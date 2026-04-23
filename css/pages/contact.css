@@ -7,6 +7,14 @@
 .contact-dark-info h4:first-child{margin-top:0;}
 .contact-dark-info p,.contact-dark-info a{font-size:15px;color:#ffffff;line-height:1.8;text-decoration:none;display:block;}
 
+.dark-label{color:#fff !important;}
+.dark-select-wrapper select,
+.dark-select-wrapper select option{color:#fff !important; background:var(--navy);}
+.dark-field{color:#fff !important;}
+.dark-field::placeholder{color:rgba(255,255,255,0.7) !important;}
+.dark-textarea{color:#fff !important;}
+.dark-hint{color:rgba(255,255,255,0.85) !important;}
+
 @media(max-width:960px){
   .contact-dark-section{grid-template-columns:1fr;padding:56px 28px;}
   .contact-dark-heading{font-size:36px;}

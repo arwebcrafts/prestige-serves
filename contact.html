@@ -17,6 +17,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/global.css">
 <link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages/process-serving.css">
 <link rel="stylesheet" href="css/pages/contact.css">
 </head>
 <body>
@@ -45,18 +46,15 @@
 
 <div id="page-contact" class="page active">
 
-  <div style="position:relative;height:380px;overflow:hidden;">
-    <img src="assets/images/prestige-serves-img-0.png" 
-         alt="Lady Justice — Prestige Serves LLC" 
-         style="width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block;"/>
-    <div style="position:absolute;inset:0;background:linear-gradient(to bottom, rgba(13,20,40,0.2) 0%, rgba(13,20,40,0.78) 100%);display:flex;align-items:flex-end;padding:52px 72px 52px 0;">
-      <div style="color:#fff;">
-        <div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#c9a84c;font-weight:600;margin-bottom:12px;">✦ Contact Prestige Serves</div>
-        <h1 style="font-size:clamp(36px,4vw,60px);font-weight:300;line-height:1.1;letter-spacing:-0.01em;">Get In Touch</h1>
-        <p style="font-size:16px;opacity:0.85;margin-top:10px;font-style:italic;">Available for law firms, businesses &amp; private individuals across Los Angeles.</p>
-      </div>
+  <section class="ps-hero">
+    <img class="ps-bg" src="assets/images/prestige-serves-img-0.png" alt="Lady Justice — Prestige Serves LLC">
+    <div class="ps-hero-overlay"></div>
+    <div class="ps-hero-content">
+      <div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#c9a84c;font-weight:600;margin-bottom:12px;">✦ Contact Prestige Serves</div>
+      <h1 class="ps-hero-title" style="display:none;">Get In Touch</h1>
+      <p class="ps-hero-sub">Reliable for law firms, businesses &amp; private individuals across Los Angeles.</p>
     </div>
-  </div>
+  </section>
   <section class="contact-dark-section">
     <div>
       <h1 class="contact-dark-heading">Get In Touch</h1>
@@ -130,4 +128,3 @@
 <script src="js/ui.js" defer></script>
 </body>
 </html>
-
