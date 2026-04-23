@@ -80,31 +80,59 @@
   </div>
   <div class="request-form-wrapper">
     <div class="request-disclaimer">
-      <p>To submit a request, please use the form below.</p>
+      <p>To submit a request, please complete the form below.</p>
       <p>All services are <strong>prepaid in advance</strong> before any job is scheduled or assigned.</p>
       <p>By clicking "Submit", you agree to the <a onclick="showPage('terms')">Terms of Use</a> and all agreements herein.</p>
       <p><strong>Thank you for your business.</strong></p>
     </div>
-
-    <!-- TALLY FORM EMBED -->
-    <iframe
-      data-tally-src="https://tally.so/embed/FORM_ID_HERE?alignLeft=1&hideTitle=1&transparentBackground=1"
-      loading="lazy"
-      width="100%"
-      height="600"
-      frameborder="0"
-      marginheight="0"
-      marginwidth="0"
-      title="Service Request Form">
-    </iframe>
-    <script>
-      var d=document,w="https://tally.so/widgets/embed.js",
-      v=function(){"undefined"!=typeof Tally?Tally.loadEmbeds():d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach((function(e){e.src=e.dataset.tallySrc}))};
-      if("undefined"!=typeof Tally)v();
-      else if(d.querySelector('script[src="'+w+'"]')==null){
-        var s=d.createElement("script");s.src=w;s.onload=v;s.onerror=v;d.body.appendChild(s);
-      }
-    </script>
+    <div class="form-group"><label>Client / Firm Name <span class="req">(required)</span></label><input type="text" required=""></div>
+    <div class="form-group"><label>Contact Name <span class="req">(required)</span></label><input type="text" required=""></div>
+    <div class="form-group"><label>Email Address <span class="req">(required)</span></label><input type="email" required=""></div>
+    <div class="form-group"><label>Phone Number <span class="req">(required)</span></label><input type="tel" required=""></div>
+    <div class="form-group">
+      <label>Service Address <span class="req">(required)</span></label>
+      <input type="text" placeholder="Address Line 1" style="margin-bottom:8px;">
+      <input type="text" placeholder="Address Line 2" style="margin-bottom:8px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        <input type="text" placeholder="City" required="">
+        <input type="text" placeholder="State" required="">
+        <input type="text" placeholder="ZIP" required="">
+      </div>
+    </div>
+    <div class="form-group"><label>Defendant / Recipient Full Name <span class="req">(required)</span></label><input type="text" required=""></div>
+    <div class="form-group"><label>Case Number</label><input type="text"></div>
+    <div class="form-group"><label>Court / Jurisdiction</label><input type="text"></div>
+    <div class="form-group">
+      <label>Are there multiple defendants to be served?</label>
+      <div class="form-hint" style="margin-bottom:10px;">Selecting "Yes" does not create additional jobs automatically.</div>
+      <div style="display:flex;gap:20px;font-size:15px;">
+        <label style="display:flex;align-items:center;gap:8px;font-weight:400;letter-spacing:0;font-size:15px;"><input type="checkbox" style="width:15px;height:15px;"> Yes</label>
+        <label style="display:flex;align-items:center;gap:8px;font-weight:400;letter-spacing:0;font-size:15px;"><input type="checkbox" style="width:15px;height:15px;"> No</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Service Type <span class="req">(required)</span></label>
+      <div class="form-hint" style="margin-bottom:8px;">Emergency service requires internal approval. Additional fees apply.</div>
+      <select required="">
+        <option value="">Select an option</option>
+        <option>Standard Service — $97.99 (5–7 business days)</option>
+        <option>Rush Service — $119.99 (3 business days)</option>
+        <option>Priority Serve — $149.99 (2 business days)</option>
+        <option>Emergency Serve — $249.99 (Same-day, approval required)</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Deadline Date</label><input type="date"></div>
+    <div class="form-group">
+      <label>File Upload <span class="req">(required)</span></label>
+      <div class="form-hint" style="margin-bottom:8px;">Upload all documents to be served (PDF preferred). Multiple files accepted.</div>
+      <div class="file-upload-area" onclick="this.querySelector('input').click()">
+        <span>+ Add a File</span>
+        <input type="file" style="display:none;" multiple="" accept=".pdf,.doc,.docx">
+      </div>
+    </div>
+    <div class="form-group"><label>Special Instructions</label><textarea rows="3"></textarea></div>
+    <button class="btn-navy" onclick="handleFormSubmit('req-success')" style="width:100%;">Submit Request</button>
+    <div class="form-success" id="req-success">Thank you! Your request has been received. We'll review it and be in touch shortly.</div>
   </div>
   <footer>
     <div><div class="footer-brand-name">Prestige Serves</div><div class="footer-tagline">Reliable. Professional. Fast.</div></div>
@@ -118,4 +146,3 @@
 <script src="js/ui.js" defer></script>
 </body>
 </html>
-
