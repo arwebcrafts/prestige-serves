@@ -81,7 +81,10 @@
   <button class="qty-btn" onclick="adjQty('prod-0',1)">+</button>
 </div>
 <button class="add-cart-btn" onclick="addToCart('Standard Service',97.99,'prod-0')">Add to Cart</button>
-      <div id="paypal-btn-standard" style="margin-top:10px;"></div>
+      <div id="paypal-btn-standard" style="margin-top:10px;">
+        <!-- PayPal Button - Replace YOUR_CLIENT_ID with actual PayPal Client ID -->
+        <div id="paypal-button-container-standard"></div>
+      </div>
     </div>
     <div class="payment-product">
       <img src="assets/images/prestige-serves-img-9.png">
@@ -93,7 +96,9 @@
   <button class="qty-btn" onclick="adjQty('prod-1',1)">+</button>
 </div>
 <button class="add-cart-btn" onclick="addToCart('Rush Serve',119.99,'prod-1')">Add to Cart</button>
-      <div id="paypal-btn-rush" style="margin-top:10px;"></div>
+      <div id="paypal-btn-rush" style="margin-top:10px;">
+        <div id="paypal-button-container-rush"></div>
+      </div>
     </div>
     <div class="payment-product">
       <img src="assets/images/prestige-serves-img-10.png">
@@ -105,7 +110,9 @@
   <button class="qty-btn" onclick="adjQty('prod-2',1)">+</button>
 </div>
 <button class="add-cart-btn" onclick="addToCart('Priority Serve',149.99,'prod-2')">Add to Cart</button>
-      <div id="paypal-btn-priority" style="margin-top:10px;"></div>
+      <div id="paypal-btn-priority" style="margin-top:10px;">
+        <div id="paypal-button-container-priority"></div>
+      </div>
     </div>
     <div class="payment-product">
       <img src="assets/images/prestige-serves-img-11.png">
@@ -117,7 +124,9 @@
   <button class="qty-btn" onclick="adjQty('prod-3',1)">+</button>
 </div>
 <button class="add-cart-btn" onclick="addToCart('Emergency Serve',249.99,'prod-3')">Add to Cart</button>
-      <div id="paypal-btn-emergency" style="margin-top:10px;"></div>
+      <div id="paypal-btn-emergency" style="margin-top:10px;">
+        <div id="paypal-button-container-emergency"></div>
+      </div>
     </div>
   </div>
   <div style="padding:0 72px;margin-bottom:48px;">
@@ -180,6 +189,55 @@
   <div class="footer-col"><h4>Contact</h4><a href="mailto:prestigeservesllc@gmail.com">prestigeservesllc@gmail.com</a><a href="tel:6092405665">609.240.5665</a></div>
 </footer>
 
+<!-- PayPal SDK - Replace YOUR_CLIENT_ID with actual PayPal Client ID -->
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&currency=USD" data-sdk-ready="true"></script>
+<script>
+  window.addEventListener('load', function() {
+    // Standard Service
+    paypal.Buttons({
+      style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' },
+      createOrder: function(data, actions) {
+        return actions.order.create({ purchase_units: [{ amount: { value: '97.99' } }] });
+      },
+      onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) { alert('Transaction completed by ' + details.payer.name.given_name); });
+      }
+    }).render('#paypal-button-container-standard');
+
+    // Rush Serve
+    paypal.Buttons({
+      style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' },
+      createOrder: function(data, actions) {
+        return actions.order.create({ purchase_units: [{ amount: { value: '119.99' } }] });
+      },
+      onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) { alert('Transaction completed by ' + details.payer.name.given_name); });
+      }
+    }).render('#paypal-button-container-rush');
+
+    // Priority Serve
+    paypal.Buttons({
+      style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' },
+      createOrder: function(data, actions) {
+        return actions.order.create({ purchase_units: [{ amount: { value: '149.99' } }] });
+      },
+      onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) { alert('Transaction completed by ' + details.payer.name.given_name); });
+      }
+    }).render('#paypal-button-container-priority');
+
+    // Emergency Serve
+    paypal.Buttons({
+      style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' },
+      createOrder: function(data, actions) {
+        return actions.order.create({ purchase_units: [{ amount: { value: '249.99' } }] });
+      },
+      onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) { alert('Transaction completed by ' + details.payer.name.given_name); });
+      }
+    }).render('#paypal-button-container-emergency');
+  });
+</script>
 <script src="js/main.js" defer></script>
 <script src="js/forms.js" defer></script>
 <script src="js/ui.js" defer></script>
