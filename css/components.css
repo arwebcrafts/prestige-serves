@@ -29,6 +29,8 @@
 .services-section-label{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent-blue);font-weight:600;text-align:center;margin-bottom:16px;display:block;}
 .services-section-title{font-size:38px;font-weight:300;text-align:center;margin-bottom:52px;letter-spacing:-0.01em;}
 .svc-icon-card img{width:58px;height:58px;margin:0 auto 18px;display:block;object-fit:contain;}
+a.svc-icon-card{text-decoration:none;color:inherit;display:block;transition:transform 0.2s ease;}
+a.svc-icon-card:hover{transform:translateY(-4px);}
 .svc-icon-title{font-size:17px;font-weight:600;margin-bottom:10px;}
 .svc-icon-desc{font-size:14.5px;color:var(--text-muted);line-height:1.65;}
 
