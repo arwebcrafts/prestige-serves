@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prestige Serves LLC — Professional Process Serving Los Angeles</title>
+<meta name="description" content="Prestige Serves LLC is a premium process serving company in Los Angeles, CA. Licensed, bonded, and court-ready. Service of process, skip tracing, eFiling, eRecording, and legal courier services.">
+<meta name="keywords" content="process server Los Angeles, process serving LA, legal courier Los Angeles, skip tracing, eFiling, eRecording, attorney service, service of process California, Prestige Serves">
+<meta property="og:title" content="Prestige Serves LLC — Premium Process Serving Los Angeles">
+<meta property="og:description" content="High-priority process service across Los Angeles with real-time updates, verified attempts, and court-ready proof. Reliable. Professional. Fast.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.prestigeserves.com">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://www.prestigeserves.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/global.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages/about.css">
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" onclick="showPage('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="1.5"/><path d="m2 7 10 7 10-7"/></svg>
+    Prestige Serves
+  </a>
+  <ul class="nav-links">
+    <li><a id="nav-home" class="active" onclick="showPage('home')">Home</a></li>
+    <li><a id="nav-about" onclick="showPage('about')">About</a></li>
+    <li class="dropdown" id="services-dropdown">
+      <a id="nav-services" style="cursor:pointer;" onclick="toggleServicesDropdown(event)">Services ▾</a>
+      <div class="dropdown-menu" id="services-menu">
+        <a onclick="showPage('process-serving');closeServicesDropdown()">Process Serving</a>
+        <a onclick="showPage('skip-tracing');closeServicesDropdown()">Skip Tracing</a>
+        <a onclick="showPage('all-services');closeServicesDropdown()">All Services</a>
+      </div>
+    </li>
+    <li><a id="nav-payment" onclick="showPage('payment')">Payment</a></li>
+    <li><a id="nav-request" onclick="showPage('request')">Request Process Serving</a></li>
+    <li><a id="nav-contact" onclick="showPage('contact')">Contact</a></li>
+  </ul>
+</nav>
+
+<div id="page-about" class="page active">
+
+  <section class="about-hero">
+    <div class="about-content-col">
+      <h1 class="page-heading">About Us</h1>
+      <p class="body-text"><strong style="text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--accent-blue);color:var(--accent-blue);cursor:pointer;" onclick="showPage('about')">Prestige Serves LLC</strong> is a Los Angeles–based legal support services company specializing in professional service of process and procedural document handling.</p>
+      <p class="body-text">We operate with the understanding that our work directly supports the integrity of the legal system. Service of process is not incidental — it is a formal procedural requirement that must be executed accurately, lawfully, and within strict timelines.</p>
+      <p class="body-text">Our team approaches each assignment with discretion, discipline, and strategic awareness.</p>
+      <div style="margin-top:48px;">
+        <h2 class="section-heading">Our Approach</h2>
+        <p class="pull-quote">We believe professionalism in the field should reflect the professionalism inside the courtroom.</p>
+        <p class="body-text">Every assignment is handled with:</p>
+        <ul class="bullet-list">
+          <li>Strict procedural compliance</li>
+          <li>Timely execution</li>
+          <li>Detailed documentation</li>
+          <li>Clear and direct communication</li>
+        </ul>
+        <p class="body-text">We understand the importance of accuracy. Improper service can result in delays, dismissals, or unnecessary litigation risk. Our processes are designed to minimize error and protect the interests of our clients.</p>
+      </div>
+    </div>
+    <div class="about-img-col">
+      <img src="assets/images/prestige-serves-img-0.png" alt="Los Angeles palm trees — Prestige Serves LLC">
+    </div>
+  </section>
+  <div class="two-col-content">
+    <div class="two-col-item">
+      <h2 class="section-heading">Who We Serve</h2>
+      <p class="body-text">Prestige Serves works with:</p>
+      <ul class="bullet-list">
+        <li>Law firms</li>
+        <li>Solo practitioners</li>
+        <li>Corporate legal departments</li>
+        <li>Registered agents</li>
+        <li>Private individuals</li>
+      </ul>
+      <p class="body-text">Whether routine service or time-sensitive matters, each assignment receives focused attention and professional handling.</p>
+    </div>
+    <div class="two-col-item">
+      <h2 class="section-heading">Our Commitment to Clients</h2>
+      <p class="body-text" style="font-weight:500;">We prioritize reliability and accountability.</p>
+      <p class="body-text">Clients receive clear updates, properly executed proofs of service, and professional representation in the field. We do not overextend beyond our capacity. We accept assignments we can execute properly and within required timeframes.</p>
+      <p class="body-text">Our reputation is built on <strong>consistency</strong> and <strong>execution</strong>.</p>
+    </div>
+  </div>
+  <div style="padding:0 72px 80px;border-top:1px solid var(--border);">
+    <div style="max-width:720px;padding-top:64px;">
+      <h2 class="section-heading">Our Operating Area</h2>
+      <p class="body-text">Prestige Serves provides coverage throughout Los Angeles County and surrounding jurisdictions. Expanded coverage may be coordinated upon request.</p>
+      <p class="body-text"><strong>Primary Coverage:</strong> Los Angeles County &amp; surrounding jurisdictions — including Downtown LA, Westside, San Fernando Valley, South Bay, and San Gabriel Valley.</p>
+      <p class="body-text"><strong>Nationwide:</strong> We coordinate nationwide service through our trusted network of registered process servers in all 50 states.</p>
+    </div>
+  </div>
+  <footer>
+    <div><div class="footer-brand-name">Prestige Serves</div><div class="footer-tagline">Reliable. Professional. Fast.</div></div>
+    <div class="footer-col"><h4>Location</h4><p>1240 S Corning St.</p><p>Los Angeles, CA 90035</p></div>
+    <div class="footer-col"><h4>Contact</h4><a href="mailto:prestigeservesllc@gmail.com">prestigeservesllc@gmail.com</a><a href="tel:6092405665">609.240.5665</a></div>
+  </footer>
+</div>
+
+<!-- PROCESS SERVING -->
+
+</div>
+
+<footer>
+    <div><div class="footer-brand-name">Prestige Serves</div><div class="footer-tagline">Reliable. Professional. Fast.</div></div>
+    <div class="footer-col"><h4>Location</h4><p>1240 S Corning St.</p><p>Los Angeles, CA 90035</p></div>
+    <div class="footer-col"><h4>Contact</h4><a href="mailto:prestigeservesllc@gmail.com">prestigeservesllc@gmail.com</a><a href="tel:6092405665">609.240.5665</a></div>
+  </footer>
+
+<script src="js/main.js" defer></script>
+<script src="js/forms.js" defer></script>
+<script src="js/ui.js" defer></script>
+</body>
+</html>

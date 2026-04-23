@@ -1,0 +1,32 @@
+/* request.css — Request page specific styles */
+
+.request-hero{padding:72px 72px 48px;}
+.request-label{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent-blue);font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.request-title{font-size:clamp(40px,4.5vw,68px);font-weight:300;letter-spacing:-0.015em;margin-bottom:14px;}
+.request-sub{font-size:15px;color:var(--text-muted);margin-bottom:36px;}
+.request-info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;}
+.request-info-card{border:1px solid var(--border);padding:18px 22px;border-radius:4px;display:flex;gap:12px;align-items:flex-start;}
+.request-info-card svg{width:18px;height:18px;opacity:0.4;flex-shrink:0;margin-top:2px;}
+.request-info-card h4{font-size:14px;font-weight:600;margin-bottom:3px;}
+.request-info-card p{font-size:12.5px;color:var(--text-muted);}
+.request-need-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:36px;}
+.request-need-box,.request-emergency-box{border:1px solid var(--border);padding:22px 26px;border-radius:4px;}
+.request-need-box h4,.request-emergency-box h4{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.request-need-box ul{padding-left:18px;}
+.request-need-box li{font-size:13.5px;color:var(--text-body);line-height:1.7;}
+.request-need-box li strong{font-weight:600;}
+.emergency-badge{background:var(--accent-blue);color:#fff;font-size:11px;font-weight:600;letter-spacing:0.08em;padding:3px 10px;border-radius:100px;}
+.request-emergency-box p{font-size:13px;color:var(--text-muted);line-height:1.6;}
+.request-form-wrapper{max-width:680px;margin:0 72px 80px;}
+.request-disclaimer{text-align:center;font-size:13px;color:var(--text-muted);line-height:1.8;margin-bottom:32px;}
+.request-disclaimer strong{color:var(--text-dark);}
+.request-disclaimer a{color:var(--accent-blue);cursor:pointer;}
+.file-upload-area{border:1.5px dashed var(--border);border-radius:10px;padding:28px;text-align:center;cursor:pointer;transition:border-color 0.2s;font-size:14px;color:var(--text-muted);}
+.file-upload-area:hover{border-color:var(--accent-blue);}
+
+@media(max-width:960px){
+  .request-hero{padding:48px 28px 36px;}
+  .request-form-wrapper{margin:0 28px 56px;}
+  .request-info-grid{grid-template-columns:1fr;}
+  .request-need-grid{grid-template-columns:1fr;}
+}

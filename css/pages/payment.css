@@ -1,0 +1,36 @@
+/* payment.css — Payment page specific styles */
+
+.payment-hero{text-align:center;padding:72px 72px 48px;border-bottom:2px solid var(--text-dark);margin:40px 72px 0;}
+.payment-secure{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-blue);font-weight:600;margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.payment-title{font-size:clamp(32px,4vw,52px);font-weight:300;margin-bottom:14px;letter-spacing:-0.01em;}
+.payment-sub{font-size:15px;color:var(--text-muted);max-width:560px;margin:0 auto;}
+.payment-info-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:40px 72px;}
+.payment-info-card{border:1px solid var(--border);border-radius:4px;padding:28px 32px;display:flex;gap:16px;align-items:flex-start;}
+.payment-info-card svg{width:22px;height:22px;opacity:0.5;flex-shrink:0;margin-top:2px;}
+.payment-info-card h4{font-size:15px;font-weight:600;margin-bottom:6px;}
+.payment-info-card p{font-size:13.5px;color:var(--text-muted);line-height:1.55;}
+.payment-products{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;padding:0 72px;margin-bottom:48px;}
+.payment-product{border:1px solid var(--border);padding:32px 24px;text-align:center;transition:border-color 0.2s;}
+.payment-product:hover{border-color:var(--accent-blue);}
+.payment-product img{width:88px;height:88px;object-fit:contain;margin:0 auto 20px;display:block;}
+.payment-product h3{font-size:17px;font-weight:600;margin-bottom:6px;}
+.payment-product .price{font-size:18px;color:var(--navy);font-weight:500;margin-bottom:10px;}
+.payment-product p{font-size:13px;color:var(--text-muted);line-height:1.5;margin-bottom:20px;}
+.payment-policies{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:0 72px 48px;border:2px solid var(--text-dark);}
+.payment-policy-col{padding:36px 44px;}
+.payment-policy-col:first-child{border-right:2px solid var(--text-dark);}
+.payment-policy-col h3{font-size:28px;font-weight:300;margin-bottom:20px;}
+.payment-policy-col ul,.payment-policy-col ol{padding-left:20px;}
+.payment-policy-col li{font-size:14px;color:var(--text-body);line-height:1.8;margin-bottom:6px;}
+.payment-policy-col li strong{font-weight:600;}
+.payment-disclaimer{padding:0 72px 56px;text-align:center;font-size:13.5px;color:var(--text-muted);line-height:1.9;}
+.payment-disclaimer strong{color:var(--text-dark);font-weight:600;}
+.payment-disclaimer a{color:var(--accent-blue);cursor:pointer;}
+
+@media(max-width:960px){
+  .payment-hero{margin:20px 28px 0;padding:40px 28px;}
+  .payment-products{grid-template-columns:repeat(2,1fr);padding:0 28px;}
+  .payment-info-cards,.payment-policies{margin:20px 28px;}
+  .payment-policies{grid-template-columns:1fr;}
+  .payment-policy-col:first-child{border-right:none;border-bottom:2px solid var(--text-dark);}
+}

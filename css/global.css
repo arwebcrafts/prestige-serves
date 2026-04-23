@@ -1,0 +1,65 @@
+/* ============================
+   PRESTIGE SERVES — GLOBAL CSS
+   CSS Variables, Reset, Nav,
+   Buttons, Footer, Base
+   ============================ */
+
+:root{
+  --bg-warm:#e8e6e1;
+  --bg-white:#ffffff;
+  --bg-dark:#0d0d0d;
+  --navy:#2d3a52;
+  --navy-hover:#1e293f;
+  --text-dark:#1a1a1a;
+  --text-body:#2e2e2e;
+  --text-muted:#666;
+  --accent-blue:#2d3a7c;
+  --accent-gold:#c9a84c;
+  --border:#d5d2cc;
+  --serif:'Cormorant Garamond',Georgia,serif;
+}
+
+/* RESET */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--serif);color:var(--text-dark);background:var(--bg-white);line-height:1.6;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:1000;background:var(--bg-white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 52px;height:74px;box-shadow:0 1px 8px rgba(0,0,0,0.04);}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text-dark);font-size:21px;font-weight:400;letter-spacing:0.01em;cursor:pointer;}
+.nav-brand svg{width:26px;height:26px;opacity:0.65;}
+.nav-links{display:flex;align-items:center;gap:34px;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--text-dark);font-size:15px;font-weight:400;letter-spacing:0.02em;transition:opacity 0.2s;cursor:pointer;border:none;background:none;font-family:var(--serif);}
+.nav-links a:hover{opacity:0.55;}
+.nav-links a.active{border-bottom:1.5px solid var(--text-dark);padding-bottom:1px;}
+.dropdown{position:relative;}
+.dropdown-menu{display:none;position:absolute;top:calc(100% + 8px);left:0;background:var(--bg-white);border:1px solid var(--border);min-width:190px;padding:6px 0;z-index:300;box-shadow:0 4px 20px rgba(0,0,0,0.08);}
+.dropdown:hover .dropdown-menu{display:block;} .dropdown.open .dropdown-menu{display:block;}
+.dropdown-menu a{display:block;padding:10px 22px;font-size:14px;color:var(--text-dark);text-decoration:none;cursor:pointer;}
+.dropdown-menu a:hover{background:var(--bg-warm);opacity:1;}
+
+/* PAGE ROUTING */
+.page{display:none;}
+.page.active{display:block;}
+
+/* BUTTONS */
+.btn-navy{display:inline-block;background:var(--accent-blue);color:#fff;padding:15px 44px;border-radius:100px;font-family:var(--serif);font-size:15px;font-weight:400;letter-spacing:0.06em;text-decoration:none;border:none;cursor:pointer;transition:background 0.2s;text-align:center;}
+.btn-navy:hover{background:var(--navy-hover);}
+.btn-outline{display:inline-block;background:transparent;color:var(--text-dark);padding:14px 44px;border-radius:100px;font-family:var(--serif);font-size:15px;font-weight:400;letter-spacing:0.04em;text-decoration:none;border:1.5px solid var(--text-dark);cursor:pointer;transition:all 0.2s;text-align:center;}
+.btn-outline:hover{background:var(--text-dark);color:#fff;}
+
+/* FOOTER */
+footer{background:var(--bg-warm);padding:56px 72px;display:grid;grid-template-columns:1fr auto auto;gap:48px;align-items:start;border-top:1px solid var(--border);}
+.footer-brand-name{font-size:34px;font-weight:300;letter-spacing:-0.01em;margin-bottom:8px;}
+.footer-tagline{font-size:13px;color:var(--text-muted);font-style:italic;}
+.footer-col h4{font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px;color:var(--text-dark);}
+.footer-col p,.footer-col a{font-size:14px;color:var(--text-muted);line-height:1.95;text-decoration:none;display:block;}
+.footer-col a:hover{color:var(--text-dark);}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  nav{padding:0 28px;}
+  .nav-links{gap:14px;}
+  .nav-links a{font-size:13px;}
+  footer{grid-template-columns:1fr;padding:40px 28px;}
+}

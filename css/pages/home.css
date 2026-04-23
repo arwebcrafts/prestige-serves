@@ -1,0 +1,6 @@
+/* home.css — Home page specific styles */
+
+@media(max-width:960px){
+  .hero-right{height:360px;}
+  .hero-left{padding:56px 28px;}
+}

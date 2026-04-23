@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prestige Serves LLC — Professional Process Serving Los Angeles</title>
+<meta name="description" content="Prestige Serves LLC is a premium process serving company in Los Angeles, CA. Licensed, bonded, and court-ready. Service of process, skip tracing, eFiling, eRecording, and legal courier services.">
+<meta name="keywords" content="process server Los Angeles, process serving LA, legal courier Los Angeles, skip tracing, eFiling, eRecording, attorney service, service of process California, Prestige Serves">
+<meta property="og:title" content="Prestige Serves LLC — Premium Process Serving Los Angeles">
+<meta property="og:description" content="High-priority process service across Los Angeles with real-time updates, verified attempts, and court-ready proof. Reliable. Professional. Fast.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.prestigeserves.com">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://www.prestigeserves.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/global.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages/payment.css">
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" onclick="showPage('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="1.5"/><path d="m2 7 10 7 10-7"/></svg>
+    Prestige Serves
+  </a>
+  <ul class="nav-links">
+    <li><a id="nav-home" class="active" onclick="showPage('home')">Home</a></li>
+    <li><a id="nav-about" onclick="showPage('about')">About</a></li>
+    <li class="dropdown" id="services-dropdown">
+      <a id="nav-services" style="cursor:pointer;" onclick="toggleServicesDropdown(event)">Services ▾</a>
+      <div class="dropdown-menu" id="services-menu">
+        <a onclick="showPage('process-serving');closeServicesDropdown()">Process Serving</a>
+        <a onclick="showPage('skip-tracing');closeServicesDropdown()">Skip Tracing</a>
+        <a onclick="showPage('all-services');closeServicesDropdown()">All Services</a>
+      </div>
+    </li>
+    <li><a id="nav-payment" onclick="showPage('payment')">Payment</a></li>
+    <li><a id="nav-request" onclick="showPage('request')">Request Process Serving</a></li>
+    <li><a id="nav-contact" onclick="showPage('contact')">Contact</a></li>
+  </ul>
+</nav>
+
+<div id="page-payment" class="page active">
+
+  <div class="payment-hero">
+    <div class="payment-secure">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      SECURE PAYMENT
+    </div>
+    <h1 class="payment-title">Payment Required to Proceed</h1>
+    <p class="payment-sub">Please complete payment to allow us to review, approve, and assign your process serving request.</p>
+  </div>
+  <div class="payment-info-cards">
+    <div class="payment-info-card">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2M1 13h22"/></svg>
+      <div><h4>Payment timing</h4><p>Payment is required <strong>before or during service</strong>, depending on service type and approval.</p></div>
+    </div>
+    <div class="payment-info-card">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      <div><h4>After payment</h4><p>We confirm intake details, assess deadlines, and schedule assignment.</p></div>
+    </div>
+    <div class="payment-info-card">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <div><h4>Court-safe documentation</h4><p>Professional service attempts and documentation in accordance with law.</p></div>
+    </div>
+  </div>
+  <div style="padding:0 72px;margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;">
+    <h2 style="font-size:38px;font-weight:300;">Select Your Preferred Service:</h2>
+    <a class="btn-outline" style="cursor:pointer;font-size:13px;padding:11px 28px;" onclick="showPage('all-services')">Shop All</a>
+  </div>
+
+  <!-- STRIPE PAYMENT BUTTON -->
+  <script async src="https://js.stripe.com/v3/buy-button.js"></script>
+
+  <stripe-buy-button
+    buy-button-id="STRIPE_BUTTON_ID_HERE"
+    publishable-key="STRIPE_PUBLISHABLE_KEY_HERE">
+  </stripe-buy-button>
+
+  <!-- PAYPAL BUTTON -->
+  <div id="paypal-button-container"></div>
+  <!-- Client will paste their PayPal hosted button code here -->
+  <!-- Get it from: paypal.com/buttons -->
+
+  <footer>
+    <div><div class="footer-brand-name">Prestige Serves</div><div class="footer-tagline">Reliable. Professional. Fast.</div></div>
+    <div class="footer-col"><h4>Location</h4><p>1240 S Corning St.</p><p>Los Angeles, CA 90035</p></div>
+    <div class="footer-col"><h4>Contact</h4><a href="mailto:prestigeservesllc@gmail.com">prestigeservesllc@gmail.com</a><a href="tel:6092405665">609.240.5665</a></div>
+  </footer>
+</div>
+
+<script src="js/main.js" defer></script>
+<script src="js/forms.js" defer></script>
+<script src="js/ui.js" defer></script>
+</body>
+</html>
