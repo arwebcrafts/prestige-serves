@@ -22,24 +22,24 @@
 <body>
 
 <nav>
-  <a class="nav-brand" onclick="showPage('home')">
+  <a class="nav-brand" onclick="window.location.href='index.html'">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="1.5"/><path d="m2 7 10 7 10-7"/></svg>
     Prestige Serves
   </a>
   <ul class="nav-links">
-    <li><a id="nav-home" class="active" onclick="showPage('home')">Home</a></li>
-    <li><a id="nav-about" onclick="showPage('about')">About</a></li>
+    <li><a id="nav-home" class="active" onclick="window.location.href='index.html'">Home</a></li>
+    <li><a id="nav-about" onclick="window.location.href='about.html'">About</a></li>
     <li class="dropdown" id="services-dropdown">
       <a id="nav-services" style="cursor:pointer;" onclick="toggleServicesDropdown(event)">Services ▾</a>
       <div class="dropdown-menu" id="services-menu">
-        <a onclick="showPage('process-serving');closeServicesDropdown()">Process Serving</a>
-        <a onclick="showPage('skip-tracing');closeServicesDropdown()">Skip Tracing</a>
-        <a onclick="showPage('all-services');closeServicesDropdown()">All Services</a>
+        <a onclick="window.location.href='process-serving.html'">Process Serving</a>
+        <a onclick="window.location.href='skip-tracing.html'">Skip Tracing</a>
+        <a onclick="window.location.href='services.html'">All Services</a>
       </div>
     </li>
-    <li><a id="nav-payment" onclick="showPage('payment')">Payment</a></li>
-    <li><a id="nav-request" onclick="showPage('request')">Request Process Serving</a></li>
-    <li><a id="nav-contact" onclick="showPage('contact')">Contact</a></li>
+    <li><a id="nav-payment" onclick="window.location.href='payment.html'">Payment</a></li>
+    <li><a id="nav-request" onclick="window.location.href='request.html'" onclick="window.location.href='services.html'">Request Process Serving</a></li>
+    <li><a id="nav-contact" onclick="window.location.href='contact.html'">Contact</a></li>
   </ul>
 </nav>
 

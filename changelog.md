@@ -12,6 +12,13 @@
 - Replaced cart-based payment flow in `payment.html` with Stripe Buy Button embed (placeholders: `STRIPE_BUTTON_ID_HERE`, `STRIPE_PUBLISHABLE_KEY_HERE`)
 - Added PayPal button container to `payment.html` (placeholder div for client's own PayPal button code)
 - Initialized git repo and pushed to GitHub (https://github.com/arwebcrafts/prestige-serves)
+- Made service icon boxes on `services.html` clickable with light blue hover effect (`#d0e4f7`)
+- Service boxes route to `process-serving.html` (Service of Process, eFiling, eRecording, Nationwide, Concierge) or `skip-tracing.html` (Skip Tracing)
+- "Request Process Serving" nav link now routes to `services.html` (all services page) for service selection before request form
+- Simplified home page contact section — "Prestige Serves" in gold with tagline in white, form on right
+- Form labels and inputs on dark backgrounds now use white text for legibility
+- All icons throughout site updated to consistent 110x110px size (matching homepage)
+- Address updated to include "Suite 105" across all pages
 
 ### Added
 - `css/global.css` - CSS custom properties, resets, navigation, buttons, footer, base responsive styles

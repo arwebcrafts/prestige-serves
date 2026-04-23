@@ -22,24 +22,24 @@
 <body>
 
 <nav>
-  <a class="nav-brand" onclick="showPage('home')">
+  <a class="nav-brand" onclick="window.location.href='index.html'">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="1.5"/><path d="m2 7 10 7 10-7"/></svg>
     Prestige Serves
   </a>
   <ul class="nav-links">
-    <li><a id="nav-home" class="active" onclick="showPage('home')">Home</a></li>
-    <li><a id="nav-about" onclick="showPage('about')">About</a></li>
+    <li><a id="nav-home" class="active" onclick="window.location.href='index.html'">Home</a></li>
+    <li><a id="nav-about" onclick="window.location.href='about.html'">About</a></li>
     <li class="dropdown" id="services-dropdown">
       <a id="nav-services" style="cursor:pointer;" onclick="toggleServicesDropdown(event)">Services ▾</a>
       <div class="dropdown-menu" id="services-menu">
-        <a onclick="showPage('process-serving');closeServicesDropdown()">Process Serving</a>
-        <a onclick="showPage('skip-tracing');closeServicesDropdown()">Skip Tracing</a>
-        <a onclick="showPage('all-services');closeServicesDropdown()">All Services</a>
+        <a onclick="window.location.href='process-serving.html'">Process Serving</a>
+        <a onclick="window.location.href='skip-tracing.html'">Skip Tracing</a>
+        <a onclick="window.location.href='services.html'">All Services</a>
       </div>
     </li>
-    <li><a id="nav-payment" onclick="showPage('payment')">Payment</a></li>
-    <li><a id="nav-request" onclick="showPage('request')">Request Process Serving</a></li>
-    <li><a id="nav-contact" onclick="showPage('contact')">Contact</a></li>
+    <li><a id="nav-payment" onclick="window.location.href='payment.html'">Payment</a></li>
+    <li><a id="nav-request" onclick="window.location.href='request.html'" onclick="window.location.href='services.html'">Request Process Serving</a></li>
+    <li><a id="nav-contact" onclick="window.location.href='contact.html'">Contact</a></li>
   </ul>
 </nav>
 
@@ -52,7 +52,7 @@
       <div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#c9a84c;font-weight:600;margin-bottom:14px;">✦ Los Angeles Skip Tracing Services</div>
       <h1 class="st-hero-title">Skip Tracing &amp;<br>Address Research</h1>
       <p style="font-size:18px;font-weight:300;opacity:0.9;font-style:italic;margin-bottom:28px;">Verified Address &amp; Agent-for-Service Research — Fast. Discreet. Court-Ready.</p>
-      <a class="btn-navy" onclick="showPage('request')" style="cursor:pointer;background:#c9a84c;color:#0d0d0d;font-weight:600;">Order Skip Trace</a>
+      <a class="btn-navy" onclick="window.location.href='request.html'" style="cursor:pointer;background:#c9a84c;color:#0d0d0d;font-weight:600;">Order Skip Trace</a>
     </div>
   </section>
   <div class="st-two-col">
@@ -117,7 +117,7 @@
   </div>
   <div class="cta-banner">
     <div><h2>Ready to Find Who You're Looking For?</h2><p>Stop working with outdated information and move your case forward.</p></div>
-    <div class="cta-banner-right"><a class="btn-navy" onclick="showPage('request')" style="cursor:pointer;">Order Service Online</a></div>
+    <div class="cta-banner-right"><a class="btn-navy" onclick="window.location.href='request.html'" style="cursor:pointer;">Order Service Online</a></div>
   </div>
   <footer>
     <div><div class="footer-brand-name">Prestige Serves</div><div class="footer-tagline">Reliable. Professional. Fast.</div></div>
