@@ -17,22 +17,32 @@ function showPage(page) {
 function toggleServicesDropdown(e) {
   e.stopPropagation();
   var menu = document.getElementById('services-menu');
-  var isOpen = menu.style.display === 'block';
-  menu.style.display = isOpen ? 'none' : 'block';
+  menu.classList.toggle('open');
 }
 
 function closeServicesDropdown() {
   var menu = document.getElementById('services-menu');
-  if (menu) menu.style.display = 'none';
+  if (menu) menu.classList.remove('open');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  // Set active nav based on current page
+  var path = window.location.pathname;
+  var page = path.substring(path.lastIndexOf('/') + 1).replace('.html', '') || 'index';
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  var activeNav = document.getElementById('nav-' + page);
+  if (activeNav) activeNav.classList.add('active');
+  if (['process-serving', 'skip-tracing', 'services'].includes(page)) {
+    var servicesNav = document.getElementById('nav-services');
+    if (servicesNav) servicesNav.classList.add('active');
+  }
+
   // Services dropdown click outside handler
   document.addEventListener('click', function(e) {
     var dd = document.getElementById('services-dropdown');
     var menu = document.getElementById('services-menu');
     if (dd && menu && !dd.contains(e.target)) {
-      menu.style.display = 'none';
+      menu.classList.remove('open');
     }
   });
 

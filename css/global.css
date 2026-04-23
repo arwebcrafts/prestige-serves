@@ -33,8 +33,8 @@ nav{position:sticky;top:0;z-index:1000;background:var(--bg-white);border-bottom:
 .nav-links a:hover{opacity:0.55;}
 .nav-links a.active{border-bottom:1.5px solid var(--text-dark);padding-bottom:1px;}
 .dropdown{position:relative;}
-.dropdown-menu{display:none;position:absolute;top:calc(100% + 8px);left:0;background:var(--bg-white);border:1px solid var(--border);min-width:190px;padding:6px 0;z-index:300;box-shadow:0 4px 20px rgba(0,0,0,0.08);}
-.dropdown:hover .dropdown-menu{display:block;} .dropdown.open .dropdown-menu{display:block;}
+.dropdown-menu{display:none;position:absolute;top:100%;left:0;background:var(--bg-white);border:1px solid var(--border);min-width:190px;padding:6px 0;z-index:300;box-shadow:0 4px 20px rgba(0,0,0,0.08);margin-top:0;}
+.dropdown:hover .dropdown-menu,.dropdown.open .dropdown-menu{display:block;}
 .dropdown-menu a{display:block;padding:10px 22px;font-size:14px;color:var(--text-dark);text-decoration:none;cursor:pointer;}
 .dropdown-menu a:hover{background:var(--bg-warm);opacity:1;}
 
