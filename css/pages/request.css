@@ -17,7 +17,7 @@
 .request-need-box li strong{font-weight:600;}
 .emergency-badge{background:var(--accent-blue);color:#fff;font-size:11px;font-weight:600;letter-spacing:0.08em;padding:3px 10px;border-radius:100px;}
 .request-emergency-box p{font-size:13px;color:var(--text-muted);line-height:1.6;}
-.request-form-wrapper{max-width:680px;margin:0 72px 80px;}
+.request-form-wrapper{max-width:680px;margin:0 auto 80px;}
 .request-disclaimer{text-align:center;font-size:13px;color:var(--text-muted);line-height:1.8;margin-bottom:32px;}
 .request-disclaimer strong{color:var(--text-dark);}
 .request-disclaimer a{color:var(--accent-blue);cursor:pointer;}
