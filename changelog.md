@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.0.1] - 2026-04-23
+
+### Fixed
+- Removed duplicate footers from `about.html`, `contact.html`, `process-serving.html`, `skip-tracing.html`, and `terms.html`
+- Updated `process-serving.html` hero image from `prestige-serves-img-0.jpeg` to `prestige-serves-img-14.png`
+- Contact page now uses consistent hero section styling with `ps-hero` class like other pages
+- Contact page form labels and inputs now display in white text for better visibility on dark background
+- Removed "Get In Touch" heading from contact page hero section
+- Updated contact page hero subtitle from "Available for..." to "Reliable for..."
+
+### Changed
+- Contact page hero image: uses `prestige-serves-img-0.png` with `ps-hero` section structure
+- Contact page CSS now imports `process-serving.css` for consistent hero styling
+
 ## [1.0.0] - 2026-04-23
 
 ### Changed
