@@ -9,7 +9,7 @@
 .ps-hero-nav .nav-links li a{color:#fff;text-decoration:none;font-size:14px;padding:8px 12px;opacity:0.9;transition:opacity 0.2s;}
 .ps-hero-nav .nav-links li a:hover{opacity:1;}
 .ps-hero-nav .dropdown-menu{background:rgba(10,15,35,0.95);border:1px solid rgba(255,255,255,0.2);}
-.ps-hero-content{position:relative;z-index:2;padding:20px 72px 56px;color:#fff;margin-top:auto;}
+.ps-hero-content{position:relative;z-index:2;padding:100px 72px 56px;color:#fff;}
 .ps-hero-title{font-size:clamp(32px,4vw,56px);font-weight:300;line-height:1.2;letter-spacing:-0.01em;}
 .ps-hero-title-line{display:block;}
 .ps-hero-title-line:first-child{position:relative;display:inline-block;margin-bottom:15px;z-index:1;}
