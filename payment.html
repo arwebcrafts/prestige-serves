@@ -152,6 +152,7 @@
           <button class="qty-btn" onclick="adjQty('prod-add', 1)">+</button>
         </div>
         <button class="add-cart-btn" onclick="addToCart('Additional Defendant', 25.00, 'prod-add')">Add to Cart</button>
+        <div id="paypal-button-container-addon" style="margin-top:10px;"></div>
       </div>
     </div>
   </div>
@@ -236,6 +237,17 @@
         return actions.order.capture().then(function(details) { alert('Transaction completed by ' + details.payer.name.given_name); });
       }
     }).render('#paypal-button-container-emergency');
+
+    // Additional Defendant Add-On
+    paypal.Buttons({
+      style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' },
+      createOrder: function(data, actions) {
+        return actions.order.create({ purchase_units: [{ amount: { value: '25.00' } }] });
+      },
+      onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) { alert('Transaction completed by ' + details.payer.name.given_name); });
+      }
+    }).render('#paypal-button-container-addon');
   });
 </script>
 <script src="js/main.js" defer></script>
