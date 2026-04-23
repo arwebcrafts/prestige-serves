@@ -10,6 +10,8 @@
 - Extracted 39 base64 images (total ~25MB) to `assets/images/` — HTML files reduced from 60MB to under 15KB each
 - Replaced custom HTML service request form in `request.html` with Tally.so embed (placeholder: `FORM_ID_HERE`)
 - Replaced cart-based payment flow in `payment.html` with Stripe Buy Button embed (placeholders: `STRIPE_BUTTON_ID_HERE`, `STRIPE_PUBLISHABLE_KEY_HERE`)
+- Added PayPal button container to `payment.html` (placeholder div for client's own PayPal button code)
+- Initialized git repo and pushed to GitHub (https://github.com/arwebcrafts/prestige-serves)
 
 ### Added
 - `css/global.css` - CSS custom properties, resets, navigation, buttons, footer, base responsive styles
