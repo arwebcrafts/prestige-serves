@@ -69,21 +69,21 @@
 
 /* Dark background form overrides — for contact sections with navy background */
 .contact-form-col .form-group label,
-.contact-form-col label{color:#87ceeb !important;}
+.contact-form-col label{color:var(--text-dark) !important;}
 .contact-form-col .req,
-.contact-form-col .form-group .req{color:rgba(135,206,235,0.8) !important;}
+.contact-form-col .form-group .req{color:var(--text-muted) !important;}
 .contact-form-col .form-hint,
 .contact-form-col .form-group .form-hint{color:rgba(255,255,255,0.6) !important;}
 .contact-form-col .form-group input,
 .contact-form-col .form-group textarea,
 .contact-form-col input,
-.contact-form-col textarea{background:rgba(255,255,255,0.9) !important;border:1px solid rgba(135,206,235,0.6) !important;color:#1a1a1a !important;}
+.contact-form-col textarea{background:rgba(255,255,255,0.9) !important;border:0.5px solid var(--text-muted) !important;color:#1a1a1a !important;}
 .contact-form-col .form-group input::placeholder,
 .contact-form-col .form-group textarea::placeholder,
 .contact-form-col input::placeholder,
 .contact-form-col textarea::placeholder{color:rgba(255,255,255,0.4) !important;}
 .contact-form-col .form-group select,
-.contact-form-col select{background:rgba(255,255,255,0.9) !important;border:1px solid rgba(135,206,235,0.6) !important;color:#1a1a1a !important;}
+.contact-form-col select{background:rgba(255,255,255,0.9) !important;border:0.5px solid var(--text-muted) !important;color:#1a1a1a !important;}
 .contact-form-col .form-checkbox label,
 .contact-form-col .form-group .form-checkbox label{color:rgba(255,255,255,0.85) !important;}
 .contact-form-col select option{background:#f5f5f5;color:#1a1a1a;}
