@@ -44,10 +44,9 @@
 </nav>
 
 <div id="page-payment" class="page active">
-
   <div class="payment-hero">
     <div class="payment-secure">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0110 0v4"></path></svg>
       SECURE PAYMENT
     </div>
     <h1 class="payment-title">Payment Required to Proceed</h1>
@@ -55,46 +54,130 @@
   </div>
   <div class="payment-info-cards">
     <div class="payment-info-card">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2M1 13h22"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 7V5a2 2 0 00-4 0v2M1 13h22"></path></svg>
       <div><h4>Payment timing</h4><p>Payment is required <strong>before or during service</strong>, depending on service type and approval.</p></div>
     </div>
     <div class="payment-info-card">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
       <div><h4>After payment</h4><p>We confirm intake details, assess deadlines, and schedule assignment.</p></div>
     </div>
     <div class="payment-info-card">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
       <div><h4>Court-safe documentation</h4><p>Professional service attempts and documentation in accordance with law.</p></div>
     </div>
   </div>
   <div style="padding:0 72px;margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;">
     <h2 style="font-size:38px;font-weight:300;">Select Your Preferred Service:</h2>
-    <a class="btn-outline" style="cursor:pointer;font-size:13px;padding:11px 28px;" onclick="window.location.href='services.html'">Shop All</a>
+    <a class="btn-outline" style="cursor:pointer;font-size:13px;padding:11px 28px;" onclick="showPage('all-services')">Shop All</a>
+  </div>
+  <div class="payment-products">
+    <div class="payment-product">
+      <img src="assets/images/prestige-serves-img-8.png">
+      <h3>Standard Service</h3><div class="price">$97.99</div>
+      <p>Delivers legal documents within 5–7 business days.</p>
+      <div class="qty-row">
+  <button class="qty-btn" onclick="adjQty('prod-0',-1)">−</button>
+  <span class="qty-num" id="prod-0-qty">1</span>
+  <button class="qty-btn" onclick="adjQty('prod-0',1)">+</button>
+</div>
+<button class="add-cart-btn" onclick="addToCart('Standard Service',97.99,'prod-0')">Add to Cart</button>
+    </div>
+    <div class="payment-product">
+      <img src="assets/images/prestige-serves-img-9.png">
+       <h3>Rush Serve</h3><div class="price">$119.99</div>
+      <p>Service attempts within 3 business days for urgent matters.</p>
+      <div class="qty-row">
+  <button class="qty-btn" onclick="adjQty('prod-1',-1)">−</button>
+  <span class="qty-num" id="prod-1-qty">1</span>
+  <button class="qty-btn" onclick="adjQty('prod-1',1)">+</button>
+</div>
+<button class="add-cart-btn" onclick="addToCart('Rush Serve',119.99,'prod-1')">Add to Cart</button>
+    </div>
+    <div class="payment-product">
+      <img src="assets/images/prestige-serves-img-10.png">
+       <h3>Priority Serve</h3><div class="price">$149.99</div>
+      <p>Guaranteed delivery within 2 business days.</p>
+      <div class="qty-row">
+  <button class="qty-btn" onclick="adjQty('prod-2',-1)">−</button>
+  <span class="qty-num" id="prod-2-qty">1</span>
+  <button class="qty-btn" onclick="adjQty('prod-2',1)">+</button>
+</div>
+<button class="add-cart-btn" onclick="addToCart('Priority Serve',149.99,'prod-2')">Add to Cart</button>
+    </div>
+    <div class="payment-product">
+      <img src="assets/images/prestige-serves-img-11.png">
+       <h3>Emergency Serve</h3><div class="price">$249.99</div>
+      <p>Same-day service. Requires internal approval.</p>
+      <div class="qty-row">
+  <button class="qty-btn" onclick="adjQty('prod-3',-1)">−</button>
+  <span class="qty-num" id="prod-3-qty">1</span>
+  <button class="qty-btn" onclick="adjQty('prod-3',1)">+</button>
+</div>
+<button class="add-cart-btn" onclick="addToCart('Emergency Serve',249.99,'prod-3')">Add to Cart</button>
+    </div>
+  </div>
+  <div style="padding:0 72px;margin-bottom:48px;">
+    <h2 style="font-size:28px;font-weight:300;margin-bottom:24px;color:var(--accent-blue);text-align:center;">Add-On Services</h2>
+    <div class="payment-products" style="grid-template-columns:repeat(1,1fr);max-width:340px;margin:0 auto;padding:0;">
+      <div class="payment-product" style="display:flex;flex-direction:column;align-items:center;">
+        <div style="width:100px;height:90px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="28" cy="26" r="14" stroke="#2d3a7c" stroke-width="3" fill="none"></circle>
+            <circle cx="52" cy="26" r="14" stroke="#c9a84c" stroke-width="3" fill="none"></circle>
+            <path d="M4 66c0-13.255 10.745-24 24-24" stroke="#2d3a7c" stroke-width="3" stroke-linecap="round" fill="none"></path>
+            <path d="M76 66c0-13.255-10.745-24-24-24" stroke="#c9a84c" stroke-width="3" stroke-linecap="round" fill="none"></path>
+            <path d="M28 42c6.627 0 12 5.373 12 12 0 0 0 12 0 12H16s0-12 0-12c0-6.627 5.373-12 12-12z" stroke="#2d3a7c" stroke-width="2.5" fill="none"></path>
+            <path d="M52 42c6.627 0 12 5.373 12 12 0 0 0 12 0 12H40s0-12 0-12c0-6.627 5.373-12 12-12z" stroke="#c9a84c" stroke-width="2.5" fill="none"></path>
+          </svg>
+        </div>
+        <h3>Additional Defendant – Same Case</h3>
+        <div class="price">$25.00</div>
+        <p>For cases with multiple defendants. Add one for each additional individual. Each defendant requires separate attempts and documentation.</p>
+        <div class="qty-row">
+          <button class="qty-btn" onclick="adjQty('prod-add', -1)">−</button>
+          <span class="qty-num" id="prod-add-qty">1</span>
+          <button class="qty-btn" onclick="adjQty('prod-add', 1)">+</button>
+        </div>
+        <button class="add-cart-btn" onclick="addToCart('Additional Defendant', 25.00, 'prod-add')">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+  <div class="payment-policies">
+    <div class="payment-policy-col">
+      <h3>Important Policies</h3>
+      <ul>
+        <li><strong>Emergency requests:</strong> same-day service requires internal approval and availability.</li>
+        <li><strong>No guarantee:</strong> payment covers lawful service attempts, not guaranteed completion.</li>
+        <li><strong>Adjustments:</strong> additional fees may apply and will be communicated promptly.</li>
+        <li><strong>Proceeding:</strong> requests do not proceed without confirmed payment.</li>
+      </ul>
+    </div>
+    <div class="payment-policy-col">
+      <h3>What Happens Next</h3>
+      <ol>
+        <li><strong>Confirm</strong> payment</li>
+        <li><strong>Review</strong> request details</li>
+        <li><strong>Approve</strong> service level</li>
+        <li><strong>Assign</strong> for service attempts</li>
+        <li><strong>Notify</strong> upon completion</li>
+      </ol>
+      <p style="font-size:13px;color:var(--text-muted);margin-top:14px;">By completing payment, you acknowledge service is subject to review and applicable legal requirements.</p>
+    </div>
+  </div>
+  <div class="payment-disclaimer">
+    <p>Disclaimer: All services are <strong>prepaid in advance</strong> before any job is scheduled or assigned.</p>
+    <p>By clicking "Request Process Serving", you agree to the <a onclick="showPage('terms')">Terms of Use</a> and all agreements herein.</p>
+    <p><strong>Thank you for your business.</strong></p>
   </div>
 
-  <!-- STRIPE PAYMENT BUTTON -->
-  <script async src="https://js.stripe.com/v3/buy-button.js"></script>
-
-  <stripe-buy-button
-    buy-button-id="STRIPE_BUTTON_ID_HERE"
-    publishable-key="STRIPE_PUBLISHABLE_KEY_HERE">
-  </stripe-buy-button>
-
-  <!-- PAYPAL BUTTON -->
-  <div id="paypal-button-container"></div>
-  <!-- Client will paste their PayPal hosted button code here -->
-  <!-- Get it from: paypal.com/buttons -->
-
-  <footer>
-    <div><div class="footer-brand-name">Prestige Serves</div><div class="footer-tagline">Reliable. Professional. Fast.</div></div>
-    <div class="footer-col"><h4>Location</h4><p>1240 S Corning St., Suite 105</p><p>Los Angeles, CA 90035</p></div>
-    <div class="footer-col"><h4>Contact</h4><a href="mailto:prestigeservesllc@gmail.com">prestigeservesllc@gmail.com</a><a href="tel:6092405665">609.240.5665</a></div>
-  </footer>
-</div>
+<footer>
+  <div><div class="footer-brand-name">Prestige Serves</div><div class="footer-tagline">Reliable. Professional. Fast.</div></div>
+  <div class="footer-col"><h4>Location</h4><p>1240 S Corning St., Suite 105</p><p>Los Angeles, CA 90035</p></div>
+  <div class="footer-col"><h4>Contact</h4><a href="mailto:prestigeservesllc@gmail.com">prestigeservesllc@gmail.com</a><a href="tel:6092405665">609.240.5665</a></div>
+</footer>
 
 <script src="js/main.js" defer></script>
 <script src="js/forms.js" defer></script>
 <script src="js/ui.js" defer></script>
 </body>
 </html>
-
