@@ -33,7 +33,7 @@
 .svc-icon-desc{font-size:14.5px;color:var(--text-muted);line-height:1.65;}
 
 /* PRICING SPLIT */
-.pricing-split{display:grid;grid-template-columns:1fr 1fr;min-height:640px;}
+.pricing-split{display:grid;grid-template-columns:1fr 1fr;min-height:480px;}
 .pricing-img{position:relative;overflow:hidden;}
 .pricing-img img{width:100%;height:100%;object-fit:cover;display:block;}
 .pricing-content{padding:80px 72px;background:var(--bg-white);}
