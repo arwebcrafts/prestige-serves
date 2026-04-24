@@ -200,6 +200,8 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
 .qty-num{font-size:16px;font-weight:500;min-width:24px;text-align:center;}
 .add-cart-btn{display:block;width:100%;background:var(--accent-blue);color:#fff;padding:11px 20px;border-radius:100px;font-family:var(--serif);font-size:13px;font-weight:400;letter-spacing:0.04em;border:none;cursor:pointer;transition:background 0.2s;text-align:center;}
 .add-cart-btn:hover{background:var(--navy-hover);}
+.pay-btn{display:block;width:100%;background:var(--accent-blue);color:#fff;padding:11px 20px;border-radius:100px;font-family:var(--serif);font-size:13px;font-weight:400;letter-spacing:0.04em;border:none;cursor:pointer;transition:background 0.2s;text-align:center;margin-top:6px;}
+.pay-btn:hover{background:var(--navy-hover);}
 
 /* FAQ */
 .faq-list{border-top:1px solid var(--border);}
