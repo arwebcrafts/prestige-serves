@@ -18,10 +18,10 @@
 
 /* TICKER */
 .ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;padding:20px 0;background:var(--bg-white);white-space:nowrap;}
-.ticker-track{display:inline-flex;animation:ticker 32s linear infinite;}
+.ticker-track{display:inline-flex;animation:ticker 405s linear infinite;flex-shrink:0;}
 .ticker-item{font-size:26px;font-weight:300;padding:0 28px;display:inline-flex;align-items:center;gap:28px;color:var(--text-dark);}
 .ticker-sep{font-size:40px;opacity:0.4;}
-@keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+@keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-100%);}}
 
 /* SERVICES ICONS */
 .services-icons{padding:88px 72px;background:var(--bg-white);}
@@ -36,7 +36,7 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
 
 /* PRICING SPLIT */
 .pricing-split{display:grid;grid-template-columns:1fr 1fr;min-height:380px;}
-.pricing-img{position:relative;overflow:hidden;height:720px;}
+.pricing-img{position:relative;overflow:hidden;height:1020px;}
 .pricing-img img{width:100%;height:100%;object-fit:cover;display:block;}
 .pricing-content{padding:80px 72px;background:var(--bg-white);}
 .pricing-heading{font-size:58px;font-weight:300;letter-spacing:-0.01em;margin-bottom:10px;color:var(--accent-blue);}
@@ -52,8 +52,8 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
 
 /* TESTIMONIAL */
 .testimonial-split{display:grid;grid-template-columns:1fr 1fr;align-items:stretch;min-height:640px;gap:0;margin:0;padding:0;}
-.testimonial-img{position:relative;overflow:hidden;align-self:stretch;margin:0;padding:0;}
-.testimonial-img img{width:100%;height:100%;object-fit:cover;display:block;font-size:0;margin:0;padding:0;}
+.testimonial-img{position:relative;overflow:hidden;align-self:stretch;margin:10;padding:10;}
+.testimonial-img img{width:100%;height:100%;object-fit:cover;display:block;font-size:0;margin:10;padding:10;}
 .testimonial-content{background:var(--bg-dark);color:#fff;padding:80px 72px;display:flex;flex-direction:column;justify-content:center;align-self:stretch;margin:0;}
 .testimonial-quote{font-size:21px;font-weight:300;line-height:1.7;font-style:italic;color:#ffffff;margin-bottom:32px;}
 .testimonial-attr{font-size:13px;letter-spacing:0.06em;color:var(--accent-gold);}
