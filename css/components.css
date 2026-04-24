@@ -58,7 +58,7 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
 .testimonial-quote{font-size:21px;font-weight:300;line-height:1.7;font-style:italic;color:#ffffff;margin-bottom:32px;}
 .testimonial-attr{font-size:13px;letter-spacing:0.06em;color:var(--accent-gold);}
 .testimonial-carousel{position:relative;display:flex;align-items:center;gap:16px;}
-.testimonial-slides{overflow:hidden;flex:1;}
+.testimonial-slides{overflow:hidden;flex:1;min-height:120px;pointer-events:auto;}
 .testimonial-slide{display:none;}
 .testimonial-slide.active{display:block;}
 .testimonial-arrow{background:none;border:none;font-size:36px;color:rgba(255,255,255,0.5);cursor:pointer;transition:color 0.2s;padding:8px;line-height:1;}

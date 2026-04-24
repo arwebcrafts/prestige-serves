@@ -175,18 +175,18 @@ function initTestimonialCarousel() {
     resetTestimonialTimer();
   }));
 
-  // Pause on hover - target the wider testimonial content area
-  const testimonialSection = carousel.closest('.testimonial-content');
-  if (testimonialSection) {
-    testimonialSection.addEventListener('mouseenter', function() {
-      clearInterval(testimonialTimer);
-    });
-    testimonialSection.addEventListener('mouseleave', function() {
-      testimonialTimer = setInterval(nextTestimonialCarousel, 3000);
-    });
-  }
+  testimonialTimer = setInterval(nextTestimonialCarousel, 6000);
 
-  testimonialTimer = setInterval(nextTestimonialCarousel, 3000);
+  // Pause on hover over testimonial content area
+  const testContent = document.querySelector('.testimonial-content');
+  if (testContent) {
+    testContent.onmouseenter = function() {
+      clearInterval(testimonialTimer);
+    };
+    testContent.onmouseleave = function() {
+      testimonialTimer = setInterval(nextTestimonialCarousel, 6000);
+    };
+  }
   console.log('Carousel initialized');
 }
 

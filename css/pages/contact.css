@@ -27,6 +27,7 @@
 #contact-form-container .state-dropdown{background:#fff;}
 #contact-form-container .state-option{color:#000000;}
 #contact-form-container .btn-navy{color:#2d3a7c !important;background:#ffffff !important;border:2px solid #2d3a7c !important;}
+#contact-form-container .btn-navy:hover{color:#ffffff !important;background:#2d3a7c !important;border:2px solid #2d3a7c !important;}
 
 @media(max-width:960px){
   .contact-dark-section{grid-template-columns:1fr;padding:56px 28px;}
