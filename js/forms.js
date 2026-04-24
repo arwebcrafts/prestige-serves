@@ -73,24 +73,56 @@ function handleFormSubmit(event, id) {
 
 // State autocomplete
 const states = [
-  {value:'CA',label:'California'},
-  {value:'AL',label:'Alabama'},{value:'AK',label:'Alaska'},{value:'AZ',label:'Arizona'},
-  {value:'AR',label:'Arkansas'},{value:'CO',label:'Colorado'},{value:'CT',label:'Connecticut'},
-  {value:'DE',label:'Delaware'},{value:'FL',label:'Florida'},{value:'GA',label:'Georgia'},
-  {value:'HI',label:'Hawaii'},{value:'ID',label:'Idaho'},{value:'IL',label:'Illinois'},
-  {value:'IN',label:'Indiana'},{value:'IA',label:'Iowa'},{value:'KS',label:'Kansas'},
-  {value:'KY',label:'Kentucky'},{value:'LA',label:'Louisiana'},{value:'ME',label:'Maine'},
-  {value:'MD',label:'Maryland'},{value:'MA',label:'Massachusetts'},{value:'MI',label:'Michigan'},
-  {value:'MN',label:'Minnesota'},{value:'MS',label:'Mississippi'},{value:'MO',label:'Missouri'},
-  {value:'MT',label:'Montana'},{value:'NE',label:'Nebraska'},{value:'NV',label:'Nevada'},
-  {value:'NH',label:'New Hampshire'},{value:'NJ',label:'New Jersey'},{value:'NM',label:'New Mexico'},
-  {value:'NY',label:'New York'},{value:'NC',label:'North Carolina'},{value:'ND',label:'North Dakota'},
-  {value:'OH',label:'Ohio'},{value:'OK',label:'Oklahoma'},{value:'OR',label:'Oregon'},
-  {value:'PA',label:'Pennsylvania'},{value:'RI',label:'Rhode Island'},{value:'SC',label:'South Carolina'},
-  {value:'SD',label:'South Dakota'},{value:'TN',label:'Tennessee'},{value:'TX',label:'Texas'},
-  {value:'UT',label:'Utah'},{value:'VT',label:'Vermont'},{value:'VA',label:'Virginia'},
-  {value:'WA',label:'Washington'},{value:'WV',label:'West Virginia'},{value:'WI',label:'Wisconsin'},
-  {value:'WY',label:'Wyoming'}
+  {value:'AL',label:'Alabama',postal:'AL'},
+  {value:'AK',label:'Alaska',postal:'AK'},
+  {value:'AZ',label:'Arizona',postal:'AZ'},
+  {value:'AR',label:'Arkansas',postal:'AR'},
+  {value:'CA',label:'California',postal:'CA'},
+  {value:'CO',label:'Colorado',postal:'CO'},
+  {value:'CT',label:'Connecticut',postal:'CT'},
+  {value:'DE',label:'Delaware',postal:'DE'},
+  {value:'FL',label:'Florida',postal:'FL'},
+  {value:'GA',label:'Georgia',postal:'GA'},
+  {value:'HI',label:'Hawaii',postal:'HI'},
+  {value:'ID',label:'Idaho',postal:'ID'},
+  {value:'IL',label:'Illinois',postal:'IL'},
+  {value:'IN',label:'Indiana',postal:'IN'},
+  {value:'IA',label:'Iowa',postal:'IA'},
+  {value:'KS',label:'Kansas',postal:'KS'},
+  {value:'KY',label:'Kentucky',postal:'KY'},
+  {value:'LA',label:'Louisiana',postal:'LA'},
+  {value:'ME',label:'Maine',postal:'ME'},
+  {value:'MD',label:'Maryland',postal:'MD'},
+  {value:'MA',label:'Massachusetts',postal:'MA'},
+  {value:'MI',label:'Michigan',postal:'MI'},
+  {value:'MN',label:'Minnesota',postal:'MN'},
+  {value:'MS',label:'Mississippi',postal:'MS'},
+  {value:'MO',label:'Missouri',postal:'MO'},
+  {value:'MT',label:'Montana',postal:'MT'},
+  {value:'NE',label:'Nebraska',postal:'NE'},
+  {value:'NV',label:'Nevada',postal:'NV'},
+  {value:'NH',label:'New Hampshire',postal:'NH'},
+  {value:'NJ',label:'New Jersey',postal:'NJ'},
+  {value:'NM',label:'New Mexico',postal:'NM'},
+  {value:'NY',label:'New York',postal:'NY'},
+  {value:'NC',label:'North Carolina',postal:'NC'},
+  {value:'ND',label:'North Dakota',postal:'ND'},
+  {value:'OH',label:'Ohio',postal:'OH'},
+  {value:'OK',label:'Oklahoma',postal:'OK'},
+  {value:'OR',label:'Oregon',postal:'OR'},
+  {value:'PA',label:'Pennsylvania',postal:'PA'},
+  {value:'RI',label:'Rhode Island',postal:'RI'},
+  {value:'SC',label:'South Carolina',postal:'SC'},
+  {value:'SD',label:'South Dakota',postal:'SD'},
+  {value:'TN',label:'Tennessee',postal:'TN'},
+  {value:'TX',label:'Texas',postal:'TX'},
+  {value:'UT',label:'Utah',postal:'UT'},
+  {value:'VT',label:'Vermont',postal:'VT'},
+  {value:'VA',label:'Virginia',postal:'VA'},
+  {value:'WA',label:'Washington',postal:'WA'},
+  {value:'WV',label:'West Virginia',postal:'WV'},
+  {value:'WI',label:'Wisconsin',postal:'WI'},
+  {value:'WY',label:'Wyoming',postal:'WY'}
 ];
 
 function initStateAutocomplete() {
@@ -104,9 +136,14 @@ function initStateAutocomplete() {
   hiddenInput.value = 'CA';
 
   function renderDropdown(filter) {
-    const filtered = states.filter(s => s.label.toLowerCase().includes(filter.toLowerCase()));
+    const filterLower = filter.toLowerCase().trim();
+    const filtered = states.filter(s => 
+      s.label.toLowerCase().includes(filterLower) || 
+      s.postal.toLowerCase() === filterLower ||
+      s.postal.toLowerCase().startsWith(filterLower)
+    );
     dropdown.innerHTML = filtered.map(s =>
-      '<div class="state-option' + (s.value === hiddenInput.value ? ' selected' : '') + '" data-value="' + s.value + '">' + s.label + '</div>'
+      '<div class="state-option' + (s.value === hiddenInput.value ? ' selected' : '') + '" data-value="' + s.value + '">' + s.label + ' (' + s.postal + ')</div>'
     ).join('');
     dropdown.style.display = filtered.length ? 'block' : 'none';
   }
@@ -122,8 +159,9 @@ function initStateAutocomplete() {
 
   dropdown.addEventListener('click', function(e) {
     if (e.target.classList.contains('state-option')) {
-      input.value = e.target.textContent;
-      hiddenInput.value = e.target.dataset.value;
+      const state = states.find(s => s.value === e.target.dataset.value);
+      input.value = state.label + ' (' + state.postal + ')';
+      hiddenInput.value = state.value;
       dropdown.style.display = 'none';
     }
   });

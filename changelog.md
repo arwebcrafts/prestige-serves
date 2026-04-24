@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.0.3] - 2026-04-24
+
+### Added
+- Added `top.png` image to navigation bar on all 12 HTML pages (next to Contact button)
+- Testimonial carousel now pauses auto-rotation on hover for better readability
+- State dropdown now searches by both state name AND postal abbreviation (e.g., "CA" finds California)
+- State dropdown displays state name with postal code in parentheses (e.g., "California (CA)")
+- All form fields on index.html and contact.html are now required before submission
+- Form validation with red border highlight on empty required fields
+
+### Changed
+- Contact form now uses same structure as index.html (dynamically built via `buildContactForm()`)
+- Increased "Built for clients who value speed, precision, and professionalism." text to 21px
+- Increased contact section text sizes on index.html (intro 18px, email/phone 24px)
+- Contact page info section increased to 18px with email/phone at 24px
+- Email and phone on index.html are now clickable mailto/tel links
+- Removed "Get In Touch" heading from contact page below form
+- Hero section content moved down with `padding-top:400px`
+- Hero text sizes increased (✦ Contact Prestige Serves: 33px, subtitle: 33px)
+- Added (required) labels to all form fields: Reason for Contact, County/City, State, Brief Case Details
+- Form checkbox consent is now required
+- Contact form wrapped in `<form>` tag with proper `type="submit"` button
+- Increased font sizes of contact info on contact.html (heading 52px, sub 21px, info 18px, email/phone 24px)
+
+### Fixed
+- Fixed duplicate `</section>` tag in contact.html
+- Contact page now uses full form from forms.js instead of static HTML
+- State autocomplete properly clears and updates hidden input field
+
 ## [1.0.2] - 2026-04-24
 
 ### Changed
