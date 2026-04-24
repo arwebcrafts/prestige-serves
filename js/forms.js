@@ -15,6 +15,7 @@ function buildContactForm(containerId, formId) {
       <label>Reason for Contact</label>
       <select><option value="">Select an option</option><option>Process Serving</option><option>Skip Tracing</option><option>eFiling / eRecording</option><option>Legal Courier</option><option>General Inquiry</option></select>
     </div>
+     <div class="form-row">
     <div class="form-group"><label>County / City</label><input type="text" placeholder="Los Angeles County"></div>
     <div class="form-group">
   <label>State</label>
@@ -24,6 +25,7 @@ function buildContactForm(containerId, formId) {
     <div class="state-dropdown" id="state-dropdown"></div>
   </div>
 </div>
+       </div>
     <div class="form-group">
       <label>Brief Case Details</label>
       <div class="form-hint" style="margin-bottom:8px;">Please include service type, deadlines, number of parties, and any known address information.</div>

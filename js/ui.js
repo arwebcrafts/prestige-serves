@@ -175,6 +175,17 @@ function initTestimonialCarousel() {
     resetTestimonialTimer();
   }));
 
+  // Pause on hover - target the wider testimonial content area
+  const testimonialSection = carousel.closest('.testimonial-content');
+  if (testimonialSection) {
+    testimonialSection.addEventListener('mouseenter', function() {
+      clearInterval(testimonialTimer);
+    });
+    testimonialSection.addEventListener('mouseleave', function() {
+      testimonialTimer = setInterval(nextTestimonialCarousel, 3000);
+    });
+  }
+
   testimonialTimer = setInterval(nextTestimonialCarousel, 3000);
   console.log('Carousel initialized');
 }

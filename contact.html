@@ -53,72 +53,25 @@
   <section class="ps-hero">
     <img class="ps-bg" src="assets/images/prestige-serves-img-12.png" alt="Lady Justice — Prestige Serves LLC">
     <div class="ps-hero-overlay"></div>
-    <div class="ps-hero-content">
-      <div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#c9a84c;font-weight:600;margin-bottom:12px;">✦ Contact Prestige Serves</div>
-      <h1 class="ps-hero-title" style="display:none;">Get In Touch</h1>
-      <p class="ps-hero-sub">Reliable for law firms, businesses &amp; private individuals across Los Angeles.</p>
+    <div class="ps-hero-content" style="padding-top:400px;">
+      <div style="font-size:33px;letter-spacing:0.22em;text-transform:uppercase;color:#c9a84c;font-weight:600;margin-bottom:12px;">✦ Contact Prestige Serves</div>
+      <p class="ps-hero-sub" style="font-size:33px;">Reliable for law firms, businesses &amp; private individuals across Los Angeles.</p>
     </div>
   </section>
   <section class="contact-dark-section">
     <div>
-      <h1 class="contact-dark-heading">Get In Touch</h1>
-      <p class="contact-dark-sub">Reach out to request service, confirm availability, or ask a general question. For fastest service, please submit your request with complete details.</p>
-      <div class="contact-dark-info">
-        <h4>Email</h4>
-        <a href="mailto:prestigeservesllc@gmail.com">prestigeservesllc@gmail.com</a>
-        <h4>Phone</h4>
-        <a href="tel:6092405665">609-240-5665</a>
-        <h4>Address</h4>
-        <p>PRESTIGE SERVES LLC<br>1240 S Corning Street, Suite 105<br>Los Angeles, CA 90035</p>
+      <h1 class="contact-dark-heading" style="font-size:52px;">Get In Touch</h1>
+      <p class="contact-dark-sub" style="font-size:21px;">Reach out to request service, confirm availability, or ask a general question. For fastest service, please submit your request with complete details.</p>
+      <div class="contact-dark-info" style="font-size:18px;">
+        <h4 style="font-size:18px;">Email</h4>
+        <a href="mailto:prestigeservesllc@gmail.com" style="font-size:24px;color:#fff;text-decoration:none;">prestigeservesllc@gmail.com</a>
+        <h4 style="font-size:18px;">Phone</h4>
+        <a href="tel:6092405665" style="font-size:24px;color:#fff;text-decoration:none;">609-240-5665</a>
+        <h4 style="font-size:18px;">Address</h4>
+        <p style="font-size:18px;">PRESTIGE SERVES LLC<br>1240 S Corning Street, Suite 105<br>Los Angeles, CA 90035</p>
       </div>
     </div>
-    <div>
-      <div class="form-row">
-        <div class="form-group"><label class="dark-label">First Name <span class="dark-req">(required)</span></label><input class="dark-field" type="text" required></div>
-        <div class="form-group"><label class="dark-label">Last Name <span class="dark-req">(required)</span></label><input class="dark-field" type="text" required></div>
-      </div>
-      <div class="form-group"><label class="dark-label">Firm / Company Name <span class="dark-req">(required)</span></label><input class="dark-field" type="text" required></div>
-      <div class="form-group"><label class="dark-label">Email <span class="dark-req">(required)</span></label><input class="dark-field" type="email" required></div>
-      <div class="form-group"><label class="dark-label">Phone <span class="dark-req">(required)</span></label><input class="dark-field" type="tel" required></div>
-      <div class="form-group">
-        <label class="dark-label">Reason for Contact</label>
-        <div class="dark-select-wrapper">
-          <select>
-            <option value="">Select an option</option>
-            <option>Process Serving</option>
-            <option>Skip Tracing</option>
-            <option>eFiling / eRecording</option>
-            <option>Legal Courier</option>
-            <option>General Inquiry</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group"><label class="dark-label">County / City</label><input class="dark-field" type="text" placeholder="Los Angeles County"></div>
-      <div class="form-group"><label class="dark-label">State</label><input class="dark-field" type="text" placeholder="California"></div>
-      <div class="form-group">
-        <label class="dark-label">Brief Case Details</label>
-        <div class="dark-hint" style="margin-bottom:8px;">Please include service type, deadlines, number of parties, and any known address information.</div>
-        <textarea class="dark-field dark-textarea"></textarea>
-      </div>
-      <div class="form-group">
-        <label class="dark-label">Urgency Level <span class="dark-req">(Subject to Approval)</span></label>
-        <div class="dark-select-wrapper">
-          <select>
-            <option value="">Select an option</option>
-            <option>Standard (5–7 business days)</option>
-            <option>Rush (3 business days)</option>
-            <option>Priority (2 business days)</option>
-            <option>Emergency (Same-day)</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-checkbox">
-        <input type="checkbox" id="contact-consent" style="accent-color:#fff;">
-        <label for="contact-consent" style="color:rgba(255,255,255,0.65);font-size:13px;line-height:1.55;cursor:pointer;">I understand that submitting this form does not guarantee service and all requests are subject to review and availability.</label>
-      </div>
-      <button class="btn-navy" onclick="handleFormSubmit('contact-success')" style="background:var(--accent-blue);color:#fff;">Submit</button>
-      <div class="form-success" id="contact-success">Thank you! We'll be in touch shortly.</div>
-    </div>
+    <div id="contact-form-container"></div>
   </section>
   <footer>
     <div><div class="footer-brand-name">Prestige Serves</div><div class="footer-tagline">Reliable. Professional. Fast.</div></div>
@@ -130,5 +83,11 @@
 <script src="js/main.js" defer></script>
 <script src="js/forms.js" defer></script>
 <script src="js/ui.js" defer></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    buildContactForm('contact-form-container', 'contact');
+    initStateAutocomplete();
+  });
+</script>
 </body>
 </html>
