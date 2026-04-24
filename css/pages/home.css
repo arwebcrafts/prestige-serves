@@ -11,6 +11,7 @@
 .pricing-item:nth-child(3) .pricing-item-name{padding-top:30px;}
 .pricing-item:nth-child(1) .pricing-item-desc{padding-top:10px;}
 .pricing-item:nth-child(3) .pricing-item-desc{padding-top:10px;}
+.pricing-img{margin-left:24px;}
 
 @media(max-width:960px){
   .hero-right{height:360px;}

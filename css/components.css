@@ -130,6 +130,18 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
 .state-option{padding:10px 16px;font-size:14px;cursor:pointer;color:var(--text-dark);}
 .state-option:hover,.state-option.selected{background:var(--bg-warm);}
 .state-option.selected{color:var(--accent-blue);font-weight:500;}
+.reason-select-wrapper{position:relative;}
+.reason-select-wrapper input{width:100%;box-sizing:border-box;cursor:pointer;}
+.reason-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:10px;max-height:200px;overflow-y:auto;z-index:100;margin-top:4px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.reason-option{padding:10px 16px;font-size:14px;cursor:pointer;color:var(--text-dark);}
+.reason-option:hover,.reason-option.selected{background:var(--bg-warm);}
+.reason-option.selected{color:var(--accent-blue);font-weight:500;}
+.county-select-wrapper{position:relative;}
+.county-select-wrapper input{width:100%;box-sizing:border-box;cursor:pointer;}
+.county-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:10px;max-height:200px;overflow-y:auto;z-index:100;margin-top:4px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.county-option{padding:10px 16px;font-size:14px;cursor:pointer;color:var(--text-dark);}
+.county-option:hover,.county-option.selected{background:var(--bg-warm);}
+.county-option.selected{color:var(--accent-blue);font-weight:500;}
 .form-checkbox{display:flex;align-items:flex-start;gap:10px;margin-bottom:28px;}
 .form-checkbox input{width:15px;height:15px;margin-top:3px;accent-color:var(--navy);cursor:pointer;flex-shrink:0;}
 .form-checkbox label{font-size:13px;color:var(--text-muted);line-height:1.55;cursor:pointer;}

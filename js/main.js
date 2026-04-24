@@ -50,5 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (document.getElementById('home-form-container')) {
     buildContactForm('home-form-container', 'home');
     initStateAutocomplete();
+    initReasonDropdown();
+    initCountyDropdown();
   }
 });
