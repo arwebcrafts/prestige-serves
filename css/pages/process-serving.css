@@ -1,16 +1,16 @@
 /* process-serving.css — Process Serving page specific styles */
 
-.ps-hero{position:relative;min-height:440px;overflow:hidden;display:flex;flex-direction:column;}
+.ps-hero{position:relative;min-height:580px;overflow:hidden;display:flex;flex-direction:column;}
 .ps-hero img.ps-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;}
 .ps-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top, rgba(10,15,35,0.72) 0%, rgba(10,15,35,0.35) 55%, rgba(10,15,35,0.08) 100%);}
 .ps-hero-nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:20px 72px;background:transparent;}
 .ps-hero-nav .nav-brand{color:#fff;text-decoration:none;display:flex;align-items:center;gap:12px;font-size:20px;font-weight:500;}
 .ps-hero-nav .nav-links{display:flex;list-style:none;margin:0;padding:0;gap:8px;}
-.ps-hero-nav .nav-links li a{color:#fff;text-decoration:none;font-size:14px;padding:8px 12px;opacity:0.9;transition:opacity 0.2s;}
+.ps-hero-nav .nav-links li a{color:#fff;text-decoration:none;font-size:14px;padding:8px 12px;opacity:0.9;transition:opacity 0.2s;display:block;}
 .ps-hero-nav .nav-links li a:hover{opacity:1;}
 .ps-hero-nav .dropdown-menu{background:rgba(10,15,35,0.95);border:1px solid rgba(255,255,255,0.2);}
 .ps-hero-content{position:relative;z-index:2;padding:100px 72px 56px;color:#fff;}
-.ps-hero-title{font-size:clamp(32px,4vw,56px);font-weight:300;line-height:1.2;letter-spacing:-0.01em;}
+.ps-hero-title{font-size:clamp(38px,5vw,72px);font-weight:600;line-height:1.2;letter-spacing:-0.01em;}
 .ps-hero-title-line{display:block;}
 .ps-hero-title-line:first-child{position:relative;display:inline-block;margin-bottom:15px;z-index:1;}
 .ps-hero-title-line:first-child::after{content:"";position:absolute;left:0;bottom:-4px;width:100%;height:18px;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 15" preserveAspectRatio="none"><path d="M0,8 Q50,-1 100,5 Q50,15 0,10 Z" fill="rgba(255,255,255,0.9)"/></svg>');background-size:100% 100%;background-repeat:no-repeat;z-index:-1;}

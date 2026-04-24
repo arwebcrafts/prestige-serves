@@ -29,7 +29,7 @@ nav{position:sticky;top:0;z-index:1000;background:var(--bg-white);display:flex;a
 .nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text-dark);font-size:21px;font-weight:400;letter-spacing:0.01em;cursor:pointer;}
 .nav-brand svg{width:26px;height:26px;opacity:0.65;}
 .nav-links{display:flex;align-items:center;gap:34px;list-style:none;}
-.nav-links a{text-decoration:none;color:var(--text-dark);font-size:15px;font-weight:400;letter-spacing:0.02em;transition:opacity 0.2s;cursor:pointer;border:none;background:none;font-family:var(--serif);}
+.nav-links a{text-decoration:none;color:var(--text-dark);font-size:15px;font-weight:400;letter-spacing:0.02em;transition:opacity 0.2s;cursor:pointer;border:none;background:none;font-family:var(--serif);padding:8px 12px;display:block;}
 .nav-links a:hover{opacity:0.55;}
 .nav-links a.active{border-bottom:1.5px solid var(--text-dark);padding-bottom:1px;}
 .dropdown{position:relative;}

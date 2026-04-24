@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.0.2] - 2026-04-24
+
+### Changed
+- Updated nav link buttons with `display:block` and `padding:8px 12px` for larger clickable areas
+- Styled "Prestige Serves provides high-priority" text on `index.html` to match pull-quote style from `about.html` (21px italic, blue color, underline)
+- Replaced mail SVG icon with `mail.png` image (`<img src="assets/images/mail.png" alt="Mail" style="width:80px;height:80px;object-fit:contain;">`) across all 12 HTML pages
+- Added testimonial carousel on `index.html` with 5 testimonials, auto-rotation (3s), left/right arrow navigation, and dot indicators
+- Changed testimonial attribution text color to gold (`--accent-gold`)
+- Updated placeholder text color on home form to grey (#999) for better visibility
+- Updated form hint and checkbox label text color on home form to grey (#666)
+- Replaced State text input with searchable autocomplete dropdown (California pre-selected)
+- Increased `ps-hero` min-height on `process-serving.html` for larger hero image area
+- Increased `ps-hero-title` font size and weight for bolder, larger heading text
+- Split "Nationwide" onto separate line in `process-serving.html` hero title
+- Updated `process-serving.html` hero subtitle text
+- Centered legal document type labels in `process-serving.html`
+
 ## [1.0.1] - 2026-04-23
 
 ### Fixed

@@ -122,6 +122,63 @@ function proceedToCheckout() {
   }
 }
 
+// ── TESTIMONIAL CAROUSEL ──
+let testimonialIndex = 0;
+let testimonialTimer = null;
+let testimonialSlides = null;
+let testimonialDots = null;
+let testimonialSlidesCount = 0;
+
+function showTestimonial(idx) {
+  if (!testimonialSlides) return;
+  testimonialSlides.forEach((s, i) => s.classList.toggle('active', i === idx));
+  testimonialDots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  testimonialIndex = idx;
+}
+
+function nextTestimonialCarousel() {
+  showTestimonial((testimonialIndex + 1) % testimonialSlidesCount);
+  resetTestimonialTimer();
+}
+
+function prevTestimonialCarousel() {
+  showTestimonial((testimonialIndex - 1 + testimonialSlidesCount) % testimonialSlidesCount);
+  resetTestimonialTimer();
+}
+
+function resetTestimonialTimer() {
+  clearInterval(testimonialTimer);
+  testimonialTimer = setInterval(nextTestimonialCarousel, 3000);
+}
+
+function initTestimonialCarousel() {
+  const carousel = document.querySelector('.testimonial-carousel');
+  if (!carousel) {
+    console.log('Carousel not found');
+    return;
+  }
+  testimonialSlides = carousel.querySelectorAll('.testimonial-slide');
+  // Find dots container - it's outside the carousel div
+  const dotsContainer = carousel.parentElement.querySelector('.testimonial-dots');
+  testimonialSlidesCount = testimonialSlides.length;
+  console.log('Slides found:', testimonialSlidesCount, 'Dots container:', dotsContainer);
+  if (testimonialSlidesCount <= 1) return;
+
+  // Build dots
+  dotsContainer.innerHTML = Array.from(testimonialSlides).map((_, i) => '<button class="testimonial-dot' + (i === 0 ? ' active' : '') + '" aria-label="Go to testimonial ' + (i + 1) + '"></button>').join('');
+  testimonialDots = dotsContainer.querySelectorAll('.testimonial-dot');
+
+  carousel.querySelector('.testimonial-arrow-left').addEventListener('click', prevTestimonialCarousel);
+  carousel.querySelector('.testimonial-arrow-right').addEventListener('click', nextTestimonialCarousel);
+  testimonialDots.forEach((dot, i) => dot.addEventListener('click', function() {
+    showTestimonial(i);
+    resetTestimonialTimer();
+  }));
+
+  testimonialTimer = setInterval(nextTestimonialCarousel, 3000);
+  console.log('Carousel initialized');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   // Process Serving FAQ
   if (document.getElementById('ps-faq')) {
@@ -151,4 +208,10 @@ document.addEventListener('DOMContentLoaded', function() {
       {q:"Is skip tracing confidential?",a:"Yes. Requests are handled discreetly and shared only with the client who submitted the request."}
     ]);
   }
+
+  // Initialize testimonial carousel
+  initTestimonialCarousel();
 });
+
+// Also run on window load as fallback
+window.addEventListener('load', initTestimonialCarousel);
