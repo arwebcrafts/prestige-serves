@@ -23,3 +23,37 @@
   .two-col-item{padding:40px 28px;}
   .two-col-item:first-child{border-right:none;border-bottom:1px solid var(--border);}
 }
+
+/* MOBILE — about */
+@media(max-width:768px){
+  .about-hero{
+    grid-template-columns:1fr;
+    min-height:auto;
+  }
+  .about-content-col{
+    padding:40px 20px;
+  }
+  .page-heading{
+    font-size:clamp(36px,8vw,52px);
+    margin-bottom:24px;
+  }
+  .section-heading{
+    font-size:28px;
+    margin-bottom:14px;
+  }
+  .pull-quote{
+    font-size:18px;
+  }
+  .body-text{
+    font-size:15px;
+  }
+  .about-img-col{
+    height:220px;
+  }
+  .two-col-content{
+    grid-template-columns:1fr;
+  }
+  .two-col-item{
+    padding:40px 20px;
+  }
+}

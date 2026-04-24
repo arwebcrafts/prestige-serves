@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.0.4] - 2026-04-25
+
+### Added
+- Mobile hamburger navigation menu on all 13 HTML pages
+- Comprehensive mobile responsiveness (768px breakpoint) across all pages
+- `toggleMobileNav()` JavaScript function in `js/ui.js` for mobile menu toggle
+- Mobile nav overlay with stacked menu items and full-screen coverage
+- Mobile-specific styles for hero sections, services grids, pricing, testimonials, forms, and footer
+- Additional mobile styles for all page-specific CSS files (about, services, request, payment, process-serving, contact, concierge, efiling, erecording, nationwide, skip-tracing, home)
+
+### Changed
+- All grid layouts (hero, pricing, testimonials, contact, coverage) now stack vertically on mobile
+- Services grid changes from 3 columns to 2 columns on tablet, 1 column on mobile
+- Navigation padding and font sizes adjusted for mobile
+- Footer now single-column centered layout on mobile
+- Form inputs use 16px font size on mobile for proper touch keyboard display
+- Button padding and font sizes optimized for mobile touch targets
+
 ## [1.0.3] - 2026-04-24
 
 ### Added

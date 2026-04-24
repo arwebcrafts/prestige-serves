@@ -30,3 +30,44 @@
   .request-info-grid{grid-template-columns:1fr;}
   .request-need-grid{grid-template-columns:1fr;}
 }
+
+/* MOBILE — request */
+@media(max-width:768px){
+  .request-hero{
+    padding:40px 20px 32px;
+  }
+  .request-label{
+    font-size:10px;
+  }
+  .request-title{
+    font-size:clamp(32px,7vw,48px);
+  }
+  .request-sub{
+    font-size:14px;
+  }
+  .request-info-grid{
+    grid-template-columns:1fr;
+    gap:12px;
+    margin-bottom:24px;
+  }
+  .request-need-grid{
+    grid-template-columns:1fr;
+    gap:16px;
+    margin-bottom:28px;
+  }
+  .request-need-box,
+  .request-emergency-box{
+    padding:18px 20px;
+  }
+  .request-need-box h4,
+  .request-emergency-box h4{
+    font-size:13px;
+  }
+  .request-form-wrapper{
+    margin:0 20px 48px;
+    padding:0 4px;
+  }
+  .file-upload-area{
+    padding:20px;
+  }
+}

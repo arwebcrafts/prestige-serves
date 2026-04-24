@@ -56,10 +56,145 @@ footer{background:var(--bg-warm);padding:56px 72px;display:grid;grid-template-co
 .footer-col p,.footer-col a{font-size:14px;color:var(--text-muted);line-height:1.95;text-decoration:none;display:block;}
 .footer-col a:hover{color:var(--text-dark);}
 
-/* RESPONSIVE */
+/* RESPONSIVE — TABLET */
 @media(max-width:960px){
   nav{padding:0 28px;}
   .nav-links{gap:14px;}
   .nav-links a{font-size:13px;}
   footer{grid-template-columns:1fr;padding:40px 28px;}
+}
+
+/* RESPONSIVE — MOBILE */
+@media(max-width:768px){
+  /* NAV MOBILE */
+  nav{
+    padding:0 20px;
+    height:64px;
+    flex-wrap:wrap;
+  }
+  .nav-brand{
+    font-size:18px;
+    z-index:1001;
+  }
+  .nav-brand svg{
+    width:22px;
+    height:22px;
+  }
+  .nav-brand img{
+    width:60px !important;
+    height:60px !important;
+  }
+  .nav-links{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background:var(--bg-white);
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:0;
+    z-index:1000;
+  }
+  .nav-links.open{
+    display:flex;
+  }
+  .nav-links li{
+    width:100%;
+    text-align:center;
+  }
+  .nav-links a{
+    font-size:18px;
+    padding:16px;
+    border-bottom:1px solid var(--border);
+  }
+  .nav-links a.active{
+    border-bottom:1px solid var(--border);
+    background:var(--bg-warm);
+  }
+  .nav-links li:last-child{
+    display:none;
+  }
+  .dropdown-menu{
+    position:static;
+    box-shadow:none;
+    border:none;
+    min-width:100%;
+    padding:0;
+    display:none;
+  }
+  .dropdown.open .dropdown-menu{
+    display:block;
+  }
+  .dropdown-menu a{
+    padding:14px 20px;
+    font-size:15px;
+  }
+  /* MOBILE HAMBURGER */
+  .nav-hamburger{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    width:40px;
+    height:40px;
+    cursor:pointer;
+    z-index:1001;
+    background:none;
+    border:none;
+    padding:8px;
+    gap:5px;
+  }
+  .nav-hamburger span{
+    display:block;
+    width:24px;
+    height:2px;
+    background:var(--text-dark);
+    transition:all 0.3s ease;
+  }
+  .nav-hamburger.open span:nth-child(1){
+    transform:rotate(45deg) translate(5px, 5px);
+  }
+  .nav-hamburger.open span:nth-child(2){
+    opacity:0;
+  }
+  .nav-hamburger.open span:nth-child(3){
+    transform:rotate(-45deg) translate(5px, -5px);
+  }
+}
+
+/* DEFAULT HAMBURGER HIDDEN ON DESKTOP */
+.nav-hamburger{
+  display:none;
+}
+
+/* RESPONSIVE — MOBILE FOOTER */
+@media(max-width:768px){
+  footer{
+    grid-template-columns:1fr;
+    padding:32px 20px;
+    gap:32px;
+    text-align:center;
+  }
+  .footer-brand-name{
+    font-size:28px;
+  }
+  .footer-col{
+    text-align:center;
+  }
+  .footer-col h4{
+    margin-bottom:10px;
+  }
+
+  /* Additional mobile adjustments */
+  .btn-navy{
+    padding:14px 36px;
+    font-size:14px;
+  }
+  .btn-outline{
+    padding:12px 36px;
+    font-size:14px;
+  }
 }

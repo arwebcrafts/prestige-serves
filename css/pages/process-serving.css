@@ -21,3 +21,19 @@
   .ps-hero-nav{flex-wrap:wrap;gap:12px;}
   .ps-hero-nav .nav-links{flex-wrap:wrap;gap:4px;}
 }
+
+/* MOBILE — process-serving */
+@media(max-width:768px){
+  .ps-hero{
+    min-height:400px;
+  }
+  .ps-hero-content{
+    padding:32px 20px 40px;
+  }
+  .ps-hero-title{
+    font-size:clamp(28px,7vw,48px);
+  }
+  .ps-hero-sub{
+    font-size:14px;
+  }
+}

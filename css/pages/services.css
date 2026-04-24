@@ -13,3 +13,19 @@
   .all-services-hero{padding:0 28px 56px;}
   .all-services-grid{grid-template-columns:repeat(2,1fr);}
 }
+
+/* MOBILE — services */
+@media(max-width:768px){
+  .all-services-hero{
+    padding:40px 20px 40px;
+  }
+  .all-services-hero h1{
+    font-size:clamp(36px,8vw,52px);
+  }
+  .all-services-grid{
+    grid-template-columns:1fr;
+  }
+  .all-svc-item{
+    padding:32px 24px;
+  }
+}

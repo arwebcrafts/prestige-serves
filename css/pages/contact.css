@@ -39,3 +39,28 @@
   .contact-dark-section{grid-template-columns:1fr;padding:56px 28px;}
   .contact-dark-heading{font-size:36px;}
 }
+
+/* MOBILE — contact */
+@media(max-width:768px){
+  .contact-dark-section{
+    grid-template-columns:1fr;
+    padding:40px 20px;
+    gap:40px;
+  }
+  .contact-dark-heading{
+    font-size:clamp(28px,7vw,40px);
+  }
+  .contact-dark-sub{
+    font-size:16px;
+  }
+  .contact-dark-info{
+    font-size:14px;
+  }
+  .contact-dark-info h4{
+    font-size:10px;
+  }
+  .contact-dark-info a,
+  .contact-dark-info p{
+    font-size:15px;
+  }
+}

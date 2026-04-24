@@ -17,3 +17,20 @@
   .hero-right{height:360px;}
   .hero-left{padding:56px 28px;}
 }
+
+/* MOBILE — home */
+@media(max-width:768px){
+  .hero-right{
+    height:280px;
+  }
+  .hero-left{
+    padding:48px 20px;
+  }
+  .pricing-img{
+    margin-left:0;
+  }
+  .pricing-item:nth-child(1) .pricing-item-name,
+  .pricing-item:nth-child(3) .pricing-item-name{
+    padding-top:0;
+  }
+}

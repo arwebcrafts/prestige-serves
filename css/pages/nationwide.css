@@ -12,3 +12,16 @@
 @media(max-width:960px){
   .ps-hero-content{padding:40px 28px;}
 }
+
+/* MOBILE — nationwide */
+@media(max-width:768px){
+  .ps-hero{
+    min-height:320px;
+  }
+  .ps-hero-content{
+    padding:28px 20px 36px;
+  }
+  .ps-hero-title{
+    font-size:clamp(26px,6vw,40px);
+  }
+}

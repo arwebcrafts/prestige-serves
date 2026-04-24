@@ -18,3 +18,27 @@
   .st-hero-content{padding:40px 28px;}
   .st-two-col{grid-template-columns:1fr;padding:40px 28px;}
 }
+
+/* MOBILE — skip-tracing */
+@media(max-width:768px){
+  .st-hero{
+    min-height:320px;
+  }
+  .st-hero-content{
+    padding:28px 20px 36px;
+  }
+  .st-hero-title{
+    font-size:clamp(26px,6vw,40px);
+  }
+  .st-two-col{
+    grid-template-columns:1fr;
+    padding:40px 20px;
+    gap:40px;
+  }
+  .st-what-provide h2{
+    font-size:28px;
+  }
+  .st-provide-item h3{
+    font-size:18px;
+  }
+}

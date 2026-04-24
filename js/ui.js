@@ -1,3 +1,23 @@
+// MOBILE NAVIGATION
+function toggleMobileNav() {
+  const navLinks = document.querySelector('.nav-links');
+  const hamburger = document.querySelector('.nav-hamburger');
+  if (!navLinks) return;
+  navLinks.classList.toggle('open');
+  if (hamburger) hamburger.classList.toggle('open');
+}
+
+// Close mobile nav when clicking a link
+document.addEventListener('click', function(e) {
+  const navLinks = document.querySelector('.nav-links');
+  const hamburger = document.querySelector('.nav-hamburger');
+  if (!navLinks || !navLinks.classList.contains('open')) return;
+  if (!e.target.closest('.nav-links') && !e.target.closest('.nav-hamburger')) {
+    navLinks.classList.remove('open');
+    if (hamburger) hamburger.classList.remove('open');
+  }
+});
+
 // FAQ, Accordion, and Cart functions
 
 function buildFAQ(containerId, items) {
@@ -175,7 +195,7 @@ function initTestimonialCarousel() {
     resetTestimonialTimer();
   }));
 
-  testimonialTimer = setInterval(nextTestimonialCarousel, 6000);
+  testimonialTimer = setInterval(nextTestimonialCarousel, 10000);
 
   // Pause on hover over testimonial content area
   const testContent = document.querySelector('.testimonial-content');
@@ -184,7 +204,7 @@ function initTestimonialCarousel() {
       clearInterval(testimonialTimer);
     };
     testContent.onmouseleave = function() {
-      testimonialTimer = setInterval(nextTestimonialCarousel, 6000);
+      testimonialTimer = setInterval(nextTestimonialCarousel, 10000);
     };
   }
   console.log('Carousel initialized');
