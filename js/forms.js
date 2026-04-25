@@ -136,15 +136,19 @@ const states = [
   {value:'WY',label:'Wyoming',postal:'WY'}
 ];
 
-function initStateAutocomplete() {
-  const input = document.getElementById('state-input');
-  const hiddenInput = document.getElementById('state-value');
-  const dropdown = document.getElementById('state-dropdown');
+function initStateAutocomplete(inputId, hiddenInputId, dropdownId, defaultState) {
+  const input = document.getElementById(inputId);
+  const hiddenInput = document.getElementById(hiddenInputId);
+  const dropdown = document.getElementById(dropdownId);
   if (!input || !dropdown) return;
 
-  // Set initial value
-  input.value = 'California';
-  hiddenInput.value = 'CA';
+  if (defaultState) {
+    const state = states.find(s => s.value === defaultState || s.postal === defaultState);
+    if (state) {
+      input.value = state.label + ' (' + state.postal + ')';
+      hiddenInput.value = state.value;
+    }
+  }
 
   function renderDropdown(filter) {
     const filterLower = filter.toLowerCase().trim();
@@ -713,4 +717,6 @@ document.addEventListener('DOMContentLoaded', function() {
   initCityAutocomplete('req-city-input', 'req-city-value', 'req-city-dropdown');
   initCityAutocomplete('def-city', 'def-city-value', 'def-city-dropdown');
   initCountryAutocomplete('def-country-input', 'def-country-value', 'def-country-dropdown');
+  initStateAutocomplete('req-state-input', 'req-state-value', 'req-state-dropdown', 'CA');
+  initStateAutocomplete('state-input', 'state-value', 'state-dropdown', 'CA');
 });
