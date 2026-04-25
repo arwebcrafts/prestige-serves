@@ -150,7 +150,7 @@ export default async function handler(req, res) {
     return res.status(201).json({ success: true, message: 'Service request submitted successfully' });
   } catch (err) {
     console.error('Request submission error:', err);
-    return res.status(500).json({ success: false, message: 'Database error: ' + err.message });
+    return res.status(500).json({ success: false, message: 'Server error: ' + err.message, stack: err.stack });
   }
 }
 
