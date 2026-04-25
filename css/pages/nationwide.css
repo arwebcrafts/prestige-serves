@@ -24,4 +24,38 @@
   .ps-hero-title{
     font-size:clamp(26px,6vw,40px);
   }
+
+  /* Two column info section */
+  [style*="grid-template-columns:1fr 300px"]{grid-template-columns:1fr !important;gap:32px !important;padding:40px 20px !important;}
+
+  /* 4-column nationwide steps - become 2 columns then 1 */
+  .nationwide-steps-section{padding:40px 20px !important;}
+  .nationwide-steps-section h2{font-size:22px !important;margin-bottom:20px !important;}
+  .nationwide-steps-grid{display:grid;grid-template-columns:repeat(2,1fr) !important;gap:20px !important;}
+  .nationwide-steps-grid > div{text-align:center;}
+  .nationwide-steps-grid .step-number{width:40px !important;height:40px !important;font-size:16px !important;margin-bottom:12px !important;}
+  .nationwide-steps-grid h3{font-size:14px !important;margin-bottom:6px !important;}
+  .nationwide-steps-grid p{font-size:12px !important;}
+
+  /* 4-column why choose - become 2 columns */
+  .nationwide-why-section{padding:40px 20px !important;background:var(--bg-light) !important;}
+  .nationwide-why-section h2{font-size:22px !important;margin-bottom:20px !important;}
+  .nationwide-why-grid{display:grid;grid-template-columns:repeat(2,1fr) !important;gap:20px !important;}
+  .nationwide-why-grid > div{padding:20px;border:1px solid var(--border);border-radius:4px;}
+  .nationwide-why-grid h3{font-size:14px !important;margin-bottom:8px !important;}
+  .nationwide-why-grid p{font-size:12px !important;}
+
+  /* 5-column states - become 2 columns then 1 */
+  .nationwide-states-section{padding:40px 20px !important;}
+  .nationwide-states-section h2{font-size:22px !important;margin-bottom:16px !important;}
+  .nationwide-states-section > p{font-size:13px !important;margin-bottom:20px !important;}
+  .nationwide-states-grid{display:grid;grid-template-columns:repeat(2,1fr) !important;gap:12px !important;}
+  .nationwide-states-grid > div{padding:12px;border:1px solid var(--border);border-radius:4px;}
+  .nationwide-states-grid p{font-size:12px !important;}
+
+  /* Text sections */
+  [style*="padding:56px 72px"]{padding:40px 20px !important;}
+  h2{font-size:22px !important;}
+  p{font-size:14px !important;}
+  li{font-size:13px !important;}
 }

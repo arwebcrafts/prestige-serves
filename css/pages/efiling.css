@@ -24,4 +24,36 @@
   .ps-hero-title{
     font-size:clamp(26px,6vw,40px);
   }
+
+  /* Two column info section */
+  [style*="grid-template-columns:1fr 300px"]{grid-template-columns:1fr !important;gap:32px !important;padding:40px 20px !important;}
+
+  /* 3-column services grid - become 1 column */
+  [style*="repeat(3,1fr)"]{grid-template-columns:1fr !important;gap:20px !important;}
+  .efiling-services-section{padding:40px 20px !important;}
+  .efiling-services-section h2{font-size:22px !important;margin-bottom:20px !important;}
+  .efiling-services-section > div > div{padding:24px;border:1px solid var(--border);border-radius:4px;}
+  .efiling-services-section h3{font-size:16px !important;}
+  .efiling-services-section p{font-size:13px !important;}
+
+  /* 3-column why choose section - become 1 column */
+  .efiling-why-section{padding:40px 20px !important;background:var(--bg-light) !important;}
+  .efiling-why-section h2{font-size:22px !important;margin-bottom:20px !important;}
+  .efiling-why-section > div{display:grid;grid-template-columns:1fr !important;gap:20px !important;}
+  .efiling-why-section > div > div{padding:20px;border:1px solid var(--border);border-radius:4px;}
+  .efiling-why-section h3{font-size:14px !important;margin-bottom:8px !important;}
+  .efiling-why-section p{font-size:12px !important;}
+
+  /* 2-column courts list - become 1 column */
+  .efiling-courts-section{padding:40px 20px !important;}
+  .efiling-courts-section h2{font-size:22px !important;margin-bottom:16px !important;}
+  .efiling-courts-section > p{font-size:13px !important;margin-bottom:20px !important;}
+  [style*="grid-template-columns:repeat(2,1fr)"]{grid-template-columns:1fr !important;gap:16px !important;}
+  .efiling-courts-section ul{font-size:13px !important;}
+
+  /* Text sections */
+  [style*="padding:56px 72px"]{padding:40px 20px !important;}
+  h2{font-size:22px !important;}
+  p{font-size:14px !important;}
+  li{font-size:13px !important;}
 }
