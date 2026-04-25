@@ -90,20 +90,11 @@ function handleFormSubmit(event, id, formType) {
         urgency: form.querySelector('[name="urgency"]')?.value || '',
         consent: form.querySelector('[name="consent"]')?.checked || false
       };
-      console.log('Submitting contact form:', formData);
       fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
-      })
-      .then(res => {
-        console.log('Response status:', res.status);
-        return res.json();
-      })
-      .then(data => {
-        console.log('Response data:', data);
-      })
-      .catch(err => console.error('Form submission error:', err));
+      }).catch(err => console.error('Form submission error:', err));
     }
     const el = document.getElementById(id);
     if (el) el.classList.add('show');

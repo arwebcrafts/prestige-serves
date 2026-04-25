@@ -85,14 +85,14 @@ const server = http.createServer(async (req, res) => {
             ${body.clientName}, ${body.contactName}, ${body.email}, ${body.phone},
             ${body.addressLine1}, ${body.addressLine2}, ${body.city}, ${body.state}, ${body.zip},
             ${body.defendantName}, ${body.caseNumber}, ${body.courtJurisdiction},
-            ${body.multipleDefendants}, ${body.serviceType}, ${body.deadlineDate},
+            ${body.multipleDefendants || false}, ${body.serviceType}, ${body.deadlineDate},
             ${body.specialInstructions}, ${body.defendantsData || null}
           )
         `;
         jsonResponse(res, 201, { success: true, message: 'Service request submitted successfully' });
       } catch (err) {
         console.error('Request submission error:', err);
-        jsonResponse(res, 500, { success: false, message: 'Database error' });
+        jsonResponse(res, 500, { success: false, message: 'Database error: ' + err.message });
       }
       return;
     }
