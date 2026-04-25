@@ -42,4 +42,36 @@
   .ps-hero-content{padding:32px 20px 40px;}
   .ps-hero-title{font-size:clamp(28px,7vw,48px);}
   .ps-hero-sub{font-size:14px;}
+
+  /* Two column info section */
+  [style*="grid-template-columns:1fr 300px"]{grid-template-columns:1fr !important;gap:32px !important;padding:40px 20px !important;}
+
+  /* Coverage grid */
+  .coverage-grid{display:flex;flex-direction:column;padding:40px 20px;gap:40px;}
+  .coverage-col h3,.coverage-col h4{font-size:22px;}
+  .coverage-col p,.coverage-col li{font-size:14px;}
+
+  /* Pricing section */
+  .ps-pricing-section{padding:40px 20px !important;}
+  .ps-pricing-section h2{font-size:28px !important;}
+  .pricing-grid{max-width:100% !important;display:flex;flex-direction:column;gap:20px;}
+  .pricing-item{padding:20px;border:1px solid var(--border);}
+  .pricing-item-head{display:flex;align-items:center;gap:12px;}
+  .pricing-real-icon{width:48px;height:48px;object-fit:contain;}
+  .pricing-item-price{font-size:22px;font-weight:600;}
+
+  /* Document types section */
+  [style*="repeat(4,1fr)"]{grid-template-columns:repeat(2,1fr) !important;gap:16px !important;}
+  .small-icon-wrap{width:56px;height:56px;margin:0 auto 8px;}
+
+  /* Trust section */
+  [style*="repeat(3,1fr)"]{grid-template-columns:1fr !important;gap:24px !important;max-width:100% !important;}
+
+  /* FAQ section */
+  [style*="padding:0 72px"]{padding:0 20px 40px !important;}
+  [style*="font-size:38px"]{font-size:28px !important;padding:40px 0 24px !important;}
+
+  /* General text scaling */
+  h2{font-size:24px !important;}
+  p,li{word-wrap:break-word;overflow-wrap:break-word;}
 }
