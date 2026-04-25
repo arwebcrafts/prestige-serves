@@ -38,12 +38,12 @@ export default async function handler(req, res) {
     let uploadedFiles = null;
 
     if (contentType.includes('multipart/form-data')) {
-      // Get body as Buffer (Vercel provides it this way)
-      const chunks = [];
-      for await (const chunk of req.body) {
-        chunks.push(chunk);
+      // Vercel provides req.body as a Buffer when bodyParser is false
+      const data = req.body;
+      
+      if (!data || !Buffer.isBuffer(data)) {
+        throw new Error('Request body is not available');
       }
-      const data = Buffer.concat(chunks);
       
       const boundary = contentType.split('boundary=')[1];
       if (!boundary) {
