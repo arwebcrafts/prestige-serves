@@ -105,57 +105,111 @@ function handleFormSubmit(event, id, formType) {
 function handleRequestSubmit(event) {
   event.preventDefault();
   const form = event.target;
-  const requiredFields = form.querySelectorAll('[required]');
   let allFilled = true;
+  let firstEmptyField = null;
+
+  // Check standard required fields
+  const requiredFields = form.querySelectorAll('[required]');
   requiredFields.forEach(function(field) {
     if (!field.value.trim()) {
       allFilled = false;
       field.style.border = '2px solid #e74c3c';
+      if (!firstEmptyField) firstEmptyField = field;
     } else {
       field.style.border = '';
     }
   });
 
-  if (allFilled) {
-    const formData = {
-      clientName: form.querySelector('[name="clientName"]')?.value || '',
-      contactName: form.querySelector('[name="contactName"]')?.value || '',
-      email: form.querySelector('[name="email"]')?.value || '',
-      phone: form.querySelector('[name="phone"]')?.value || '',
-      addressLine1: form.querySelector('[name="addressLine1"]')?.value || '',
-      addressLine2: form.querySelector('[name="addressLine2"]')?.value || '',
-      city: document.getElementById('req-city-value')?.value || '',
-      state: document.getElementById('req-state-value')?.value || '',
-      zip: form.querySelector('[name="zip"]')?.value || '',
-      defendantName: form.querySelector('[name="defendantName"]')?.value || '',
-      caseNumber: form.querySelector('[name="caseNumber"]')?.value || '',
-      courtJurisdiction: form.querySelector('[name="courtJurisdiction"]')?.value || '',
-      multipleDefendants: document.querySelector('input[name="multiple_defendants"][value="yes"]')?.checked || false,
-      serviceType: form.querySelector('[name="serviceType"]')?.value || '',
-      deadlineDate: form.querySelector('[name="deadlineDate"]')?.value || '',
-      specialInstructions: form.querySelector('[name="specialInstructions"]')?.value || '',
-      defendantsData: defendantsArray.length > 0 ? JSON.stringify(defendantsArray) : null
-    };
-
-    fetch('/api/request', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        document.getElementById('req-success').classList.add('show');
-        form.reset();
-        defendantsArray = [];
-        renderDefendantsList();
-        document.getElementById('defendants-list-container').style.display = 'none';
-        document.getElementById('btn-add-defendant').style.display = 'none';
-        document.querySelector('input[name="multiple_defendants"][value="no"]').checked = true;
-      }
-    })
-    .catch(err => console.error('Request submission error:', err));
+  // Check city dropdown (hidden input value)
+  const cityValue = document.getElementById('req-city-value')?.value;
+  if (!cityValue) {
+    allFilled = false;
+    document.getElementById('req-city-input').style.border = '2px solid #e74c3c';
+    if (!firstEmptyField) firstEmptyField = document.getElementById('req-city-input');
+  } else {
+    document.getElementById('req-city-input').style.border = '';
   }
+
+  // Check state dropdown (hidden input value)
+  const stateValue = document.getElementById('req-state-value')?.value;
+  if (!stateValue) {
+    allFilled = false;
+    document.getElementById('req-state-input').style.border = '2px solid #e74c3c';
+    if (!firstEmptyField) firstEmptyField = document.getElementById('req-state-input');
+  } else {
+    document.getElementById('req-state-input').style.border = '';
+  }
+
+  if (!allFilled) {
+    alert('Please fill in all required fields.');
+    if (firstEmptyField) firstEmptyField.focus();
+    return;
+  }
+
+  const formData = {
+    clientName: form.querySelector('[name="clientName"]')?.value || '',
+    contactName: form.querySelector('[name="contactName"]')?.value || '',
+    email: form.querySelector('[name="email"]')?.value || '',
+    phone: form.querySelector('[name="phone"]')?.value || '',
+    addressLine1: form.querySelector('[name="addressLine1"]')?.value || '',
+    addressLine2: form.querySelector('[name="addressLine2"]')?.value || '',
+    city: cityValue || '',
+    state: stateValue || '',
+    zip: form.querySelector('[name="zip"]')?.value || '',
+    defendantName: form.querySelector('[name="defendantName"]')?.value || '',
+    caseNumber: form.querySelector('[name="caseNumber"]')?.value || '',
+    courtJurisdiction: form.querySelector('[name="courtJurisdiction"]')?.value || '',
+    multipleDefendants: document.querySelector('input[name="multiple_defendants"][value="yes"]')?.checked || false,
+    serviceType: form.querySelector('[name="serviceType"]')?.value || '',
+    deadlineDate: form.querySelector('[name="deadlineDate"]')?.value || '',
+    specialInstructions: form.querySelector('[name="specialInstructions"]')?.value || '',
+    defendantsData: defendantsArray.length > 0 ? JSON.stringify(defendantsArray) : null
+  };
+
+  if (!allFilled) {
+    alert('Please fill in all required fields.');
+    if (firstEmptyField) firstEmptyField.focus();
+    return;
+  }
+
+  const formData = {
+    clientName: form.querySelector('[name="clientName"]')?.value || '',
+    contactName: form.querySelector('[name="contactName"]')?.value || '',
+    email: form.querySelector('[name="email"]')?.value || '',
+    phone: form.querySelector('[name="phone"]')?.value || '',
+    addressLine1: form.querySelector('[name="addressLine1"]')?.value || '',
+    addressLine2: form.querySelector('[name="addressLine2"]')?.value || '',
+    city: cityValue || '',
+    state: stateValue || '',
+    zip: form.querySelector('[name="zip"]')?.value || '',
+    defendantName: form.querySelector('[name="defendantName"]')?.value || '',
+    caseNumber: form.querySelector('[name="caseNumber"]')?.value || '',
+    courtJurisdiction: form.querySelector('[name="courtJurisdiction"]')?.value || '',
+    multipleDefendants: document.querySelector('input[name="multiple_defendants"][value="yes"]')?.checked || false,
+    serviceType: form.querySelector('[name="serviceType"]')?.value || '',
+    deadlineDate: form.querySelector('[name="deadlineDate"]')?.value || '',
+    specialInstructions: form.querySelector('[name="specialInstructions"]')?.value || '',
+    defendantsData: defendantsArray.length > 0 ? JSON.stringify(defendantsArray) : null
+  };
+
+  fetch('/api/request', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      document.getElementById('req-success').classList.add('show');
+      form.reset();
+      defendantsArray = [];
+      renderDefendantsList();
+      document.getElementById('defendants-list-container').style.display = 'none';
+      document.getElementById('btn-add-defendant').style.display = 'none';
+      document.querySelector('input[name="multiple_defendants"][value="no"]').checked = true;
+    }
+  })
+  .catch(err => console.error('Request submission error:', err));
 }
 
 // State autocomplete
