@@ -38,25 +38,29 @@ export default async function handler(req, res) {
     let uploadedFiles = null;
 
     if (contentType.includes('multipart/form-data')) {
-      // Parse multipart form data
-      const parts = [];
+      // Get body as Buffer (Vercel provides it this way)
+      const chunks = [];
       for await (const chunk of req.body) {
-        parts.push(chunk);
+        chunks.push(chunk);
       }
-      const data = Buffer.concat(parts);
+      const data = Buffer.concat(chunks);
       
       const boundary = contentType.split('boundary=')[1];
       if (!boundary) {
         throw new Error('No boundary found');
       }
 
-      const sections = data.toString('binary').split('--' + boundary);
+      const boundaryBuffer = Buffer.from('--' + boundary, 'binary');
+      const sections = splitBuffer(data, boundaryBuffer);
       
       for (const section of sections) {
-        if (!section.includes('\r\n\r\n') || section === '--') continue;
+        if (section.length === 0 || section.equals(Buffer.from('--', 'binary'))) continue;
         
-        const [header, ...contentParts] = section.split('\r\n\r\n');
-        const content = contentParts.join('\r\n\r\n');
+        const idx = section.indexOf(Buffer.from('\r\n\r\n'));
+        if (idx === -1) continue;
+        
+        const header = section.slice(0, idx).toString('binary');
+        const content = section.slice(idx + 4);
         const headerMatch = header.match(/name="([^"]+)"/);
         if (!headerMatch) continue;
         
@@ -69,7 +73,7 @@ export default async function handler(req, res) {
             const binaryContent = content.slice(0, content.length - 2);
             
             try {
-              const blobResult = await put(filename, Buffer.from(binaryContent, 'binary'), {
+              const blobResult = await put(filename, binaryContent, {
                 access: 'public',
                 token: BLOB_READ_WRITE_TOKEN,
               });
@@ -81,7 +85,7 @@ export default async function handler(req, res) {
             }
           }
         } else {
-          const value = content.replace(/\r\n$/, '');
+          const value = content.slice(0, content.length - 2).toString('utf8');
           switch (fieldName) {
             case 'clientName': clientName = value; break;
             case 'contactName': contactName = value; break;
@@ -148,4 +152,23 @@ export default async function handler(req, res) {
     console.error('Request submission error:', err);
     return res.status(500).json({ success: false, message: 'Database error: ' + err.message });
   }
+}
+
+// Helper function to split buffer by boundary
+function splitBuffer(buffer, delimiter) {
+  const result = [];
+  let start = 0;
+  let idx = buffer.indexOf(delimiter, start);
+  
+  while (idx !== -1) {
+    result.push(buffer.slice(start, idx));
+    start = idx + delimiter.length;
+    idx = buffer.indexOf(delimiter, start);
+  }
+  
+  if (start < buffer.length) {
+    result.push(buffer.slice(start));
+  }
+  
+  return result;
 }
