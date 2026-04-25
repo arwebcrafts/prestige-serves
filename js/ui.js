@@ -7,16 +7,41 @@ function toggleMobileNav() {
   if (hamburger) hamburger.classList.toggle('open');
 }
 
-// Close mobile nav when clicking a link
+// Close mobile nav when clicking a link or outside
 document.addEventListener('click', function(e) {
   const navLinks = document.querySelector('.nav-links');
   const hamburger = document.querySelector('.nav-hamburger');
+  
+  // Check if mobile nav is open
   if (!navLinks || !navLinks.classList.contains('open')) return;
-  if (!e.target.closest('.nav-links') && !e.target.closest('.nav-hamburger')) {
+  
+  // Don't close if clicking hamburger
+  if (e.target.closest('.nav-hamburger')) return;
+  
+  // Close when clicking outside nav or on a nav link
+  if (!e.target.closest('.nav-links')) {
     navLinks.classList.remove('open');
     if (hamburger) hamburger.classList.remove('open');
   }
 });
+
+// Close mobile nav on navigation link click
+document.addEventListener('DOMContentLoaded', function() {
+  const navLinks = document.querySelectorAll('.nav-links a');
+  navLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      // Small delay to allow navigation to start
+      setTimeout(closeMobileNav, 100);
+    });
+  });
+});
+
+function closeMobileNav() {
+  const navLinks = document.querySelector('.nav-links');
+  const hamburger = document.querySelector('.nav-hamburger');
+  if (navLinks) navLinks.classList.remove('open');
+  if (hamburger) hamburger.classList.remove('open');
+}
 
 // FAQ, Accordion, and Cart functions
 

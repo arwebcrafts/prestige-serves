@@ -12,17 +12,39 @@ function showPage(page) {
     if (s) s.classList.add('active');
   }
   window.scrollTo(0,0);
+  // Close mobile nav when navigating
+  closeMobileNav();
 }
 
 function toggleServicesDropdown(e) {
   e.stopPropagation();
   var menu = document.getElementById('services-menu');
-  menu.classList.toggle('open');
+  var dropdown = document.getElementById('services-dropdown');
+  
+  // Check if mobile
+  var isMobile = window.innerWidth <= 768;
+  
+  if (isMobile) {
+    // Toggle mobile dropdown
+    menu.classList.toggle('open');
+    dropdown.classList.toggle('open');
+  } else {
+    menu.classList.toggle('open');
+  }
+}
+
+function closeMobileNav() {
+  var navLinks = document.querySelector('.nav-links');
+  var hamburger = document.querySelector('.nav-hamburger');
+  if (navLinks) navLinks.classList.remove('open');
+  if (hamburger) hamburger.classList.remove('open');
 }
 
 function closeServicesDropdown() {
   var menu = document.getElementById('services-menu');
+  var dropdown = document.getElementById('services-dropdown');
   if (menu) menu.classList.remove('open');
+  if (dropdown) dropdown.classList.remove('open');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
