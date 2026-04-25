@@ -54,7 +54,7 @@ export default async function handler(req, res) {
     contactName = Array.isArray(fields.contactName) ? fields.contactName[0] : fields.contactName || '';
     email = Array.isArray(fields.email) ? fields.email[0] : fields.email || '';
     phone = Array.isArray(fields.phone) ? fields.phone[0] : fields.phone || '';
-    addressLine1 = Array.isArray(fields.addressLine1) ? fields.addressLine[0] : fields.addressLine1 || '';
+    addressLine1 = Array.isArray(fields.addressLine1) ? fields.addressLine1[0] : fields.addressLine1 || '';
     addressLine2 = Array.isArray(fields.addressLine2) ? fields.addressLine2[0] : fields.addressLine2 || '';
     city = Array.isArray(fields.city) ? fields.city[0] : fields.city || '';
     state = Array.isArray(fields.state) ? fields.state[0] : fields.state || '';
