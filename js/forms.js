@@ -483,3 +483,136 @@ function initCountyDropdown() {
     }
   });
 }
+
+// Store defendants in an array
+let defendantsArray = [];
+const MAX_DEFENDANTS = 10;
+
+function toggleDefendantUI() {
+  const isYes = document.querySelector('input[name="multiple_defendants"][value="yes"]').checked;
+  const listContainer = document.getElementById('defendants-list-container');
+  const addBtn = document.getElementById('btn-add-defendant');
+
+  if (isYes) {
+    listContainer.style.display = 'flex';
+    if (defendantsArray.length < MAX_DEFENDANTS) {
+      addBtn.style.display = 'block';
+    } else {
+      addBtn.style.display = 'none';
+    }
+  } else {
+    listContainer.style.display = 'none';
+    addBtn.style.display = 'none';
+  }
+}
+
+function openDefendantModal(editIndex = -1) {
+  const modal = document.getElementById('defendant-modal');
+  const title = document.getElementById('modal-title');
+  
+  if (editIndex > -1) {
+    title.innerText = "Edit Defendant";
+    document.getElementById('def-edit-index').value = editIndex;
+    
+    const def = defendantsArray[editIndex];
+    document.getElementById('def-first-name').value = def.firstName;
+    document.getElementById('def-middle-name').value = def.middleName;
+    document.getElementById('def-last-name').value = def.lastName;
+    document.getElementById('def-gender').value = def.gender;
+    document.getElementById('def-relationship').value = def.relationship;
+    document.getElementById('def-address').value = def.address;
+    document.getElementById('def-city').value = def.city;
+    document.getElementById('def-country').value = def.country;
+    document.getElementById('def-dob').value = def.dob;
+    document.getElementById('def-phone').value = def.phone;
+    document.getElementById('def-aliases').value = def.aliases;
+    document.getElementById('def-employer').value = def.employer;
+    document.getElementById('def-physical').value = def.physical;
+    document.getElementById('def-notes').value = def.notes;
+  } else {
+    title.innerText = "Add Additional Defendant";
+    document.getElementById('def-edit-index').value = "-1";
+    clearDefendantForm();
+  }
+  
+  modal.style.display = 'flex';
+}
+
+function closeDefendantModal() {
+  document.getElementById('defendant-modal').style.display = 'none';
+}
+
+function clearDefendantForm() {
+  const inputs = document.querySelectorAll('#defendant-modal input, #defendant-modal textarea, #defendant-modal select');
+  inputs.forEach(input => {
+    if(input.id !== 'def-country' && input.id !== 'def-edit-index') {
+      input.value = '';
+    }
+  });
+}
+
+function saveDefendant() {
+  const firstName = document.getElementById('def-first-name').value.trim();
+  const lastName = document.getElementById('def-last-name').value.trim();
+  const address = document.getElementById('def-address').value.trim();
+  const city = document.getElementById('def-city').value.trim();
+
+  if(!firstName || !lastName || !address || !city) {
+    alert("Please fill in all required fields (First Name, Last Name, Address, City).");
+    return;
+  }
+
+  const defendantData = {
+    firstName: firstName,
+    middleName: document.getElementById('def-middle-name').value,
+    lastName: lastName,
+    gender: document.getElementById('def-gender').value,
+    relationship: document.getElementById('def-relationship').value,
+    address: address,
+    city: city,
+    country: document.getElementById('def-country').value,
+    dob: document.getElementById('def-dob').value,
+    phone: document.getElementById('def-phone').value,
+    aliases: document.getElementById('def-aliases').value,
+    employer: document.getElementById('def-employer').value,
+    physical: document.getElementById('def-physical').value,
+    notes: document.getElementById('def-notes').value,
+  };
+
+  const editIndex = parseInt(document.getElementById('def-edit-index').value);
+
+  if (editIndex > -1) {
+    defendantsArray[editIndex] = defendantData;
+  } else {
+    if (defendantsArray.length < MAX_DEFENDANTS) {
+      defendantsArray.push(defendantData);
+    }
+  }
+
+  renderDefendantsList();
+  closeDefendantModal();
+  toggleDefendantUI();
+}
+
+function renderDefendantsList() {
+  const container = document.getElementById('defendants-list-container');
+  container.innerHTML = '';
+
+  defendantsArray.forEach((def, index) => {
+    const card = document.createElement('div');
+    card.className = 'defendant-card';
+    
+    const mid = def.middleName ? ` ${def.middleName} ` : ' ';
+    const fullName = `${def.firstName}${mid}${def.lastName}`;
+
+    card.innerHTML = `
+      <div class="defendant-info">
+        <h5>Defendant #${index + 2}: ${fullName}</h5>
+        <p>${def.address}, ${def.city}</p>
+      </div>
+      <button type="button" class="edit-def-btn" onclick="openDefendantModal(${index})">Edit</button>
+    `;
+    
+    container.appendChild(card);
+  });
+}
