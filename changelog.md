@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.7] - 2026-04-25
+
+### Added
+- `formidable` package for multipart form data parsing in Vercel serverless functions
+
+### Fixed
+- Request form file upload now works on Vercel deployment
+- Fixed "req.formData is not a function" error by using formidable for multipart parsing
+- Fixed typo in request.js causing "Cannot read properties of undefined" error
+
 ## [1.0.6] - 2026-04-25
 
 ### Added
@@ -29,6 +39,8 @@
 - File upload display shows selected file names
 - Contact form submission works on Vercel deployment
 - Admin dashboard View button works on deployment
+- Request form file upload now works (fixed multipart parsing with formidable)
+- Fixed typo in request.js causing "Cannot read properties of undefined" error
 
 ## [1.0.5] - 2026-04-25
 
