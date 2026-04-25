@@ -115,12 +115,14 @@
     <div class="form-group">
       <label>Are there multiple defendants to be served?</label>
       <div class="form-hint" style="margin-bottom:10px;">Selecting "Yes" allows you to add up to 10 additional defendants.</div>
-      <div style="display:flex;gap:20px;font-size:15px;margin-bottom:15px;">
-        <label style="display:flex;align-items:center;gap:8px;font-weight:400;letter-spacing:0;font-size:15px;">
-          <input type="radio" name="multiple_defendants" value="yes" onchange="toggleDefendantUI()" style="width:15px;height:15px;"> Yes
+      <div class="radio-toggle-group">
+        <label class="radio-toggle">
+          <input type="radio" name="multiple_defendants" value="yes" onchange="toggleDefendantUI()">
+          <span>Yes</span>
         </label>
-        <label style="display:flex;align-items:center;gap:8px;font-weight:400;letter-spacing:0;font-size:15px;">
-          <input type="radio" name="multiple_defendants" value="no" onchange="toggleDefendantUI()" checked style="width:15px;height:15px;"> No
+        <label class="radio-toggle">
+          <input type="radio" name="multiple_defendants" value="no" onchange="toggleDefendantUI()" checked="">
+          <span>No</span>
         </label>
       </div>
       <div id="defendants-list-container" style="display:none; flex-direction:column; gap:10px; margin-bottom: 15px;"></div>

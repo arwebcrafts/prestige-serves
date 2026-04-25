@@ -159,3 +159,55 @@
 .edit-def-btn:hover {
   background: #eee;
 }
+
+/* --- Modern Radio Button Toggles --- */
+.radio-toggle-group {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.radio-toggle {
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+}
+
+/* Hide the default radio circle entirely */
+.radio-toggle input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Style the text to look like a button */
+.radio-toggle span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 28px;
+  background-color: #f9f9f9;
+  color: #666;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+/* Add a subtle hover effect for unselected buttons */
+.radio-toggle:hover input:not(:checked) ~ span {
+  background-color: #f1f1f1;
+  border-color: #ccc;
+}
+
+/* Style the button when it is selected (checked) */
+.radio-toggle input:checked ~ span {
+  background-color: #1a2332;
+  color: #ffffff;
+  border-color: #1a2332;
+  box-shadow: 0 2px 8px rgba(26, 35, 50, 0.2);
+}
