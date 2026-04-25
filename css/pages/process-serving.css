@@ -16,24 +16,30 @@
 .ps-hero-title-line:first-child::after{content:"";position:absolute;left:0;bottom:-4px;width:100%;height:18px;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 15" preserveAspectRatio="none"><path d="M0,8 Q50,-1 100,5 Q50,15 0,10 Z" fill="rgba(255,255,255,0.9)"/></svg>');background-size:100% 100%;background-repeat:no-repeat;z-index:-1;}
 .ps-hero-sub{font-size:16px;font-style:italic;opacity:0.85;}
 
+/* --- Fix Mobile Menu on Transparent Nav --- */
 @media(max-width:960px){
   .ps-hero-content,.ps-hero-nav{padding:20px 28px;}
   .ps-hero-nav{flex-wrap:wrap;gap:12px;}
-  .ps-hero-nav .nav-links{flex-wrap:wrap;gap:4px;}
+
+  /* 1. Make the hamburger lines white on the dark background */
+  .ps-hero-nav .nav-hamburger span{background:#ffffff;}
+
+  /* 2. Turn the hamburger lines dark when the white menu opens */
+  .ps-hero-nav .nav-hamburger.open span{background:var(--text-dark);}
+
+  /* 3. Hide global nav and use ps-hero-nav for mobile menu */
+  .ps-hero-nav{display:flex !important;}
+  .ps-hero-nav .nav-links{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg-white);flex-direction:column;align-items:center;justify-content:flex-start;padding-top:80px;gap:0;z-index:1000;}
+  .ps-hero-nav .nav-links.open{display:flex;}
+  .ps-hero-nav .nav-links li{width:100%;text-align:center;}
+  .ps-hero-nav .nav-links li a{color:var(--text-dark);font-size:18px;padding:16px;border-bottom:1px solid var(--border);width:100%;opacity:1;}
+  .ps-hero-nav .dropdown-menu{background:var(--bg-warm);border:none;}
 }
 
 /* MOBILE — process-serving */
 @media(max-width:768px){
-  .ps-hero{
-    min-height:400px;
-  }
-  .ps-hero-content{
-    padding:32px 20px 40px;
-  }
-  .ps-hero-title{
-    font-size:clamp(28px,7vw,48px);
-  }
-  .ps-hero-sub{
-    font-size:14px;
-  }
+  .ps-hero{min-height:400px;}
+  .ps-hero-content{padding:32px 20px 40px;}
+  .ps-hero-title{font-size:clamp(28px,7vw,48px);}
+  .ps-hero-sub{font-size:14px;}
 }
