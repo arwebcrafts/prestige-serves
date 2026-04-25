@@ -268,8 +268,8 @@ footer{background:var(--bg-warm);padding:56px 72px;display:grid;grid-template-co
 }
 
 /* DEFAULT HAMBURGER HIDDEN ON DESKTOP */
-.nav-hamburger{
-  display:none;
+@media (min-width: 961px) {
+  .nav-hamburger { display: none; }
 }
 
 /* RESPONSIVE — MOBILE FOOTER */
