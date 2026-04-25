@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { neon } = require('@neondatabase/serverless');
-const { Blob } = require('@vercel/blob');
+const { put } = require('@vercel/blob');
 
 const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_P8aH3JElyXBw@ep-gentle-frog-a4yzwn3w-pooler.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require';
 const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN || 'vercel_blob_rw_1qFTdRzk36aoQZsG_uiiyBg0DZ8Sl5zySi6DmqaMnIz9eqV';
@@ -146,8 +146,7 @@ const server = http.createServer(async (req, res) => {
             const uploadedFiles = [];
             for (const file of parsed.files) {
               try {
-                const blob = new Blob();
-                const blobResult = await blob.put(file.originalName, file.buffer, {
+                const blobResult = await put(file.originalName, file.buffer, {
                   access: 'public',
                   token: BLOB_READ_WRITE_TOKEN
                 });
