@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Initialize page-specific content
   if (document.getElementById('home-form-container')) {
     buildContactForm('home-form-container', 'home');
-    initStateAutocomplete();
+    initStateAutocomplete('state-input', 'state-value', 'state-dropdown', 'CA');
     initReasonDropdown();
     initCountyDropdown();
   }
