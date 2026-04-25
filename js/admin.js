@@ -138,6 +138,16 @@ async function viewRequest(id) {
         <h4>Submission Info</h4>
         <p><strong>Submitted:</strong> ${formatDate(r.created_at)}</p>
       </div>
+      ${r.uploaded_files ? `
+      <div class="detail-section">
+        <h4>Uploaded Files</h4>
+        <div class="highlight">
+          ${JSON.parse(r.uploaded_files).map((f, i) => `
+            <p><a href="${f.url}" target="_blank" style="color:#1a2332;word-break:break-all;">${escapeHtml(f.name)}</a></p>
+          `).join('')}
+        </div>
+      </div>
+      ` : ''}
     `;
     
     document.getElementById('detail-modal').style.display = 'flex';
