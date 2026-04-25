@@ -29,7 +29,11 @@ document.addEventListener('click', function(e) {
 document.addEventListener('DOMContentLoaded', function() {
   const navLinks = document.querySelectorAll('.nav-links a');
   navLinks.forEach(link => {
-    link.addEventListener('click', function() {
+    link.addEventListener('click', function(e) {
+      // Do not close the menu if they are just opening the Services dropdown
+      if (this.id === 'nav-services') {
+        return;
+      }
       // Small delay to allow navigation to start
       setTimeout(closeMobileNav, 100);
     });

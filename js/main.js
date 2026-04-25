@@ -21,8 +21,8 @@ function toggleServicesDropdown(e) {
   var menu = document.getElementById('services-menu');
   var dropdown = document.getElementById('services-dropdown');
   
-  // Check if mobile
-  var isMobile = window.innerWidth <= 768;
+  // Check if mobile (match CSS breakpoint at 960px)
+  var isMobile = window.innerWidth <= 960;
   
   if (isMobile) {
     // Toggle mobile dropdown
