@@ -95,31 +95,32 @@
       <p>By clicking "Submit", you agree to the <a onclick="showPage('terms')">Terms of Use</a> and all agreements herein.</p>
       <p><strong>Thank you for your business.</strong></p>
     </div>
-    <div class="form-group"><label>Client / Firm Name <span class="req">(required)</span></label><input type="text" required=""></div>
-    <div class="form-group"><label>Contact Name <span class="req">(required)</span></label><input type="text" required=""></div>
-    <div class="form-group"><label>Email Address <span class="req">(required)</span></label><input type="email" required=""></div>
-    <div class="form-group"><label>Phone Number <span class="req">(required)</span></label><input type="tel" required=""></div>
+    <form id="request-form" onsubmit="handleRequestSubmit(event)">
+    <div class="form-group"><label>Client / Firm Name <span class="req">(required)</span></label><input type="text" name="clientName" required></div>
+    <div class="form-group"><label>Contact Name <span class="req">(required)</span></label><input type="text" name="contactName" required></div>
+    <div class="form-group"><label>Email Address <span class="req">(required)</span></label><input type="email" name="email" required></div>
+    <div class="form-group"><label>Phone Number <span class="req">(required)</span></label><input type="tel" name="phone" required></div>
     <div class="form-group">
       <label>Service Address <span class="req">(required)</span></label>
-      <input type="text" placeholder="Address Line 1" style="margin-bottom:8px;">
-      <input type="text" placeholder="Address Line 2" style="margin-bottom:8px;">
+      <input type="text" name="addressLine1" placeholder="Address Line 1" style="margin-bottom:8px;">
+      <input type="text" name="addressLine2" placeholder="Address Line 2" style="margin-bottom:8px;">
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
         <div class="city-select-wrapper">
           <input type="text" id="req-city-input" placeholder="City" autocomplete="off" required="">
-          <input type="hidden" id="req-city-value" value="">
+          <input type="hidden" id="req-city-value" name="city" value="">
           <div class="city-dropdown" id="req-city-dropdown"></div>
         </div>
         <div class="state-select-wrapper">
           <input type="text" id="req-state-input" placeholder="State" autocomplete="off" required="">
-          <input type="hidden" id="req-state-value" value="CA">
+          <input type="hidden" id="req-state-value" name="state" value="CA">
           <div class="state-dropdown" id="req-state-dropdown"></div>
         </div>
-        <input type="text" placeholder="ZIP" required="">
+        <input type="text" name="zip" placeholder="ZIP" required="">
       </div>
     </div>
-    <div class="form-group"><label>Defendant / Recipient Full Name <span class="req">(required)</span></label><input type="text" required=""></div>
-    <div class="form-group"><label>Case Number</label><input type="text"></div>
-    <div class="form-group"><label>Court / Jurisdiction</label><input type="text"></div>
+    <div class="form-group"><label>Defendant / Recipient Full Name <span class="req">(required)</span></label><input type="text" name="defendantName" required></div>
+    <div class="form-group"><label>Case Number</label><input type="text" name="caseNumber"></div>
+    <div class="form-group"><label>Court / Jurisdiction</label><input type="text" name="courtJurisdiction"></div>
     <div class="form-group">
       <label>Are there multiple defendants to be served?</label>
       <div class="form-hint" style="margin-bottom:10px;">Selecting "Yes" allows you to add up to 10 additional defendants.</div>
@@ -139,26 +140,27 @@
     <div class="form-group">
       <label>Service Type <span class="req">(required)</span></label>
       <div class="form-hint" style="margin-bottom:8px;">Emergency service requires internal approval. Additional fees apply.</div>
-      <select required="">
+      <select name="serviceType" required="">
         <option value="">Select an option</option>
-        <option>Standard Service — $97.99 (5–7 business days)</option>
-        <option>Rush Service — $119.99 (3 business days)</option>
-        <option>Priority Serve — $149.99 (2 business days)</option>
-        <option>Emergency Serve — $249.99 (Same-day, approval required)</option>
+        <option value="Standard Service — $97.99 (5–7 business days)">Standard Service — $97.99 (5–7 business days)</option>
+        <option value="Rush Service — $119.99 (3 business days)">Rush Service — $119.99 (3 business days)</option>
+        <option value="Priority Serve — $149.99 (2 business days)">Priority Serve — $149.99 (2 business days)</option>
+        <option value="Emergency Serve — $249.99 (Same-day, approval required)">Emergency Serve — $249.99 (Same-day, approval required)</option>
       </select>
     </div>
-    <div class="form-group"><label>Deadline Date</label><input type="date"></div>
+    <div class="form-group"><label>Deadline Date</label><input type="date" name="deadlineDate"></div>
     <div class="form-group">
       <label>File Upload <span class="req">(required)</span></label>
       <div class="form-hint" style="margin-bottom:8px;">Upload all documents to be served (PDF preferred). Multiple files accepted.</div>
       <div class="file-upload-area" onclick="this.querySelector('input').click()">
         <span>+ Add a File</span>
-        <input type="file" style="display:none;" multiple="" accept=".pdf,.doc,.docx">
+        <input type="file" name="files" style="display:none;" multiple="" accept=".pdf,.doc,.docx">
       </div>
     </div>
-    <div class="form-group"><label>Special Instructions</label><textarea rows="3"></textarea></div>
-    <button class="btn-navy" onclick="handleFormSubmit('req-success')" style="width:100%;">Submit Request</button>
+    <div class="form-group"><label>Special Instructions</label><textarea name="specialInstructions" rows="3"></textarea></div>
+    <button type="submit" class="btn-navy" style="width:100%;">Submit Request</button>
     <div class="form-success" id="req-success">Thank you! Your request has been received. We'll review it and be in touch shortly.</div>
+    </form>
   </div>
   <footer>
     <div><div class="footer-brand-name">Prestige Serves</div><div class="footer-tagline">Reliable. Professional. Fast.</div></div>

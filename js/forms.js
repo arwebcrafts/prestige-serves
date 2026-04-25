@@ -4,7 +4,7 @@ function buildContactForm(containerId, formId) {
   const c = document.getElementById(containerId);
   if (!c) return;
   c.innerHTML = `
-    <form onsubmit="handleFormSubmit(event, '${formId}-success')">
+    <form onsubmit="handleFormSubmit(event, '${formId}-success', 'contact')">
     <div class="form-row">
       <div class="form-group"><label>First Name <span class="req">(required)</span></label><input type="text" name="firstName" required></div>
       <div class="form-group"><label>Last Name <span class="req">(required)</span></label><input type="text" name="lastName" required></div>
@@ -57,7 +57,7 @@ function buildContactForm(containerId, formId) {
   `;
 }
 
-function handleFormSubmit(event, id) {
+function handleFormSubmit(event, id, formType) {
   event.preventDefault();
   const form = event.target;
   const requiredFields = form.querySelectorAll('[required]');
@@ -76,9 +76,85 @@ function handleFormSubmit(event, id) {
     consent.style.outline = '2px solid #e74c3c';
   }
   if (allFilled) {
+    if (formType === 'contact') {
+      const formData = {
+        firstName: form.querySelector('[name="firstName"]')?.value || '',
+        lastName: form.querySelector('[name="lastName"]')?.value || '',
+        company: form.querySelector('[name="company"]')?.value || '',
+        email: form.querySelector('[name="email"]')?.value || '',
+        phone: form.querySelector('[name="phone"]')?.value || '',
+        reason: document.getElementById('reason-value')?.value || '',
+        county: document.getElementById('county-value')?.value || '',
+        state: document.getElementById('state-value')?.value || '',
+        caseDetails: form.querySelector('[name="caseDetails"]')?.value || '',
+        urgency: form.querySelector('[name="urgency"]')?.value || '',
+        consent: form.querySelector('[name="consent"]')?.checked || false
+      };
+      fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      }).catch(err => console.error('Form submission error:', err));
+    }
     const el = document.getElementById(id);
     if (el) el.classList.add('show');
     form.reset();
+  }
+}
+
+function handleRequestSubmit(event) {
+  event.preventDefault();
+  const form = event.target;
+  const requiredFields = form.querySelectorAll('[required]');
+  let allFilled = true;
+  requiredFields.forEach(function(field) {
+    if (!field.value.trim()) {
+      allFilled = false;
+      field.style.border = '2px solid #e74c3c';
+    } else {
+      field.style.border = '';
+    }
+  });
+
+  if (allFilled) {
+    const formData = {
+      clientName: form.querySelector('[name="clientName"]')?.value || '',
+      contactName: form.querySelector('[name="contactName"]')?.value || '',
+      email: form.querySelector('[name="email"]')?.value || '',
+      phone: form.querySelector('[name="phone"]')?.value || '',
+      addressLine1: form.querySelector('[name="addressLine1"]')?.value || '',
+      addressLine2: form.querySelector('[name="addressLine2"]')?.value || '',
+      city: document.getElementById('req-city-value')?.value || '',
+      state: document.getElementById('req-state-value')?.value || '',
+      zip: form.querySelector('[name="zip"]')?.value || '',
+      defendantName: form.querySelector('[name="defendantName"]')?.value || '',
+      caseNumber: form.querySelector('[name="caseNumber"]')?.value || '',
+      courtJurisdiction: form.querySelector('[name="courtJurisdiction"]')?.value || '',
+      multipleDefendants: document.querySelector('input[name="multiple_defendants"][value="yes"]')?.checked || false,
+      serviceType: form.querySelector('[name="serviceType"]')?.value || '',
+      deadlineDate: form.querySelector('[name="deadlineDate"]')?.value || '',
+      specialInstructions: form.querySelector('[name="specialInstructions"]')?.value || '',
+      defendantsData: defendantsArray.length > 0 ? JSON.stringify(defendantsArray) : null
+    };
+
+    fetch('/api/request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById('req-success').classList.add('show');
+        form.reset();
+        defendantsArray = [];
+        renderDefendantsList();
+        document.getElementById('defendants-list-container').style.display = 'none';
+        document.getElementById('btn-add-defendant').style.display = 'none';
+        document.querySelector('input[name="multiple_defendants"][value="no"]').checked = true;
+      }
+    })
+    .catch(err => console.error('Request submission error:', err));
   }
 }
 
