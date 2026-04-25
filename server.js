@@ -97,6 +97,68 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    // Admin API - Get all service requests (recent first)
+    if (url === '/api/admin/requests' && method === 'GET') {
+      try {
+        const sql = getSql();
+        const result = await sql`SELECT * FROM service_requests ORDER BY created_at DESC LIMIT 100`;
+        jsonResponse(res, 200, { success: true, data: result });
+      } catch (err) {
+        console.error('Admin requests error:', err);
+        jsonResponse(res, 500, { success: false, message: 'Database error' });
+      }
+      return;
+    }
+
+    // Admin API - Get all contact submissions (recent first)
+    if (url === '/api/admin/contacts' && method === 'GET') {
+      try {
+        const sql = getSql();
+        const result = await sql`SELECT * FROM contact_submissions ORDER BY created_at DESC LIMIT 100`;
+        jsonResponse(res, 200, { success: true, data: result });
+      } catch (err) {
+        console.error('Admin contacts error:', err);
+        jsonResponse(res, 500, { success: false, message: 'Database error' });
+      }
+      return;
+    }
+
+    // Admin API - Get single service request
+    if (url.match(/^\/api\/admin\/request\/\d+$/) && method === 'GET') {
+      const id = url.split('/').pop();
+      try {
+        const sql = getSql();
+        const result = await sql`SELECT * FROM service_requests WHERE id = ${id}`;
+        if (result.length > 0) {
+          jsonResponse(res, 200, { success: true, data: result[0] });
+        } else {
+          jsonResponse(res, 404, { success: false, message: 'Not found' });
+        }
+      } catch (err) {
+        console.error('Admin request detail error:', err);
+        jsonResponse(res, 500, { success: false, message: 'Database error' });
+      }
+      return;
+    }
+
+    // Admin API - Get single contact submission
+    if (url.match(/^\/api\/admin\/contact\/\d+$/) && method === 'GET') {
+      const id = url.split('/').pop();
+      try {
+        const sql = getSql();
+        const result = await sql`SELECT * FROM contact_submissions WHERE id = ${id}`;
+        if (result.length > 0) {
+          jsonResponse(res, 200, { success: true, data: result[0] });
+        } else {
+          jsonResponse(res, 404, { success: false, message: 'Not found' });
+        }
+      } catch (err) {
+        console.error('Admin contact detail error:', err);
+        jsonResponse(res, 500, { success: false, message: 'Database error' });
+      }
+      return;
+    }
+
     jsonResponse(res, 404, { message: 'API endpoint not found' });
     return;
   }
