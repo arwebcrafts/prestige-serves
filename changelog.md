@@ -1,5 +1,49 @@
 # Changelog
 
+## [1.0.6] - 2026-04-25
+
+### Added
+- File upload functionality with Vercel Blob storage for request form
+- Uploaded files displayed as clickable links in admin dashboard
+- Admin dashboard (`dashboard.html`) with login and data viewing
+- Admin login page (`admin.html`) with preset credentials
+- Vercel serverless API routes (`/api/contact`, `/api/request`, `/api/admin/*`)
+- PostgreSQL database tables for `contact_submissions` and `service_requests`
+- SQL migration file for adding `uploaded_files` column
+- `package.json` with dependencies (`@neontdatabase/serverless`, `@vercel/blob`)
+- `vercel.json` for proper API routing
+- City autocomplete dropdown for request form (uses county/city list)
+- State autocomplete for request form
+- Country autocomplete with all countries in defendant modal
+- Modern radio button toggles (pill-style) for Yes/No selections
+
+### Changed
+- Request form fields now wrapped in `<form>` tags with proper name attributes
+- Form submission uses `FormData` for multipart support
+- Radio buttons replaced checkboxes for "multiple defendants" selection
+- City and state fields use hidden inputs for proper data handling
+
+### Fixed
+- Form validation now checks city/state dropdown values
+- JSONB column parsing in admin dashboard (Neon returns objects, not strings)
+- File upload display shows selected file names
+- Contact form submission works on Vercel deployment
+- Admin dashboard View button works on deployment
+
+## [1.0.5] - 2026-04-25
+
+### Added
+- Dynamic "Add Defendant" feature with modal popup form
+- Support for up to 10 additional defendants per request
+- Defendant data stored as JSONB in database
+- Edit/delete capability for added defendants
+- Modal form with fields: name, gender, relationship, address, DOB, phone, aliases, employer, physical description, notes
+
+### Changed
+- Multiple defendants UI changed from checkboxes to radio button toggle
+- Defendant modal styled consistently with existing design
+- Defendant cards display in list format with edit button
+
 ## [1.0.4] - 2026-04-25
 
 ### Added
