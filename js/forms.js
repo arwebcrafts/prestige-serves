@@ -522,7 +522,9 @@ function openDefendantModal(editIndex = -1) {
     document.getElementById('def-relationship').value = def.relationship;
     document.getElementById('def-address').value = def.address;
     document.getElementById('def-city').value = def.city;
-    document.getElementById('def-country').value = def.country;
+    document.getElementById('def-city-value').value = def.city;
+    document.getElementById('def-country-input').value = def.country;
+    document.getElementById('def-country-value').value = def.country;
     document.getElementById('def-dob').value = def.dob;
     document.getElementById('def-phone').value = def.phone;
     document.getElementById('def-aliases').value = def.aliases;
@@ -555,7 +557,7 @@ function saveDefendant() {
   const firstName = document.getElementById('def-first-name').value.trim();
   const lastName = document.getElementById('def-last-name').value.trim();
   const address = document.getElementById('def-address').value.trim();
-  const city = document.getElementById('def-city').value.trim();
+  const city = document.getElementById('def-city-value').value.trim();
 
   if(!firstName || !lastName || !address || !city) {
     alert("Please fill in all required fields (First Name, Last Name, Address, City).");
@@ -569,8 +571,8 @@ function saveDefendant() {
     gender: document.getElementById('def-gender').value,
     relationship: document.getElementById('def-relationship').value,
     address: address,
-    city: city,
-    country: document.getElementById('def-country').value,
+    city: document.getElementById('def-city-value').value || city,
+    country: document.getElementById('def-country-value').value,
     dob: document.getElementById('def-dob').value,
     phone: document.getElementById('def-phone').value,
     aliases: document.getElementById('def-aliases').value,
@@ -616,3 +618,99 @@ function renderDefendantsList() {
     container.appendChild(card);
   });
 }
+
+// City autocomplete for request page and defendant modal
+function initCityAutocomplete(inputId, hiddenInputId, dropdownId) {
+  const input = document.getElementById(inputId);
+  const hiddenInput = document.getElementById(hiddenInputId);
+  const dropdown = document.getElementById(dropdownId);
+  if (!input || !dropdown) return;
+
+  function renderDropdown(filter) {
+    const filterLower = filter.toLowerCase().trim();
+    const filtered = countyOptions.filter(c =>
+      c.toLowerCase().includes(filterLower)
+    );
+    dropdown.innerHTML = filtered.slice(0, 50).map(c =>
+      '<div class="city-option' + (c === hiddenInput.value ? ' selected' : '') + '">' + c + '</div>'
+    ).join('');
+    dropdown.style.display = filtered.length ? 'block' : 'none';
+  }
+
+  input.addEventListener('input', function() {
+    hiddenInput.value = '';
+    renderDropdown(this.value);
+  });
+
+  input.addEventListener('focus', function() {
+    renderDropdown(this.value);
+  });
+
+  dropdown.addEventListener('click', function(e) {
+    if (e.target.classList.contains('city-option')) {
+      input.value = e.target.textContent;
+      hiddenInput.value = e.target.textContent;
+      dropdown.style.display = 'none';
+    }
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.city-select-wrapper')) {
+      dropdown.style.display = 'none';
+    }
+  });
+}
+
+// Country autocomplete
+const countryOptions = [
+  'United States',
+  'Afghanistan','Albania','Algeria','Andorra','Angola','Antigua and Barbuda','Argentina','Armenia','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bhutan','Bolivia','Bosnia and Herzegovina','Botswana','Brazil','Brunei','Bulgaria','Burkina Faso','Burundi','Cabo Verde','Cambodia','Cameroon','Canada','Central African Republic','Chad','Chile','China','Colombia','Comoros','Congo','Costa Rica','Croatia','Cuba','Cyprus','Czech Republic','Denmark','Djibouti','Dominica','Dominican Republic','East Timor','Ecuador','Egypt','El Salvador','Equatorial Guinea','Eritrea','Estonia','Eswatini','Ethiopia','Fiji','Finland','France','Gabon','Gambia','Georgia','Germany','Ghana','Greece','Grenada','Guatemala','Guinea','Guinea-Bissau','Guyana','Haiti','Honduras','Hungary','Iceland','India','Indonesia','Iran','Iraq','Ireland','Israel','Italy','Ivory Coast','Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kiribati','Korea, North','Korea, South','Kosovo','Kuwait','Kyrgyzstan','Laos','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands','Mauritania','Mauritius','Mexico','Micronesia','Moldova','Monaco','Mongolia','Montenegro','Morocco','Mozambique','Myanmar','Namibia','Nauru','Nepal','Netherlands','New Zealand','Nicaragua','Niger','Nigeria','North Macedonia','Norway','Oman','Pakistan','Palau','Palestine','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Poland','Portugal','Qatar','Romania','Russia','Rwanda','Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines','Samoa','San Marino','Sao Tome and Principe','Saudi Arabia','Senegal','Serbia','Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia','Solomon Islands','Somalia','South Africa','South Sudan','Spain','Sri Lanka','Sudan','Suriname','Sweden','Switzerland','Syria','Taiwan','Tajikistan','Tanzania','Thailand','Togo','Tonga','Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Tuvalu','Uganda','Ukraine','United Arab Emirates','United Kingdom','Uruguay','Uzbekistan','Vanuatu','Vatican City','Venezuela','Vietnam','Yemen','Zambia','Zimbabwe'
+];
+
+function initCountryAutocomplete(inputId, hiddenInputId, dropdownId) {
+  const input = document.getElementById(inputId);
+  const hiddenInput = document.getElementById(hiddenInputId);
+  const dropdown = document.getElementById(dropdownId);
+  if (!input || !dropdown) return;
+
+  function renderDropdown(filter) {
+    const filterLower = filter.toLowerCase().trim();
+    const filtered = countryOptions.filter(c =>
+      c.toLowerCase().includes(filterLower)
+    );
+    dropdown.innerHTML = filtered.slice(0, 50).map(c =>
+      '<div class="country-option' + (c === hiddenInput.value ? ' selected' : '') + '">' + c + '</div>'
+    ).join('');
+    dropdown.style.display = filtered.length ? 'block' : 'none';
+  }
+
+  input.addEventListener('input', function() {
+    hiddenInput.value = '';
+    renderDropdown(this.value);
+  });
+
+  input.addEventListener('focus', function() {
+    renderDropdown(this.value);
+  });
+
+  dropdown.addEventListener('click', function(e) {
+    if (e.target.classList.contains('country-option')) {
+      input.value = e.target.textContent;
+      hiddenInput.value = e.target.textContent;
+      dropdown.style.display = 'none';
+    }
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.country-select-wrapper')) {
+      dropdown.style.display = 'none';
+    }
+  });
+}
+
+// Initialize all autocomplete inputs
+document.addEventListener('DOMContentLoaded', function() {
+  initCityAutocomplete('req-city-input', 'req-city-value', 'req-city-dropdown');
+  initCityAutocomplete('def-city', 'def-city-value', 'def-city-dropdown');
+  initCountryAutocomplete('def-country-input', 'def-country-value', 'def-country-dropdown');
+});

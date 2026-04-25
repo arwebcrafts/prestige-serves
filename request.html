@@ -104,8 +104,16 @@
       <input type="text" placeholder="Address Line 1" style="margin-bottom:8px;">
       <input type="text" placeholder="Address Line 2" style="margin-bottom:8px;">
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-        <input type="text" placeholder="City" required="">
-        <input type="text" placeholder="State" required="">
+        <div class="city-select-wrapper">
+          <input type="text" id="req-city-input" placeholder="City" autocomplete="off" required="">
+          <input type="hidden" id="req-city-value" value="">
+          <div class="city-dropdown" id="req-city-dropdown"></div>
+        </div>
+        <div class="state-select-wrapper">
+          <input type="text" id="req-state-input" placeholder="State" autocomplete="off" required="">
+          <input type="hidden" id="req-state-value" value="CA">
+          <div class="state-dropdown" id="req-state-dropdown"></div>
+        </div>
         <input type="text" placeholder="ZIP" required="">
       </div>
     </div>
@@ -200,10 +208,16 @@
         <label>Service Address <span class="req">*</span></label>
         <input type="text" id="def-address" placeholder="Full address including postcode / zip" style="margin-bottom:8px;" required>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <input type="text" id="def-city" placeholder="City" required>
-          <select id="def-country">
-            <option value="United States" selected>United States</option>
-          </select>
+          <div class="city-select-wrapper">
+            <input type="text" id="def-city" placeholder="City" autocomplete="off" required="">
+            <input type="hidden" id="def-city-value" value="">
+            <div class="city-dropdown" id="def-city-dropdown"></div>
+          </div>
+          <div class="country-select-wrapper">
+            <input type="text" id="def-country-input" placeholder="Country" autocomplete="off">
+            <input type="hidden" id="def-country-value" value="United States">
+            <div class="country-dropdown" id="def-country-dropdown"></div>
+          </div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
