@@ -2,8 +2,10 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { neon } = require('@neondatabase/serverless');
+const { Blob } = require('@vercel/blob');
 
 const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_P8aH3JElyXBw@ep-gentle-frog-a4yzwn3w-pooler.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require';
+const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN || 'vercel_blob_rw_1qFTdRzk36aoQZsG_uiiyBg0DZ8Sl5zySi6DmqaMnIz9eqV';
 
 function getSql() {
   return neon(DATABASE_URL);
@@ -31,6 +33,65 @@ function jsonResponse(res, statusCode, data) {
   res.end(JSON.stringify(data));
 }
 
+// Parse multipart form data
+function parseMultipart(req) {
+  return new Promise((resolve, reject) => {
+    const contentType = req.headers['content-type'] || '';
+    if (!contentType.includes('multipart/form-data')) {
+      parseBody(req).then(resolve).catch(reject);
+      return;
+    }
+
+    const boundary = contentType.split('boundary=')[1];
+    if (!boundary) {
+      reject(new Error('No boundary found'));
+      return;
+    }
+
+    let body = [];
+    req.on('data', chunk => body.push(chunk));
+    req.on('end', () => {
+      try {
+        const data = Buffer.concat(body);
+        const parts = data.toString('binary').split('--' + boundary);
+        const result = { fields: {}, files: [] };
+        
+        for (const part of parts) {
+          if (!part.includes('\r\n\r\n') || part === '--') continue;
+          
+          const [header, content] = part.split('\r\n\r\n');
+          const headerMatch = header.match(/name="([^"]+)"/);
+          if (!headerMatch) continue;
+          
+          const fieldName = headerMatch[1];
+          
+          if (header.includes('filename')) {
+            const filenameMatch = header.match(/filename="([^"]+)"/);
+            if (filenameMatch && content && content.length > 2) {
+              const filename = filenameMatch[1];
+              const binaryContent = content.slice(0, content.length - 2);
+              
+              result.files.push({
+                fieldName: fieldName,
+                originalName: filename,
+                buffer: Buffer.from(binaryContent, 'binary')
+              });
+            }
+          } else {
+            const value = content.replace(/\r\n$/, '');
+            result.fields[fieldName] = value;
+          }
+        }
+        
+        resolve(result);
+      } catch (e) {
+        reject(e);
+      }
+    });
+    req.on('error', reject);
+  });
+}
+
 const server = http.createServer(async (req, res) => {
   const url = req.url.split('?')[0];
   const method = req.method;
@@ -47,7 +108,7 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    // Contact form submission (used by both index.html and contact.html)
+    // Contact form submission
     if (url === '/api/contact' && method === 'POST') {
       try {
         const body = await parseBody(req);
@@ -69,27 +130,75 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    // Request form submission (request.html)
+    // Request form submission with file upload
     if (url === '/api/request' && method === 'POST') {
       try {
-        const body = await parseBody(req);
+        const contentType = req.headers['content-type'] || '';
         const sql = getSql();
-        await sql`
-          INSERT INTO service_requests (
-            client_name, contact_name, email, phone,
-            address_line1, address_line2, city, state, zip,
-            defendant_name, case_number, court_jurisdiction,
-            multiple_defendants, service_type, deadline_date,
-            special_instructions, defendants_data
-          ) VALUES (
-            ${body.clientName}, ${body.contactName}, ${body.email}, ${body.phone},
-            ${body.addressLine1}, ${body.addressLine2}, ${body.city}, ${body.state}, ${body.zip},
-            ${body.defendantName}, ${body.caseNumber}, ${body.courtJurisdiction},
-            ${body.multipleDefendants || false}, ${body.serviceType}, ${body.deadlineDate},
-            ${body.specialInstructions}, ${body.defendantsData || null}
-          )
-        `;
-        jsonResponse(res, 201, { success: true, message: 'Service request submitted successfully' });
+        
+        if (contentType.includes('multipart/form-data')) {
+          const parsed = await parseMultipart(req);
+          const f = parsed.fields;
+          
+          // Upload files to Vercel Blob
+          let fileData = null;
+          if (parsed.files.length > 0) {
+            const uploadedFiles = [];
+            for (const file of parsed.files) {
+              try {
+                const blob = new Blob();
+                const blobResult = await blob.put(file.originalName, file.buffer, {
+                  access: 'public',
+                  token: BLOB_READ_WRITE_TOKEN
+                });
+                uploadedFiles.push({
+                  name: file.originalName,
+                  url: blobResult.url
+                });
+              } catch (blobErr) {
+                console.error('Blob upload error:', blobErr);
+              }
+            }
+            if (uploadedFiles.length > 0) {
+              fileData = JSON.stringify(uploadedFiles);
+            }
+          }
+          
+          await sql`
+            INSERT INTO service_requests (
+              client_name, contact_name, email, phone,
+              address_line1, address_line2, city, state, zip,
+              defendant_name, case_number, court_jurisdiction,
+              multiple_defendants, service_type, deadline_date,
+              special_instructions, defendants_data, uploaded_files
+            ) VALUES (
+              ${f.clientName || ''}, ${f.contactName || ''}, ${f.email || ''}, ${f.phone || ''},
+              ${f.addressLine1 || ''}, ${f.addressLine2 || ''}, ${f.city || ''}, ${f.state || ''}, ${f.zip || ''},
+              ${f.defendantName || ''}, ${f.caseNumber || ''}, ${f.courtJurisdiction || ''},
+              ${f.multiple_defendants === 'true'}, ${f.serviceType || ''}, ${f.deadlineDate || null},
+              ${f.specialInstructions || ''}, ${f.defendantsData || null}, ${fileData}
+            )
+          `;
+          jsonResponse(res, 201, { success: true, message: 'Service request submitted successfully' });
+        } else {
+          const body = await parseBody(req);
+          await sql`
+            INSERT INTO service_requests (
+              client_name, contact_name, email, phone,
+              address_line1, address_line2, city, state, zip,
+              defendant_name, case_number, court_jurisdiction,
+              multiple_defendants, service_type, deadline_date,
+              special_instructions, defendants_data
+            ) VALUES (
+              ${body.clientName}, ${body.contactName}, ${body.email}, ${body.phone},
+              ${body.addressLine1}, ${body.addressLine2}, ${body.city}, ${body.state}, ${body.zip},
+              ${body.defendantName}, ${body.caseNumber}, ${body.courtJurisdiction},
+              ${body.multipleDefendants || false}, ${body.serviceType}, ${body.deadlineDate},
+              ${body.specialInstructions}, ${body.defendantsData || null}
+            )
+          `;
+          jsonResponse(res, 201, { success: true, message: 'Service request submitted successfully' });
+        }
       } catch (err) {
         console.error('Request submission error:', err);
         jsonResponse(res, 500, { success: false, message: 'Database error: ' + err.message });
@@ -97,7 +206,7 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    // Admin API - Get all service requests (recent first)
+    // Admin API - Get all service requests
     if (url === '/api/admin/requests' && method === 'GET') {
       try {
         const sql = getSql();
@@ -110,7 +219,7 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    // Admin API - Get all contact submissions (recent first)
+    // Admin API - Get all contact submissions
     if (url === '/api/admin/contacts' && method === 'GET') {
       try {
         const sql = getSql();

@@ -37,5 +37,6 @@ CREATE TABLE IF NOT EXISTS service_requests (
   deadline_date DATE,
   special_instructions TEXT,
   defendants_data JSONB,
+  uploaded_files JSONB,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

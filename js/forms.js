@@ -146,56 +146,19 @@ function handleRequestSubmit(event) {
     return;
   }
 
-  const formData = {
-    clientName: form.querySelector('[name="clientName"]')?.value || '',
-    contactName: form.querySelector('[name="contactName"]')?.value || '',
-    email: form.querySelector('[name="email"]')?.value || '',
-    phone: form.querySelector('[name="phone"]')?.value || '',
-    addressLine1: form.querySelector('[name="addressLine1"]')?.value || '',
-    addressLine2: form.querySelector('[name="addressLine2"]')?.value || '',
-    city: cityValue || '',
-    state: stateValue || '',
-    zip: form.querySelector('[name="zip"]')?.value || '',
-    defendantName: form.querySelector('[name="defendantName"]')?.value || '',
-    caseNumber: form.querySelector('[name="caseNumber"]')?.value || '',
-    courtJurisdiction: form.querySelector('[name="courtJurisdiction"]')?.value || '',
-    multipleDefendants: document.querySelector('input[name="multiple_defendants"][value="yes"]')?.checked || false,
-    serviceType: form.querySelector('[name="serviceType"]')?.value || '',
-    deadlineDate: form.querySelector('[name="deadlineDate"]')?.value || '',
-    specialInstructions: form.querySelector('[name="specialInstructions"]')?.value || '',
-    defendantsData: defendantsArray.length > 0 ? JSON.stringify(defendantsArray) : null
-  };
-
-  if (!allFilled) {
-    alert('Please fill in all required fields.');
-    if (firstEmptyField) firstEmptyField.focus();
-    return;
+  // Use FormData for multipart submission with files
+  const formData = new FormData(form);
+  formData.set('city', cityValue || '');
+  formData.set('state', stateValue || '');
+  formData.set('multiple_defendants', document.querySelector('input[name="multiple_defendants"][value="yes"]')?.checked ? 'true' : 'false');
+  
+  if (defendantsArray.length > 0) {
+    formData.set('defendantsData', JSON.stringify(defendantsArray));
   }
-
-  const formData = {
-    clientName: form.querySelector('[name="clientName"]')?.value || '',
-    contactName: form.querySelector('[name="contactName"]')?.value || '',
-    email: form.querySelector('[name="email"]')?.value || '',
-    phone: form.querySelector('[name="phone"]')?.value || '',
-    addressLine1: form.querySelector('[name="addressLine1"]')?.value || '',
-    addressLine2: form.querySelector('[name="addressLine2"]')?.value || '',
-    city: cityValue || '',
-    state: stateValue || '',
-    zip: form.querySelector('[name="zip"]')?.value || '',
-    defendantName: form.querySelector('[name="defendantName"]')?.value || '',
-    caseNumber: form.querySelector('[name="caseNumber"]')?.value || '',
-    courtJurisdiction: form.querySelector('[name="courtJurisdiction"]')?.value || '',
-    multipleDefendants: document.querySelector('input[name="multiple_defendants"][value="yes"]')?.checked || false,
-    serviceType: form.querySelector('[name="serviceType"]')?.value || '',
-    deadlineDate: form.querySelector('[name="deadlineDate"]')?.value || '',
-    specialInstructions: form.querySelector('[name="specialInstructions"]')?.value || '',
-    defendantsData: defendantsArray.length > 0 ? JSON.stringify(defendantsArray) : null
-  };
 
   fetch('/api/request', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData)
+    body: formData
   })
   .then(res => res.json())
   .then(data => {
