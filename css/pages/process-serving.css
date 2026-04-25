@@ -60,12 +60,23 @@
   .pricing-real-icon{width:48px;height:48px;object-fit:contain;}
   .pricing-item-price{font-size:22px;font-weight:600;}
 
-  /* Document types section */
-  [style*="repeat(4,1fr)"]{grid-template-columns:repeat(2,1fr) !important;gap:16px !important;}
-  .small-icon-wrap{width:56px;height:56px;margin:0 auto 8px;}
+  /* Document types section - 4 columns become 2x2 grid */
+  .ps-docs-section{padding:40px 20px !important;}
+  .ps-docs-section h2{font-size:22px !important;margin-bottom:8px !important;}
+  .ps-docs-section > p{font-size:13px !important;margin-bottom:24px !important;}
+  .ps-docs-grid{display:grid;grid-template-columns:repeat(2,1fr) !important;gap:16px !important;}
+  .ps-docs-grid .small-icon-wrap{width:64px;height:64px;margin:0 auto 10px;}
+  .ps-docs-grid .small-icon-wrap img{max-width:64px;max-height:64px;}
+  .ps-docs-grid p{font-size:12px !important;}
 
-  /* Trust section */
-  [style*="repeat(3,1fr)"]{grid-template-columns:1fr !important;gap:24px !important;max-width:100% !important;}
+  /* Trust section - 3 columns become 1 column */
+  .ps-trust-section{padding:40px 20px !important;}
+  .ps-trust-section h2{font-size:22px !important;margin-bottom:8px !important;}
+  .ps-trust-section > p{font-size:13px !important;margin-bottom:28px !important;}
+  .ps-trust-grid{display:grid;grid-template-columns:1fr !important;gap:28px !important;max-width:100% !important;}
+  .ps-trust-grid .small-icon-wrap{width:64px;height:64px;margin:0 auto 10px;}
+  .ps-trust-grid .small-icon-wrap img{max-width:64px;max-height:64px;}
+  .ps-trust-grid p{font-size:13px !important;}
 
   /* FAQ section */
   [style*="padding:0 72px"]{padding:0 20px 40px !important;}
