@@ -123,7 +123,7 @@ async function viewRequest(id) {
       <div class="detail-section">
         <h4>Additional Defendants</h4>
         <div class="highlight">
-          ${JSON.parse(r.defendants_data).map((d, i) => `
+          ${(typeof r.defendants_data === 'string' ? JSON.parse(r.defendants_data) : r.defendants_data).map((d, i) => `
             <p><strong>Defendant #${i+2}:</strong> ${escapeHtml(d.firstName || '')} ${escapeHtml(d.lastName || '')}</p>
             <p>Address: ${escapeHtml(d.address || '')}, ${escapeHtml(d.city || '')}</p>
           `).join('')}
@@ -142,7 +142,7 @@ async function viewRequest(id) {
       <div class="detail-section">
         <h4>Uploaded Files</h4>
         <div class="highlight">
-          ${JSON.parse(r.uploaded_files).map((f, i) => `
+          ${(typeof r.uploaded_files === 'string' ? JSON.parse(r.uploaded_files) : r.uploaded_files).map((f, i) => `
             <p><a href="${f.url}" target="_blank" style="color:#1a2332;word-break:break-all;">${escapeHtml(f.name)}</a></p>
           `).join('')}
         </div>
