@@ -4,12 +4,6 @@ import { put } from '@vercel/blob';
 const DATABASE_URL = process.env.DATABASE_URL;
 const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -35,58 +29,15 @@ export default async function handler(req, res) {
     let clientName, contactName, email, phone, addressLine1, addressLine2, city, state, zip;
     let defendantName, caseNumber, courtJurisdiction, multipleDefendants, serviceType, deadlineDate;
     let specialInstructions, defendantsData;
-    let uploadedFiles = null;
+    let uploadedFiles = [];
 
     if (contentType.includes('multipart/form-data')) {
-      // Vercel provides req.body as a Buffer when bodyParser is false
-      const data = req.body;
+      // Use req.formData() which is available in Vercel serverless
+      const formData = await req.formData();
       
-      if (!data || !Buffer.isBuffer(data)) {
-        throw new Error('Request body is not available');
-      }
-      
-      const boundary = contentType.split('boundary=')[1];
-      if (!boundary) {
-        throw new Error('No boundary found');
-      }
-
-      const boundaryBuffer = Buffer.from('--' + boundary, 'binary');
-      const sections = splitBuffer(data, boundaryBuffer);
-      
-      for (const section of sections) {
-        if (section.length === 0 || section.equals(Buffer.from('--', 'binary'))) continue;
-        
-        const idx = section.indexOf(Buffer.from('\r\n\r\n'));
-        if (idx === -1) continue;
-        
-        const header = section.slice(0, idx).toString('binary');
-        const content = section.slice(idx + 4);
-        const headerMatch = header.match(/name="([^"]+)"/);
-        if (!headerMatch) continue;
-        
-        const fieldName = headerMatch[1];
-        
-        if (header.includes('filename')) {
-          const filenameMatch = header.match(/filename="([^"]+)"/);
-          if (filenameMatch && content.length > 2) {
-            const filename = filenameMatch[1];
-            const binaryContent = content.slice(0, content.length - 2);
-            
-            try {
-              const blobResult = await put(filename, binaryContent, {
-                access: 'public',
-                token: BLOB_READ_WRITE_TOKEN,
-              });
-              
-              if (!uploadedFiles) uploadedFiles = [];
-              uploadedFiles.push({ name: filename, url: blobResult.url });
-            } catch (blobErr) {
-              console.error('Blob upload error:', blobErr);
-            }
-          }
-        } else {
-          const value = content.slice(0, content.length - 2).toString('utf8');
-          switch (fieldName) {
+      for (const [key, value] of formData.entries()) {
+        if (typeof value === 'string') {
+          switch (key) {
             case 'clientName': clientName = value; break;
             case 'contactName': contactName = value; break;
             case 'email': email = value; break;
@@ -105,31 +56,45 @@ export default async function handler(req, res) {
             case 'specialInstructions': specialInstructions = value; break;
             case 'defendantsData': defendantsData = value || null; break;
           }
+        } else if (value instanceof File) {
+          // Handle file upload
+          try {
+            const arrayBuffer = await value.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            const blobResult = await put(value.name, buffer, {
+              access: 'public',
+              token: BLOB_READ_WRITE_TOKEN,
+            });
+            uploadedFiles.push({ name: value.name, url: blobResult.url });
+          } catch (blobErr) {
+            console.error('Blob upload error:', blobErr);
+          }
         }
       }
     } else {
-      // JSON body
       const body = req.body;
-      clientName = body.clientName;
-      contactName = body.contactName;
-      email = body.email;
-      phone = body.phone;
-      addressLine1 = body.addressLine1;
-      addressLine2 = body.addressLine2;
-      city = body.city;
-      state = body.state;
-      zip = body.zip;
-      defendantName = body.defendantName;
-      caseNumber = body.caseNumber;
-      courtJurisdiction = body.courtJurisdiction;
-      multipleDefendants = body.multipleDefendants || false;
-      serviceType = body.serviceType;
-      deadlineDate = body.deadlineDate || null;
-      specialInstructions = body.specialInstructions;
-      defendantsData = body.defendantsData || null;
+      if (body) {
+        clientName = body.clientName;
+        contactName = body.contactName;
+        email = body.email;
+        phone = body.phone;
+        addressLine1 = body.addressLine1;
+        addressLine2 = body.addressLine2;
+        city = body.city;
+        state = body.state;
+        zip = body.zip;
+        defendantName = body.defendantName;
+        caseNumber = body.caseNumber;
+        courtJurisdiction = body.courtJurisdiction;
+        multipleDefendants = body.multipleDefendants || false;
+        serviceType = body.serviceType;
+        deadlineDate = body.deadlineDate || null;
+        specialInstructions = body.specialInstructions;
+        defendantsData = body.defendantsData || null;
+      }
     }
 
-    const uploadedFilesJson = uploadedFiles ? JSON.stringify(uploadedFiles) : null;
+    const uploadedFilesJson = uploadedFiles.length > 0 ? JSON.stringify(uploadedFiles) : null;
 
     await sql`
       INSERT INTO service_requests (
@@ -150,25 +115,6 @@ export default async function handler(req, res) {
     return res.status(201).json({ success: true, message: 'Service request submitted successfully' });
   } catch (err) {
     console.error('Request submission error:', err);
-    return res.status(500).json({ success: false, message: 'Server error: ' + err.message, stack: err.stack });
+    return res.status(500).json({ success: false, message: 'Server error: ' + err.message });
   }
-}
-
-// Helper function to split buffer by boundary
-function splitBuffer(buffer, delimiter) {
-  const result = [];
-  let start = 0;
-  let idx = buffer.indexOf(delimiter, start);
-  
-  while (idx !== -1) {
-    result.push(buffer.slice(start, idx));
-    start = idx + delimiter.length;
-    idx = buffer.indexOf(delimiter, start);
-  }
-  
-  if (start < buffer.length) {
-    result.push(buffer.slice(start));
-  }
-  
-  return result;
 }
