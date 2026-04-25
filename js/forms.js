@@ -170,6 +170,9 @@ function handleRequestSubmit(event) {
       document.getElementById('defendants-list-container').style.display = 'none';
       document.getElementById('btn-add-defendant').style.display = 'none';
       document.querySelector('input[name="multiple_defendants"][value="no"]').checked = true;
+      document.getElementById('file-list').innerHTML = '';
+      const uploadText = document.getElementById('file-upload-text');
+      if (uploadText) uploadText.textContent = '+ Add a File';
     }
   })
   .catch(err => console.error('Request submission error:', err));
@@ -805,6 +808,36 @@ function initCountryAutocomplete(inputId, hiddenInputId, dropdownId) {
   });
 }
 
+// Initialize file upload display
+function initFileUpload() {
+  const fileInput = document.getElementById('file-input');
+  const fileList = document.getElementById('file-list');
+  const uploadText = document.getElementById('file-upload-text');
+  
+  if (!fileInput || !fileList) return;
+  
+  fileInput.addEventListener('change', function() {
+    const files = Array.from(fileInput.files);
+    if (files.length === 0) {
+      fileList.innerHTML = '';
+      if (uploadText) uploadText.textContent = '+ Add a File';
+      return;
+    }
+    
+    let html = '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+    files.forEach((file, index) => {
+      html += `<span style="background:#e8f0fe;padding:6px 12px;border-radius:4px;font-size:12px;display:flex;align-items:center;gap:6px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+        ${escapeHtml(file.name)}
+      </span>`;
+    });
+    html += '</div>';
+    fileList.innerHTML = html;
+    
+    if (uploadText) uploadText.textContent = files.length === 1 ? '1 file selected' : files.length + ' files selected';
+  });
+}
+
 // Initialize all autocomplete inputs
 document.addEventListener('DOMContentLoaded', function() {
   initCityAutocomplete('req-city-input', 'req-city-value', 'req-city-dropdown');
@@ -812,4 +845,5 @@ document.addEventListener('DOMContentLoaded', function() {
   initCountryAutocomplete('def-country-input', 'def-country-value', 'def-country-dropdown');
   initStateAutocomplete('req-state-input', 'req-state-value', 'req-state-dropdown', 'CA');
   initStateAutocomplete('state-input', 'state-value', 'state-dropdown', 'CA');
+  initFileUpload();
 });
