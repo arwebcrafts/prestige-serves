@@ -18,18 +18,18 @@
     <img src="assets/images/mail.png" alt="Mail" style="width:50px;height:50px;object-fit:contain;">
     <span>Prestige Serves Admin</span>
   </div>
-  <button class="btn-outline" onclick="handleLogout()">Logout</button>
+  <button type="button" class="btn-outline" onclick="handleLogout()">Logout</button>
 </nav>
 
 <div class="admin-container">
   <div class="admin-header">
     <h1>Dashboard</h1>
-    <p>Manage form submissions</p>
+    <p>Review submissions, copy fields, export CSV, or add manual records.</p>
   </div>
 
-  <div class="dashboard-tabs">
-    <button class="tab-btn active" onclick="switchTab('requests')">Service Requests</button>
-    <button class="tab-btn" onclick="switchTab('contacts')">Contact Submissions</button>
+  <div class="dashboard-tabs" role="tablist">
+    <button type="button" class="tab-btn active" data-tab="requests" onclick="switchTab('requests')">Service Requests</button>
+    <button type="button" class="tab-btn" data-tab="contacts" onclick="switchTab('contacts')">Contact Submissions</button>
   </div>
 
   <div class="tab-content active" id="tab-requests">
@@ -40,14 +40,19 @@
       </div>
       <div class="stat-card">
         <h3 id="requests-today">0</h3>
-        <p>Today's Requests</p>
+        <p>Today&rsquo;s Requests</p>
       </div>
       <div class="stat-card">
         <h3 id="requests-emergency">0</h3>
         <p>Emergency Services</p>
       </div>
     </div>
-    <div class="table-container">
+    <div class="dashboard-toolbar">
+      <button type="button" class="btn-toolbar" onclick="loadRequests()">Refresh</button>
+      <button type="button" class="btn-toolbar" onclick="exportRequestsCsv()">Export CSV</button>
+      <button type="button" class="btn-toolbar btn-toolbar-primary" onclick="openAddRequestModal()">Add request</button>
+    </div>
+    <div class="table-scroll-wrap">
       <table class="data-table" id="requests-table">
         <thead>
           <tr>
@@ -75,10 +80,15 @@
       </div>
       <div class="stat-card">
         <h3 id="contacts-today">0</h3>
-        <p>Today's Contacts</p>
+        <p>Today&rsquo;s Contacts</p>
       </div>
     </div>
-    <div class="table-container">
+    <div class="dashboard-toolbar">
+      <button type="button" class="btn-toolbar" onclick="loadContacts()">Refresh</button>
+      <button type="button" class="btn-toolbar" onclick="exportContactsCsv()">Export CSV</button>
+      <button type="button" class="btn-toolbar btn-toolbar-primary" onclick="openAddContactModal()">Add contact</button>
+    </div>
+    <div class="table-scroll-wrap">
       <table class="data-table" id="contacts-table">
         <thead>
           <tr>
@@ -100,15 +110,79 @@
 </div>
 
 <!-- Detail Modal -->
-<div id="detail-modal" class="modal-overlay">
-  <div class="modal-content" style="max-width:700px;">
+<div id="detail-modal" class="modal-overlay" onclick="if(event.target===this)closeDetailModal()">
+  <div class="modal-content modal-content-wide" onclick="event.stopPropagation()">
     <div class="modal-header">
       <h3 id="modal-detail-title">Details</h3>
-      <span class="modal-close" onclick="closeDetailModal()">&times;</span>
+      <div class="modal-header-actions">
+        <button type="button" class="btn-toolbar" id="modal-copy-all" onclick="copyDetailAll()">Copy all</button>
+        <button type="button" class="btn-toolbar btn-danger" id="modal-delete-btn" style="display:none;" onclick="deleteCurrentDetail()">Delete</button>
+        <span class="modal-close" onclick="closeDetailModal()" role="button" tabindex="0" aria-label="Close">&times;</span>
+      </div>
     </div>
     <div class="modal-body" id="modal-detail-body"></div>
   </div>
 </div>
+
+<!-- Add Service Request -->
+<div id="add-request-modal" class="modal-overlay" onclick="if(event.target===this)closeAddRequestModal()">
+  <div class="modal-content modal-content-wide" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Add service request</h3>
+      <span class="modal-close" onclick="closeAddRequestModal()">&times;</span>
+    </div>
+    <div class="modal-body admin-form-grid">
+      <label>Client / firm <input type="text" id="ar-client_name"></label>
+      <label>Contact name <input type="text" id="ar-contact_name"></label>
+      <label>Email <input type="email" id="ar-email"></label>
+      <label>Phone <input type="text" id="ar-phone"></label>
+      <label>Address line 1 <input type="text" id="ar-address_line1"></label>
+      <label>Address line 2 <input type="text" id="ar-address_line2"></label>
+      <label>City <input type="text" id="ar-city"></label>
+      <label>State <input type="text" id="ar-state" maxlength="2" placeholder="CA"></label>
+      <label>ZIP <input type="text" id="ar-zip"></label>
+      <label>Defendant name <input type="text" id="ar-defendant_name"></label>
+      <label>Case number <input type="text" id="ar-case_number"></label>
+      <label>Court <input type="text" id="ar-court_jurisdiction"></label>
+      <label>Service type <input type="text" id="ar-service_type" placeholder="e.g. Standard Service"></label>
+      <label>Deadline <input type="date" id="ar-deadline_date"></label>
+      <label class="admin-form-span2">Special instructions <textarea id="ar-special_instructions" rows="3"></textarea></label>
+      <div class="admin-form-actions admin-form-span2">
+        <button type="button" class="btn-navy" onclick="submitAddRequest()">Save</button>
+        <button type="button" class="btn-toolbar" onclick="closeAddRequestModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Contact -->
+<div id="add-contact-modal" class="modal-overlay" onclick="if(event.target===this)closeAddContactModal()">
+  <div class="modal-content modal-content-wide" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Add contact submission</h3>
+      <span class="modal-close" onclick="closeAddContactModal()">&times;</span>
+    </div>
+    <div class="modal-body admin-form-grid">
+      <label>First name <input type="text" id="ac-first_name"></label>
+      <label>Last name <input type="text" id="ac-last_name"></label>
+      <label>Company <input type="text" id="ac-company"></label>
+      <label>Email <input type="email" id="ac-email"></label>
+      <label>Phone <input type="text" id="ac-phone"></label>
+      <label>Reason <input type="text" id="ac-reason"></label>
+      <label>City / county <input type="text" id="ac-county"></label>
+      <label>State <input type="text" id="ac-state" maxlength="2" placeholder="CA"></label>
+      <label>Urgency <input type="text" id="ac-urgency"></label>
+      <label class="admin-form-span2">Case details <textarea id="ac-case_details" rows="3"></textarea></label>
+      <label class="admin-form-span2"><input type="checkbox" id="ac-consent"> Consent recorded</label>
+      <div class="admin-form-actions admin-form-span2">
+        <button type="button" class="btn-navy" onclick="submitAddContact()">Save</button>
+        <button type="button" class="btn-toolbar" onclick="closeAddContactModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
 
 <script src="js/admin.js"></script>
 </body>

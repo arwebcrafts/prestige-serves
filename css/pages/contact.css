@@ -36,8 +36,15 @@
 #contact-form-container .btn-navy:hover{color:#ffffff !important;background:#2d3a7c !important;border:2px solid #2d3a7c !important;}
 
 @media(max-width:960px){
-  .contact-dark-section{grid-template-columns:1fr;padding:56px 28px;}
+  .contact-dark-section{
+    grid-template-columns:1fr;
+    padding:56px 28px;
+    gap:48px;
+  }
   .contact-dark-heading{font-size:36px;}
+  /* Form first, Get In Touch copy second */
+  #contact-form-container{order:1;}
+  .contact-dark-section > div:first-child{order:2;}
 }
 
 /* MOBILE — contact */

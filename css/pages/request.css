@@ -1,7 +1,7 @@
 /* request.css — Request page specific styles */
 
 .request-hero{padding:72px 72px 48px;}
-.request-label{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent-blue);font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.request-label{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent-blue);font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;font-variant-emoji:text;}
 .request-title{font-size:clamp(40px,4.5vw,68px);font-weight:300;letter-spacing:-0.015em;margin-bottom:14px;}
 .request-sub{font-size:15px;color:var(--text-muted);margin-bottom:36px;}
 .request-info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;}
@@ -210,4 +210,16 @@
   color: #ffffff;
   border-color: #1a2332;
   box-shadow: 0 2px 8px rgba(26, 35, 50, 0.2);
+}
+
+.defendant-loc-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .defendant-loc-row {
+    grid-template-columns: 1fr;
+  }
 }

@@ -33,6 +33,22 @@ function jsonResponse(res, statusCode, data) {
   res.end(JSON.stringify(data));
 }
 
+function csvEscape(val) {
+  if (val === null || val === undefined) return '';
+  let s = typeof val === 'object' ? JSON.stringify(val) : String(val);
+  s = s.replace(/"/g, '""');
+  if (/[",\r\n]/.test(s)) return `"${s}"`;
+  return s;
+}
+
+function rowsToCsv(rows, columns) {
+  const header = columns.map(csvEscape).join(',');
+  const lines = rows.map((row) =>
+    columns.map((col) => csvEscape(row[col])).join(',')
+  );
+  return [header, ...lines].join('\r\n');
+}
+
 // Parse multipart form data
 function parseMultipart(req) {
   return new Promise((resolve, reject) => {
@@ -93,13 +109,14 @@ function parseMultipart(req) {
 }
 
 const server = http.createServer(async (req, res) => {
-  const url = req.url.split('?')[0];
+  const rawUrl = req.url || '/';
+  const url = rawUrl.split('?')[0];
   const method = req.method;
 
   // API routes
   if (url.startsWith('/api/')) {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (method === 'OPTIONS') {
@@ -205,11 +222,30 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    // Admin API - Get all service requests
-    if (url === '/api/admin/requests' && method === 'GET') {
+    const reqPath = url;
+    const query = new URLSearchParams(rawUrl.includes('?') ? rawUrl.split('?')[1] : '');
+
+    // Admin API - List / export CSV / create service requests
+    if (reqPath === '/api/admin/requests' && method === 'GET') {
       try {
         const sql = getSql();
-        const result = await sql`SELECT * FROM service_requests ORDER BY created_at DESC LIMIT 100`;
+        const result = await sql`SELECT * FROM service_requests ORDER BY created_at DESC LIMIT 500`;
+        if (query.get('format') === 'csv') {
+          const cols = [
+            'id', 'created_at', 'client_name', 'contact_name', 'email', 'phone',
+            'address_line1', 'address_line2', 'city', 'state', 'zip',
+            'defendant_name', 'case_number', 'court_jurisdiction', 'multiple_defendants',
+            'service_type', 'deadline_date', 'special_instructions', 'defendants_data', 'uploaded_files'
+          ];
+          const csv = rowsToCsv(result, cols);
+          res.writeHead(200, {
+            'Content-Type': 'text/csv; charset=utf-8',
+            'Content-Disposition': 'attachment; filename="service_requests.csv"',
+            'Access-Control-Allow-Origin': '*'
+          });
+          res.end('\uFEFF' + csv);
+          return;
+        }
         jsonResponse(res, 200, { success: true, data: result });
       } catch (err) {
         console.error('Admin requests error:', err);
@@ -218,11 +254,52 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    // Admin API - Get all contact submissions
-    if (url === '/api/admin/contacts' && method === 'GET') {
+    if (reqPath === '/api/admin/requests' && method === 'POST') {
+      try {
+        const body = await parseBody(req);
+        const sql = getSql();
+        await sql`
+          INSERT INTO service_requests (
+            client_name, contact_name, email, phone,
+            address_line1, address_line2, city, state, zip,
+            defendant_name, case_number, court_jurisdiction,
+            multiple_defendants, service_type, deadline_date,
+            special_instructions, defendants_data, uploaded_files
+          ) VALUES (
+            ${body.client_name || ''}, ${body.contact_name || ''}, ${body.email || ''}, ${body.phone || ''},
+            ${body.address_line1 || ''}, ${body.address_line2 || ''}, ${body.city || ''}, ${body.state || ''}, ${body.zip || ''},
+            ${body.defendant_name || ''}, ${body.case_number || ''}, ${body.court_jurisdiction || ''},
+            ${!!body.multiple_defendants}, ${body.service_type || ''}, ${body.deadline_date || null},
+            ${body.special_instructions || ''}, ${body.defendants_data || null}, ${body.uploaded_files || null}
+          )
+        `;
+        jsonResponse(res, 201, { success: true, message: 'Request created' });
+      } catch (err) {
+        console.error('Admin create request error:', err);
+        jsonResponse(res, 500, { success: false, message: 'Database error' });
+      }
+      return;
+    }
+
+    // Admin API - List / export CSV / create contact submissions
+    if (reqPath === '/api/admin/contacts' && method === 'GET') {
       try {
         const sql = getSql();
-        const result = await sql`SELECT * FROM contact_submissions ORDER BY created_at DESC LIMIT 100`;
+        const result = await sql`SELECT * FROM contact_submissions ORDER BY created_at DESC LIMIT 500`;
+        if (query.get('format') === 'csv') {
+          const cols = [
+            'id', 'created_at', 'first_name', 'last_name', 'company', 'email', 'phone',
+            'reason', 'county', 'state', 'case_details', 'urgency', 'consent'
+          ];
+          const csv = rowsToCsv(result, cols);
+          res.writeHead(200, {
+            'Content-Type': 'text/csv; charset=utf-8',
+            'Content-Disposition': 'attachment; filename="contact_submissions.csv"',
+            'Access-Control-Allow-Origin': '*'
+          });
+          res.end('\uFEFF' + csv);
+          return;
+        }
         jsonResponse(res, 200, { success: true, data: result });
       } catch (err) {
         console.error('Admin contacts error:', err);
@@ -231,9 +308,31 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    if (reqPath === '/api/admin/contacts' && method === 'POST') {
+      try {
+        const body = await parseBody(req);
+        const sql = getSql();
+        await sql`
+          INSERT INTO contact_submissions (
+            first_name, last_name, company, email, phone,
+            reason, county, state, case_details, urgency, consent
+          ) VALUES (
+            ${body.first_name || ''}, ${body.last_name || ''}, ${body.company || ''}, ${body.email || ''}, ${body.phone || ''},
+            ${body.reason || ''}, ${body.county || ''}, ${body.state || ''}, ${body.case_details || ''}, ${body.urgency || ''},
+            ${body.consent === true || body.consent === 'true'}
+          )
+        `;
+        jsonResponse(res, 201, { success: true, message: 'Contact created' });
+      } catch (err) {
+        console.error('Admin create contact error:', err);
+        jsonResponse(res, 500, { success: false, message: 'Database error' });
+      }
+      return;
+    }
+
     // Admin API - Get single service request
-    if (url.match(/^\/api\/admin\/request\/\d+$/) && method === 'GET') {
-      const id = url.split('/').pop();
+    if (reqPath.match(/^\/api\/admin\/request\/\d+$/) && method === 'GET') {
+      const id = reqPath.split('/').pop();
       try {
         const sql = getSql();
         const result = await sql`SELECT * FROM service_requests WHERE id = ${id}`;
@@ -249,9 +348,22 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    if (reqPath.match(/^\/api\/admin\/request\/\d+$/) && method === 'DELETE') {
+      const id = reqPath.split('/').pop();
+      try {
+        const sql = getSql();
+        await sql`DELETE FROM service_requests WHERE id = ${id}`;
+        jsonResponse(res, 200, { success: true, message: 'Deleted' });
+      } catch (err) {
+        console.error('Admin delete request error:', err);
+        jsonResponse(res, 500, { success: false, message: 'Database error' });
+      }
+      return;
+    }
+
     // Admin API - Get single contact submission
-    if (url.match(/^\/api\/admin\/contact\/\d+$/) && method === 'GET') {
-      const id = url.split('/').pop();
+    if (reqPath.match(/^\/api\/admin\/contact\/\d+$/) && method === 'GET') {
+      const id = reqPath.split('/').pop();
       try {
         const sql = getSql();
         const result = await sql`SELECT * FROM contact_submissions WHERE id = ${id}`;
@@ -262,6 +374,19 @@ const server = http.createServer(async (req, res) => {
         }
       } catch (err) {
         console.error('Admin contact detail error:', err);
+        jsonResponse(res, 500, { success: false, message: 'Database error' });
+      }
+      return;
+    }
+
+    if (reqPath.match(/^\/api\/admin\/contact\/\d+$/) && method === 'DELETE') {
+      const id = reqPath.split('/').pop();
+      try {
+        const sql = getSql();
+        await sql`DELETE FROM contact_submissions WHERE id = ${id}`;
+        jsonResponse(res, 200, { success: true, message: 'Deleted' });
+      } catch (err) {
+        console.error('Admin delete contact error:', err);
         jsonResponse(res, 500, { success: false, message: 'Database error' });
       }
       return;

@@ -71,7 +71,11 @@ document.addEventListener('DOMContentLoaded', function() {
   // Initialize page-specific content
   if (document.getElementById('home-form-container')) {
     buildContactForm('home-form-container', 'home');
-    initStateAutocomplete('state-input', 'state-value', 'state-dropdown', 'CA');
+    initStateAutocomplete('state-input', 'state-value', 'state-dropdown', 'CA', {
+      onStateSelected: function() {
+        clearLinkedCityFields('county-input', 'county-value');
+      }
+    });
     initReasonDropdown();
     initCountyDropdown();
   }
