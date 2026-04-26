@@ -249,7 +249,7 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
 
 /* RESPONSIVE — components */
 @media(max-width:960px){
-  .hero,.pricing-split,.testimonial-split,.contact-split{grid-template-columns:1fr;}
+  .hero,.pricing-split,.testimonial-split,.contact-split{grid-template-columns:1fr;display:flex;flex-direction:column;}
   .hero-right,.pricing-img,.testimonial-img{height:360px;}
   .hero-left,.pricing-content,.testimonial-content,.contact-info-col,.contact-form-col{padding:56px 28px;}
   .services-icons{padding:56px 28px;}
@@ -258,6 +258,8 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
   .cta-banner-right{margin-left:0;}
   .coverage-grid{padding:0 28px 56px;}
   .form-row{grid-template-columns:1fr;}
+  .hero-left,.testimonial-content,.contact-info-col,.pricing-content{order:1;}
+  .hero-right,.testimonial-img,.contact-form-col,.pricing-img{order:2;}
 }
 
 /* RESPONSIVE — MOBILE COMPONENTS */
@@ -266,14 +268,16 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
   .hero{
     grid-template-columns:1fr;
     min-height:auto;
+    display:flex;
+    flex-direction:column;
   }
   .hero-left{
     padding:48px 20px;
-    order:2;
+    order:1;
   }
   .hero-right{
     height:280px;
-    order:1;
+    order:2;
   }
   .hero-eyebrow{
     font-size:10px;
@@ -345,13 +349,17 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
   /* PRICING MOBILE */
   .pricing-split{
     grid-template-columns:1fr;
+    display:flex;
+    flex-direction:column;
   }
   .pricing-img{
     height:240px;
     margin-left:0;
+    order:2;
   }
   .pricing-content{
     padding:48px 20px;
+    order:1;
   }
   .pricing-heading{
     font-size:40px;
@@ -390,11 +398,14 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
   /* TESTIMONIAL MOBILE */
   .testimonial-split{
     grid-template-columns:1fr;
+    display:flex;
+    flex-direction:column;
   }
   .testimonial-img{
     height:240px;
     margin:0;
     padding:0;
+    order:2;
   }
   .testimonial-img img{
     margin:0;
@@ -403,6 +414,7 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
   .testimonial-content{
     padding:48px 20px;
     min-height:auto;
+    order:1;
   }
   .testimonial-quote{
     font-size:17px;
@@ -415,11 +427,14 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
   /* CONTACT MOBILE */
   .contact-split{
     grid-template-columns:1fr;
+    display:flex;
+    flex-direction:column;
   }
   .contact-info-col{
     padding:48px 20px;
     border-right:none;
     border-bottom:1px solid var(--border);
+    order:2;
   }
   .contact-heading{
     font-size:36px;
@@ -432,6 +447,7 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
   }
   .contact-form-col{
     padding:48px 20px;
+    order:1;
   }
 
   /* CTA BANNER MOBILE */
