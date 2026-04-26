@@ -20,7 +20,8 @@
 .ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;padding:20px 0;background:var(--bg-white);white-space:nowrap;}
 .ticker-track{display:inline-flex;animation:ticker 405s linear infinite;flex-shrink:0;}
 .ticker-item{font-size:26px;font-weight:300;padding:0 28px;display:inline-flex;align-items:center;gap:28px;color:var(--text-dark);}
-.ticker-sep{font-size:40px;opacity:0.4;}
+.ticker-sep{font-size:40px;opacity:0.4;}.ticker-sep{display:flex;align-items:center;justify-content:center;}
+.ticker-sep img{height:30px;width:auto;}
 @keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-100%);}}
 
 /* SERVICES ICONS */
