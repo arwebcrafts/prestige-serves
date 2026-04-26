@@ -338,210 +338,63 @@ function initReasonDropdown() {
   });
 }
 
-// County / City dropdown
-const countyOptions = [
-  'Los Angeles',
-  'Beverly Hills',
-  'Burbank',
-  'Century City',
-  'Compton',
-  'Culver City',
-  ' Downey',
-  'El Segundo',
-  'Glendale',
-  'Hawthorne',
-  'Hollywood',
-  'Huntington Park',
-  'Inglewood',
-  'Long Beach',
-  'Los Angeles County',
-  'Malibu',
-  'Manhattan Beach',
-  'North Hollywood',
-  'Pasadena',
-  'Pomona',
-  'Santa Clarita',
-  'Santa Monica',
-  'Sherman Oaks',
-  'Silver Lake',
-  'South Gate',
-  'Studio City',
-  'Toluca Lake',
-  'Torrance',
-  'Universal City',
-  'Van Nuys',
-  'Venice',
-  'West Hollywood',
-  'West Los Angeles',
-  'Westlake Village',
-  'Woodland Hills',
-  'Alameda',
-  'Alameda County',
-  'Antioch',
-  'Berkeley',
-  'Brentwood',
-  'Concord',
-  'Contra Costa County',
-  'Danville',
-  'Dublin',
-  'El Cerrito',
-  'Emeryville',
-  'Fremont',
-  'Hayward',
-  'Livermore',
-  'Martinez',
-  'Moraga',
-  'Newark',
-  'Oakland',
-  'Orinda',
-  'Pleasant Hill',
-  'Pleasanton',
-  'Richmond',
-  'San Leandro',
-  'San Lorenzo',
-  'San Pablo',
-  'San Ramon',
-  'Union City',
-  'Walnut Creek',
-  'Fresno',
-  'Fresno County',
-  'Clovis',
-  'Madera',
-  'Merced',
-  'Modesto',
-  'Porterville',
-  'Visalia',
-  'Bakersfield',
-  'Delano',
-  'Imperial County',
-  'El Centro',
-  'Kern County',
-  'Ridgecrest',
-  'Anaheim',
-  'Costa Mesa',
-  'Cypress',
-  'Dana Point',
-  'Fullerton',
-  'Garden Grove',
-  'Huntington Beach',
-  'Irvine',
-  'La Habra',
-  'Laguna Beach',
-  'Laguna Hills',
-  'Laguna Niguel',
-  'Lake Forest',
-  'Mission Viejo',
-  'Newport Beach',
-  'Orange',
-  'Orange County',
-  'Placentia',
-  'Rancho Santa Margarita',
-  'San Clemente',
-  'San Juan Capistrano',
-  'Santa Ana',
-  'Seal Beach',
-  'Stanton',
-  'Tustin',
-  'Westminster',
-  'Yorba Linda',
-  'Corona',
-  'Hemet',
-  'Indio',
-  'Lake Elsinore',
-  'Menifee',
-  'Moreno Valley',
-  'Murrieta',
-  'Norco',
-  'Perris',
-  'Rancho Cucamonga',
-  'Riverside',
-  'Riverside County',
-  'San Bernardino',
-  'San Bernardino County',
-  'Temecula',
-  'Victorville',
-  'Westminster',
-  'Arden-Arcade',
-  'Carmichael',
-  'Citrus Heights',
-  'Davis',
-  'Elk Grove',
-  'Folsom',
-  'Galt',
-  'Lincoln',
-  'Natomas',
-  'Rancho Cordova',
-  'Rocklin',
-  'Roseville',
-  'Sacramento',
-  'Sacramento County',
-  'South Lake Tahoe',
-  'Stockton',
-  'Walnut Grove',
-  'West Sacramento',
-  'Yolo',
-  'Chula Vista',
-  'Coronado',
-  'El Cajon',
-  'Encinitas',
-  'Escondido',
-  'Fallbrook',
-  'Imperial Beach',
-  'La Jolla',
-  'National City',
-  'Oceanside',
-  'Poway',
-  'Ramona',
-  'San Diego',
-  'San Diego County',
-  'San Marcos',
-  'San Ysidro',
-  'Santee',
-  'Solana Beach',
-  'Spring Valley',
-  'Valley Center',
-  'Vista',
-  'Daly City',
-  'Foster City',
-  'Half Moon Bay',
-  'Menlo Park',
-  'Millbrae',
-  'Pacifica',
-  'Redwood City',
-  'San Bruno',
-  'San Carlos',
-  'San Francisco',
-  'San Francisco County',
-  'San Mateo',
-  'San Mateo County',
-  'South San Francisco',
-  'Campbell',
-  'Cupertino',
-  'Gilroy',
-  'Los Altos',
-  'Milpitas',
-  'Morgan Hill',
-  'Mountain View',
-  'Palo Alto',
-  'San Jose',
-  'Santa Clara',
-  'Santa Clara County',
-  'Saratoga',
-  'Sunnyvale',
-  'Camarillo',
-  'Moorpark',
-  'Oxnard',
-  'Port Hueneme',
-  'San Buenaventura',
-  'Santa Paula',
-  'Simi Valley',
-  'Thousand Oaks',
-  'Ventura',
-  'Ventura County',
-  'Other California City',
-  'Other California County',
-  'Other State'
-];
+// Cities by state
+const citiesByState = {
+  'AL': ['Birmingham','Montgomery','Mobile','Huntsville','Tuscaloosa','Hoover','Dothan','Auburn','Madison','Florence','Anniston','Oxford','Gadsden','Vestavia Hills','Phenix City','Alabaster','Prattville','Trussville','Troy','Ozark'],
+  'AK': ['Anchorage','Fairbanks','Juneau','Wasilla','Knik-Fairview','College','North Lakes','Badger','Ketchikan','Kenai','Sitka','College','Kodiak','Chena Ridge','Gateway','Haines','Soldotna','Ursine','Willow','Nome'],
+  'AZ': ['Phoenix','Tucson','Mesa','Chandler','Scottsdale','Glendale','Gilbert','Tempe','Peoria','Surprise','Yuma','Prescott','Flagstaff','Goodyear','Buckeye','Avondale','Casa Grande','Laveen','Maricopa','Queen Creek'],
+  'AR': ['Little Rock','Fort Smith','Fayetteville','Springdale','Jonesboro','Rogers','Conway','North Little Rock','Bentonville','Pine Bluff','Hot Springs','Benton','Bryant','Sherwood','Texarkana','Van Buren','Stuttgart','Marion','Blytheville','Searcy'],
+  'CA': ['Los Angeles','Beverly Hills','Burbank','Century City','Compton','Culver City','Downey','El Segundo','Glendale','Hawthorne','Hollywood','Huntington Park','Inglewood','Long Beach','Malibu','Manhattan Beach','North Hollywood','Pasadena','Pomona','Santa Clarita','Santa Monica','Sherman Oaks','Silver Lake','South Gate','Studio City','Toluca Lake','Torrance','Universal City','Van Nuys','Venice','West Hollywood','West Los Angeles','Westlake Village','Woodland Hills','Oakland','Berkeley','Fresno','Sacramento','San Diego','San Francisco','San Jose','Anaheim','Santa Ana','Irvine','Riverside','Bakersfield','Stockton','Modesto','Stanislaus'],
+  'CO': ['Denver','Colorado Springs','Aurora','Fort Collins','Lakewood','Thornton','Arvada','Westminster','Pueblo','Boulder','Greeley','Longmont','Loveland','Grand Junction','Aspen','Aurora','Colorado Springs','Parker','Castle Rock','Littleton'],
+  'CT': ['Bridgeport','New Haven','Stamford','Hartford','Waterbury','Norwalk','Danbury','New Britain','Bristol','Meriden','West Haven','Milford','Stratford','East Hartford','Middletown','Norwich','Shelton','Groton','Trumbull','Wethersfield'],
+  'DE': ['Wilmington','Dover','Newark','Middletown','Smyrna','Milford','Clayton','Lewes','Georgetown','Rehoboth Beach','Seaford','Millsboro','Ocean View','Elsmere','New Castle','Harrington','Bethany Beach','Blades','Bridgeville','Townsend'],
+  'FL': ['Jacksonville','Miami','Tampa','Orlando','St. Petersburg','Hialeah','Tallahassee','Fort Lauderdale','Port St. Lucie','Cape Coral','Pembroke Pines','Hollywood','Gainesville','Miramar','Clearwater','Palm Bay','Pompano Beach','Lakeland','Miami Gardens','Davie'],
+  'GA': ['Atlanta','Augusta','Columbus','Savannah','Athens','Macon','Albany','Johns Creek','Warner Robins','Sandy Springs','Roswell','Dalton','Hinesville','Rome','Georgia','Smyrna','Valdosta',' Alpharetta','Marietta','Stonecrest'],
+  'HI': ['Honolulu','East Honolulu','Pearl City','Hilo','Kailua','Waipahu','Kaneohe','Mililani Town','Kailua','Kapolei','Ewa Gentry','Mile 55','Makakilo','Royal Kunia','Halawa','Waianae','Nanakuli','Makawao','Lahaina','Kaneohe'],
+  'ID': ['Boise','Meridian','Nampa','Idaho Falls','Pocatello','Caldwell','Coeur d Alene','Twin Falls','Post Falls','Rexburg','Moscow','Kuna','Eagle','Star','Burley','Sandpoint','Chubbuck','Fruitland','Hailey','Ketchum'],
+  'IL': ['Chicago','Aurora','Naperville','Joliet','Rockford','Springfield','Peoria','Elgin','Champaign','Bloomington','Decatur','Evanston','Wheaton','Hoffman Estates','Oak Lawn','Berwyn','Mount Prospect','Normal','Waukegan','Schaumburg'],
+  'IN': ['Indianapolis','Fort Wayne','Evansville','South Bend','Carmel','Fishers','Bloomington','Hammond','Gary','Lafayette','Muncie','Noblesville','Terre Haute','Anderson','Kokomo','Greenfield','Richmond','New Albany','Elkhart','Mishawaka'],
+  'IA': ['Des Moines','Cedar Rapids','Davenport','Sioux City','Iowa City','Ames','West Des Moines','Waterloo','Council Bluffs','Dubuque','Marion','Bettendorf','Fort Dodge','Ottumwa','Boon','Clinton','Muscatine','Burlington','Coralville','North Liberty'],
+  'KS': ['Wichita','Overland Park','Kansas City','Olathe','Topeka','Lawrence','Shawnee','Manhattan','Lenexa','Salina','Hutchinson','Leavenworth','Gardner','Derby','Prairie Village','Hays','Junction City','Atchison','Ottawa','Winfield'],
+  'KY': ['Louisville','Lexington','Bowling Green','Owensboro','Covington','Richmond','Florence','Georgetown','Hopkinsville','Nicholasville','Frankfort','Paducah','Lawton','Middletown','Elizabethtown','Ashland','Radcliff','Independence','Murray','Bardstown'],
+  'LA': ['New Orleans','Baton Rouge','Shreveport','Metairie','Lafayette','Lake Charles','Bossier City','Monroe','Alexandria','Hammond','Houma','Terrebone','Ruston','Sulphur','Natchitoches','Gretna','LaPlace','St. Gabriel','Zachary','Baker'],
+  'ME': ['Portland','Lewiston','Bangor','South Portland','Auburn','Biddeford','Sanford','Saco','Augusta','Scarborough','Brunswick','Rockland','Kennebunk','York','Falmouth','Kittery','Windham','Old Town','Ellsworth','Caribou'],
+  'MD': ['Baltimore','Frederick','Rockville','Gaithersburg','Bowie','Hagerstown','Annapolis','College Park','Salisbury','Laurel','Greenbelt','Cumberland','Hyattsville','Takoma Park','Easton','Aberdeen','Bel Air','Elkton','Chestertown','Ocean City'],
+  'MA': ['Boston','Worcester','Springfield','Cambridge','Lowell','Quincy','Lynn','New Bedford','Brockton','Quincy','Fall River','Somerville','Lawrence','Waltham','Haverhill','Malden','Weymouth','Medford','Taunton','Chicopee'],
+  'MI': ['Detroit','Grand Rapids','Warren','Sterling Heights','Ann Arbor','Lansing','Dearborn','Livonia','Flint','Concord','Muskegon','Troy','Kalamazoo','Ypsilanti','Southfield','Novi','Pontiac','Royal Oak','St. Clair Shores','Jackson'],
+  'MN': ['Minneapolis','St. Paul','Rochester','Duluth','Bloomington','Brooklyn Park','Plymouth','St. Cloud','Eden Prairie','Blaine','Lakeville','Eagan','Burnsville','Coon Rapids','Edina','St. Louis Park','Maple Grove','Minnetonka','Mankato','St. Paul'],
+  'MS': ['Jackson','Gulfport','Southaven','Hattiesburg','Biloxi','Meridian','Tupelo','Vicksburg','Clinton','Pearl','Oxford','Starkville','Columbus','Greenville','Horn Lake','Brandon','Ridgeland','Olive Branch','Natchez','Laurel'],
+  'MO': ['Kansas City','St. Louis','Springfield','Columbia','Jefferson City','Lee\'s Summit','O\'Fallon','St. Joseph','St. Charles','St. Peters','Blue Springs','Florissant','University City','Chesterfield','Joplin','Warrensburg','Liberty','Ballwin','Raytown','Kirkwood'],
+  'MT': ['Billings','Missoula','Great Falls','Bozeman','Butte','Helena','Kalispell','Havre','Anaconda','Miles City','Whitefish','Belgrade','Laurel','Livingston','Lockwood','Red Lodge','West Yellowstone','Baker','Glasgow','Wolf Point'],
+  'NE': ['Omaha','Lincoln','Bellevue','Grand Island','Kearney','Fremont','Hastings','North Platte','Norfolk','Columbus','Plattsmouth','La Vista','Scottsbluff','Bridgeport','Chadron','Gering','Blair','South Sioux City','Valley','Madison'],
+  'NV': ['Las Vegas','Henderson','Reno','Sparks','Carson City','North Las Vegas','Elko','Fernley','Landing','Spring Valley','Enterprise','Sunrise Manor','Paradise','Winchester','Sandy Valley','Mesquite','Nixon','Owyhee','Yerington','Minden'],
+  'NH': ['Manchester','Nashua','Concord','Derry','Rochester','Keene','Derry','Salem','Merrimack','Goffstown','Londonderry','Hudson','Bedford','Milford','Durham','Exeter','Swanzey','Claremont','Laconia','Hanover'],
+  'NJ': ['Newark','Jersey City','Paterson','Elizabeth','Trenton','Camden','Clifton','Passaic','Union City','Bayonne','Vineland','New Brunswick','West New York','Hackensack','Morristown','Kearny','Linden','Paramus','Somerville','Princeton'],
+  'NM': ['Albuquerque','Las Cruces','Rio Rancho','Santa Fe','Roswell','Farmington','Clovis',' Hobbs','Alamogordo','Los Lunas','Silver City',' Gallup','Anthony','Sunland Park','Lovington','Truth or Consequences','Portales','Los Alamos','Artesia','Carlsbad'],
+  'NY': ['New York','Buffalo','Rochester','Syracuse','Albany','New Rochelle','Mount Vernon','Schenectady','Utica','White Plains','Troy','Niagara Falls','Binghamton','Forest Hills','Saratoga Springs','Hicksville','Huntington','Manhattan','Brooklyn','Queens'],
+  'NC': ['Charlotte','Raleigh','Greensboro','Durham','Winston-Salem','Fayetteville','Cary','Wilmington','High Point','Greenville','Jacksonville','Chapel Hill','Goldsboro','Rocky Mount','Kernersville','Indian Trail','Holly Springs','Garner','Thomasville','Mooresville'],
+  'ND': ['Fargo','Bismarck','Grand Forks','Minot','West Fargo','Mandan','Jamestown','Wahpeton','Dickinson','Bottineau','Rugby','Burlington','Casselton','Langdon','Mandan','New Town','Horace','Harvey','Lincoln','Hillsboro'],
+  'OH': ['Columbus','Cleveland','Cincinnati','Toledo','Akron','Dayton','Canton','Youngstown','Parma','Lorain','Hamilton','Springfield','Kettering','Elyria','Cuyahoga Falls','Lakewood','Euclid','Middletown','Independence','Mansfield'],
+  'OK': ['Oklahoma City','Tulsa','Norman','Broken Arrow','Lawton','Moore','Midwest City','Enid','Stillwater','Muskogee','Bartlesville','Shawnee','Ponca City','Azure','Ardmore','Duncan','Yukon','Sapulpa','Del City','Muskogee'],
+  'OR': ['Portland','Eugene','Salem','Gresham','Hillsboro','Beaverton','Bend','Medford','Springfield','Corvallis','Albany','Lake Oswego','Keizer','Oregon City','McMinnville','Grants Pass','Tigard','Newberg','Redmond','Klamath Falls'],
+  'PA': ['Philadelphia','Pittsburgh','Allentown','Erie','Reading','Scranton','Lancaster','York','Harrisburg','Altoona','Lancaster','Norristown','York','Springfield','Bryn Mawr','Wilkes-Barre','Hazleton','Kingston','Pottstown','Monroeville'],
+  'RI': ['Providence','Cranston','Warwick','Pawtucket','East Providence','Woonsocket','Coventry','Cumberland','North Providence','South Kingstown','West Warwick','North Kingstown','Newport','Lincoln','Smithfield','Central Falls','Middletown','Bristol','East Greenwich','West Greenwich'],
+  'SC': ['Charleston','Columbia','North Charleston','Mount Pleasant','Rock Hill','Greenville','Summerville','Sumter','Hilton Head Island','Spartanburg','Goose Creek',' Greer','Aiken','Mount Pleasant','Florence','Charleston','North Augusta','West Columbia','Beaufort','Bluffton'],
+  'SD': ['Sioux Falls','Rapid City','Aberdeen','Brookings','Watertown','Mitchell','Yankton','Pierre','Huron','Spearfish','Brandon','Harrisburg','Sturgis','Vermillion','Deadwood','Hartford','Mellette','North Sioux City','Dakota Dunes','Sisseton'],
+  'TN': ['Memphis','Nashville','Knoxville','Chattanooga','Clarksville','Murfreesboro','Franklin','Johnson City','Jackson','Murfreesboro','Nashville','Memphis','Knoxville','Chattanooga','Hendersonville','Kingsport','Murfreesboro','Arlington','Jackson','Gallatin'],
+  'TX': ['Houston','San Antonio','Dallas','Austin','Fort Worth','El Paso','Arlington','Corpus Christi','Plano','Lubbock','Garland','Irving','Frisco','McKinney','Amarillo','Grand Prairie','Brownsville','McAllen','Killeen','Round Rock'],
+  'UT': ['Salt Lake City','Provo','West Valley City','Logan','Murray','South Salt Lake','Park City','St. George','Ogden','Layton','Millcreek','Holladay','Canyon','Bountiful','Syracuse','Clearfield','Washington','Cedar City','Lehi','South Jordan'],
+  'VT': ['Burlington','South Burlington','Rutland','Essex Junction','Barre','Montpelier','Winooski','St. Albans','Newport','Bristol','Richmond','Colchester','Milton','Shelburne','Williston','St. Johnsbury','Windsor','Springfield','Middlebury','Fair Haven'],
+  'VA': ['Virginia Beach','Norfolk','Chesapeake','Richmond','Newport News','Arlington','Alexandria','Hampton','Newport News','Virginia Beach','Norfolk','Chesapeake','Richmond','Newport News','Suffolk','Powhatan','Chesterfield','Henrico','Arlington','Fairfax'],
+  'WA': ['Seattle','Spokane','Tacoma','Vancouver','Bellevue','Kent','Renton','Yakima','Kirkland','Spokane Valley','Redmond','Everett','Federal Way','Auburn','Bellingham','Kennewick','Pasco','Richland','Lakewood','Olympia'],
+  'WV': ['Charleston','Huntington','Morgantown','Parkersburg','Wheeling','Weirton','Fairmont','Martinsburg','Beckley','Clarksburg','South Charleston','St. Albans','Vienna','Bluefield','Dunbar','Elkins','Keyser','Lewisburg','Moundsville','Moundsville'],
+  'WI': ['Milwaukee','Madison','Green Bay','Kenosha','Racine','Kenosha','Waukesha','Oshkosh','Madison','Green Bay','Appleton','Janesville','Waukesha','Eau Claire','Sheboygan','La Crosse',' Fond du Lac','Brookfield','Menomonee Falls','Wauwatosa'],
+  'WY': ['Cheyenne','Casper','Laramie','Gillette','Sheridan','Rock Springs','Lander','Riverton','Jackson','Powell','Cody','Rawlins','Douglas','Torrington','Evanston','Lander','Riverton','Cody','Powell','Sundance']
+};
+
+function getCitiesForState(stateCode) {
+  return citiesByState[stateCode] || [];
+}
 
 function initCountyDropdown() {
   const input = document.getElementById('county-input');
@@ -723,15 +576,15 @@ function renderDefendantsList() {
 }
 
 // City autocomplete for request page and defendant modal
-function initCityAutocomplete(inputId, hiddenInputId, dropdownId) {
+function initCityAutocomplete(inputId, hiddenInputId, dropdownId, stateInputId) {
   const input = document.getElementById(inputId);
   const hiddenInput = document.getElementById(hiddenInputId);
   const dropdown = document.getElementById(dropdownId);
   if (!input || !dropdown) return;
 
-  function renderDropdown(filter) {
+  function renderDropdown(filter, cities) {
     const filterLower = filter.toLowerCase().trim();
-    const filtered = countyOptions.filter(c =>
+    const filtered = (cities || []).filter(c =>
       c.toLowerCase().includes(filterLower)
     );
     dropdown.innerHTML = filtered.slice(0, 50).map(c =>
@@ -740,13 +593,24 @@ function initCityAutocomplete(inputId, hiddenInputId, dropdownId) {
     dropdown.style.display = filtered.length ? 'block' : 'none';
   }
 
+  function getCurrentStateCities() {
+    const stateInput = stateInputId ? document.getElementById(stateInputId) : null;
+    const stateHiddenInput = stateInputId ? document.getElementById(stateInputId.replace('-input', '-value')) : null;
+    let stateCode = stateHiddenInput ? stateHiddenInput.value : '';
+    if (!stateCode && stateInput) {
+      const stateMatch = stateInput.value.match(/\(([A-Z]{2})\)/);
+      if (stateMatch) stateCode = stateMatch[1];
+    }
+    return getCitiesForState(stateCode);
+  }
+
   input.addEventListener('input', function() {
     hiddenInput.value = '';
-    renderDropdown(this.value);
+    renderDropdown(this.value, getCurrentStateCities());
   });
 
   input.addEventListener('focus', function() {
-    renderDropdown(this.value);
+    renderDropdown(this.value, getCurrentStateCities());
   });
 
   dropdown.addEventListener('click', function(e) {
@@ -762,6 +626,17 @@ function initCityAutocomplete(inputId, hiddenInputId, dropdownId) {
       dropdown.style.display = 'none';
     }
   });
+
+  if (stateInputId) {
+    const stateInput = document.getElementById(stateInputId);
+    if (stateInput) {
+      stateInput.addEventListener('input', function() {
+        input.value = '';
+        hiddenInput.value = '';
+        renderDropdown('', getCurrentStateCities());
+      });
+    }
+  }
 }
 
 // Country autocomplete
@@ -840,8 +715,8 @@ function initFileUpload() {
 
 // Initialize all autocomplete inputs
 document.addEventListener('DOMContentLoaded', function() {
-  initCityAutocomplete('req-city-input', 'req-city-value', 'req-city-dropdown');
-  initCityAutocomplete('def-city', 'def-city-value', 'def-city-dropdown');
+  initCityAutocomplete('req-city-input', 'req-city-value', 'req-city-dropdown', 'req-state-input');
+  initCityAutocomplete('def-city', 'def-city-value', 'def-city-dropdown', 'def-state-input');
   initCountryAutocomplete('def-country-input', 'def-country-value', 'def-country-dropdown');
   initStateAutocomplete('def-state-input', 'def-state-value', 'def-state-dropdown', 'CA');
   initStateAutocomplete('req-state-input', 'req-state-value', 'req-state-dropdown', 'CA');
