@@ -178,6 +178,10 @@ let testimonialSlides = null;
 let testimonialDots = null;
 let testimonialSlidesCount = 0;
 
+// Set your desired timing here (5000 = 5 seconds)
+const slideDelay = 5000; 
+let isCarouselInitialized = false;
+
 function showTestimonial(idx) {
   if (!testimonialSlides) return;
   testimonialSlides.forEach((s, i) => s.classList.toggle('active', i === idx));
@@ -185,58 +189,80 @@ function showTestimonial(idx) {
   testimonialIndex = idx;
 }
 
-function nextTestimonialCarousel() {
-  showTestimonial((testimonialIndex + 1) % testimonialSlidesCount);
-  resetTestimonialTimer();
+// Just changes the slide, without touching the timer
+function changeSlide(direction) {
+  if (direction === 'next') {
+    showTestimonial((testimonialIndex + 1) % testimonialSlidesCount);
+  } else {
+    showTestimonial((testimonialIndex - 1 + testimonialSlidesCount) % testimonialSlidesCount);
+  }
 }
 
-function prevTestimonialCarousel() {
-  showTestimonial((testimonialIndex - 1 + testimonialSlidesCount) % testimonialSlidesCount);
-  resetTestimonialTimer();
+// Manual controls reset the timer so it doesn't slide right after you click
+function manualNext() {
+  changeSlide('next');
+  startTestimonialTimer(); 
 }
 
-function resetTestimonialTimer() {
+function manualPrev() {
+  changeSlide('prev');
+  startTestimonialTimer();
+}
+
+function manualDot(idx) {
+  showTestimonial(idx);
+  startTestimonialTimer();
+}
+
+// Single function to manage starting the timer
+function startTestimonialTimer() {
+  clearInterval(testimonialTimer); // Always clear before starting a new one
+  testimonialTimer = setInterval(() => {
+    changeSlide('next');
+  }, slideDelay);
+}
+
+// Single function to manage stopping the timer
+function stopTestimonialTimer() {
   clearInterval(testimonialTimer);
-  testimonialTimer = setInterval(nextTestimonialCarousel, 3000);
 }
 
 function initTestimonialCarousel() {
+  // Prevent double-initialization rogue timers
+  if (isCarouselInitialized) return; 
+  isCarouselInitialized = true;
+
   const carousel = document.querySelector('.testimonial-carousel');
-  if (!carousel) {
-    console.log('Carousel not found');
-    return;
-  }
+  if (!carousel) return;
+
   testimonialSlides = carousel.querySelectorAll('.testimonial-slide');
-  // Find dots container - it's outside the carousel div
   const dotsContainer = carousel.parentElement.querySelector('.testimonial-dots');
   testimonialSlidesCount = testimonialSlides.length;
-  console.log('Slides found:', testimonialSlidesCount, 'Dots container:', dotsContainer);
+  
   if (testimonialSlidesCount <= 1) return;
 
   // Build dots
-  dotsContainer.innerHTML = Array.from(testimonialSlides).map((_, i) => '<button class="testimonial-dot' + (i === 0 ? ' active' : '') + '" aria-label="Go to testimonial ' + (i + 1) + '"></button>').join('');
+  dotsContainer.innerHTML = Array.from(testimonialSlides).map((_, i) => 
+    `<button class="testimonial-dot${i === 0 ? ' active' : ''}" aria-label="Go to testimonial ${i + 1}"></button>`
+  ).join('');
   testimonialDots = dotsContainer.querySelectorAll('.testimonial-dot');
 
-  carousel.querySelector('.testimonial-arrow-left').addEventListener('click', prevTestimonialCarousel);
-  carousel.querySelector('.testimonial-arrow-right').addEventListener('click', nextTestimonialCarousel);
-  testimonialDots.forEach((dot, i) => dot.addEventListener('click', function() {
-    showTestimonial(i);
-    resetTestimonialTimer();
-  }));
+  // Attach manual events
+  carousel.querySelector('.testimonial-arrow-left').addEventListener('click', manualPrev);
+  carousel.querySelector('.testimonial-arrow-right').addEventListener('click', manualNext);
+  testimonialDots.forEach((dot, i) => dot.addEventListener('click', () => manualDot(i)));
 
-  testimonialTimer = setInterval(nextTestimonialCarousel, 10000);
+  // 1. Start auto timer
+  startTestimonialTimer();
 
-  // Pause on hover over testimonial content area
+  // 2. Pause on hover / touch
   const testContent = document.querySelector('.testimonial-content');
   if (testContent) {
-    testContent.onmouseenter = function() {
-      clearInterval(testimonialTimer);
-    };
-    testContent.onmouseleave = function() {
-      testimonialTimer = setInterval(nextTestimonialCarousel, 10000);
-    };
+    testContent.addEventListener('mouseenter', stopTestimonialTimer);
+    testContent.addEventListener('mouseleave', startTestimonialTimer);
+    testContent.addEventListener('touchstart', stopTestimonialTimer, {passive: true});
+    testContent.addEventListener('touchend', startTestimonialTimer, {passive: true});
   }
-  console.log('Carousel initialized');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -269,9 +295,6 @@ document.addEventListener('DOMContentLoaded', function() {
     ]);
   }
 
-  // Initialize testimonial carousel
+  // Initialize testimonial carousel safely once
   initTestimonialCarousel();
 });
-
-// Also run on window load as fallback
-window.addEventListener('load', initTestimonialCarousel);
