@@ -125,7 +125,7 @@ async function viewRequest(id) {
         <div class="highlight">
           ${(typeof r.defendants_data === 'string' ? JSON.parse(r.defendants_data) : r.defendants_data).map((d, i) => `
             <p><strong>Defendant #${i+2}:</strong> ${escapeHtml(d.firstName || '')} ${escapeHtml(d.lastName || '')}</p>
-            <p>Address: ${escapeHtml(d.address || '')}, ${escapeHtml(d.city || '')}</p>
+            <p>Address: ${escapeHtml(d.address || '')}, ${escapeHtml(d.city || '')}, ${escapeHtml(d.state || '')}</p>
           `).join('')}
         </div>
       </div>
