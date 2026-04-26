@@ -6,7 +6,7 @@
 /* HERO */
 .hero{display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 74px);}
 .hero-left{padding:88px 72px;display:flex;flex-direction:column;justify-content:center;background:var(--bg-white);}
-.hero-eyebrow{font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent-blue);font-weight:600;margin-bottom:20px;}
+.hero-eyebrow{font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent-blue);font-weight:600;margin-bottom:20px;font-variant-emoji:text;}
 .hero-headline{font-size:clamp(48px,5.5vw,82px);font-weight:300;line-height:1.08;letter-spacing:-0.015em;color:var(--text-dark);margin-bottom:32px;}
 .hero-body{font-size:18px;line-height:1.75;color:var(--text-body);margin-bottom:10px;max-width:480px;}
 .hero-body strong{font-weight:600;}
@@ -20,7 +20,7 @@
 .ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;padding:20px 0;background:var(--bg-white);white-space:nowrap;}
 .ticker-track{display:inline-flex;animation:ticker 405s linear infinite;flex-shrink:0;}
 .ticker-item{font-size:26px;font-weight:300;padding:0 28px;display:inline-flex;align-items:center;gap:28px;color:var(--text-dark);}
-.ticker-sep{font-size:40px;opacity:0.4;}
+.ticker-sep{font-size:40px;opacity:0.4;font-variant-emoji:text;}
 @keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-100%);}}
 
 /* SERVICES ICONS */
@@ -35,8 +35,8 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
 .svc-icon-desc{font-size:14.5px;color:var(--text-muted);line-height:1.65;}
 
 /* PRICING SPLIT */
-.pricing-split{display:grid;grid-template-columns:1fr 1fr;min-height:380px;}
-.pricing-img{position:relative;overflow:hidden;height:1020px;}
+.pricing-split{display:grid;grid-template-columns:1fr 1fr;min-height:420px;}
+.pricing-img{position:relative;overflow:hidden;height:1140px;min-height:560px;}
 .pricing-img img{width:100%;height:100%;object-fit:cover;display:block;}
 .pricing-content{padding:80px 72px;background:var(--bg-white);}
 .pricing-heading{font-size:58px;font-weight:300;letter-spacing:-0.01em;margin-bottom:10px;color:var(--accent-blue);}
@@ -249,8 +249,13 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
 /* RESPONSIVE — components */
 @media(max-width:960px){
   .hero,.pricing-split,.testimonial-split,.contact-split{grid-template-columns:1fr;}
-  .hero-right,.pricing-img,.testimonial-img{height:360px;}
+  .hero-right,.testimonial-img{height:360px;}
+  .pricing-img{height:420px;}
   .hero-left,.pricing-content,.testimonial-content,.contact-info-col,.contact-form-col{padding:56px 28px;}
+  /* Home contact: form first on narrow screens; desktop column order unchanged */
+  .contact-split .contact-form-col{order:1;}
+  .contact-split .contact-info-col{order:2;border-right:none;border-bottom:none;}
+  .contact-split .contact-form-col{border-bottom:1px solid var(--border);}
   .services-icons{padding:56px 28px;}
   .services-icons-grid{grid-template-columns:repeat(2,1fr);}
   .cta-banner{flex-direction:column;gap:28px;padding:56px 28px;text-align:center;}
@@ -318,6 +323,7 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
   }
   .ticker-sep{
     font-size:28px;
+    font-variant-emoji:text;
   }
 
   /* SERVICES ICONS MOBILE */
@@ -346,11 +352,12 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
     grid-template-columns:1fr;
   }
   .pricing-img{
-    height:240px;
+    height:300px;
+    min-height:300px;
     margin-left:0;
   }
   .pricing-content{
-    padding:48px 20px;
+    padding:52px 20px 56px;
   }
   .pricing-heading{
     font-size:40px;
@@ -411,26 +418,31 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
     padding:6px;
   }
 
-  /* CONTACT MOBILE */
+  /* CONTACT MOBILE — form above Get In Touch; divider under form */
   .contact-split{
     grid-template-columns:1fr;
   }
-  .contact-info-col{
-    padding:48px 20px;
-    border-right:none;
+  .contact-form-col{
+    order:1;
+    padding:52px 20px 56px;
     border-bottom:1px solid var(--border);
+  }
+  .contact-info-col{
+    order:2;
+    padding:52px 20px 56px;
+    border-right:none;
+    border-bottom:none;
   }
   .contact-heading{
     font-size:36px;
+    margin-bottom:16px;
   }
   .contact-intro{
     font-size:14px;
+    margin-bottom:32px;
   }
   .contact-line{
     font-size:15px;
-  }
-  .contact-form-col{
-    padding:48px 20px;
   }
 
   /* CTA BANNER MOBILE */

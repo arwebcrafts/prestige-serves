@@ -22,9 +22,9 @@ function buildContactForm(containerId, formId) {
     </div>
      <div class="form-row">
     <div class="form-group">
-      <label>County / City <span class="req">(required)</span></label>
+      <label>City <span class="req">(required)</span></label>
       <div class="county-select-wrapper">
-        <input type="text" id="county-input" placeholder="Select an option..." autocomplete="off" required>
+        <input type="text" id="county-input" placeholder="Select city..." autocomplete="off" required>
         <input type="hidden" id="county-value" name="county" value="">
         <div class="county-dropdown" id="county-dropdown"></div>
       </div>
@@ -94,7 +94,28 @@ function handleFormSubmit(event, id, formType) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
-      }).catch(err => console.error('Form submission error:', err));
+      })
+        .then(function(res) {
+          if (!res.ok) throw new Error('Server rejected submission');
+          return res.json();
+        })
+        .then(function() {
+          const el = document.getElementById(id);
+          if (el) el.classList.add('show');
+          form.reset();
+          applyStateToFields('state-input', 'state-value', 'CA');
+          const rv = document.getElementById('reason-value');
+          const ci = document.getElementById('county-input');
+          const ch = document.getElementById('county-value');
+          if (rv) rv.value = '';
+          if (ci) ci.value = '';
+          if (ch) ch.value = '';
+        })
+        .catch(function(err) {
+          console.error('Form submission error:', err);
+          alert('We could not submit your message. Please try again or email prestigeservesllc@gmail.com.');
+        });
+      return;
     }
     const el = document.getElementById(id);
     if (el) el.classList.add('show');
@@ -188,6 +209,7 @@ const states = [
   {value:'CO',label:'Colorado',postal:'CO'},
   {value:'CT',label:'Connecticut',postal:'CT'},
   {value:'DE',label:'Delaware',postal:'DE'},
+  {value:'DC',label:'District of Columbia',postal:'DC'},
   {value:'FL',label:'Florida',postal:'FL'},
   {value:'GA',label:'Georgia',postal:'GA'},
   {value:'HI',label:'Hawaii',postal:'HI'},
@@ -232,11 +254,42 @@ const states = [
   {value:'WY',label:'Wyoming',postal:'WY'}
 ];
 
-function initStateAutocomplete(inputId, hiddenInputId, dropdownId, defaultState) {
+function getCitiesForStateCode(stateCode) {
+  if (!window.CITIES_BY_STATE || typeof window.CITIES_BY_STATE !== 'object') return [];
+  var raw = stateCode && String(stateCode).trim() ? String(stateCode).trim().toUpperCase() : 'CA';
+  var code = raw.length >= 2 ? raw.slice(0, 2) : 'CA';
+  var list = window.CITIES_BY_STATE[code];
+  return Array.isArray(list) ? list : [];
+}
+
+function clearLinkedCityFields(cityInputId, cityHiddenId) {
+  var ci = document.getElementById(cityInputId);
+  var hi = document.getElementById(cityHiddenId);
+  if (ci) ci.value = '';
+  if (hi) hi.value = '';
+}
+
+function applyStateToFields(inputId, hiddenId, code) {
+  var input = document.getElementById(inputId);
+  var hidden = document.getElementById(hiddenId);
+  if (!input || !hidden) return;
+  var st = states.find(function(s) { return s.value === code; });
+  if (st) {
+    input.value = st.label + ' (' + st.postal + ')';
+    hidden.value = st.value;
+  } else {
+    input.value = '';
+    hidden.value = '';
+  }
+}
+
+function initStateAutocomplete(inputId, hiddenInputId, dropdownId, defaultState, options) {
   const input = document.getElementById(inputId);
   const hiddenInput = document.getElementById(hiddenInputId);
   const dropdown = document.getElementById(dropdownId);
-  if (!input || !dropdown) return;
+  if (!input || !hiddenInput || !dropdown) return;
+  options = options || {};
+  const onStateSelected = options.onStateSelected;
 
   if (defaultState) {
     const state = states.find(s => s.value === defaultState || s.postal === defaultState);
@@ -248,8 +301,8 @@ function initStateAutocomplete(inputId, hiddenInputId, dropdownId, defaultState)
 
   function renderDropdown(filter) {
     const filterLower = filter.toLowerCase().trim();
-    const filtered = states.filter(s => 
-      s.label.toLowerCase().includes(filterLower) || 
+    const filtered = states.filter(s =>
+      s.label.toLowerCase().includes(filterLower) ||
       s.postal.toLowerCase() === filterLower ||
       s.postal.toLowerCase().startsWith(filterLower)
     );
@@ -274,6 +327,9 @@ function initStateAutocomplete(inputId, hiddenInputId, dropdownId, defaultState)
       input.value = state.label + ' (' + state.postal + ')';
       hiddenInput.value = state.value;
       dropdown.style.display = 'none';
+      if (typeof onStateSelected === 'function') {
+        onStateSelected(state.value);
+      }
     }
   });
 
@@ -338,220 +394,18 @@ function initReasonDropdown() {
   });
 }
 
-// County / City dropdown
-const countyOptions = [
-  'Los Angeles',
-  'Beverly Hills',
-  'Burbank',
-  'Century City',
-  'Compton',
-  'Culver City',
-  ' Downey',
-  'El Segundo',
-  'Glendale',
-  'Hawthorne',
-  'Hollywood',
-  'Huntington Park',
-  'Inglewood',
-  'Long Beach',
-  'Los Angeles County',
-  'Malibu',
-  'Manhattan Beach',
-  'North Hollywood',
-  'Pasadena',
-  'Pomona',
-  'Santa Clarita',
-  'Santa Monica',
-  'Sherman Oaks',
-  'Silver Lake',
-  'South Gate',
-  'Studio City',
-  'Toluca Lake',
-  'Torrance',
-  'Universal City',
-  'Van Nuys',
-  'Venice',
-  'West Hollywood',
-  'West Los Angeles',
-  'Westlake Village',
-  'Woodland Hills',
-  'Alameda',
-  'Alameda County',
-  'Antioch',
-  'Berkeley',
-  'Brentwood',
-  'Concord',
-  'Contra Costa County',
-  'Danville',
-  'Dublin',
-  'El Cerrito',
-  'Emeryville',
-  'Fremont',
-  'Hayward',
-  'Livermore',
-  'Martinez',
-  'Moraga',
-  'Newark',
-  'Oakland',
-  'Orinda',
-  'Pleasant Hill',
-  'Pleasanton',
-  'Richmond',
-  'San Leandro',
-  'San Lorenzo',
-  'San Pablo',
-  'San Ramon',
-  'Union City',
-  'Walnut Creek',
-  'Fresno',
-  'Fresno County',
-  'Clovis',
-  'Madera',
-  'Merced',
-  'Modesto',
-  'Porterville',
-  'Visalia',
-  'Bakersfield',
-  'Delano',
-  'Imperial County',
-  'El Centro',
-  'Kern County',
-  'Ridgecrest',
-  'Anaheim',
-  'Costa Mesa',
-  'Cypress',
-  'Dana Point',
-  'Fullerton',
-  'Garden Grove',
-  'Huntington Beach',
-  'Irvine',
-  'La Habra',
-  'Laguna Beach',
-  'Laguna Hills',
-  'Laguna Niguel',
-  'Lake Forest',
-  'Mission Viejo',
-  'Newport Beach',
-  'Orange',
-  'Orange County',
-  'Placentia',
-  'Rancho Santa Margarita',
-  'San Clemente',
-  'San Juan Capistrano',
-  'Santa Ana',
-  'Seal Beach',
-  'Stanton',
-  'Tustin',
-  'Westminster',
-  'Yorba Linda',
-  'Corona',
-  'Hemet',
-  'Indio',
-  'Lake Elsinore',
-  'Menifee',
-  'Moreno Valley',
-  'Murrieta',
-  'Norco',
-  'Perris',
-  'Rancho Cucamonga',
-  'Riverside',
-  'Riverside County',
-  'San Bernardino',
-  'San Bernardino County',
-  'Temecula',
-  'Victorville',
-  'Westminster',
-  'Arden-Arcade',
-  'Carmichael',
-  'Citrus Heights',
-  'Davis',
-  'Elk Grove',
-  'Folsom',
-  'Galt',
-  'Lincoln',
-  'Natomas',
-  'Rancho Cordova',
-  'Rocklin',
-  'Roseville',
-  'Sacramento',
-  'Sacramento County',
-  'South Lake Tahoe',
-  'Stockton',
-  'Walnut Grove',
-  'West Sacramento',
-  'Yolo',
-  'Chula Vista',
-  'Coronado',
-  'El Cajon',
-  'Encinitas',
-  'Escondido',
-  'Fallbrook',
-  'Imperial Beach',
-  'La Jolla',
-  'National City',
-  'Oceanside',
-  'Poway',
-  'Ramona',
-  'San Diego',
-  'San Diego County',
-  'San Marcos',
-  'San Ysidro',
-  'Santee',
-  'Solana Beach',
-  'Spring Valley',
-  'Valley Center',
-  'Vista',
-  'Daly City',
-  'Foster City',
-  'Half Moon Bay',
-  'Menlo Park',
-  'Millbrae',
-  'Pacifica',
-  'Redwood City',
-  'San Bruno',
-  'San Carlos',
-  'San Francisco',
-  'San Francisco County',
-  'San Mateo',
-  'San Mateo County',
-  'South San Francisco',
-  'Campbell',
-  'Cupertino',
-  'Gilroy',
-  'Los Altos',
-  'Milpitas',
-  'Morgan Hill',
-  'Mountain View',
-  'Palo Alto',
-  'San Jose',
-  'Santa Clara',
-  'Santa Clara County',
-  'Saratoga',
-  'Sunnyvale',
-  'Camarillo',
-  'Moorpark',
-  'Oxnard',
-  'Port Hueneme',
-  'San Buenaventura',
-  'Santa Paula',
-  'Simi Valley',
-  'Thousand Oaks',
-  'Ventura',
-  'Ventura County',
-  'Other California City',
-  'Other California County',
-  'Other State'
-];
-
+// Contact form city list follows selected US state (see window.CITIES_BY_STATE)
 function initCountyDropdown() {
   const input = document.getElementById('county-input');
   const hiddenInput = document.getElementById('county-value');
+  const stateHidden = document.getElementById('state-value');
   const dropdown = document.getElementById('county-dropdown');
-  if (!input || !dropdown) return;
+  if (!input || !hiddenInput || !dropdown) return;
 
   function renderDropdown(filter) {
     const filterLower = filter.toLowerCase().trim();
-    const filtered = countyOptions.filter(c =>
+    var code = stateHidden && stateHidden.value ? stateHidden.value : 'CA';
+    const filtered = getCitiesForStateCode(code).filter(c =>
       c.toLowerCase().includes(filterLower)
     );
     dropdown.innerHTML = filtered.map(c =>
@@ -623,8 +477,9 @@ function openDefendantModal(editIndex = -1) {
     document.getElementById('def-address').value = def.address;
     document.getElementById('def-city').value = def.city;
     document.getElementById('def-city-value').value = def.city;
-    document.getElementById('def-country-input').value = def.country;
-    document.getElementById('def-country-value').value = def.country;
+    applyStateToFields('def-state-input', 'def-state-value', def.state || 'CA');
+    document.getElementById('def-country-input').value = def.country || 'United States';
+    document.getElementById('def-country-value').value = def.country || 'United States';
     document.getElementById('def-dob').value = def.dob;
     document.getElementById('def-phone').value = def.phone;
     document.getElementById('def-aliases').value = def.aliases;
@@ -645,12 +500,15 @@ function closeDefendantModal() {
 }
 
 function clearDefendantForm() {
-  const inputs = document.querySelectorAll('#defendant-modal input, #defendant-modal textarea, #defendant-modal select');
-  inputs.forEach(input => {
-    if(input.id !== 'def-country' && input.id !== 'def-edit-index') {
-      input.value = '';
-    }
+  document.querySelectorAll('#defendant-modal input, #defendant-modal textarea, #defendant-modal select').forEach(function(input) {
+    if (input.id === 'def-edit-index') return;
+    input.value = '';
   });
+  applyStateToFields('def-state-input', 'def-state-value', 'CA');
+  var dci = document.getElementById('def-country-input');
+  var dcv = document.getElementById('def-country-value');
+  if (dci) dci.value = 'United States';
+  if (dcv) dcv.value = 'United States';
 }
 
 function saveDefendant() {
@@ -658,9 +516,10 @@ function saveDefendant() {
   const lastName = document.getElementById('def-last-name').value.trim();
   const address = document.getElementById('def-address').value.trim();
   const city = document.getElementById('def-city-value').value.trim();
+  const defStateVal = document.getElementById('def-state-value') ? document.getElementById('def-state-value').value.trim() : '';
 
-  if(!firstName || !lastName || !address || !city) {
-    alert("Please fill in all required fields (First Name, Last Name, Address, City).");
+  if(!firstName || !lastName || !address || !city || !defStateVal) {
+    alert("Please fill in all required fields (First Name, Last Name, Address, City, and State).");
     return;
   }
 
@@ -672,6 +531,7 @@ function saveDefendant() {
     relationship: document.getElementById('def-relationship').value,
     address: address,
     city: document.getElementById('def-city-value').value || city,
+    state: document.getElementById('def-state-value') ? document.getElementById('def-state-value').value || 'CA' : 'CA',
     country: document.getElementById('def-country-value').value,
     dob: document.getElementById('def-dob').value,
     phone: document.getElementById('def-phone').value,
@@ -710,7 +570,7 @@ function renderDefendantsList() {
     card.innerHTML = `
       <div class="defendant-info">
         <h5>Defendant #${index + 2}: ${fullName}</h5>
-        <p>${def.address}, ${def.city}</p>
+        <p>${def.address}, ${def.city}${def.state ? ', ' + def.state : ''}</p>
       </div>
       <button type="button" class="edit-def-btn" onclick="openDefendantModal(${index})">Edit</button>
     `;
@@ -719,19 +579,22 @@ function renderDefendantsList() {
   });
 }
 
-// City autocomplete for request page and defendant modal
-function initCityAutocomplete(inputId, hiddenInputId, dropdownId) {
+// City autocomplete for request page and defendant modal (list depends on selected US state)
+function initCityAutocomplete(inputId, hiddenInputId, dropdownId, stateHiddenInputId) {
   const input = document.getElementById(inputId);
   const hiddenInput = document.getElementById(hiddenInputId);
   const dropdown = document.getElementById(dropdownId);
-  if (!input || !dropdown) return;
+  const stateHidden = stateHiddenInputId ? document.getElementById(stateHiddenInputId) : null;
+  if (!input || !hiddenInput || !dropdown) return;
 
   function renderDropdown(filter) {
     const filterLower = filter.toLowerCase().trim();
-    const filtered = countyOptions.filter(c =>
+    var code = stateHidden && stateHidden.value ? stateHidden.value : 'CA';
+    const filtered = getCitiesForStateCode(code).filter(c =>
       c.toLowerCase().includes(filterLower)
     );
-    dropdown.innerHTML = filtered.slice(0, 50).map(c =>
+    var maxShow = 500;
+    dropdown.innerHTML = filtered.slice(0, maxShow).map(c =>
       '<div class="city-option' + (c === hiddenInput.value ? ' selected' : '') + '">' + c + '</div>'
     ).join('');
     dropdown.style.display = filtered.length ? 'block' : 'none';
@@ -767,15 +630,16 @@ const countryOptions = [
   'Afghanistan','Albania','Algeria','Andorra','Angola','Antigua and Barbuda','Argentina','Armenia','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bhutan','Bolivia','Bosnia and Herzegovina','Botswana','Brazil','Brunei','Bulgaria','Burkina Faso','Burundi','Cabo Verde','Cambodia','Cameroon','Canada','Central African Republic','Chad','Chile','China','Colombia','Comoros','Congo','Costa Rica','Croatia','Cuba','Cyprus','Czech Republic','Denmark','Djibouti','Dominica','Dominican Republic','East Timor','Ecuador','Egypt','El Salvador','Equatorial Guinea','Eritrea','Estonia','Eswatini','Ethiopia','Fiji','Finland','France','Gabon','Gambia','Georgia','Germany','Ghana','Greece','Grenada','Guatemala','Guinea','Guinea-Bissau','Guyana','Haiti','Honduras','Hungary','Iceland','India','Indonesia','Iran','Iraq','Ireland','Israel','Italy','Ivory Coast','Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kiribati','Korea, North','Korea, South','Kosovo','Kuwait','Kyrgyzstan','Laos','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands','Mauritania','Mauritius','Mexico','Micronesia','Moldova','Monaco','Mongolia','Montenegro','Morocco','Mozambique','Myanmar','Namibia','Nauru','Nepal','Netherlands','New Zealand','Nicaragua','Niger','Nigeria','North Macedonia','Norway','Oman','Pakistan','Palau','Palestine','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Poland','Portugal','Qatar','Romania','Russia','Rwanda','Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines','Samoa','San Marino','Sao Tome and Principe','Saudi Arabia','Senegal','Serbia','Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia','Solomon Islands','Somalia','South Africa','South Sudan','Spain','Sri Lanka','Sudan','Suriname','Sweden','Switzerland','Syria','Taiwan','Tajikistan','Tanzania','Thailand','Togo','Tonga','Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Tuvalu','Uganda','Ukraine','United Arab Emirates','United Kingdom','Uruguay','Uzbekistan','Vanuatu','Vatican City','Venezuela','Vietnam','Yemen','Zambia','Zimbabwe'
 ];
 
-function initCountryAutocomplete(inputId, hiddenInputId, dropdownId) {
+function initCountryAutocomplete(inputId, hiddenInputId, dropdownId, countryList) {
   const input = document.getElementById(inputId);
   const hiddenInput = document.getElementById(hiddenInputId);
   const dropdown = document.getElementById(dropdownId);
-  if (!input || !dropdown) return;
+  if (!input || !hiddenInput || !dropdown) return;
+  const list = (countryList && countryList.length) ? countryList : countryOptions;
 
   function renderDropdown(filter) {
     const filterLower = filter.toLowerCase().trim();
-    const filtered = countryOptions.filter(c =>
+    const filtered = list.filter(c =>
       c.toLowerCase().includes(filterLower)
     );
     dropdown.innerHTML = filtered.slice(0, 50).map(c =>
@@ -840,10 +704,23 @@ function initFileUpload() {
 
 // Initialize all autocomplete inputs
 document.addEventListener('DOMContentLoaded', function() {
-  initCityAutocomplete('req-city-input', 'req-city-value', 'req-city-dropdown');
-  initCityAutocomplete('def-city', 'def-city-value', 'def-city-dropdown');
-  initCountryAutocomplete('def-country-input', 'def-country-value', 'def-country-dropdown');
-  initStateAutocomplete('req-state-input', 'req-state-value', 'req-state-dropdown', 'CA');
-  initStateAutocomplete('state-input', 'state-value', 'state-dropdown', 'CA');
+  initCityAutocomplete('req-city-input', 'req-city-value', 'req-city-dropdown', 'req-state-value');
+  initCityAutocomplete('def-city', 'def-city-value', 'def-city-dropdown', 'def-state-value');
+  initCountryAutocomplete('def-country-input', 'def-country-value', 'def-country-dropdown', ['United States']);
+  initStateAutocomplete('req-state-input', 'req-state-value', 'req-state-dropdown', 'CA', {
+    onStateSelected: function() {
+      clearLinkedCityFields('req-city-input', 'req-city-value');
+    }
+  });
+  initStateAutocomplete('def-state-input', 'def-state-value', 'def-state-dropdown', 'CA', {
+    onStateSelected: function() {
+      clearLinkedCityFields('def-city', 'def-city-value');
+    }
+  });
+  var defCoIn = document.getElementById('def-country-input');
+  var defCoHi = document.getElementById('def-country-value');
+  if (defCoIn && defCoHi && defCoHi.value && !defCoIn.value) {
+    defCoIn.value = defCoHi.value;
+  }
   initFileUpload();
 });

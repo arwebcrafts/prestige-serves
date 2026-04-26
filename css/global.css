@@ -19,6 +19,14 @@
   --serif:'Cormorant Garamond',Georgia,serif;
 }
 
+/* iOS Safari: keep decorative stars as text glyphs, not Apple Color Emoji tiles */
+.ticker-sep,
+.hero-eyebrow,
+.request-label,
+.ps-accent-star {
+  font-variant-emoji: text;
+}
+
 /* RESET */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;overflow-x:hidden;}

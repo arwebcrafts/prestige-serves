@@ -56,7 +56,7 @@
 <div id="page-request" class="page active">
 
   <div class="request-hero">
-    <div class="request-label">✦ PROCESS SERVING INTAKE</div>
+    <div class="request-label">&#x2726;&#xfe0e; PROCESS SERVING INTAKE</div>
     <h1 class="request-title">Request Process Serving</h1>
     <p class="request-sub">Submit your request below. Every intake is reviewed for accuracy, compliance, and deadline risk before assignment.</p>
     <div class="request-info-grid">
@@ -92,7 +92,7 @@
     <div class="request-disclaimer">
       <p>To submit a request, please complete the form below.</p>
       <p>All services are <strong>prepaid in advance</strong> before any job is scheduled or assigned.</p>
-      <p>By clicking "Submit", you agree to the <a onclick="showPage('terms')">Terms of Use</a> and all agreements herein.</p>
+      <p>By clicking &quot;Submit&quot;, you agree to the <a href="terms.html">Terms of Use</a> and all agreements herein.</p>
       <p><strong>Thank you for your business.</strong></p>
     </div>
     <form id="request-form" onsubmit="handleRequestSubmit(event)">
@@ -210,11 +210,16 @@
       <div class="form-group">
         <label>Service Address <span class="req">*</span></label>
         <input type="text" id="def-address" placeholder="Full address including postcode / zip" style="margin-bottom:8px;" required>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div class="defendant-loc-row">
           <div class="city-select-wrapper">
             <input type="text" id="def-city" placeholder="City" autocomplete="off" required="">
             <input type="hidden" id="def-city-value" value="">
             <div class="city-dropdown" id="def-city-dropdown"></div>
+          </div>
+          <div class="state-select-wrapper">
+            <input type="text" id="def-state-input" placeholder="State" autocomplete="off" required="">
+            <input type="hidden" id="def-state-value" value="CA">
+            <div class="state-dropdown" id="def-state-dropdown"></div>
           </div>
           <div class="country-select-wrapper">
             <input type="text" id="def-country-input" placeholder="Country" autocomplete="off">
@@ -256,6 +261,7 @@
   </div>
 </div>
 
+<script src="js/us-cities-by-state.js" defer></script>
 <script src="js/main.js" defer></script>
 <script src="js/forms.js" defer></script>
 <script src="js/ui.js" defer></script>
