@@ -137,7 +137,7 @@
   .carousel-item{
     width:100vw !important;
     flex-shrink:0;
-    padding-right:24px;
+    padding-right:0;
     box-sizing:border-box;
   }
 }
