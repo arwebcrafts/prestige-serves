@@ -70,9 +70,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Initialize page-specific content
   if (document.getElementById('home-form-container')) {
+    console.log('home-form-container found, building form...');
     buildContactForm('home-form-container', 'home');
+    console.log('form built, state-value element:', document.getElementById('state-value'));
+    console.log('state-value content:', document.getElementById('state-value') ? document.getElementById('state-value').value : 'N/A');
     initStateAutocomplete('state-input', 'state-value', 'state-dropdown', 'CA');
+    initCityAutocomplete('city-input', 'city-value', 'city-dropdown', 'state-input');
     initReasonDropdown();
     initCountyDropdown();
+    console.log('All home form init done');
   }
 });

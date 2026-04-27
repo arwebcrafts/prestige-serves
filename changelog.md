@@ -3,6 +3,7 @@
 ## [1.1.0] - 2026-04-28
 
 ### Added
+- City autocomplete dropdown with state filtering for home form on `index.html` (mirrors `request.html` behavior)
 - Email notification system via GoHighLevel API (`api/email.js`)
 - `email_sent` column to `service_requests` and `contact_submissions` tables (1=sent, 0=failed, -1=pending)
 - "Email Sent" column to dashboard tables (Service Requests & Contact Submissions)
@@ -15,6 +16,11 @@
 - Form submissions now trigger email notification to owner via GHL API
 - Email sent/failed status tracked in database and displayed in admin dashboard
 - GHL credentials configurable via environment variables (no hardcoded values)
+
+### Added
+- "Pay with Card" buttons to each pricing item in the `pricing-grid` on `index.html`
+- Stripe checkout links for all 4 service tiers (Standard $97.99, Rush $119.99, Priority $149.99, Emergency $249.99)
+- `.pricing-item-actions` container styles in `css/pages/home.css` for button layout
 
 ### Added
 - Mobile hero image for contact page (`contact.html`)

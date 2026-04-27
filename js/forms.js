@@ -20,23 +20,23 @@ function buildContactForm(containerId, formId) {
         <div class="reason-dropdown" id="reason-dropdown"></div>
       </div>
     </div>
-     <div class="form-row">
+     <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
     <div class="form-group">
-      <label>County / City <span class="req">(required)</span></label>
-      <div class="county-select-wrapper">
-        <input type="text" id="county-input" placeholder="Select an option..." autocomplete="off" required>
-        <input type="hidden" id="county-value" name="county" value="">
-        <div class="county-dropdown" id="county-dropdown"></div>
+      <label>City <span class="req">(required)</span></label>
+      <div class="city-select-wrapper">
+        <input type="text" id="city-input" placeholder="City" autocomplete="off" required>
+        <input type="hidden" id="city-value" name="city" value="">
+        <div class="city-dropdown" id="city-dropdown"></div>
       </div>
     </div>
     <div class="form-group">
-  <label>State <span class="req">(required)</span></label>
-  <div class="state-select-wrapper">
-    <input type="text" id="state-input" placeholder="Type to search..." autocomplete="off" required>
-    <input type="hidden" id="state-value" name="state" value="CA">
-    <div class="state-dropdown" id="state-dropdown"></div>
-  </div>
-</div>
+      <label>State <span class="req">(required)</span></label>
+      <div class="state-select-wrapper">
+        <input type="text" id="state-input" placeholder="State" autocomplete="off" required>
+        <input type="hidden" id="state-value" name="state" value="CA">
+        <div class="state-dropdown" id="state-dropdown"></div>
+      </div>
+    </div>
        </div>
     <div class="form-group">
       <label>Brief Case Details <span class="req">(required)</span></label>
@@ -84,7 +84,7 @@ function handleFormSubmit(event, id, formType) {
         email: form.querySelector('[name="email"]')?.value || '',
         phone: form.querySelector('[name="phone"]')?.value || '',
         reason: document.getElementById('reason-value')?.value || '',
-        county: document.getElementById('county-value')?.value || '',
+        city: document.getElementById('city-value')?.value || '',
         state: document.getElementById('state-value')?.value || '',
         caseDetails: form.querySelector('[name="caseDetails"]')?.value || '',
         urgency: form.querySelector('[name="urgency"]')?.value || '',
@@ -580,7 +580,11 @@ function initCityAutocomplete(inputId, hiddenInputId, dropdownId, stateInputId) 
   const input = document.getElementById(inputId);
   const hiddenInput = document.getElementById(hiddenInputId);
   const dropdown = document.getElementById(dropdownId);
-  if (!input || !dropdown) return;
+  if (!input || !dropdown) {
+    console.log('initCityAutocomplete early return: input=', input, 'dropdown=', dropdown);
+    return;
+  }
+  console.log('initCityAutocomplete initialized for', inputId, 'stateInputId=', stateInputId);
 
   function renderDropdown(filter, cities) {
     const filterLower = filter.toLowerCase().trim();
@@ -591,6 +595,7 @@ function initCityAutocomplete(inputId, hiddenInputId, dropdownId, stateInputId) 
       '<div class="city-option' + (c === hiddenInput.value ? ' selected' : '') + '">' + c + '</div>'
     ).join('');
     dropdown.style.display = filtered.length ? 'block' : 'none';
+    console.log('renderDropdown called: filter=', filter, 'cities count=', (cities || []).length, 'display=', dropdown.style.display);
   }
 
   function getCurrentStateCities() {
@@ -601,6 +606,11 @@ function initCityAutocomplete(inputId, hiddenInputId, dropdownId, stateInputId) 
       const stateMatch = stateInput.value.match(/\(([A-Z]{2})\)/);
       if (stateMatch) stateCode = stateMatch[1];
     }
+    if (!stateCode) {
+      const stateMatch = stateInput ? stateInput.value.match(/\(([A-Z]{2})\)/) : null;
+      if (stateMatch) stateCode = stateMatch[1];
+    }
+    console.log('getCurrentStateCities: stateCode=', stateCode, 'stateInput=', stateInput ? stateInput.value : 'null');
     return getCitiesForState(stateCode);
   }
 
@@ -610,6 +620,7 @@ function initCityAutocomplete(inputId, hiddenInputId, dropdownId, stateInputId) 
   });
 
   input.addEventListener('focus', function() {
+    console.log('city input focus event');
     renderDropdown(this.value, getCurrentStateCities());
   });
 
