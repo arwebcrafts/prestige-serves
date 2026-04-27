@@ -44,7 +44,7 @@
   .concierge-why-section p{font-size:12px !important;}
 
   /* 5-column who we serve - become 2 columns then 1 */
-  [style*="repeat(5,1fr)"]{grid-template-columns:repeat(2,1fr) !important;}
+  .concierge-who-section > div[style*="repeat(5,1fr)"]{display:grid !important;grid-template-columns:repeat(2,1fr) !important;gap:12px !important;padding:0 16px !important;}
   .concierge-who-section{padding:40px 20px !important;}
   .concierge-who-section h2{font-size:24px !important;margin-bottom:16px !important;}
   .concierge-who-section > p{font-size:13px !important;margin-bottom:20px !important;}

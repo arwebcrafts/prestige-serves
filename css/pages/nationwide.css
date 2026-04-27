@@ -49,7 +49,7 @@
   .nationwide-states-section{padding:40px 20px !important;}
   .nationwide-states-section h2{font-size:22px !important;margin-bottom:16px !important;}
   .nationwide-states-section > p{font-size:13px !important;margin-bottom:20px !important;}
-  .nationwide-states-grid{display:grid;grid-template-columns:repeat(2,1fr) !important;gap:12px !important;}
+  .nationwide-states-grid{display:grid !important;grid-template-columns:repeat(2,1fr) !important;gap:12px !important;padding:0 16px !important;}
   .nationwide-states-grid > div{padding:12px;border:1px solid var(--border);border-radius:4px;}
   .nationwide-states-grid p{font-size:12px !important;}
 

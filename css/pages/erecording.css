@@ -48,7 +48,7 @@
   .erec-counties-section{padding:40px 20px !important;}
   .erec-counties-section h2{font-size:22px !important;margin-bottom:16px !important;}
   .erec-counties-section > p{font-size:13px !important;margin-bottom:20px !important;}
-  .erec-counties-grid{display:grid;grid-template-columns:repeat(2,1fr) !important;gap:16px !important;}
+  .erec-counties-grid{display:grid !important;grid-template-columns:repeat(2,1fr) !important;gap:16px !important;padding:0 16px !important;}
   .erec-counties-grid > div{padding:16px;border:1px solid var(--border);border-radius:4px;}
   .erec-counties-grid p{font-size:12px !important;}
 
