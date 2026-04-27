@@ -163,7 +163,22 @@ function handleRequestSubmit(event) {
   .then(res => res.json())
   .then(data => {
     if (data.success) {
+      const serviceType = form.querySelector('[name="serviceType"]')?.value || '';
+      const stripeLinks = {
+        'Standard Service — $97.99 (5–7 business days)': 'https://buy.stripe.com/8x24gz7C11J9dHj3Ix6sw04',
+        'Rush Service — $119.99 (3 business days)': 'https://buy.stripe.com/6oU6oH2hHevV1YB4MB6sw09',
+        'Priority Serve — $149.99 (2 business days)': 'https://buy.stripe.com/bJeaEX09z3RhgTvcf36sw02',
+        'Emergency Serve — $249.99 (Same-day, approval required)': 'https://buy.stripe.com/00w4gz1dD1J9fPr0wl6sw03',
+        'Standard Skip Trace — $75': 'https://buy.stripe.com/00w00j3lL9bBfPr5QF6sw08',
+        'Enhanced Trace — $150': 'https://buy.stripe.com/8x24gz7C11J9dHj3Ix6sw04',
+        'Rush Trace (same/next-day) — $225': 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
+        'Business / Agent Verification — $95': 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
+        'Court-Ready Skip Trace Report — $250': 'https://buy.stripe.com/cNieVd1dD87xcDfenb6sw0a'
+      };
       document.getElementById('req-success').classList.add('show');
+      if (stripeLinks[serviceType]) {
+        setTimeout(() => { window.location.href = stripeLinks[serviceType]; }, 1500);
+      }
       form.reset();
       defendantsArray = [];
       renderDefendantsList();

@@ -22,6 +22,9 @@
 - "Pay with Card" buttons to each pricing item in the `pricing-grid` on `index.html`
 - Stripe checkout links for all 4 service tiers (Standard $97.99, Rush $119.99, Priority $149.99, Emergency $249.99)
 - `.pricing-item-actions` container styles in `css/pages/home.css` for button layout
+- Post-submit redirect to Stripe checkout on `request.html` based on selected Service Type (5 skip trace options)
+- Added 4 process serving options to Service Type dropdown in `request.html` (Standard Service $97.99, Rush Service $119.99, Priority Serve $149.99, Emergency Serve $249.99)
+- Stripe links mapped for all 9 service types in `request.html` form submission (`forms.js`)
 
 ### Added
 - Mobile hero image for contact page (`contact.html`)
