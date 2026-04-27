@@ -232,14 +232,14 @@
     var slider = document.getElementById('payment-slider');
     var isMobile = window.innerWidth <= 768;
     var visible = isMobile ? 1 : 4;
-    var groups = Math.ceil(totalProducts / visible);
-    if (dir === 'next' && paymentSliderPos < groups - 1) { paymentSliderPos++; }
+    var groups = totalProducts;
+    if (dir === 'next' && paymentSliderPos < groups - visible) { paymentSliderPos++; }
     else if (dir === 'prev' && paymentSliderPos > 0) { paymentSliderPos--; }
-    else if (dir === 'next') { paymentSliderPos = groups - 1; }
+    else if (dir === 'next') { paymentSliderPos = groups - visible; }
     else { paymentSliderPos = 0; }
     var containerWidth = slider.offsetWidth;
-    var itemWidth = containerWidth / visible;
-    sections.style.transform = 'translateX(-' + (itemWidth * paymentSliderPos) + 'px)';
+    var slideWidth = containerWidth / visible;
+    sections.style.transform = 'translateX(-' + (slideWidth * paymentSliderPos) + 'px)';
   }
   window.addEventListener('load', function() {
     window.addEventListener('resize', function() {

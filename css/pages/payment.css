@@ -32,8 +32,15 @@
 /* Carousel */
 .payment-carousel-wrapper{padding:0 72px;margin-bottom:48px;position:relative;}
 .payment-slider{overflow:hidden;position:relative;}
-.payment-sections{display:flex;transition:transform 0.3s ease;gap:24px;}
-.carousel-item{flex-shrink:0;width:calc(25% - 18px);}
+.payment-sections{
+    display:flex;
+    transition:transform 0.3s ease;
+    gap:24px;
+  }
+  .carousel-item{
+    flex-shrink:0;
+    width:calc(100% / 9);
+  }
 .carousel-item .payment-product{height:100%;box-sizing:border-box;}
 .carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border:1px solid var(--border);border-radius:50%;background:var(--bg-light);cursor:pointer;font-size:18px;z-index:10;}
 .carousel-arrow-left{left:72px;}
