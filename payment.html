@@ -246,8 +246,15 @@
     else if (dir === 'prev' && paymentSliderPos > 0) { paymentSliderPos--; }
     else if (dir === 'next') { paymentSliderPos = groups - 1; }
     else { paymentSliderPos = 0; }
-    var slidePercent = (100 / groups) * paymentSliderPos;
-    sections.style.transform = 'translateX(-' + slidePercent + '%)';
+    var isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      var containerWidth = document.getElementById('payment-slider').offsetWidth;
+      var itemWidth = containerWidth;
+      sections.style.transform = 'translateX(-' + (itemWidth * paymentSliderPos) + 'px)';
+    } else {
+      var slidePercent = (100 / groups) * paymentSliderPos;
+      sections.style.transform = 'translateX(-' + slidePercent + '%)';
+    }
   }
   window.addEventListener('load', function() {
     window.addEventListener('resize', function() {

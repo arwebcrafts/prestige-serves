@@ -127,6 +127,9 @@
     padding:0 20px !important;
     margin-bottom:32px !important;
   }
+  .payment-slider{
+    overflow:hidden;
+  }
   .carousel-arrow{
     width:36px !important;
     height:36px !important;
@@ -134,10 +137,11 @@
   }
   .carousel-arrow-left{left:20px !important;}
   .carousel-arrow-right{right:20px !important;}
+  .payment-sections{
+    gap:0 !important;
+  }
   .carousel-item{
-    width:100vw !important;
     flex-shrink:0;
-    padding-right:0;
-    box-sizing:border-box;
+    width:calc((100vw - 40px)) !important;
   }
 }
