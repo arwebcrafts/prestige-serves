@@ -231,12 +231,12 @@
 <script>
   var paymentSliderPos = 0;
   var totalProducts = 9;
-  var visibleProducts = 4;
+  var desktopVisible = 4;
   function getVisibleProducts() {
-    return window.innerWidth <= 768 ? 1 : visibleProducts;
+    return window.innerWidth <= 768 ? 1 : desktopVisible;
   }
   function getTotalGroups() {
-    return window.innerWidth <= 768 ? totalProducts : Math.ceil(totalProducts / visibleProducts);
+    return window.innerWidth <= 768 ? totalProducts : Math.ceil(totalProducts / desktopVisible);
   }
   function slidePaymentSection(dir) {
     var sections = document.getElementById('payment-sections');

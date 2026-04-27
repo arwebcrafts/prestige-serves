@@ -122,7 +122,7 @@
   .skip-trace-section h2{
     font-size:22px !important;
   }
-  /* Carousel mobile - slide 4 at a time like desktop */
+  /* Carousel mobile - show 1 item at a time */
   .payment-carousel-wrapper{
     padding:0 20px !important;
     margin-bottom:32px !important;
@@ -135,7 +135,7 @@
   .carousel-arrow-left{left:20px !important;}
   .carousel-arrow-right{right:20px !important;}
   .carousel-item{
-    width:calc(25% - 18px);
+    width:calc(100vw - 40px) !important;
     flex-shrink:0;
   }
 }
