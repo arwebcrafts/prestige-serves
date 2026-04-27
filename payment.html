@@ -232,13 +232,22 @@
   var paymentSliderPos = 0;
   var totalProducts = 9;
   var visibleProducts = 4;
+  function getVisibleProducts() {
+    return window.innerWidth <= 768 ? 1 : visibleProducts;
+  }
+  function getTotalGroups() {
+    return window.innerWidth <= 768 ? totalProducts : Math.ceil(totalProducts / visibleProducts);
+  }
   function slidePaymentSection(dir) {
     var sections = document.getElementById('payment-sections');
-    if (dir === 'next' && paymentSliderPos < totalProducts - visibleProducts) { paymentSliderPos++; }
+    var visible = getVisibleProducts();
+    var groups = getTotalGroups();
+    if (dir === 'next' && paymentSliderPos < groups - 1) { paymentSliderPos++; }
     else if (dir === 'prev' && paymentSliderPos > 0) { paymentSliderPos--; }
-    else if (dir === 'next') { paymentSliderPos = totalProducts - visibleProducts; }
+    else if (dir === 'next') { paymentSliderPos = groups - 1; }
     else { paymentSliderPos = 0; }
-    sections.style.transform = 'translateX(-' + (paymentSliderPos * (100 / totalProducts * visibleProducts)) + '%)';
+    var itemWidth = 100 / totalProducts;
+    sections.style.transform = 'translateX(-' + (paymentSliderPos * visible * itemWidth) + '%)';
   }
   window.addEventListener('load', function() {
     window.addEventListener('resize', function() {
