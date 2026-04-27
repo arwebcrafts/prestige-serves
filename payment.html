@@ -227,30 +227,19 @@
 <script>
   var paymentSliderPos = 0;
   var totalProducts = 9;
-  var desktopVisible = 4;
-  function getVisibleProducts() {
-    return window.innerWidth <= 768 ? 1 : desktopVisible;
-  }
-  function getTotalGroups() {
-    return window.innerWidth <= 768 ? totalProducts : Math.ceil(totalProducts / desktopVisible);
-  }
   function slidePaymentSection(dir) {
     var sections = document.getElementById('payment-sections');
-    var visible = getVisibleProducts();
-    var groups = getTotalGroups();
+    var slider = document.getElementById('payment-slider');
+    var isMobile = window.innerWidth <= 768;
+    var visible = isMobile ? 1 : 4;
+    var groups = Math.ceil(totalProducts / visible);
     if (dir === 'next' && paymentSliderPos < groups - 1) { paymentSliderPos++; }
     else if (dir === 'prev' && paymentSliderPos > 0) { paymentSliderPos--; }
     else if (dir === 'next') { paymentSliderPos = groups - 1; }
     else { paymentSliderPos = 0; }
-    var isMobile = window.innerWidth <= 768;
-    if (isMobile) {
-      var containerWidth = document.getElementById('payment-slider').offsetWidth;
-      var itemWidth = containerWidth;
-      sections.style.transform = 'translateX(-' + (itemWidth * paymentSliderPos) + 'px)';
-    } else {
-      var slidePercent = (100 / groups) * paymentSliderPos;
-      sections.style.transform = 'translateX(-' + slidePercent + '%)';
-    }
+    var containerWidth = slider.offsetWidth;
+    var itemWidth = containerWidth / visible;
+    sections.style.transform = 'translateX(-' + (itemWidth * paymentSliderPos) + 'px)';
   }
   window.addEventListener('load', function() {
     window.addEventListener('resize', function() {
