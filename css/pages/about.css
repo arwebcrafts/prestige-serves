@@ -29,7 +29,7 @@
   .about-hero{
     grid-template-columns:1fr;
     min-height:auto;
-    padding-bottom:80px;
+    padding-bottom:0;
   }
   .about-content-col{
     padding:40px 20px 0;
@@ -50,7 +50,7 @@
   }
   .about-img-col{
     height:auto;
-    padding-bottom:40px;
+    padding-bottom:0;
   }
   .about-img-col img{
     height:auto;
@@ -58,8 +58,17 @@
   }
   .two-col-content{
     grid-template-columns:1fr;
+    margin-top:0 !important;
+    border-top:none !important;
   }
   .two-col-item{
     padding:40px 20px;
+  }
+  [style*="padding:0 72px 80px"]{
+    padding:0 20px 40px !important;
+    border-top:none !important;
+  }
+  [style*="padding-top:64px"]{
+    padding-top:40px !important;
   }
 }

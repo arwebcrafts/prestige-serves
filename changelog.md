@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.1] - 2026-04-28
+
+### Changed
+- Contact page hero section mobile height reduced for better mobile view
+- Hero content repositioned to bottom on mobile with smaller text sizes
+- Hero content moved to bottom on desktop (justify-content:flex-end)
+- Hero content padding adjusted (100px→56px top) to position text at bottom
+- Contact section (`contact-dark-section`) switched to flexbox column layout for mobile responsiveness
+- All inline-styled elements in contact section now properly overrideable via CSS for mobile
+- Text wrapping and overflow handling for contact info (email, phone, address)
+
 ## [1.1.0] - 2026-04-28
 
 ### Added

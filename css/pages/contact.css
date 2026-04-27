@@ -1,11 +1,11 @@
 /* contact.css — Contact page specific styles */
 
-.ps-hero{position:relative;min-height:620px;overflow:hidden;display:flex;flex-direction:column;}
+.ps-hero{position:relative;min-height:620px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;}
 .ps-hero img.ps-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;}
 .ps-bg-mobile{display:none;}
 .ps-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top, rgba(10,15,35,0.72) 0%, rgba(10,15,35,0.35) 55%, rgba(10,15,35,0.08) 100%);}
 .ps-hero-overlay-light{position:absolute;inset:0;background:rgba(0,0,0,0.4);}
-.ps-hero-content{position:relative;z-index:2;padding:100px 72px 56px;color:#fff;}
+.ps-hero-content{position:relative;z-index:2;padding:56px 72px;color:#fff;}
 
 .contact-dark-section{background:var(--navy);color:#fff;padding:88px 72px;display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start;}
 .contact-dark-heading{font-size:52px;font-weight:300;line-height:1.1;margin-bottom:20px;color:#fff;}
@@ -43,56 +43,42 @@
 #contact-form-container .btn-navy:hover{color:#ffffff !important;background:#2d3a7c !important;border:2px solid #2d3a7c !important;}
 
 @media(max-width:960px){
-  .contact-dark-section{grid-template-columns:1fr;padding:56px 28px;}
-  .contact-dark-heading{font-size:36px;}
+  .contact-dark-section{display:flex !important;flex-direction:column;padding:40px 28px;gap:40px;}
+  .contact-dark-section > div{width:100%;max-width:100%;box-sizing:border-box;}
+  .contact-dark-heading,
+  .contact-dark-heading[style]{font-size:clamp(28px,6vw,40px) !important;line-height:1.2;}
+  .contact-dark-sub,
+  .contact-dark-sub[style]{font-size:15px !important;max-width:100%;}
 }
 
-/* MOBILE — hero image */
 @media(max-width:768px){
-  .ps-hero{min-height:400px;}
-  .ps-hero-content{padding:32px 20px 40px;}
-  .ps-hero img.ps-bg{object-position:center;}
-  .ps-bg-desktop{display:none;}
-  .ps-bg-mobile{display:block;}
-}
-
-/* MOBILE — contact */
-@media(max-width:768px){
-  .contact-dark-section{
-    grid-template-columns:1fr;
-    padding:40px 20px;
-    gap:40px;
-  }
-  .contact-dark-heading{
-    font-size:clamp(28px,7vw,40px);
-    line-height:1.2;
-  }
-  .contact-dark-sub{
-    font-size:15px;
-  }
-  .contact-dark-info{
-    font-size:14px;
-  }
-  .contact-dark-info h4{
-    font-size:10px;
-    margin-top:20px;
-  }
-  .contact-dark-info h4:first-child{
-    margin-top:0;
-  }
+  .ps-hero{height:320px !important;min-height:320px !important;max-height:320px;position:relative;}
+  .ps-hero-content{position:relative;padding:20px !important;}
+  .ps-hero img.ps-bg{object-position:center;height:100%;}
+  .ps-bg-desktop{display:none !important;}
+  .ps-bg-mobile{display:block !important;}
+  .ps-hero-content > div{font-size:20px !important;letter-spacing:0.15em;}
+  .ps-hero-content > p{font-size:16px !important;}
+  .contact-dark-section{display:flex !important;flex-direction:column;padding:40px 20px;gap:40px;}
+  .contact-dark-section > div{width:100%;max-width:100%;box-sizing:border-box;}
+  .contact-dark-heading,
+  .contact-dark-heading[style]{font-size:clamp(28px,7vw,40px) !important;line-height:1.2;}
+  .contact-dark-sub,
+  .contact-dark-sub[style]{font-size:15px !important;max-width:100%;}
+  .contact-dark-info,
+  .contact-dark-info[style]{font-size:14px !important;}
+  .contact-dark-info h4,
+  .contact-dark-info h4[style]{font-size:10px !important;margin-top:20px;}
+  .contact-dark-info h4:first-child{margin-top:0;}
   .contact-dark-info a,
-  .contact-dark-info p{
-    font-size:15px;
-    word-wrap:break-word;
-    overflow-wrap:break-word;
-  }
-  #contact-form-container{
-    width:100%;
-  }
+  .contact-dark-info a[href^="mailto"],
+  .contact-dark-info a[href^="tel"],
+  .contact-dark-info a[style]{font-size:15px !important;word-wrap:break-word;overflow-wrap:break-word;display:block !important;}
+  .contact-dark-info p,
+  .contact-dark-info p[style]{font-size:15px !important;word-wrap:break-word;overflow-wrap:break-word;}
+  #contact-form-container{width:100%;}
   #contact-form-container .form-group input,
   #contact-form-container .form-group textarea,
   #contact-form-container input,
-  #contact-form-container textarea{
-    font-size:16px !important;
-  }
+  #contact-form-container textarea{font-size:16px !important;}
 }
