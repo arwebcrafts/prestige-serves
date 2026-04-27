@@ -15,6 +15,7 @@
 
 ### Fixed
 - Contact nav link (`li:last-child`) was hidden on mobile/tablet — removed `display:none` rule from `global.css`
+- Added left padding to bullet-list on skip-tracing mobile view
 
 ## [1.0.7] - 2026-04-25
 
