@@ -1,6 +1,20 @@
 # Changelog
 
-## [1.0.9] - 2026-04-27
+## [1.1.0] - 2026-04-28
+
+### Added
+- Email notification system via GoHighLevel API (`api/email.js`)
+- `email_sent` column to `service_requests` and `contact_submissions` tables (1=sent, 0=failed, -1=pending)
+- "Email Sent" column to dashboard tables (Service Requests & Contact Submissions)
+- Email status badge in dashboard table rows and detail modals
+- `TO_EMAIL` environment variable for configurable recipient email
+- `.env.local` template for local development with GHL credentials
+- `api/email.js` reusable email sending endpoint via GHL API
+
+### Changed
+- Form submissions now trigger email notification to owner via GHL API
+- Email sent/failed status tracked in database and displayed in admin dashboard
+- GHL credentials configurable via environment variables (no hardcoded values)
 
 ### Added
 - Mobile hero image for contact page (`contact.html`)
