@@ -3,6 +3,7 @@
 .ps-hero{position:relative;min-height:440px;overflow:hidden;display:flex;align-items:flex-end;}
 .ps-hero img.ps-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;}
 .ps-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top, rgba(10,15,35,0.72) 0%, rgba(10,15,35,0.35) 55%, rgba(10,15,35,0.08) 100%);}
+.ps-hero-overlay-light{position:absolute;inset:0;background:rgba(0,0,0,0.65);}
 .ps-hero-content{position:relative;z-index:2;padding:56px 72px;color:#fff;}
 .ps-hero-title{font-size:clamp(32px,4vw,56px);font-weight:300;line-height:1.1;letter-spacing:-0.01em;}
 .ps-hero-title-line{display:block;}
