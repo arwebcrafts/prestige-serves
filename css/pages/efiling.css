@@ -48,7 +48,7 @@
   .efiling-courts-section{padding:40px 20px !important;}
   .efiling-courts-section h2{font-size:22px !important;margin-bottom:16px !important;}
   .efiling-courts-section > p{font-size:13px !important;margin-bottom:20px !important;}
-  .efiling-courts-section > div{display:grid !important;grid-template-columns:1fr !important;gap:32px !important;}
+  .efiling-courts-section > div[style*="grid-template-columns:repeat(2,1fr)"]{display:grid !important;grid-template-columns:1fr !important;gap:32px !important;}
   .efiling-courts-section ul{font-size:13px !important;}
 
   /* Text sections */
