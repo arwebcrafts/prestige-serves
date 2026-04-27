@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.9] - 2026-04-27
+
+### Added
+- Mobile hero image for contact page (`contact.html`)
+- Mobile responsive styles for skip-tracing page sections
+- Payment products grid (5 skip tracing services) to `skip-tracing.html` after "Important Notes & Limitations" section
+- Linked `payment.css` to `skip-tracing.html` for proper product card styling
+
+### Changed
+- Removed dark overlay from hero images on service pages
+- Updated contact hero text color
+- Changed nav links across all pages
+
 ## [1.0.8] - 2026-04-27
 
 ### Added
