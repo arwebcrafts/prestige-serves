@@ -48,7 +48,11 @@
     font-size:15px;
   }
   .about-img-col{
-    height:220px;
+    height:auto;
+  }
+  .about-img-col img{
+    height:auto;
+    object-fit:contain;
   }
   .two-col-content{
     grid-template-columns:1fr;
