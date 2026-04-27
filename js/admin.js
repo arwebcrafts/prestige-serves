@@ -47,6 +47,7 @@ async function loadRequests() {
         <td>${escapeHtml(r.phone || '')}</td>
         <td>${escapeHtml(r.service_type || '')}</td>
         <td><span class="status-badge">New</span></td>
+        <td><span class="email-status-badge ${r.email_sent === 1 ? 'success' : r.email_sent === 0 ? 'failed' : 'pending'}">${r.email_sent === 1 ? 'Sent' : r.email_sent === 0 ? 'Failed' : 'Pending'}</span></td>
         <td><button class="action-btn view" onclick="viewRequest(${r.id})">View</button></td>
       </tr>
     `).join('');
@@ -77,6 +78,7 @@ async function loadContacts() {
         <td>${escapeHtml(c.phone || '')}</td>
         <td>${escapeHtml(c.reason || '')}</td>
         <td><span class="status-badge">${escapeHtml(c.urgency || '')}</span></td>
+        <td><span class="email-status-badge ${c.email_sent === 1 ? 'success' : c.email_sent === 0 ? 'failed' : 'pending'}">${c.email_sent === 1 ? 'Sent' : c.email_sent === 0 ? 'Failed' : 'Pending'}</span></td>
         <td><button class="action-btn view" onclick="viewContact(${c.id})">View</button></td>
       </tr>
     `).join('');
@@ -137,6 +139,7 @@ async function viewRequest(id) {
       <div class="detail-section">
         <h4>Submission Info</h4>
         <p><strong>Submitted:</strong> ${formatDate(r.created_at)}</p>
+        <p><strong>Email Sent:</strong> <span class="email-status-badge ${r.email_sent === 1 ? 'success' : r.email_sent === 0 ? 'failed' : 'pending'}">${r.email_sent === 1 ? 'Sent' : r.email_sent === 0 ? 'Failed' : 'Pending'}</span></p>
       </div>
       ${r.uploaded_files ? `
       <div class="detail-section">
@@ -189,6 +192,7 @@ async function viewContact(id) {
       <div class="detail-section">
         <h4>Submission Info</h4>
         <p><strong>Submitted:</strong> ${formatDate(c.created_at)}</p>
+        <p><strong>Email Sent:</strong> <span class="email-status-badge ${c.email_sent === 1 ? 'success' : c.email_sent === 0 ? 'failed' : 'pending'}">${c.email_sent === 1 ? 'Sent' : c.email_sent === 0 ? 'Failed' : 'Pending'}</span></p>
       </div>
     `;
     

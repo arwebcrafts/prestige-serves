@@ -5,12 +5,66 @@ import fs from 'fs';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
+const GOHIGHLEVEL_API_TOKEN = process.env.GOHIGHLEVEL_API_TOKEN;
+const GOHIGHLEVEL_LOCATION_ID = process.env.GOHIGHLEVEL_LOCATION_ID;
+const FROM_EMAIL = process.env.FROM_EMAIL || 'arwebcraftsagency.com';
+const TO_EMAIL = process.env.TO_EMAIL || 'prestigeservesllc@gmail.com';
 
 export const config = {
   api: {
     bodyParser: false,
   },
 };
+
+async function ensureEmailSentColumn(sql) {
+  try {
+    await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS email_sent INTEGER DEFAULT -1`;
+  } catch (e) {
+    // Column may already exist
+  }
+}
+
+async function sendGHLEmail({ to, subject, html, text }) {
+  if (!GOHIGHLEVEL_API_TOKEN || !GOHIGHLEVEL_LOCATION_ID) {
+    console.warn('GHL email credentials not configured');
+    return { success: false, reason: 'GHL credentials not configured' };
+  }
+
+  try {
+    const emailData = {
+      email: {
+        from: FROM_EMAIL,
+        to: [to],
+        subject: subject,
+        html: html || '',
+        text: text || '',
+      },
+    };
+
+    const response = await fetch(
+      `https://services.leadconnectorhq.com/emails/{${GOHIGHLEVEL_LOCATION_ID}}`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${GOHIGHLEVEL_API_TOKEN}`,
+          'Content-Type': 'application/json',
+          'Version': '2021-07-28',
+        },
+        body: JSON.stringify(emailData),
+      }
+    );
+
+    const responseData = await response.json();
+    if (!response.ok) {
+      console.error('GHL Email API error:', responseData);
+      return { success: false, error: responseData };
+    }
+    return { success: true, data: responseData };
+  } catch (err) {
+    console.error('Email send error:', err);
+    return { success: false, error: err.message };
+  }
+}
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
@@ -32,13 +86,13 @@ export default async function handler(req, res) {
 
   try {
     const sql = neon(DATABASE_URL);
+    await ensureEmailSentColumn(sql);
     
     let clientName, contactName, email, phone, addressLine1, addressLine2, city, state, zip;
     let defendantName, caseNumber, courtJurisdiction, multipleDefendants, serviceType, deadlineDate;
     let specialInstructions, defendantsData;
     let uploadedFiles = [];
 
-    // Parse multipart form data using formidable
     const data = await new Promise((resolve, reject) => {
       const form = formidable({ multiples: true, maxFileSize: 10 * 1024 * 1024 });
       form.parse(req, (err, fields, files) => {
@@ -49,7 +103,6 @@ export default async function handler(req, res) {
 
     const { fields, files } = data;
 
-    // Extract text fields
     clientName = Array.isArray(fields.clientName) ? fields.clientName[0] : fields.clientName || '';
     contactName = Array.isArray(fields.contactName) ? fields.contactName[0] : fields.contactName || '';
     email = Array.isArray(fields.email) ? fields.email[0] : fields.email || '';
@@ -68,7 +121,6 @@ export default async function handler(req, res) {
     specialInstructions = Array.isArray(fields.specialInstructions) ? fields.specialInstructions[0] : fields.specialInstructions || '';
     defendantsData = fields.defendantsData ? fields.defendantsData[0] || fields.defendantsData : null;
 
-    // Handle file uploads
     const fileField = files.files || files.file;
     if (fileField) {
       const fileArray = Array.isArray(fileField) ? fileField : [fileField];
@@ -96,17 +148,42 @@ export default async function handler(req, res) {
         address_line1, address_line2, city, state, zip,
         defendant_name, case_number, court_jurisdiction,
         multiple_defendants, service_type, deadline_date,
-        special_instructions, defendants_data, uploaded_files
+        special_instructions, defendants_data, uploaded_files, email_sent
       ) VALUES (
         ${clientName || ''}, ${contactName || ''}, ${email || ''}, ${phone || ''},
         ${addressLine1 || ''}, ${addressLine2 || ''}, ${city || ''}, ${state || ''}, ${zip || ''},
         ${defendantName || ''}, ${caseNumber || ''}, ${courtJurisdiction || ''},
         ${multipleDefendants || false}, ${serviceType || ''}, ${deadlineDate},
-        ${specialInstructions || ''}, ${defendantsData}, ${uploadedFilesJson}
+        ${specialInstructions || ''}, ${defendantsData}, ${uploadedFilesJson}, -1
       )
     `;
-    
-    return res.status(201).json({ success: true, message: 'Service request submitted successfully' });
+
+    const htmlContent = `
+      <h2>New Service Request</h2>
+      <p><strong>Client Name:</strong> ${clientName}</p>
+      <p><strong>Contact Name:</strong> ${contactName}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Phone:</strong> ${phone}</p>
+      <p><strong>Service Address:</strong> ${addressLine1}${addressLine2 ? ', ' + addressLine2 : ''}, ${city}, ${state} ${zip}</p>
+      <p><strong>Defendant:</strong> ${defendantName}</p>
+      <p><strong>Case Number:</strong> ${caseNumber}</p>
+      <p><strong>Court:</strong> ${courtJurisdiction}</p>
+      <p><strong>Service Type:</strong> ${serviceType}</p>
+      <p><strong>Deadline:</strong> ${deadlineDate || 'Not specified'}</p>
+      <p><strong>Special Instructions:</strong> ${specialInstructions || 'None'}</p>
+    `;
+
+    const emailResult = await sendGHLEmail({
+      to: TO_EMAIL,
+      subject: `New Service Request - ${serviceType} from ${clientName}`,
+      html: htmlContent,
+      text: `New Service Request from ${clientName}. Contact: ${contactName}, ${email}, ${phone}. Service type: ${serviceType}.`,
+    });
+
+    const emailSentStatus = emailResult.success ? 1 : 0;
+    await sql`UPDATE service_requests SET email_sent = ${emailSentStatus} WHERE email = ${email || ''} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1`;
+
+    return res.status(201).json({ success: true, message: 'Service request submitted successfully', emailSent: emailResult.success });
   } catch (err) {
     console.error('Request submission error:', err);
     return res.status(500).json({ success: false, message: 'Server error: ' + err.message });
