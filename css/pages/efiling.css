@@ -45,7 +45,7 @@
   .efiling-why-section p{font-size:12px !important;}
 
   /* 2-column courts list - become 1 column */
-  .efiling-courts-section{padding:40px 20px !important;}
+  .efiling-courts-section{padding:40px 28px !important;}
   .efiling-courts-section h2{font-size:22px !important;margin-bottom:16px !important;}
   .efiling-courts-section > p{font-size:13px !important;margin-bottom:20px !important;}
   .efiling-courts-section > div[style]{display:grid !important;grid-template-columns:1fr !important;gap:32px !important;}
