@@ -45,7 +45,7 @@ function buildContactForm(containerId, formId) {
     </div>
     <div class="form-group">
       <label>Urgency Level <span class="req">(Subject to Approval)</span></label>
-      <select name="urgency" required><option value="">Select an option</option><option>Standard</option><option>Rush</option><option>Priority</option><option>Emergency</option></select>
+      <select name="urgency" required><option value="">Select an option</option><option>Standard Skip Trace — $75</option><option>Enhanced Trace — $150</option><option>Rush Trace (same/next-day) — $225</option><option>Business / Agent Verification — $95</option><option>Court-Ready Skip Trace Report — $250</option></select>
     </div>
     <div class="form-checkbox">
       <input type="checkbox" id="${formId}-consent" name="consent" required>
