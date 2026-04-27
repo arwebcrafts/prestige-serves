@@ -49,6 +49,9 @@
   [style*="font-size:28px;font-weight:300;color:var(--accent-blue)"]{
     font-size:22px !important;
   }
+  .bullet-list{
+    padding:0 16px !important;
+  }
   .bullet-list li{
     font-size:13px !important;
   }
