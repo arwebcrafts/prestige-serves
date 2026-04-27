@@ -114,9 +114,6 @@ footer{background:var(--bg-warm);padding:56px 72px;display:grid;grid-template-co
     width:100%;
     text-align:center;
   }
-  .nav-links li:last-child{
-    display:none;
-  }
   .nav-links a{
     font-size:18px;
     padding:16px;
@@ -225,9 +222,6 @@ footer{background:var(--bg-warm);padding:56px 72px;display:grid;grid-template-co
   .nav-links li{
     width:100%;
     text-align:center;
-  }
-  .nav-links li:last-child{
-    display:none;
   }
   .nav-links a{
     font-size:18px;
