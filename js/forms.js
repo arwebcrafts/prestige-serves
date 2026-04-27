@@ -44,8 +44,8 @@ function buildContactForm(containerId, formId) {
       <textarea name="caseDetails" rows="3" required></textarea>
     </div>
     <div class="form-group">
-      <label>Urgency Level <span class="req">(Subject to Approval)</span></label>
-      <select name="urgency" required><option value="">Select an option</option><option>Standard Skip Trace — $75</option><option>Enhanced Trace — $150</option><option>Rush Trace (same/next-day) — $225</option><option>Business / Agent Verification — $95</option><option>Court-Ready Skip Trace Report — $250</option></select>
+      <label>Service Type <span class="req">(required)</span></label>
+      <select name="serviceType" required><option value="">Select an option</option><option>Standard Service — $97.99 (5–7 business days)</option><option>Rush Service — $119.99 (3 business days)</option><option>Priority Serve — $149.99 (2 business days)</option><option>Emergency Serve — $249.99 (Same-day, approval required)</option><option>Standard Skip Trace — $75</option><option>Enhanced Trace — $150</option><option>Rush Trace (same/next-day) — $225</option><option>Business / Agent Verification — $95</option><option>Court-Ready Skip Trace Report — $250</option></select>
     </div>
     <div class="form-checkbox">
       <input type="checkbox" id="${formId}-consent" name="consent" required>
@@ -87,7 +87,7 @@ function handleFormSubmit(event, id, formType) {
         city: document.getElementById('city-value')?.value || '',
         state: document.getElementById('state-value')?.value || '',
         caseDetails: form.querySelector('[name="caseDetails"]')?.value || '',
-        urgency: form.querySelector('[name="urgency"]')?.value || '',
+        serviceType: form.querySelector('[name="serviceType"]')?.value || '',
         consent: form.querySelector('[name="consent"]')?.checked || false
       };
       fetch('/api/contact', {
@@ -98,6 +98,22 @@ function handleFormSubmit(event, id, formType) {
     }
     const el = document.getElementById(id);
     if (el) el.classList.add('show');
+    // Stripe redirect for contact form
+    const stripeLinks = {
+      'Standard Service — $97.99 (5–7 business days)': 'https://buy.stripe.com/8x24gz7C11J9dHj3Ix6sw04',
+      'Rush Service — $119.99 (3 business days)': 'https://buy.stripe.com/6oU6oH2hHevV1YB4MB6sw09',
+      'Priority Serve — $149.99 (2 business days)': 'https://buy.stripe.com/bJeaEX09z3RhgTvcf36sw02',
+      'Emergency Serve — $249.99 (Same-day, approval required)': 'https://buy.stripe.com/00w4gz1dD1J9fPr0wl6sw03',
+      'Standard Skip Trace — $75': 'https://buy.stripe.com/00w00j3lL9bBfPr5QF6sw08',
+      'Enhanced Trace — $150': 'https://buy.stripe.com/8x24gz7C11J9dHj3Ix6sw04',
+      'Rush Trace (same/next-day) — $225': 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
+      'Business / Agent Verification — $95': 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
+      'Court-Ready Skip Trace Report — $250': 'https://buy.stripe.com/cNieVd1dD87xcDfenb6sw0a'
+    };
+    const serviceTypeVal = form.querySelector('[name="serviceType"]')?.value || '';
+    if (stripeLinks[serviceTypeVal]) {
+      setTimeout(() => { window.location.href = stripeLinks[serviceTypeVal]; }, 1500);
+    }
     form.reset();
   }
 }

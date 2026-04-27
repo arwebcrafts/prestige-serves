@@ -25,6 +25,7 @@
 - Post-submit redirect to Stripe checkout on `request.html` based on selected Service Type (5 skip trace options)
 - Added 4 process serving options to Service Type dropdown in `request.html` (Standard Service $97.99, Rush Service $119.99, Priority Serve $149.99, Emergency Serve $249.99)
 - Stripe links mapped for all 9 service types in `request.html` form submission (`forms.js`)
+- Added same service dropdown options and Stripe redirect to contact form on `index.html` and `contact.html` (built via `buildContactForm()` in `forms.js`)
 
 ### Added
 - Mobile hero image for contact page (`contact.html`)
