@@ -219,14 +219,21 @@
   var totalProducts = 9;
   var visibleProducts = 4;
   function slidePaymentSection(dir) {
+    var isMobile = window.innerWidth <= 768;
+    var visible = isMobile ? 1 : visibleProducts;
+    var total = isMobile ? totalProducts : 2;
     var sections = document.getElementById('payment-sections');
-    if (dir === 'next' && paymentSliderPos < totalProducts - visibleProducts) { paymentSliderPos++; }
+    if (dir === 'next' && paymentSliderPos < total - visible) { paymentSliderPos++; }
     else if (dir === 'prev' && paymentSliderPos > 0) { paymentSliderPos--; }
-    else if (dir === 'next') { paymentSliderPos = totalProducts - visibleProducts; }
+    else if (dir === 'next') { paymentSliderPos = total - visible; }
     else { paymentSliderPos = 0; }
-    sections.style.transform = 'translateX(-' + (paymentSliderPos * (100 / totalProducts)) + '%)';
+    sections.style.transform = 'translateX(-' + (paymentSliderPos * (100 / total)) + '%)';
   }
   window.addEventListener('load', function() {
+    window.addEventListener('resize', function() {
+      document.getElementById('payment-sections').style.transform = 'translateX(0%)';
+      paymentSliderPos = 0;
+    });
     // Standard Service
     paypal.Buttons({
       style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' },

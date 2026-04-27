@@ -112,3 +112,32 @@
     font-size:22px !important;
   }
 }
+
+/* Carousel responsive */
+@media(max-width:768px){
+  [style*="padding:0 72px"][style*="margin-bottom:48px"][style*="position:relative"]{
+    padding:0 20px !important;
+    margin-bottom:32px !important;
+  }
+  [style*="padding:0 72px"][style*="margin-bottom:48px"][style*="position:relative"] button{
+    width:36px !important;
+    height:36px !important;
+    font-size:16px !important;
+  }
+  #payment-sections{
+    width:900% !important;
+  }
+  #payment-section-services,
+  #payment-section-skip-trace{
+    display:flex !important;
+    width:11.11% !important;
+    gap:0 !important;
+    flex-shrink:0;
+  }
+  #payment-section-services .payment-product,
+  #payment-section-skip-trace .payment-product{
+    min-width:calc(100vw - 40px) !important;
+    max-width:calc(100vw - 40px) !important;
+    box-sizing:border-box;
+  }
+}
