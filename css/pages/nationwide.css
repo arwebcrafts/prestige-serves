@@ -31,7 +31,7 @@
   /* 4-column nationwide steps - become 2 columns then 1 */
   .nationwide-steps-section{padding:40px 20px !important;}
   .nationwide-steps-section h2{font-size:22px !important;margin-bottom:20px !important;}
-  .nationwide-steps-grid{display:grid;grid-template-columns:repeat(2,1fr) !important;gap:20px !important;}
+  .nationwide-steps-grid{display:grid;grid-template-columns:1fr !important;gap:20px !important;}
   .nationwide-steps-grid > div{text-align:center;}
   .nationwide-steps-grid .step-number{width:40px !important;height:40px !important;font-size:16px !important;margin-bottom:12px !important;}
   .nationwide-steps-grid h3{font-size:14px !important;margin-bottom:6px !important;}
@@ -40,7 +40,7 @@
   /* 4-column why choose - become 2 columns */
   .nationwide-why-section{padding:40px 20px !important;background:var(--bg-light) !important;}
   .nationwide-why-section h2{font-size:22px !important;margin-bottom:20px !important;}
-  .nationwide-why-grid{display:grid;grid-template-columns:repeat(2,1fr) !important;gap:20px !important;}
+  .nationwide-why-grid{display:grid;grid-template-columns:1fr !important;gap:20px !important;}
   .nationwide-why-grid > div{padding:20px;border:1px solid var(--border);border-radius:4px;}
   .nationwide-why-grid h3{font-size:14px !important;margin-bottom:8px !important;}
   .nationwide-why-grid p{font-size:12px !important;}
