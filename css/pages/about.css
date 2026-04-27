@@ -11,7 +11,7 @@
 .bullet-list li{font-size:16px;color:var(--text-body);line-height:1.9;}
 .about-img-col{overflow:hidden;}
 .about-img-col img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
-.two-col-content{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border);margin-top:0;}
+.two-col-content{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border);margin-top:32px;}
 .two-col-item{padding:64px 72px;}
 .two-col-item:first-child{border-right:1px solid var(--border);}
 
