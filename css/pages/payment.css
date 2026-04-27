@@ -39,8 +39,36 @@
   }
   .carousel-item{
     flex-shrink:0;
-    width:calc(100% / 9);
   }
+  .payment-section-group{
+    display:flex;
+    gap:24px;
+    flex-shrink:0;
+  }
+  .payment-carousel-wrapper{
+    padding:0 72px;
+    margin-bottom:48px;
+    position:relative;
+  }
+  .payment-slider{
+    overflow:hidden;
+    position:relative;
+  }
+  .carousel-arrow{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:44px;
+    height:44px;
+    border:1px solid var(--border);
+    border-radius:50%;
+    background:var(--bg-light);
+    cursor:pointer;
+    font-size:18px;
+    z-index:10;
+  }
+  .carousel-arrow-left{left:72px;}
+  .carousel-arrow-right{right:72px;}
 .carousel-item .payment-product{height:100%;box-sizing:border-box;}
 .carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border:1px solid var(--border);border-radius:50%;background:var(--bg-light);cursor:pointer;font-size:18px;z-index:10;}
 .carousel-arrow-left{left:72px;}
@@ -134,9 +162,6 @@
     padding:0 20px !important;
     margin-bottom:32px !important;
   }
-  .payment-slider{
-    overflow:hidden;
-  }
   .carousel-arrow{
     width:36px !important;
     height:36px !important;
@@ -147,8 +172,12 @@
   .payment-sections{
     gap:0 !important;
   }
+  .payment-section-group{
+    gap:0 !important;
+  }
   .carousel-item{
+    width:calc(100vw - 40px) !important;
     flex-shrink:0;
-    width:calc((100vw - 40px)) !important;
+    box-sizing:border-box;
   }
 }
