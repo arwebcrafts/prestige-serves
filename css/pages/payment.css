@@ -29,12 +29,23 @@
 .payment-section-header{padding:0 72px;margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;}
 .skip-trace-section{padding:0 72px;margin-bottom:48px;}
 
+/* Carousel */
+.payment-carousel-wrapper{padding:0 72px;margin-bottom:48px;position:relative;}
+.payment-slider{overflow:hidden;position:relative;}
+.payment-sections{display:flex;transition:transform 0.3s ease;gap:24px;}
+.carousel-item{flex-shrink:0;width:calc(25% - 18px);}
+.carousel-item .payment-product{height:100%;box-sizing:border-box;}
+.carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border:1px solid var(--border);border-radius:50%;background:var(--bg-light);cursor:pointer;font-size:18px;z-index:10;}
+.carousel-arrow-left{left:72px;}
+.carousel-arrow-right{right:72px;}
+
 @media(max-width:960px){
   .payment-hero{margin:20px 28px 0;padding:40px 28px;}
   .payment-products{grid-template-columns:repeat(2,1fr);padding:0 28px;}
   .payment-info-cards,.payment-policies{margin:20px 28px;}
   .payment-policies{grid-template-columns:1fr;}
   .payment-policy-col:first-child{border-right:none;border-bottom:2px solid var(--text-dark);}
+  .carousel-item{width:calc(50% - 12px);}
 }
 
 /* MOBILE — payment */
@@ -111,33 +122,20 @@
   .skip-trace-section h2{
     font-size:22px !important;
   }
-}
-
-/* Carousel responsive */
-@media(max-width:768px){
-  [style*="padding:0 72px"][style*="margin-bottom:48px"][style*="position:relative"]{
+  /* Carousel mobile */
+  .payment-carousel-wrapper{
     padding:0 20px !important;
     margin-bottom:32px !important;
   }
-  [style*="padding:0 72px"][style*="margin-bottom:48px"][style*="position:relative"] button{
+  .carousel-arrow{
     width:36px !important;
     height:36px !important;
     font-size:16px !important;
   }
-  #payment-sections{
-    width:900% !important;
-  }
-  #payment-section-services,
-  #payment-section-skip-trace{
-    display:flex !important;
-    width:11.11% !important;
-    gap:0 !important;
+  .carousel-arrow-left{left:20px !important;}
+  .carousel-arrow-right{right:20px !important;}
+  .carousel-item{
+    width:calc(100vw - 40px) !important;
     flex-shrink:0;
-  }
-  #payment-section-services .payment-product,
-  #payment-section-skip-trace .payment-product{
-    min-width:calc(100vw - 40px) !important;
-    max-width:calc(100vw - 40px) !important;
-    box-sizing:border-box;
   }
 }
