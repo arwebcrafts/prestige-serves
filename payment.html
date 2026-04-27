@@ -246,8 +246,8 @@
     else if (dir === 'prev' && paymentSliderPos > 0) { paymentSliderPos--; }
     else if (dir === 'next') { paymentSliderPos = groups - 1; }
     else { paymentSliderPos = 0; }
-    var itemWidth = 100 / totalProducts;
-    sections.style.transform = 'translateX(-' + (paymentSliderPos * visible * itemWidth) + '%)';
+    var slidePercent = (100 / groups) * paymentSliderPos;
+    sections.style.transform = 'translateX(-' + slidePercent + '%)';
   }
   window.addEventListener('load', function() {
     window.addEventListener('resize', function() {
