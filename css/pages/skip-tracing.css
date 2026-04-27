@@ -101,4 +101,8 @@
 
   h2{font-size:22px !important;}
   p,li{font-size:14px !important;word-wrap:break-word;overflow-wrap:break-word;}
+
+  /* Products grid - become 1 column */
+  .payment-products{grid-template-columns:1fr !important;padding:0 20px !important;}
+  .payment-product{padding:20px;border:1px solid var(--border);border-radius:4px;}
 }
