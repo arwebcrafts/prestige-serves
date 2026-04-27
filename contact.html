@@ -59,9 +59,10 @@
   <section class="ps-hero">
     <img class="ps-bg ps-bg-desktop" src="assets/images/prestige-serves-img-12.png" alt="Lady Justice — Prestige Serves LLC">
     <img class="ps-bg ps-bg-mobile" src="assets/images/mobile.png" alt="Prestige Serves Mobile">
+    <div class="ps-hero-overlay-light"></div>
     <div class="ps-hero-content" style="padding-top:400px;">
-      <div style="font-size:33px;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent-gold);font-weight:700;margin-bottom:12px;">✦ Contact Prestige Serves</div>
-      <p class="ps-hero-sub" style="font-size:33px;color:var(--accent-gold);font-weight:600;">Reliable for law firms, businesses &amp; private individuals across Los Angeles.</p>
+      <div style="font-size:33px;letter-spacing:0.22em;text-transform:uppercase;color:#ffffff;font-weight:700;margin-bottom:12px;">✦ Contact Prestige Serves</div>
+      <p class="ps-hero-sub" style="font-size:33px;color:#ffffff;font-weight:600;">Reliable for law firms, businesses &amp; private individuals across Los Angeles.</p>
     </div>
   </section>
   <section class="contact-dark-section">
@@ -93,6 +94,7 @@
   document.addEventListener('DOMContentLoaded', function() {
     buildContactForm('contact-form-container', 'contact');
     initStateAutocomplete('state-input', 'state-value', 'state-dropdown', 'CA');
+    initCityAutocomplete('city-input', 'city-value', 'city-dropdown', 'state-input');
     initReasonDropdown();
     initCountyDropdown();
   });

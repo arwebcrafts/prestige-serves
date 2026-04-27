@@ -4,6 +4,7 @@
 
 ### Added
 - City autocomplete dropdown with state filtering for home form on `index.html` (mirrors `request.html` behavior)
+- City autocomplete dropdown also added to `contact.html` form (same city/state/zip grid structure)
 - Email notification system via GoHighLevel API (`api/email.js`)
 - `email_sent` column to `service_requests` and `contact_submissions` tables (1=sent, 0=failed, -1=pending)
 - "Email Sent" column to dashboard tables (Service Requests & Contact Submissions)
