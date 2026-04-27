@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.8] - 2026-04-27
+
+### Added
+- `mobile.png` hero image for mobile view on contact page (`contact.html`)
+- Mobile responsive styles for skip-tracing page sections (When Skip Tracing Is Recommended, Pricing, What We Need from You, Important Notes, FAQ)
+
+### Changed
+- Removed dark overlay (`.ps-hero-overlay`) from hero images on all service pages (`process-serving.html`, `nationwide.html`, `erecording.html`, `efiling.html`, `concierge.html`)
+- Updated contact hero text color to `--accent-gold` with bold font weight
+- Changed "Request Process Serving" nav link to "Book a Service" across all 13 HTML pages
+- Updated Service Type dropdown options in `request.html` and `forms.js` to skip tracing options (Standard Skip Trace $75, Enhanced Trace $150, Rush Trace $225, Business/Agent Verification $95, Court-Ready Skip Trace Report $250)
+- Increased side padding on grid sections (courts, counties, states, who-we-serve) on mobile view across `efiling.css`, `erecording.css`, `nationwide.css`, `concierge.css`
+
+### Fixed
+- Contact nav link (`li:last-child`) was hidden on mobile/tablet — removed `display:none` rule from `global.css`
+
 ## [1.0.7] - 2026-04-25
 
 ### Added
