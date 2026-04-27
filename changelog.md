@@ -10,6 +10,17 @@
 - Contact section (`contact-dark-section`) switched to flexbox column layout for mobile responsiveness
 - All inline-styled elements in contact section now properly overrideable via CSS for mobile
 - Text wrapping and overflow handling for contact info (email, phone, address)
+- About page: removed top spacing from two-col-content on mobile
+- About page: matched operating area section padding to two-col-item on mobile
+
+### Added
+- "Order Skip Trace" button on `skip-tracing.html` now scrolls to payment products section
+- Prices displayed on skip trace product cards
+- Skip Tracing Services section added to `payment.html`
+- `.skip-trace-section` class for consistent mobile spacing
+
+### Changed
+- Mobile payment page now displays skip trace products in single column with consistent 20px horizontal padding
 
 ## [1.1.0] - 2026-04-28
 
