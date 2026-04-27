@@ -1,7 +1,7 @@
 /* home.css — Home page specific styles */
 
-.testimonial-img{margin:8px;}
-.testimonial-content{margin:8px;}
+.testimonial-img{margin:0;}
+.testimonial-content{margin:0;}
 .pricing-item{margin:8px;display:flex;flex-direction:column;align-items:stretch;border:1px solid var(--border);padding:20px;transition:border-color 0.2s ease;}
 .pricing-item:hover{border-color:var(--accent-blue);}
 .pricing-real-icon{width:40px;height:40px;object-fit:contain;}
@@ -28,6 +28,11 @@
   }
   .pricing-img{
     margin-left:0;
+    height:auto;
+  }
+  .pricing-img img{
+    height:auto;
+    object-fit:contain;
   }
   .pricing-item:nth-child(1) .pricing-item-name,
   .pricing-item:nth-child(3) .pricing-item-name{
