@@ -41,4 +41,61 @@
   .st-provide-item h3{
     font-size:18px;
   }
+
+  /* When Skip Tracing Is Recommended */
+  [style*="margin-top:44px"]{
+    margin-top:32px !important;
+  }
+  [style*="font-size:28px;font-weight:300;color:var(--accent-blue)"]{
+    font-size:22px !important;
+  }
+  .bullet-list li{
+    font-size:13px !important;
+  }
+
+  /* Pricing section */
+  .st-pricing{
+    padding:24px !important;
+    background:var(--bg-warm);
+    border-radius:4px;
+  }
+  .st-pricing h3{
+    font-size:18px !important;
+  }
+  .st-pricing p{
+    font-size:13px !important;
+  }
+  .st-pricing ul{
+    font-size:13px !important;
+  }
+  .st-pricing li{
+    font-size:13px !important;
+  }
+
+  /* Important Notes box */
+  [style*="background:var(--bg-warm);padding:28px;border-radius:4px"]{
+    padding:20px !important;
+  }
+  [style*="background:var(--bg-warm);padding:28px;border-radius:4px"] h3{
+    font-size:18px !important;
+  }
+
+  /* FAQ section */
+  [style*="padding:0 72px 56px;border-top:1px solid var(--border)"]{
+    padding:0 20px 40px !important;
+    border-top:1px solid var(--border) !important;
+  }
+  [style*="font-size:38px;font-weight:300;padding:56px 0 32px"]{
+    font-size:28px !important;
+    padding:40px 0 24px !important;
+  }
+  #st-faq{
+    max-width:100% !important;
+  }
+  .faq-q{
+    font-size:14px !important;
+  }
+
+  h2{font-size:22px !important;}
+  p,li{font-size:14px !important;word-wrap:break-word;overflow-wrap:break-word;}
 }
