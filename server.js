@@ -496,6 +496,11 @@ const server = http.createServer(async (req, res) => {
             html: emailHtml,
             text: `New Contact from ${body.firstName} ${body.lastName}. Company: ${body.company || 'N/A'}. Reason: ${body.reason || 'N/A'}.`,
           }).then(emailResult => {
+            const emailSentStatus = emailResult.success ? 1 : 0;
+            // Update email_sent column
+            getSql()`UPDATE contact_submissions SET email_sent = ${emailSentStatus} WHERE email = ${body.email} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1`
+              .then(() => console.log('Contact email_sent update completed'))
+              .catch(dbErr => console.error('Contact email_sent update error:', dbErr));
             if (emailResult.success) {
               console.log('Contact form email sent:', emailResult.messageId);
             } else {
@@ -616,6 +621,12 @@ const server = http.createServer(async (req, res) => {
               html: emailHtml,
               text: `New Service Request from ${f.clientName}. Contact: ${f.contactName}, ${f.email}, ${f.phone}. Service type: ${f.serviceType}.`,
             }).then(emailResult => {
+              const emailSentStatus = emailResult.success ? 1 : 0;
+              console.log('Updating email_sent to', emailSentStatus, 'for email:', f.email);
+              // Update email_sent column - await the SQL query to catch errors
+              getSql()`UPDATE service_requests SET email_sent = ${emailSentStatus} WHERE email = ${f.email} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1`
+                .then(() => console.log('email_sent update completed'))
+                .catch(dbErr => console.error('email_sent update error:', dbErr));
               if (emailResult.success) {
                 console.log('Service request email sent:', emailResult.messageId);
               } else {
@@ -706,6 +717,11 @@ const server = http.createServer(async (req, res) => {
               html: emailHtml,
               text: `New Service Request from ${body.clientName}. Contact: ${body.contactName}, ${body.email}, ${body.phone}. Service type: ${body.serviceType}.`,
             }).then(emailResult => {
+              const emailSentStatus = emailResult.success ? 1 : 0;
+              // Update email_sent column
+              getSql()`UPDATE service_requests SET email_sent = ${emailSentStatus} WHERE email = ${body.email} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1`
+                .then(() => console.log('Service (async) email_sent update completed'))
+                .catch(dbErr => console.error('Service (async) email_sent update error:', dbErr));
               if (emailResult.success) {
                 console.log('Service request email sent:', emailResult.messageId);
               } else {
