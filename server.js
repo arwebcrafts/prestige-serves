@@ -59,6 +59,305 @@ async function sendSMTPEmail({ to, subject, html, text }) {
   }
 }
 
+// Beautiful Email Templates
+function buildContactEmailHtml(data) {
+  const { firstName, lastName, company, email, phone, reason, city, state, caseDetails } = data;
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Contact</title>
+</head>
+<body style="margin:0;padding:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background-color:#f4f4f4;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f4f4f4;">
+    <tr>
+      <td align="center" style="padding:40px 20px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1);">
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#1a3a5c 0%,#2c5282 100%);padding:40px 40px 30px 40px;text-align:center;">
+              <h1 style="margin:0;font-size:28px;font-weight:700;color:#ffffff;letter-spacing:1px;">PRESTIGE SERVES</h1>
+              <p style="margin:10px 0 0 0;font-size:14px;color:rgba(255,255,255,0.8);letter-spacing:2px;text-transform:uppercase;">Professional Process Serving</p>
+            </td>
+          </tr>
+          <!-- Badge -->
+          <tr>
+            <td style="padding:30px 40px 20px 40px;text-align:center;">
+              <span style="display:inline-block;background-color:#e8f5e9;color:#2e7d32;font-size:12px;font-weight:600;padding:8px 20px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;">📬 New Contact Inquiry</span>
+            </td>
+          </tr>
+          <!-- Content -->
+          <tr>
+            <td style="padding:20px 40px;">
+              <h2 style="margin:0 0 20px 0;font-size:24px;font-weight:600;color:#1a3a5c;">Hello,</h2>
+              <p style="margin:0 0 25px 0;font-size:16px;line-height:1.6;color:#555555;">You have received a new contact inquiry. Review the details below and respond promptly.</p>
+            </td>
+          </tr>
+          <!-- Details Card -->
+          <tr>
+            <td style="padding:0 40px 30px 40px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">
+                <tr>
+                  <td style="padding:25px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Contact Name</span>
+                          <p style="margin:5px 0 0 0;font-size:16px;color:#1a3a5c;font-weight:600;">${firstName} ${lastName}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Company</span>
+                          <p style="margin:5px 0 0 0;font-size:16px;color:#333333;">${company || 'N/A'}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Email Address</span>
+                          <p style="margin:5px 0 0 0;font-size:16px;color:#2563eb;"><a href="mailto:${email}" style="color:#2563eb;text-decoration:none;">${email}</a></p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Phone Number</span>
+                          <p style="margin:5px 0 0 0;font-size:16px;color:#333333;"><a href="tel:${phone}" style="color:#333333;text-decoration:none;">${phone || 'N/A'}</a></p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Reason for Contact</span>
+                          <p style="margin:5px 0 0 0;font-size:16px;color:#2563eb;font-weight:600;">${reason || 'General Inquiry'}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Location</span>
+                          <p style="margin:5px 0 0 0;font-size:16px;color:#333333;">${city || ''} ${state || ''}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:12px 0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Message</span>
+                          <p style="margin:5px 0 0 0;font-size:15px;line-height:1.6;color:#555555;">${caseDetails || 'No message provided'}</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- CTA Button -->
+          <tr>
+            <td style="padding:0 40px 30px 40px;text-align:center;">
+              <a href="mailto:${email}" style="display:inline-block;background:linear-gradient(135deg,#1a3a5c 0%,#2c5282 100%);color:#ffffff;font-size:15px;font-weight:600;padding:16px 40px;border-radius:8px;text-decoration:none;letter-spacing:0.5px;">Reply to ${firstName}</a>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#f8fafc;padding:30px 40px;border-top:1px solid #e2e8f0;">
+              <p style="margin:0;font-size:13px;color:#94a3b8;text-align:center;line-height:1.6;">
+                Prestige Serves LLC<br>
+                1240 S Corning Street, Los Angeles, CA 90035<br>
+                Phone: 609-240-5665 | Email: prestigervesllc@gmail.com
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+function buildServiceRequestEmailHtml(data) {
+  const { clientName, contactName, email, phone, addressLine1, addressLine2, city, state, zip, defendantName, caseNumber, courtJurisdiction, serviceType, deadlineDate, specialInstructions, defendantsData } = data;
+  
+  let defendantsHtml = '';
+  if (defendantsData && defendantsData.length > 0) {
+    const defRows = defendantsData.map((def, i) => `
+      <tr>
+        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:14px;color:#555555;">${i + 2}</td>
+        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:14px;color:#333333;">${def.firstName} ${def.lastName || ''}</td>
+        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:14px;color:#555555;">${def.address || 'N/A'}</td>
+        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:14px;color:#555555;">${def.city || 'N/A'}</td>
+      </tr>
+    `).join('');
+    
+    defendantsHtml = `
+      <tr>
+        <td style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
+          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Additional Defendants</span>
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:10px;background-color:#f8fafc;border-radius:6px;overflow:hidden;">
+            <tr style="background-color:#1a3a5c;">
+              <td style="padding:10px 15px;font-size:12px;color:#ffffff;font-weight:600;">#</td>
+              <td style="padding:10px 15px;font-size:12px;color:#ffffff;font-weight:600;">Name</td>
+              <td style="padding:10px 15px;font-size:12px;color:#ffffff;font-weight:600;">Address</td>
+              <td style="padding:10px 15px;font-size:12px;color:#ffffff;font-weight:600;">City</td>
+            </tr>
+            ${defRows}
+          </table>
+        </td>
+      </tr>
+    `;
+  }
+  
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Service Request</title>
+</head>
+<body style="margin:0;padding:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background-color:#f4f4f4;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f4f4f4;">
+    <tr>
+      <td align="center" style="padding:40px 20px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1);">
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#1a3a5c 0%,#2c5282 100%);padding:40px 40px 30px 40px;text-align:center;">
+              <h1 style="margin:0;font-size:28px;font-weight:700;color:#ffffff;letter-spacing:1px;">PRESTIGE SERVES</h1>
+              <p style="margin:10px 0 0 0;font-size:14px;color:rgba(255,255,255,0.8);letter-spacing:2px;text-transform:uppercase;">Professional Process Serving</p>
+            </td>
+          </tr>
+          <!-- Badge -->
+          <tr>
+            <td style="padding:30px 40px 20px 40px;text-align:center;">
+              <span style="display:inline-block;background-color:#fff3e0;color:#e65100;font-size:12px;font-weight:600;padding:8px 20px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;">📋 New Service Request</span>
+            </td>
+          </tr>
+          <!-- Content -->
+          <tr>
+            <td style="padding:20px 40px;">
+              <h2 style="margin:0 0 20px 0;font-size:24px;font-weight:600;color:#1a3a5c;">New Service Request</h2>
+              <p style="margin:0 0 25px 0;font-size:16px;line-height:1.6;color:#555555;">A new service request has been submitted. Review the details below and proceed with assignment.</p>
+            </td>
+          </tr>
+          <!-- Client Info Card -->
+          <tr>
+            <td style="padding:0 40px 20px 40px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">
+                <tr>
+                  <td style="padding:20px 25px;border-bottom:1px solid #e2e8f0;">
+                    <span style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;">👤 Client Information</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:20px 25px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="padding:8px 0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Client / Firm</span>
+                          <p style="margin:4px 0 0 0;font-size:15px;color:#1a3a5c;font-weight:600;">${clientName}</p>
+                        </td>
+                        <td style="padding:8px 0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Contact Person</span>
+                          <p style="margin:4px 0 0 0;font-size:15px;color:#333333;">${contactName}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:8px 0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Email</span>
+                          <p style="margin:4px 0 0 0;font-size:15px;"><a href="mailto:${email}" style="color:#2563eb;text-decoration:none;">${email}</a></p>
+                        </td>
+                        <td style="padding:8px 0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Phone</span>
+                          <p style="margin:4px 0 0 0;font-size:15px;"><a href="tel:${phone}" style="color:#333333;text-decoration:none;">${phone}</a></p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Service Details Card -->
+          <tr>
+            <td style="padding:0 40px 20px 40px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">
+                <tr>
+                  <td style="padding:20px 25px;border-bottom:1px solid #e2e8f0;">
+                    <span style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;">📍 Service Details</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:20px 25px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Service Address</span>
+                          <p style="margin:5px 0 0 0;font-size:15px;line-height:1.5;color:#333333;">${addressLine1}${addressLine2 ? '<br>' + addressLine2 : ''}<br>${city}, ${state} ${zip}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Defendant / Recipient</span>
+                          <p style="margin:5px 0 0 0;font-size:15px;color:#333333;font-weight:600;">${defendantName}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Case Number</span>
+                          <p style="margin:5px 0 0 0;font-size:15px;color:#333333;">${caseNumber || 'N/A'}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Court / Jurisdiction</span>
+                          <p style="margin:5px 0 0 0;font-size:15px;color:#333333;">${courtJurisdiction || 'N/A'}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Service Type</span>
+                          <p style="margin:5px 0 0 0;font-size:15px;color:#2563eb;font-weight:600;">${serviceType}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:10px 0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Deadline</span>
+                          <p style="margin:5px 0 0 0;font-size:15px;color:#dc2626;font-weight:600;">${deadlineDate || 'Not specified'}</p>
+                        </td>
+                      </tr>
+                      ${specialInstructions ? `
+                      <tr>
+                        <td style="padding:10px 0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Special Instructions</span>
+                          <p style="margin:5px 0 0 0;font-size:14px;line-height:1.5;color:#555555;">${specialInstructions}</p>
+                        </td>
+                      </tr>
+                      ` : ''}
+                      ${defendantsHtml}
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#f8fafc;padding:30px 40px;border-top:1px solid #e2e8f0;">
+              <p style="margin:0;font-size:13px;color:#94a3b8;text-align:center;line-height:1.6;">
+                Prestige Serves LLC<br>
+                1240 S Corning Street, Los Angeles, CA 90035<br>
+                Phone: 609-240-5665 | Email: prestigervesllc@gmail.com
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
 function getSql() {
   return neon(DATABASE_URL);
 }
@@ -191,17 +490,17 @@ const server = http.createServer(async (req, res) => {
         }
         
         // Send email notification to owner
-        const emailHtml = `
-          <h2>New Contact Form Submission</h2>
-          <p><strong>Name:</strong> ${body.firstName} ${body.lastName}</p>
-          <p><strong>Company:</strong> ${body.company || 'N/A'}</p>
-          <p><strong>Email:</strong> ${body.email}</p>
-          <p><strong>Phone:</strong> ${body.phone || 'N/A'}</p>
-          <p><strong>Reason:</strong> ${body.reason || 'N/A'}</p>
-          <p><strong>City:</strong> ${body.city || 'N/A'}</p>
-          <p><strong>State:</strong> ${body.state || 'N/A'}</p>
-          <p><strong>Case Details:</strong> ${body.caseDetails || 'None provided'}</p>
-        `;
+        const emailHtml = buildContactEmailHtml({
+          firstName: body.firstName,
+          lastName: body.lastName,
+          company: body.company,
+          email: body.email,
+          phone: body.phone,
+          reason: body.reason,
+          city: body.city,
+          state: body.state,
+          caseDetails: body.caseDetails
+        });
         const emailResult = await sendSMTPEmail({
           to: TO_EMAIL,
           subject: `New Contact - ${body.reason || 'Inquiry'} from ${body.firstName} ${body.lastName}`,
@@ -296,20 +595,30 @@ const server = http.createServer(async (req, res) => {
           }
           
           // Send email notification to owner
-          const emailHtml = `
-            <h2>New Service Request</h2>
-            <p><strong>Client Name:</strong> ${f.clientName}</p>
-            <p><strong>Contact Name:</strong> ${f.contactName}</p>
-            <p><strong>Email:</strong> ${f.email}</p>
-            <p><strong>Phone:</strong> ${f.phone}</p>
-            <p><strong>Service Address:</strong> ${f.addressLine1}${f.addressLine2 ? ', ' + f.addressLine2 : ''}, ${f.city}, ${f.state} ${f.zip}</p>
-            <p><strong>Defendant:</strong> ${f.defendantName}</p>
-            <p><strong>Case Number:</strong> ${f.caseNumber || 'N/A'}</p>
-            <p><strong>Court:</strong> ${f.courtJurisdiction || 'N/A'}</p>
-            <p><strong>Service Type:</strong> ${f.serviceType}</p>
-            <p><strong>Deadline:</strong> ${f.deadlineDate || 'Not specified'}</p>
-            <p><strong>Special Instructions:</strong> ${f.specialInstructions || 'None'}</p>
-          `;
+          let defendantsData = null;
+          if (f.defendantsData) {
+            try {
+              defendantsData = typeof f.defendantsData === 'string' ? JSON.parse(f.defendantsData) : f.defendantsData;
+            } catch (e) { defendantsData = null; }
+          }
+          const emailHtml = buildServiceRequestEmailHtml({
+            clientName: f.clientName,
+            contactName: f.contactName,
+            email: f.email,
+            phone: f.phone,
+            addressLine1: f.addressLine1,
+            addressLine2: f.addressLine2,
+            city: f.city,
+            state: f.state,
+            zip: f.zip,
+            defendantName: f.defendantName,
+            caseNumber: f.caseNumber,
+            courtJurisdiction: f.courtJurisdiction,
+            serviceType: f.serviceType,
+            deadlineDate: f.deadlineDate,
+            specialInstructions: f.specialInstructions,
+            defendantsData: defendantsData
+          });
           const emailResult = await sendSMTPEmail({
             to: TO_EMAIL,
             subject: `New Service Request - ${f.serviceType} from ${f.clientName}`,
@@ -352,20 +661,30 @@ const server = http.createServer(async (req, res) => {
           const pstResult = await processServiceRequestToPST(body);
           
           // Send email notification to owner
-          const emailHtml = `
-            <h2>New Service Request</h2>
-            <p><strong>Client Name:</strong> ${body.clientName}</p>
-            <p><strong>Contact Name:</strong> ${body.contactName}</p>
-            <p><strong>Email:</strong> ${body.email}</p>
-            <p><strong>Phone:</strong> ${body.phone}</p>
-            <p><strong>Service Address:</strong> ${body.addressLine1}${body.addressLine2 ? ', ' + body.addressLine2 : ''}, ${body.city}, ${body.state} ${body.zip}</p>
-            <p><strong>Defendant:</strong> ${body.defendantName}</p>
-            <p><strong>Case Number:</strong> ${body.caseNumber || 'N/A'}</p>
-            <p><strong>Court:</strong> ${body.courtJurisdiction || 'N/A'}</p>
-            <p><strong>Service Type:</strong> ${body.serviceType}</p>
-            <p><strong>Deadline:</strong> ${body.deadlineDate || 'Not specified'}</p>
-            <p><strong>Special Instructions:</strong> ${body.specialInstructions || 'None'}</p>
-          `;
+          let defendantsData = null;
+          if (body.defendantsData) {
+            try {
+              defendantsData = typeof body.defendantsData === 'string' ? JSON.parse(body.defendantsData) : body.defendantsData;
+            } catch (e) { defendantsData = null; }
+          }
+          const emailHtml = buildServiceRequestEmailHtml({
+            clientName: body.clientName,
+            contactName: body.contactName,
+            email: body.email,
+            phone: body.phone,
+            addressLine1: body.addressLine1,
+            addressLine2: body.addressLine2,
+            city: body.city,
+            state: body.state,
+            zip: body.zip,
+            defendantName: body.defendantName,
+            caseNumber: body.caseNumber,
+            courtJurisdiction: body.courtJurisdiction,
+            serviceType: body.serviceType,
+            deadlineDate: body.deadlineDate,
+            specialInstructions: body.specialInstructions,
+            defendantsData: defendantsData
+          });
           const emailResult = await sendSMTPEmail({
             to: TO_EMAIL,
             subject: `New Service Request - ${body.serviceType} from ${body.clientName}`,
