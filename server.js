@@ -524,6 +524,11 @@ const server = http.createServer(async (req, res) => {
         
         // Process PST in background (异步，不阻塞响应)
         setImmediate(() => {
+          logger.info(LOG_CATEGORIES.PST_API, 'Starting PST contact form processing', {
+            firstName: body.firstName,
+            lastName: body.lastName,
+            email: body.email
+          });
           processContactFormToPST({
             firstName: body.firstName,
             lastName: body.lastName,
@@ -533,8 +538,11 @@ const server = http.createServer(async (req, res) => {
             city: body.city,
             state: body.state
           }).then(pstResult => {
+            logger.info(LOG_CATEGORIES.PST_API, 'PST contact form result received', pstResult);
             if (pstResult.success) {
               logger.info(LOG_CATEGORIES.PST_API, 'Contact saved to PST', { entitySerialNumber: pstResult.entitySerialNumber });
+            } else {
+              logger.warn(LOG_CATEGORIES.PST_API, 'Contact NOT saved to PST', { message: pstResult.message });
             }
           }).catch(err => {
             logger.error(LOG_CATEGORIES.PST_API, 'Background PST contact error', err);

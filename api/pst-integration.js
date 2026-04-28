@@ -32,7 +32,8 @@ class PSTAPIClient {
     const timer = perf.startTimer('pst_getToken');
     logger.info(LOG_CATEGORIES.PST_API, 'PST Token Request started', {
       dbsCode: this.dbsCode,
-      baseUrl: this.baseUrl
+      baseUrl: this.baseUrl,
+      isVercel: process.env.VERCEL === 'true'
     });
 
     if (cachedToken && tokenExpiry && Date.now() < tokenExpiry - 60000) {
@@ -45,6 +46,10 @@ class PSTAPIClient {
       apiusername: this.apiUsername,
       apipassword: this.apiPassword,
       dbscode: this.dbsCode
+    });
+
+    logger.info(LOG_CATEGORIES.PST_API, 'Making token request to PST API', {
+      url: this.baseUrl + PST_API_CONFIG.tokenEndpoint
     });
 
     try {
@@ -381,7 +386,9 @@ function getPSTClient() {
     hasUsername: !!apiUsername,
     hasPassword: !!apiPassword,
     dbsCode,
-    useTest
+    useTest,
+    envVERCEL: process.env.VERCEL,
+    nodeEnv: process.env.NODE_ENV
   });
 
   if (!apiUsername || !apiPassword) {
@@ -389,7 +396,9 @@ function getPSTClient() {
     return null;
   }
 
-  return new PSTAPIClient(apiUsername, apiPassword, dbsCode, useTest);
+  const client = new PSTAPIClient(apiUsername, apiPassword, dbsCode, useTest);
+  logger.info(LOG_CATEGORIES.PST_API, 'PST client created successfully');
+  return client;
 }
 
 // Helper: Map service type to priority
@@ -519,7 +528,9 @@ async function findOrCreateCase(pstClient, caseData) {
 
 // Process contact form submission to PST
 async function processContactFormToPST(formData) {
-  logger.info(LOG_CATEGORIES.PST_API, 'processContactFormToPST started', {
+  const timer = perf.startTimer('processContactFormToPST');
+  logger.info(LOG_CATEGORIES.PST_API, '========================================');
+  logger.info(LOG_CATEGORIES.PST_API, 'processContactFormToPST STARTED', {
     firstName: formData.firstName,
     lastName: formData.lastName,
     email: formData.email,
@@ -528,7 +539,8 @@ async function processContactFormToPST(formData) {
 
   const pstClient = getPSTClient();
   if (!pstClient) {
-    logger.info(LOG_CATEGORIES.PST_API, 'PST client not configured, skipping PST contact submission');
+    timer.end();
+    logger.warn(LOG_CATEGORIES.PST_API, 'PST client not configured, skipping PST contact submission');
     return { success: false, message: 'PST not configured' };
   }
 
@@ -551,8 +563,10 @@ async function processContactFormToPST(formData) {
     logger.info(LOG_CATEGORIES.PST_API, 'Creating/finding entity for contact form', entityData);
     const entity = await findOrCreateEntity(pstClient, entityData);
     
+    timer.end();
     if (entity) {
-      logger.info(LOG_CATEGORIES.PST_API, `Contact form SAVED TO PST SUCCESSFULLY`, { 
+      logger.info(LOG_CATEGORIES.PST_API, '========================================');
+      logger.info(LOG_CATEGORIES.PST_API, 'Contact form SAVED TO PST SUCCESSFULLY', { 
         entitySerialNumber: entity.SerialNumber,
         firmName: entity.FirmName,
         email: entity.EmailAddress,
@@ -564,14 +578,18 @@ async function processContactFormToPST(formData) {
     logger.warn(LOG_CATEGORIES.PST_API, 'Contact form FAILED TO SAVE - no entity returned');
     return { success: false, message: 'Failed to create entity in PST' };
   } catch (error) {
-    logger.error(LOG_CATEGORIES.PST_API, 'processContactFormToPST error', error);
+    timer.end();
+    logger.error(LOG_CATEGORIES.PST_API, '========================================');
+    logger.error(LOG_CATEGORIES.PST_API, 'processContactFormToPST FAILED', error);
     return { success: false, message: error.message };
   }
 }
 
 // Process service request form submission to PST
 async function processServiceRequestToPST(formData) {
-  logger.info(LOG_CATEGORIES.PST_API, 'processServiceRequestToPST started', {
+  const timer = perf.startTimer('processServiceRequestToPST');
+  logger.info(LOG_CATEGORIES.PST_API, '========================================');
+  logger.info(LOG_CATEGORIES.PST_API, 'processServiceRequestToPST STARTED', {
     clientName: formData.clientName,
     contactName: formData.contactName,
     email: formData.email,
@@ -582,7 +600,8 @@ async function processServiceRequestToPST(formData) {
 
   const pstClient = getPSTClient();
   if (!pstClient) {
-    logger.info(LOG_CATEGORIES.PST_API, 'PST client not configured, skipping PST service request');
+    timer.end();
+    logger.warn(LOG_CATEGORIES.PST_API, 'PST client not configured, skipping PST service request');
     return { success: false, message: 'PST not configured' };
   }
 
@@ -721,7 +740,9 @@ async function processServiceRequestToPST(formData) {
 
     if (jobResponse.IsSuccess && jobResponse.Jobs && jobResponse.Jobs.length > 0) {
       const jobNumber = jobResponse.Jobs[0].JobNumber;
-      logger.info(LOG_CATEGORIES.PST_API, `Service request SAVED TO PST SUCCESSFULLY`, { 
+      timer.end();
+      logger.info(LOG_CATEGORIES.PST_API, '========================================');
+      logger.info(LOG_CATEGORIES.PST_API, 'Service request SAVED TO PST SUCCESSFULLY', { 
         jobNumber,
         attorneySerialNumber: attorneyEntity?.SerialNumber,
         clientSerialNumber: clientEntity?.SerialNumber,
@@ -746,6 +767,8 @@ async function processServiceRequestToPST(formData) {
         message: `Service request created in PST. Job #${jobNumber}`
       };
     } else {
+      timer.end();
+      logger.error(LOG_CATEGORIES.PST_API, '========================================');
       logger.error(LOG_CATEGORIES.PST_API, 'Job creation failed', null, { 
         errors: jobResponse.TransactionErrors,
         formData: {
@@ -760,7 +783,9 @@ async function processServiceRequestToPST(formData) {
       };
     }
   } catch (error) {
-    logger.error(LOG_CATEGORIES.PST_API, 'processServiceRequestToPST error', error);
+    timer.end();
+    logger.error(LOG_CATEGORIES.PST_API, '========================================');
+    logger.error(LOG_CATEGORIES.PST_API, 'processServiceRequestToPST FAILED', error);
     return { success: false, message: error.message };
   }
 }
