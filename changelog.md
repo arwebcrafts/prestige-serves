@@ -10,7 +10,8 @@
 ### Changed
 - Form submissions now send beautifully designed HTML emails instead of plain text
 - PST API calls now run asynchronously in background (user gets immediate response)
-- Significantly reduced form submission wait time (~7s down from 30s+)
+- Email sending now also async for instant ~1 second response time
+- Significantly reduced form submission wait time (~1s down from 30s+)
 
 ### Changed
 - Contact page hero section mobile height reduced for better mobile view
