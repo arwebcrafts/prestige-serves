@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { neon } = require('@neondatabase/serverless');
 const { put } = require('@vercel/blob');
+const { processContactFormToPST, processServiceRequestToPST } = require('./api/pst-integration');
 
 const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_P8aH3JElyXBw@ep-gentle-frog-a4yzwn3w-pooler.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require';
 const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN || 'vercel_blob_rw_1qFTdRzk36aoQZsG_uiiyBg0DZ8Sl5zySi6DmqaMnIz9eqV';
@@ -122,7 +123,23 @@ const server = http.createServer(async (req, res) => {
             ${body.reason}, ${body.county}, ${body.state}, ${body.caseDetails}, ${body.urgency}, ${body.consent || false}
           )
         `;
-        jsonResponse(res, 201, { success: true, message: 'Contact form submitted successfully' });
+        
+        // Submit to PST API if configured
+        const pstResult = await processContactFormToPST({
+          firstName: body.firstName,
+          lastName: body.lastName,
+          company: body.company,
+          email: body.email,
+          phone: body.phone,
+          city: body.city,
+          state: body.state
+        });
+        
+        if (pstResult.success) {
+          console.log('Contact form also saved to PST:', pstResult.entitySerialNumber);
+        }
+        
+        jsonResponse(res, 201, { success: true, message: 'Contact form submitted successfully', pstSync: pstResult.success });
       } catch (err) {
         console.error('Contact submission error:', err);
         jsonResponse(res, 500, { success: false, message: 'Database error' });
@@ -178,7 +195,36 @@ const server = http.createServer(async (req, res) => {
               ${f.specialInstructions || ''}, ${f.defendantsData || null}, ${fileData}
             )
           `;
-          jsonResponse(res, 201, { success: true, message: 'Service request submitted successfully' });
+          
+          // Submit to PST API if configured
+          const pstResult = await processServiceRequestToPST({
+            clientName: f.clientName,
+            contactName: f.contactName,
+            email: f.email,
+            phone: f.phone,
+            addressLine1: f.addressLine1,
+            city: f.city,
+            state: f.state,
+            zip: f.zip,
+            defendantName: f.defendantName,
+            caseNumber: f.caseNumber,
+            courtJurisdiction: f.courtJurisdiction,
+            serviceType: f.serviceType,
+            deadlineDate: f.deadlineDate,
+            specialInstructions: f.specialInstructions,
+            defendantsData: f.defendantsData
+          });
+          
+          if (pstResult.success) {
+            console.log('Service request also saved to PST:', pstResult.jobNumber);
+          }
+          
+          jsonResponse(res, 201, { 
+            success: true, 
+            message: 'Service request submitted successfully',
+            pstSync: pstResult.success,
+            pstJobNumber: pstResult.jobNumber || null
+          });
         } else {
           const body = await parseBody(req);
           await sql`
@@ -196,7 +242,16 @@ const server = http.createServer(async (req, res) => {
               ${body.specialInstructions}, ${body.defendantsData || null}
             )
           `;
-          jsonResponse(res, 201, { success: true, message: 'Service request submitted successfully' });
+          
+          // Submit to PST API if configured
+          const pstResult = await processServiceRequestToPST(body);
+          
+          jsonResponse(res, 201, { 
+            success: true, 
+            message: 'Service request submitted successfully',
+            pstSync: pstResult.success,
+            pstJobNumber: pstResult.jobNumber || null
+          });
         }
       } catch (err) {
         console.error('Request submission error:', err);
