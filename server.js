@@ -99,7 +99,7 @@ const server = http.createServer(async (req, res) => {
   // API routes
   if (url.startsWith('/api/')) {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (method === 'OPTIONS') {
@@ -262,6 +262,20 @@ const server = http.createServer(async (req, res) => {
         }
       } catch (err) {
         console.error('Admin contact detail error:', err);
+        jsonResponse(res, 500, { success: false, message: 'Database error' });
+      }
+      return;
+    }
+
+    // Admin API - Delete service request
+    if (url.match(/^\/api\/admin\/request\/\d+$/) && method === 'DELETE') {
+      const id = url.split('/').pop();
+      try {
+        const sql = getSql();
+        await sql`DELETE FROM service_requests WHERE id = ${id}`;
+        jsonResponse(res, 200, { success: true, message: 'Deleted' });
+      } catch (err) {
+        console.error('Admin request delete error:', err);
         jsonResponse(res, 500, { success: false, message: 'Database error' });
       }
       return;
