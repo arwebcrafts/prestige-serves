@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { logger, LOG_CATEGORIES } from '../../logger.js';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -35,7 +36,7 @@ export default async function handler(req, res) {
 
     return res.status(405).json({ message: 'Method not allowed' });
   } catch (err) {
-    console.error('Admin request id error:', err);
+    logger.error(LOG_CATEGORIES.API, 'Admin request id error', err);
     return res.status(500).json({ success: false, message: 'Database error' });
   }
 }

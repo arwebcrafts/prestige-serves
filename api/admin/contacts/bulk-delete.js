@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { logger, LOG_CATEGORIES } from '../../logger.js';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -28,7 +29,7 @@ export default async function handler(req, res) {
     await sql`DELETE FROM contact_submissions WHERE id = ANY(${intIds})`;
     return res.status(200).json({ success: true, message: 'Contacts deleted', deletedCount: ids.length });
   } catch (err) {
-    console.error('Admin contacts bulk delete error:', err);
+    logger.error(LOG_CATEGORIES.API, 'Admin contacts bulk delete error', err);
     return res.status(500).json({ success: false, message: 'Database error' });
   }
 }

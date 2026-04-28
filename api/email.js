@@ -1,4 +1,5 @@
 import { sendSMTPEmail, TO_EMAIL, FROM_EMAIL } from './smtp-email.js';
+import { logger, emailLogger, LOG_CATEGORIES } from './logger.js';
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
@@ -33,7 +34,7 @@ export default async function handler(req, res) {
     });
 
     if (!emailResult.success) {
-      console.error('SMTP Email error:', emailResult.error);
+      logger.error(LOG_CATEGORIES.EMAIL, 'SMTP Email error', new Error(emailResult.error));
       return res.status(500).json({
         success: false,
         message: 'Failed to send email',
@@ -43,7 +44,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ success: true, data: emailResult });
   } catch (err) {
-    console.error('Email send error:', err);
+    logger.error(LOG_CATEGORIES.EMAIL, 'Email send error', err);
     return res.status(500).json({ success: false, message: 'Server error: ' + err.message });
   }
 }

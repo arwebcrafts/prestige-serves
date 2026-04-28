@@ -4,6 +4,7 @@ import formidable from 'formidable';
 import fs from 'fs';
 import { sendSMTPEmail } from './smtp-email.js';
 import { buildServiceRequestEmailHtml } from './email-templates.js';
+import { logger, perf, blobLogger, LOG_CATEGORIES } from './logger.js';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
@@ -102,13 +103,16 @@ export default async function handler(req, res) {
         if (file && file.filepath) {
           try {
             const buffer = fs.readFileSync(file.filepath);
+            const blobTimer = perf.startTimer('blobUpload');
             const blobResult = await put(file.originalFilename || file.newFilename, buffer, {
               access: 'public',
               token: BLOB_READ_WRITE_TOKEN,
             });
+            blobTimer.end();
+            blobLogger.uploaded(file.originalFilename || file.newFilename, buffer.length);
             uploadedFiles.push({ name: file.originalFilename || file.newFilename, url: blobResult.url });
           } catch (blobErr) {
-            console.error('Blob upload error:', blobErr);
+            logger.error(LOG_CATEGORIES.BLOB, 'Blob upload error', blobErr, { filename: file.originalFilename || file.newFilename });
           }
         }
       }
@@ -149,7 +153,7 @@ export default async function handler(req, res) {
 
     return res.status(201).json({ success: true, message: 'Service request submitted successfully', emailSent: emailResult.success });
   } catch (err) {
-    console.error('Request submission error:', err);
+    logger.error(LOG_CATEGORIES.FORM, 'Request submission error', err);
     return res.status(500).json({ success: false, message: 'Server error: ' + err.message });
   }
 }

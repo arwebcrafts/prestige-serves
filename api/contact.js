@@ -1,6 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 import { sendSMTPEmail } from './smtp-email.js';
 import { buildContactEmailHtml } from './email-templates.js';
+import { logger, perf, emailLogger, LOG_CATEGORIES } from './logger.js';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -71,13 +72,13 @@ export default async function handler(req, res) {
     });
 
     const emailSentStatus = emailResult.success ? 1 : 0;
-    console.log('api/contact.js - email result:', emailResult.success, 'updating email_sent to:', emailSentStatus);
+    logger.info(LOG_CATEGORIES.EMAIL, 'Contact email result', { success: emailResult.success, status: emailSentStatus });
     await sql`UPDATE contact_submissions SET email_sent = ${emailSentStatus} WHERE id = (SELECT id FROM contact_submissions WHERE email = ${email || ''} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1)`;
-    console.log('api/contact.js - email_sent update completed');
+    logger.info(LOG_CATEGORIES.DB, 'Contact email_sent update completed');
     
     return res.status(201).json({ success: true, message: 'Contact form submitted successfully', emailSent: emailResult.success });
   } catch (err) {
-    console.error('Contact submission error:', err);
+    logger.error(LOG_CATEGORIES.FORM, 'Contact submission error', err);
     return res.status(500).json({ success: false, message: 'Database error' });
   }
 }

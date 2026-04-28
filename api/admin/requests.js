@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { logger, LOG_CATEGORIES } from '../logger.js';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -22,7 +23,7 @@ export default async function handler(req, res) {
     const result = await sql`SELECT * FROM service_requests ORDER BY created_at DESC LIMIT 100`;
     return res.status(200).json({ success: true, data: result });
   } catch (err) {
-    console.error('Admin requests error:', err);
+    logger.error(LOG_CATEGORIES.API, 'Admin requests error', err);
     return res.status(500).json({ success: false, message: 'Database error' });
   }
 }

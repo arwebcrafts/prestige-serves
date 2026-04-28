@@ -6,6 +6,7 @@ const { neon } = require('@neondatabase/serverless');
 const { put } = require('@vercel/blob');
 const { processContactFormToPST, processServiceRequestToPST } = require('./api/pst-integration');
 const nodemailer = require('nodemailer');
+const { logger, perf, emailLogger, pstLogger, blobLogger, LOG_CATEGORIES } = require('./api/logger');
 
 const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_P8aH3JElyXBw@ep-gentle-frog-a4yzwn3w-pooler.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require';
 const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN || 'vercel_blob_rw_1qFTdRzk36aoQZsG_uiiyBg0DZ8Sl5zySi6DmqaMnIz9eqV';
@@ -40,8 +41,10 @@ function getSMTPTransporter() {
 }
 
 async function sendSMTPEmail({ to, subject, html, text }) {
+  const timer = perf.startTimer('sendSMTPEmail');
   const transport = getSMTPTransporter();
   if (!transport) {
+    logger.warn(LOG_CATEGORIES.EMAIL, 'SMTP transporter not configured');
     return { success: false, reason: 'SMTP transporter not configured' };
   }
   try {
@@ -52,9 +55,12 @@ async function sendSMTPEmail({ to, subject, html, text }) {
       html: html || '',
       text: text || '',
     });
+    timer.end();
+    emailLogger.sent(to, subject.substring(0, 50));
     return { success: true, messageId: info.messageId };
   } catch (err) {
-    console.error('SMTP Email error:', err);
+    timer.end();
+    logger.error(LOG_CATEGORIES.EMAIL, 'SMTP Email error', err);
     return { success: false, error: err.message };
   }
 }
@@ -461,6 +467,7 @@ const server = http.createServer(async (req, res) => {
 
     // Contact form submission
     if (url === '/api/contact' && method === 'POST') {
+      const timer = perf.startTimer('contactFormSubmission');
       try {
         const body = await parseBody(req);
         const sql = getSql();
@@ -483,6 +490,7 @@ const server = http.createServer(async (req, res) => {
         
         // Send email notification to owner (异步，不阻塞响应)
         setImmediate(() => {
+          const emailTimer = perf.startTimer('contactEmail');
           const emailHtml = buildContactEmailHtml({
             firstName: body.firstName,
             lastName: body.lastName,
@@ -500,15 +508,16 @@ const server = http.createServer(async (req, res) => {
             html: emailHtml,
             text: `New Contact from ${body.firstName} ${body.lastName}. Company: ${body.company || 'N/A'}. Reason: ${body.reason || 'N/A'}.`,
           }).then(emailResult => {
+            emailTimer.end();
             const emailSentStatus = emailResult.success ? 1 : 0;
             // Update email_sent column
             getSql()`UPDATE contact_submissions SET email_sent = ${emailSentStatus} WHERE id = (SELECT id FROM contact_submissions WHERE email = ${body.email} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1)`
-              .then(() => console.log('Contact email_sent update completed'))
-              .catch(dbErr => console.error('Contact email_sent update error:', dbErr));
+              .then(() => logger.info(LOG_CATEGORIES.DB, 'Contact email_sent update completed'))
+              .catch(dbErr => logger.error(LOG_CATEGORIES.DB, 'Contact email_sent update error', dbErr));
             if (emailResult.success) {
-              console.log('Contact form email sent:', emailResult.messageId);
+              logger.info(LOG_CATEGORIES.EMAIL, 'Contact form email sent', { messageId: emailResult.messageId });
             } else {
-              console.error('Contact form email failed:', emailResult.error);
+              logger.error(LOG_CATEGORIES.EMAIL, 'Contact form email failed', new Error(emailResult.error));
             }
           });
         });
@@ -525,14 +534,15 @@ const server = http.createServer(async (req, res) => {
             state: body.state
           }).then(pstResult => {
             if (pstResult.success) {
-              console.log('Contact form also saved to PST:', pstResult.entitySerialNumber);
+              logger.info(LOG_CATEGORIES.PST_API, 'Contact saved to PST', { entitySerialNumber: pstResult.entitySerialNumber });
             }
           }).catch(err => {
-            console.error('Background PST contact error:', err);
+            logger.error(LOG_CATEGORIES.PST_API, 'Background PST contact error', err);
           });
         });
       } catch (err) {
-        console.error('Contact submission error:', err);
+        logger.error(LOG_CATEGORIES.FORM, 'Contact submission error', err);
+        timer.end();
         jsonResponse(res, 500, { success: false, message: 'Database error' });
       }
       return;
@@ -540,6 +550,7 @@ const server = http.createServer(async (req, res) => {
 
     // Request form submission with file upload
     if (url === '/api/request' && method === 'POST') {
+      const timer = perf.startTimer('serviceRequestSubmission');
       try {
         const contentType = req.headers['content-type'] || '';
         const sql = getSql();
@@ -554,16 +565,19 @@ const server = http.createServer(async (req, res) => {
             const uploadedFiles = [];
             for (const file of parsed.files) {
               try {
+                const blobTimer = perf.startTimer('blobUpload');
                 const blobResult = await put(file.originalName, file.buffer, {
                   access: 'public',
                   token: BLOB_READ_WRITE_TOKEN
                 });
+                blobTimer.end();
+                blobLogger.uploaded(file.originalName, file.buffer.length);
                 uploadedFiles.push({
                   name: file.originalName,
                   url: blobResult.url
                 });
               } catch (blobErr) {
-                console.error('Blob upload error:', blobErr);
+                logger.error(LOG_CATEGORIES.BLOB, 'Blob upload error', blobErr, { filename: file.originalName });
               }
             }
             if (uploadedFiles.length > 0) {
@@ -626,15 +640,15 @@ const server = http.createServer(async (req, res) => {
               text: `New Service Request from ${f.clientName}. Contact: ${f.contactName}, ${f.email}, ${f.phone}. Service type: ${f.serviceType}.`,
             }).then(emailResult => {
               const emailSentStatus = emailResult.success ? 1 : 0;
-              console.log('Updating email_sent to', emailSentStatus, 'for email:', f.email);
+              logger.debug(LOG_CATEGORIES.EMAIL, 'Updating email_sent', { status: emailSentStatus, email: f.email });
               // Update email_sent column - await the SQL query to catch errors
               getSql()`UPDATE service_requests SET email_sent = ${emailSentStatus} WHERE id = (SELECT id FROM service_requests WHERE email = ${f.email} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1)`
-                .then(() => console.log('email_sent update completed'))
-                .catch(dbErr => console.error('email_sent update error:', dbErr));
+                .then(() => logger.info(LOG_CATEGORIES.DB, 'email_sent update completed'))
+                .catch(dbErr => logger.error(LOG_CATEGORIES.DB, 'email_sent update error', dbErr));
               if (emailResult.success) {
-                console.log('Service request email sent:', emailResult.messageId);
+                logger.info(LOG_CATEGORIES.EMAIL, 'Service request email sent', { messageId: emailResult.messageId });
               } else {
-                console.error('Service request email failed:', emailResult.error);
+                logger.error(LOG_CATEGORIES.EMAIL, 'Service request email failed', new Error(emailResult.error));
               }
             });
           });
@@ -659,10 +673,10 @@ const server = http.createServer(async (req, res) => {
               defendantsData: f.defendantsData
             }).then(pstResult => {
               if (pstResult.success) {
-                console.log('Service request also saved to PST:', pstResult.jobNumber);
+                logger.info(LOG_CATEGORIES.PST_API, 'Service request saved to PST', { jobNumber: pstResult.jobNumber });
               }
             }).catch(err => {
-              console.error('Background PST request error:', err);
+              logger.error(LOG_CATEGORIES.PST_API, 'Background PST request error', err);
             });
           });
         } else {
@@ -727,12 +741,12 @@ const server = http.createServer(async (req, res) => {
               const emailSentStatus = emailResult.success ? 1 : 0;
               // Update email_sent column
               getSql()`UPDATE service_requests SET email_sent = ${emailSentStatus} WHERE id = (SELECT id FROM service_requests WHERE email = ${body.email} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1)`
-                .then(() => console.log('Service (async) email_sent update completed'))
-                .catch(dbErr => console.error('Service (async) email_sent update error:', dbErr));
+                .then(() => logger.info(LOG_CATEGORIES.DB, 'Service (async) email_sent update completed'))
+                .catch(dbErr => logger.error(LOG_CATEGORIES.DB, 'Service (async) email_sent update error', dbErr));
               if (emailResult.success) {
-                console.log('Service request email sent:', emailResult.messageId);
+                logger.info(LOG_CATEGORIES.EMAIL, 'Service request email sent', { messageId: emailResult.messageId });
               } else {
-                console.error('Service request email failed:', emailResult.error);
+                logger.error(LOG_CATEGORIES.EMAIL, 'Service request email failed', new Error(emailResult.error));
               }
             });
           });
@@ -741,15 +755,15 @@ const server = http.createServer(async (req, res) => {
           setImmediate(() => {
             processServiceRequestToPST(body).then(pstResult => {
               if (pstResult.success) {
-                console.log('Service request also saved to PST:', pstResult.jobNumber);
+                logger.info(LOG_CATEGORIES.PST_API, 'Service request saved to PST', { jobNumber: pstResult.jobNumber });
               }
             }).catch(err => {
-              console.error('Background PST request error:', err);
+              logger.error(LOG_CATEGORIES.PST_API, 'Background PST request error', err);
             });
           });
         }
       } catch (err) {
-        console.error('Request submission error:', err);
+        logger.error(LOG_CATEGORIES.FORM, 'Request submission error', err);
         jsonResponse(res, 500, { success: false, message: 'Database error: ' + err.message });
       }
       return;
@@ -762,7 +776,7 @@ const server = http.createServer(async (req, res) => {
         const result = await sql`SELECT * FROM service_requests ORDER BY created_at DESC LIMIT 100`;
         jsonResponse(res, 200, { success: true, data: result });
       } catch (err) {
-        console.error('Admin requests error:', err);
+        logger.error(LOG_CATEGORIES.API, 'Admin requests error', err);
         jsonResponse(res, 500, { success: false, message: 'Database error' });
       }
       return;
@@ -775,7 +789,7 @@ const server = http.createServer(async (req, res) => {
         const result = await sql`SELECT * FROM contact_submissions ORDER BY created_at DESC LIMIT 100`;
         jsonResponse(res, 200, { success: true, data: result });
       } catch (err) {
-        console.error('Admin contacts error:', err);
+        logger.error(LOG_CATEGORIES.API, 'Admin contacts error', err);
         jsonResponse(res, 500, { success: false, message: 'Database error' });
       }
       return;
@@ -793,7 +807,7 @@ const server = http.createServer(async (req, res) => {
           jsonResponse(res, 404, { success: false, message: 'Not found' });
         }
       } catch (err) {
-        console.error('Admin request detail error:', err);
+        logger.error(LOG_CATEGORIES.API, 'Admin request detail error', err);
         jsonResponse(res, 500, { success: false, message: 'Database error' });
       }
       return;
@@ -811,7 +825,7 @@ const server = http.createServer(async (req, res) => {
           jsonResponse(res, 404, { success: false, message: 'Not found' });
         }
       } catch (err) {
-        console.error('Admin contact detail error:', err);
+        logger.error(LOG_CATEGORIES.API, 'Admin contact detail error', err);
         jsonResponse(res, 500, { success: false, message: 'Database error' });
       }
       return;
@@ -825,7 +839,7 @@ const server = http.createServer(async (req, res) => {
         await sql`DELETE FROM service_requests WHERE id = ${id}`;
         jsonResponse(res, 200, { success: true, message: 'Deleted' });
       } catch (err) {
-        console.error('Admin delete request error:', err);
+        logger.error(LOG_CATEGORIES.API, 'Admin delete request error', err);
         jsonResponse(res, 500, { success: false, message: 'Database error' });
       }
       return;
@@ -839,7 +853,7 @@ const server = http.createServer(async (req, res) => {
         await sql`DELETE FROM contact_submissions WHERE id = ${id}`;
         jsonResponse(res, 200, { success: true, message: 'Deleted' });
       } catch (err) {
-        console.error('Admin delete contact error:', err);
+        logger.error(LOG_CATEGORIES.API, 'Admin delete contact error', err);
         jsonResponse(res, 500, { success: false, message: 'Database error' });
       }
       return;
@@ -874,21 +888,7 @@ const server = http.createServer(async (req, res) => {
         
         jsonResponse(res, 200, { success: true, ownerEmail: global.TO_EMAIL });
       } catch (err) {
-        console.error('Settings update error:', err);
-        jsonResponse(res, 500, { success: false, message: 'Database error' });
-      }
-      return;
-    }
-
-    // Admin API - Delete service request
-    if (url.match(/^\/api\/admin\/request\/\d+$/) && method === 'DELETE') {
-      const id = url.split('/').pop();
-      try {
-        const sql = getSql();
-        await sql`DELETE FROM service_requests WHERE id = ${id}`;
-        jsonResponse(res, 200, { success: true, message: 'Deleted' });
-      } catch (err) {
-        console.error('Admin request delete error:', err);
+        logger.error(LOG_CATEGORIES.API, 'Settings update error', err);
         jsonResponse(res, 500, { success: false, message: 'Database error' });
       }
       return;
@@ -918,7 +918,7 @@ const server = http.createServer(async (req, res) => {
           jsonResponse(res, 500, { success: false, message: 'Failed to send email', error: emailResult.error });
         }
       } catch (err) {
-        console.error('Email API error:', err);
+        logger.error(LOG_CATEGORIES.EMAIL, 'Email API error', err);
         jsonResponse(res, 500, { success: false, message: 'Server error: ' + err.message });
       }
       return;
@@ -950,5 +950,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(3002, () => {
-  console.log('Server running on http://localhost:3002');
+  logger.info(LOG_CATEGORIES.SERVER, 'Server started', { port: 3002 });
 });

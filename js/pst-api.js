@@ -49,7 +49,7 @@ class PSTAPIClient {
     const data = await response.json();
     
     // Cache the token with expiry buffer (expires_in is in seconds)
-    cachedToken = data.token;
+    cachedToken = data.access_token;
     tokenExpiry = Date.now() + (data.expires_in * 1000);
     
     return cachedToken;

@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { logger, emailLogger, LOG_CATEGORIES } from './logger.js';
 
 const HOSTINGER_SMTP_HOST = process.env.HOSTINGER_SMTP_HOST || 'smtp.hostinger.com';
 const HOSTINGER_SMTP_PORT = parseInt(process.env.HOSTINGER_SMTP_PORT) || 465;
@@ -12,7 +13,7 @@ let transporter = null;
 
 function getTransporter() {
   if (!HOSTINGER_SMTP_USER || !HOSTINGER_SMTP_PASS) {
-    console.warn('Hostinger SMTP credentials not configured. Set HOSTINGER_SMTP_USER and HOSTINGER_SMTP_PASS in environment.');
+    logger.warn(LOG_CATEGORIES.EMAIL, 'Hostinger SMTP credentials not configured. Set HOSTINGER_SMTP_USER and HOSTINGER_SMTP_PASS in environment.');
     return null;
   }
 
@@ -48,10 +49,10 @@ export async function sendSMTPEmail({ to, subject, html, text }) {
     };
 
     const info = await transport.sendMail(mailOptions);
-    console.log('Email sent via Hostinger SMTP:', info.messageId);
+    logger.info(LOG_CATEGORIES.EMAIL, 'Email sent via Hostinger SMTP', { messageId: info.messageId });
     return { success: true, messageId: info.messageId, response: info };
   } catch (err) {
-    console.error('SMTP Email send error:', err);
+    logger.error(LOG_CATEGORIES.EMAIL, 'SMTP Email send error', err);
     return { success: false, error: err.message };
   }
 }
