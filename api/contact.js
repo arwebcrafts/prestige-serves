@@ -66,7 +66,7 @@ export default async function handler(req, res) {
     });
 
     const emailSentStatus = emailResult.success ? 1 : 0;
-    await sql`UPDATE contact_submissions SET email_sent = ${emailSentStatus} WHERE email = ${email || ''} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1`;
+    await sql`UPDATE contact_submissions SET email_sent = ${emailSentStatus} WHERE id = (SELECT id FROM contact_submissions WHERE email = ${email || ''} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1)`;
     
     return res.status(201).json({ success: true, message: 'Contact form submitted successfully', emailSent: emailResult.success });
   } catch (err) {

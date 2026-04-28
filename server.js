@@ -464,13 +464,17 @@ const server = http.createServer(async (req, res) => {
       try {
         const body = await parseBody(req);
         const sql = getSql();
+        
+        // Ensure email_sent column exists
+        await sql`ALTER TABLE contact_submissions ADD COLUMN IF NOT EXISTS email_sent INTEGER DEFAULT -1`;
+        
         await sql`
           INSERT INTO contact_submissions (
             first_name, last_name, company, email, phone,
-            reason, county, state, case_details, urgency, consent
+            reason, county, state, case_details, urgency, consent, email_sent
           ) VALUES (
             ${body.firstName}, ${body.lastName}, ${body.company}, ${body.email}, ${body.phone},
-            ${body.reason}, ${body.county}, ${body.state}, ${body.caseDetails}, ${body.urgency}, ${body.consent || false}
+            ${body.reason}, ${body.county}, ${body.state}, ${body.caseDetails}, ${body.urgency}, ${body.consent || false}, -1
           )
         `;
         
@@ -573,13 +577,13 @@ const server = http.createServer(async (req, res) => {
               address_line1, address_line2, city, state, zip,
               defendant_name, case_number, court_jurisdiction,
               multiple_defendants, service_type, deadline_date,
-              special_instructions, defendants_data, uploaded_files
+              special_instructions, defendants_data, uploaded_files, email_sent
             ) VALUES (
               ${f.clientName || ''}, ${f.contactName || ''}, ${f.email || ''}, ${f.phone || ''},
               ${f.addressLine1 || ''}, ${f.addressLine2 || ''}, ${f.city || ''}, ${f.state || ''}, ${f.zip || ''},
               ${f.defendantName || ''}, ${f.caseNumber || ''}, ${f.courtJurisdiction || ''},
               ${f.multiple_defendants === 'true'}, ${f.serviceType || ''}, ${f.deadlineDate || null},
-              ${f.specialInstructions || ''}, ${f.defendantsData || null}, ${fileData}
+              ${f.specialInstructions || ''}, ${f.defendantsData || null}, ${fileData}, -1
             )
           `;
           
@@ -663,19 +667,22 @@ const server = http.createServer(async (req, res) => {
           });
         } else {
           const body = await parseBody(req);
+          // Ensure email_sent column exists
+          await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS email_sent INTEGER DEFAULT -1`;
+          
           await sql`
             INSERT INTO service_requests (
               client_name, contact_name, email, phone,
               address_line1, address_line2, city, state, zip,
               defendant_name, case_number, court_jurisdiction,
               multiple_defendants, service_type, deadline_date,
-              special_instructions, defendants_data
+              special_instructions, defendants_data, email_sent
             ) VALUES (
               ${body.clientName}, ${body.contactName}, ${body.email}, ${body.phone},
               ${body.addressLine1}, ${body.addressLine2}, ${body.city}, ${body.state}, ${body.zip},
               ${body.defendantName}, ${body.caseNumber}, ${body.courtJurisdiction},
               ${body.multipleDefendants || false}, ${body.serviceType}, ${body.deadlineDate},
-              ${body.specialInstructions}, ${body.defendantsData || null}
+              ${body.specialInstructions}, ${body.defendantsData || null}, -1
             )
           `;
           
