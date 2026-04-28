@@ -4,13 +4,25 @@ const DATABASE_URL = process.env.DATABASE_URL;
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
     res.end();
     return;
+  }
+
+  if (req.method === 'DELETE') {
+    try {
+      const { id } = req.query;
+      const sql = neon(DATABASE_URL);
+      await sql`DELETE FROM contact_submissions WHERE id = ${id}`;
+      return res.status(200).json({ success: true, message: 'Contact deleted' });
+    } catch (err) {
+      console.error('Admin contact delete error:', err);
+      return res.status(500).json({ success: false, message: 'Database error' });
+    }
   }
 
   if (req.method !== 'GET') {

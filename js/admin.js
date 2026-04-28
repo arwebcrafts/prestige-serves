@@ -3,6 +3,12 @@
 var REQUESTS_PAGE_SIZE = 10;
 var allRequests = [];
 var requestsPage = 1;
+var selectedRequests = new Set();
+
+var CONTACTS_PAGE_SIZE = 10;
+var allContacts = [];
+var contactsPage = 1;
+var selectedContacts = new Set();
 
 document.addEventListener('DOMContentLoaded', function() {
   // Check if logged in
@@ -99,6 +105,11 @@ function renderRequestsTable() {
     .map(function(r) {
       return (
         '<tr>' +
+        '<td><input type="checkbox" class="request-checkbox" value="' +
+        r.id +
+        '"' +
+        (selectedRequests.has(String(r.id)) ? ' checked' : '') +
+        ' onchange="updateRequestSelection(this)"></td>' +
         '<td>#' +
         r.id +
         '</td>' +
@@ -147,6 +158,7 @@ async function deleteRequestRow(id) {
     allRequests = allRequests.filter(function(r) {
       return String(r.id) !== String(id);
     });
+    selectedRequests.delete(String(id));
     closeDetailModal();
     updateRequestStats(allRequests);
     var pages = Math.max(1, Math.ceil(allRequests.length / REQUESTS_PAGE_SIZE));
@@ -155,6 +167,93 @@ async function deleteRequestRow(id) {
   } catch (err) {
     console.error(err);
     alert('Could not delete this row. Check the server allows DELETE on /api/admin/request/:id');
+  }
+}
+
+// Request selection functions
+function updateRequestSelection(checkbox) {
+  if (checkbox.checked) {
+    selectedRequests.add(checkbox.value);
+  } else {
+    selectedRequests.delete(checkbox.value);
+  }
+  updateSelectAllRequestsCheckbox();
+}
+
+function toggleSelectAllRequests() {
+  var checkboxes = document.querySelectorAll('.request-checkbox');
+  var selectAllCheckbox = document.getElementById('select-all-requests');
+  checkboxes.forEach(function(cb) {
+    if (selectAllCheckbox.checked) {
+      cb.checked = true;
+      selectedRequests.add(cb.value);
+    } else {
+      cb.checked = false;
+      selectedRequests.delete(cb.value);
+    }
+  });
+}
+
+function updateSelectAllRequestsCheckbox() {
+  var checkboxes = document.querySelectorAll('.request-checkbox');
+  var selectAllCheckbox = document.getElementById('select-all-requests');
+  if (checkboxes.length === 0) {
+    selectAllCheckbox.checked = false;
+    return;
+  }
+  var allChecked = true;
+  var noneChecked = true;
+  checkboxes.forEach(function(cb) {
+    if (cb.checked) noneChecked = false;
+    else allChecked = false;
+  });
+  selectAllCheckbox.checked = allChecked;
+  selectAllCheckbox.indeterminate = !allChecked && !noneChecked;
+}
+
+function selectAllRequests() {
+  document.getElementById('select-all-requests').checked = true;
+  document.querySelectorAll('.request-checkbox').forEach(function(cb) {
+    cb.checked = true;
+    selectedRequests.add(cb.value);
+  });
+}
+
+function deselectAllRequests() {
+  document.getElementById('select-all-requests').checked = false;
+  document.querySelectorAll('.request-checkbox').forEach(function(cb) {
+    cb.checked = false;
+    selectedRequests.delete(cb.value);
+  });
+  selectedRequests.clear();
+}
+
+async function deleteSelectedRequests() {
+  if (selectedRequests.size === 0) {
+    alert('No requests selected');
+    return;
+  }
+  if (!confirm('Delete ' + selectedRequests.size + ' selected request(s)? This cannot be undone.')) return;
+  try {
+    var ids = Array.from(selectedRequests);
+    var res = await fetch('/api/admin/requests/bulk-delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: ids })
+    });
+    if (!res.ok) throw new Error('Delete failed');
+    allRequests = allRequests.filter(function(r) {
+      return !selectedRequests.has(String(r.id));
+    });
+    selectedRequests.clear();
+    closeDetailModal();
+    updateRequestStats(allRequests);
+    var pages = Math.max(1, Math.ceil(allRequests.length / REQUESTS_PAGE_SIZE));
+    if (requestsPage > pages) requestsPage = pages;
+    renderRequestsTable();
+  } catch (err) {
+    console.error(err);
+    alert('Could not delete selected rows');
   }
 }
 
@@ -182,9 +281,13 @@ async function loadContacts() {
     document.getElementById('contacts-total').textContent = contacts.length;
     document.getElementById('contacts-today').textContent = contacts.filter(c => new Date(c.created_at).toDateString() === today).length;
     
+    allContacts = contacts;
+    contactsPage = 1;
+    
     const tbody = document.getElementById('contacts-body');
     tbody.innerHTML = contacts.map(c => `
       <tr>
+        <td><input type="checkbox" class="contact-checkbox" value="${c.id}"${selectedContacts.has(String(c.id)) ? ' checked' : ''} onchange="updateContactSelection(this)"></td>
         <td>#${c.id}</td>
         <td>${formatDate(c.created_at)}</td>
         <td>${escapeHtml((c.first_name || '') + ' ' + (c.last_name || ''))}</td>
@@ -194,7 +297,7 @@ async function loadContacts() {
         <td>${escapeHtml(c.reason || '')}</td>
         <td><span class="status-badge">${escapeHtml(c.urgency || '')}</span></td>
         <td><span class="email-status-badge ${c.email_sent === 1 ? 'success' : c.email_sent === 0 ? 'failed' : 'pending'}">${c.email_sent === 1 ? 'Sent' : c.email_sent === 0 ? 'Failed' : 'Pending'}</span></td>
-        <td><button class="action-btn view" onclick="viewContact(${c.id})">View</button></td>
+        <td><button class="action-btn view" onclick="viewContact(${c.id})">View</button> <button class="action-btn delete" onclick="deleteContactRow(${c.id})">Delete</button></td>
       </tr>
     `).join('');
   } catch (err) {
@@ -317,6 +420,161 @@ async function viewContact(id) {
   }
 }
 
+async function deleteContactRow(id) {
+  if (!confirm('Delete contact #' + id + '? This cannot be undone.')) return;
+  try {
+    var res = await fetch('/api/admin/contact/' + id, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Delete failed');
+    allContacts = allContacts.filter(function(c) {
+      return String(c.id) !== String(id);
+    });
+    selectedContacts.delete(String(id));
+    closeDetailModal();
+    document.getElementById('contacts-total').textContent = allContacts.length;
+    renderContactsTable();
+  } catch (err) {
+    console.error(err);
+    alert('Could not delete this contact');
+  }
+}
+
+// Contact selection functions
+function updateContactSelection(checkbox) {
+  if (checkbox.checked) {
+    selectedContacts.add(checkbox.value);
+  } else {
+    selectedContacts.delete(checkbox.value);
+  }
+  updateSelectAllContactsCheckbox();
+}
+
+function toggleSelectAllContacts() {
+  var checkboxes = document.querySelectorAll('.contact-checkbox');
+  var selectAllCheckbox = document.getElementById('select-all-contacts');
+  checkboxes.forEach(function(cb) {
+    if (selectAllCheckbox.checked) {
+      cb.checked = true;
+      selectedContacts.add(cb.value);
+    } else {
+      cb.checked = false;
+      selectedContacts.delete(cb.value);
+    }
+  });
+}
+
+function updateSelectAllContactsCheckbox() {
+  var checkboxes = document.querySelectorAll('.contact-checkbox');
+  var selectAllCheckbox = document.getElementById('select-all-contacts');
+  if (checkboxes.length === 0) {
+    selectAllCheckbox.checked = false;
+    return;
+  }
+  var allChecked = true;
+  var noneChecked = true;
+  checkboxes.forEach(function(cb) {
+    if (cb.checked) noneChecked = false;
+    else allChecked = false;
+  });
+  selectAllCheckbox.checked = allChecked;
+  selectAllCheckbox.indeterminate = !allChecked && !noneChecked;
+}
+
+function selectAllContacts() {
+  document.getElementById('select-all-contacts').checked = true;
+  document.querySelectorAll('.contact-checkbox').forEach(function(cb) {
+    cb.checked = true;
+    selectedContacts.add(cb.value);
+  });
+}
+
+function deselectAllContacts() {
+  document.getElementById('select-all-contacts').checked = false;
+  document.querySelectorAll('.contact-checkbox').forEach(function(cb) {
+    cb.checked = false;
+    selectedContacts.delete(cb.value);
+  });
+  selectedContacts.clear();
+}
+
+async function deleteSelectedContacts() {
+  if (selectedContacts.size === 0) {
+    alert('No contacts selected');
+    return;
+  }
+  if (!confirm('Delete ' + selectedContacts.size + ' selected contact(s)? This cannot be undone.')) return;
+  try {
+    var ids = Array.from(selectedContacts);
+    var res = await fetch('/api/admin/contacts/bulk-delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: ids })
+    });
+    if (!res.ok) throw new Error('Delete failed');
+    allContacts = allContacts.filter(function(c) {
+      return !selectedContacts.has(String(c.id));
+    });
+    selectedContacts.clear();
+    closeDetailModal();
+    document.getElementById('contacts-total').textContent = allContacts.length;
+    renderContactsTable();
+  } catch (err) {
+    console.error(err);
+    alert('Could not delete selected contacts');
+  }
+}
+
+function renderContactsTable() {
+  var tbody = document.getElementById('contacts-body');
+  if (!tbody) return;
+  tbody.innerHTML = allContacts
+    .map(function(c) {
+      return (
+        '<tr>' +
+        '<td><input type="checkbox" class="contact-checkbox" value="' +
+        c.id +
+        '"' +
+        (selectedContacts.has(String(c.id)) ? ' checked' : '') +
+        ' onchange="updateContactSelection(this)"></td>' +
+        '<td>#' +
+        c.id +
+        '</td>' +
+        '<td>' +
+        formatDate(c.created_at) +
+        '</td>' +
+        '<td>' +
+        escapeHtml((c.first_name || '') + ' ' + (c.last_name || '')) +
+        '</td>' +
+        '<td>' +
+        escapeHtml(c.company || '') +
+        '</td>' +
+        '<td>' +
+        escapeHtml(c.email || '') +
+        '</td>' +
+        '<td>' +
+        escapeHtml(c.phone || '') +
+        '</td>' +
+        '<td>' +
+        escapeHtml(c.reason || '') +
+        '</td>' +
+        '<td><span class="status-badge">' +
+        escapeHtml(c.urgency || '') +
+        '</span></td>' +
+        '<td><span class="email-status-badge ' +
+        (c.email_sent === 1 ? 'success' : c.email_sent === 0 ? 'failed' : 'pending') +
+        '">' +
+        (c.email_sent === 1 ? 'Sent' : c.email_sent === 0 ? 'Failed' : 'Pending') +
+        '</span></td>' +
+        '<td><button class="action-btn view" onclick="viewContact(' +
+        c.id +
+        ')">View</button> <button class="action-btn delete" onclick="deleteContactRow(' +
+        c.id +
+        ')">Delete</button></td>' +
+        '</tr>'
+      );
+    })
+    .join('');
+}
+
 function closeDetailModal() {
   document.getElementById('detail-modal').style.display = 'none';
 }
@@ -363,6 +621,10 @@ function saveOwnerEmail() {
     return;
   }
   
+  statusEl.textContent = 'Saving...';
+  statusEl.style.color = '#666';
+  statusEl.style.display = 'inline';
+  
   fetch('/api/admin/settings', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -373,16 +635,17 @@ function saveOwnerEmail() {
     if (data.success) {
       statusEl.textContent = 'Saved!';
       statusEl.style.color = 'green';
-      statusEl.style.display = 'inline';
       setTimeout(function() {
         statusEl.style.display = 'none';
       }, 3000);
+    } else {
+      statusEl.textContent = data.message || 'Save failed';
+      statusEl.style.color = 'red';
     }
   })
   .catch(function(err) {
     console.error('Error saving owner email:', err);
     statusEl.textContent = 'Error saving';
     statusEl.style.color = 'red';
-    statusEl.style.display = 'inline';
   });
 }
