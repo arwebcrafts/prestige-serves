@@ -24,7 +24,8 @@ export default async function handler(req, res) {
     }
     
     const sql = neon(DATABASE_URL);
-    await sql`DELETE FROM contact_submissions WHERE id = ${ids}`;
+    const intIds = ids.map(id => parseInt(id, 10));
+    await sql`DELETE FROM contact_submissions WHERE id = ANY(${intIds})`;
     return res.status(200).json({ success: true, message: 'Contacts deleted', deletedCount: ids.length });
   } catch (err) {
     console.error('Admin contacts bulk delete error:', err);

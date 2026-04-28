@@ -24,7 +24,8 @@ export default async function handler(req, res) {
     }
     
     const sql = neon(DATABASE_URL);
-    await sql`DELETE FROM service_requests WHERE id = ${ids}`;
+    const intIds = ids.map(id => parseInt(id, 10));
+    await sql`DELETE FROM service_requests WHERE id = ANY(${intIds})`;
     return res.status(200).json({ success: true, message: 'Requests deleted', deletedCount: ids.length });
   } catch (err) {
     console.error('Admin requests bulk delete error:', err);
