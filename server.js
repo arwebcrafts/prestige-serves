@@ -1,12 +1,62 @@
+require('dotenv').config({ path: '.env.local' });
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { neon } = require('@neondatabase/serverless');
 const { put } = require('@vercel/blob');
 const { processContactFormToPST, processServiceRequestToPST } = require('./api/pst-integration');
+const nodemailer = require('nodemailer');
 
 const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_P8aH3JElyXBw@ep-gentle-frog-a4yzwn3w-pooler.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require';
 const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN || 'vercel_blob_rw_1qFTdRzk36aoQZsG_uiiyBg0DZ8Sl5zySi6DmqaMnIz9eqV';
+
+// Hostinger SMTP Configuration
+const HOSTINGER_SMTP_HOST = process.env.HOSTINGER_SMTP_HOST || 'smtp.hostinger.com';
+const HOSTINGER_SMTP_PORT = parseInt(process.env.HOSTINGER_SMTP_PORT) || 465;
+const HOSTINGER_SMTP_SECURE = process.env.HOSTINGER_SMTP_SECURE === 'true' || true;
+const HOSTINGER_SMTP_USER = process.env.HOSTINGER_SMTP_USER;
+const HOSTINGER_SMTP_PASS = process.env.HOSTINGER_SMTP_PASS;
+const FROM_EMAIL = process.env.FROM_EMAIL || 'arwebcraftsagency.com';
+
+let transporter = null;
+
+function getSMTPTransporter() {
+  if (!HOSTINGER_SMTP_USER || !HOSTINGER_SMTP_PASS) {
+    return null;
+  }
+  if (!transporter) {
+    transporter = nodemailer.createTransport({
+      host: HOSTINGER_SMTP_HOST,
+      port: HOSTINGER_SMTP_PORT,
+      secure: HOSTINGER_SMTP_SECURE,
+      auth: {
+        user: HOSTINGER_SMTP_USER,
+        pass: HOSTINGER_SMTP_PASS,
+      },
+    });
+  }
+  return transporter;
+}
+
+async function sendSMTPEmail({ to, subject, html, text }) {
+  const transport = getSMTPTransporter();
+  if (!transport) {
+    return { success: false, reason: 'SMTP transporter not configured' };
+  }
+  try {
+    const info = await transport.sendMail({
+      from: `"Prestige Serves" <${FROM_EMAIL}>`,
+      to: to,
+      subject: subject,
+      html: html || '',
+      text: text || '',
+    });
+    return { success: true, messageId: info.messageId };
+  } catch (err) {
+    console.error('SMTP Email error:', err);
+    return { success: false, error: err.message };
+  }
+}
 
 function getSql() {
   return neon(DATABASE_URL);
@@ -332,6 +382,36 @@ const server = http.createServer(async (req, res) => {
       } catch (err) {
         console.error('Admin request delete error:', err);
         jsonResponse(res, 500, { success: false, message: 'Database error' });
+      }
+      return;
+    }
+
+    // Email API - Send test email
+    if (url === '/api/email' && method === 'POST') {
+      try {
+        const body = await parseBody(req);
+        const { to, subject, html, text } = body;
+        
+        if (!to || !subject) {
+          jsonResponse(res, 400, { success: false, message: 'Missing required fields: to, subject' });
+          return;
+        }
+        
+        const emailResult = await sendSMTPEmail({
+          to: to,
+          subject: subject,
+          html: html || '',
+          text: text || '',
+        });
+        
+        if (emailResult.success) {
+          jsonResponse(res, 200, { success: true, data: emailResult });
+        } else {
+          jsonResponse(res, 500, { success: false, message: 'Failed to send email', error: emailResult.error });
+        }
+      } catch (err) {
+        console.error('Email API error:', err);
+        jsonResponse(res, 500, { success: false, message: 'Server error: ' + err.message });
       }
       return;
     }
