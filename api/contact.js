@@ -1,5 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 import { sendSMTPEmail } from './smtp-email.js';
+import { buildContactEmailHtml } from './email-templates.js';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -58,18 +59,9 @@ export default async function handler(req, res) {
       )
     `;
 
-    const htmlContent = `
-      <h2>New Contact Submission</h2>
-      <p><strong>Name:</strong> ${firstName} ${lastName}</p>
-      <p><strong>Company:</strong> ${company || 'N/A'}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Phone:</strong> ${phone || 'N/A'}</p>
-      <p><strong>Reason:</strong> ${reason}</p>
-      <p><strong>County/City:</strong> ${county || 'N/A'}</p>
-      <p><strong>State:</strong> ${state || 'N/A'}</p>
-      <p><strong>Urgency:</strong> ${urgency}</p>
-      <p><strong>Case Details:</strong> ${caseDetails || 'None provided'}</p>
-    `;
+    const htmlContent = buildContactEmailHtml({
+      firstName, lastName, company, email, phone, reason, county, state, caseDetails, urgency
+    });
 
     const emailResult = await sendSMTPEmail({
       to: ownerEmail,

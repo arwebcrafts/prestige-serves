@@ -3,6 +3,7 @@ import { put } from '@vercel/blob';
 import formidable from 'formidable';
 import fs from 'fs';
 import { sendSMTPEmail } from './smtp-email.js';
+import { buildServiceRequestEmailHtml } from './email-templates.js';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
@@ -58,7 +59,7 @@ export default async function handler(req, res) {
     
     let clientName, contactName, email, phone, addressLine1, addressLine2, city, state, zip;
     let defendantName, caseNumber, courtJurisdiction, multipleDefendants, serviceType, deadlineDate;
-    let specialInstructions, defendantsData;
+    let specialInstructions;
     let uploadedFiles = [];
 
     const data = await new Promise((resolve, reject) => {
@@ -87,7 +88,12 @@ export default async function handler(req, res) {
     serviceType = Array.isArray(fields.serviceType) ? fields.serviceType[0] : fields.serviceType || '';
     deadlineDate = Array.isArray(fields.deadlineDate) ? fields.deadlineDate[0] : fields.deadlineDate || null;
     specialInstructions = Array.isArray(fields.specialInstructions) ? fields.specialInstructions[0] : fields.specialInstructions || '';
-    defendantsData = fields.defendantsData ? fields.defendantsData[0] || fields.defendantsData : null;
+    let defendantsData = null;
+    try {
+      defendantsData = fields.defendantsData ? JSON.parse(fields.defendantsData[0] || fields.defendantsData) : null;
+    } catch (e) {
+      defendantsData = null;
+    }
 
     const fileField = files.files || files.file;
     if (fileField) {
@@ -126,20 +132,10 @@ export default async function handler(req, res) {
       )
     `;
 
-    const htmlContent = `
-      <h2>New Service Request</h2>
-      <p><strong>Client Name:</strong> ${clientName}</p>
-      <p><strong>Contact Name:</strong> ${contactName}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Phone:</strong> ${phone}</p>
-      <p><strong>Service Address:</strong> ${addressLine1}${addressLine2 ? ', ' + addressLine2 : ''}, ${city}, ${state} ${zip}</p>
-      <p><strong>Defendant:</strong> ${defendantName}</p>
-      <p><strong>Case Number:</strong> ${caseNumber}</p>
-      <p><strong>Court:</strong> ${courtJurisdiction}</p>
-      <p><strong>Service Type:</strong> ${serviceType}</p>
-      <p><strong>Deadline:</strong> ${deadlineDate || 'Not specified'}</p>
-      <p><strong>Special Instructions:</strong> ${specialInstructions || 'None'}</p>
-    `;
+    const htmlContent = buildServiceRequestEmailHtml({
+      clientName, contactName, email, phone, addressLine1, addressLine2, city, state, zip,
+      defendantName, caseNumber, courtJurisdiction, serviceType, deadlineDate, specialInstructions, defendantsData
+    });
 
     const emailResult = await sendSMTPEmail({
       to: ownerEmail,
