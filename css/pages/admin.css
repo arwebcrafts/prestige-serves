@@ -110,6 +110,49 @@
   color: #666;
 }
 
+.settings-section {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 28px;
+}
+
+.settings-section h3 {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 500;
+  color: #1a2332;
+  margin: 0 0 16px 0;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.settings-row label {
+  font-size: 14px;
+  color: #444;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background: #1a2332;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--serif);
+  font-weight: 400;
+}
+
+.btn-primary:hover {
+  background: #2d3a7c;
+}
+
 .dashboard-tabs {
   display: flex;
   gap: 4px;

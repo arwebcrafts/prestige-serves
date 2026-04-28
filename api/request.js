@@ -2,7 +2,7 @@ import { neon } from '@neondatabase/serverless';
 import { put } from '@vercel/blob';
 import formidable from 'formidable';
 import fs from 'fs';
-import { sendSMTPEmail, TO_EMAIL } from './smtp-email.js';
+import { sendSMTPEmail } from './smtp-email.js';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
@@ -12,6 +12,15 @@ export const config = {
     bodyParser: false,
   },
 };
+
+async function getOwnerEmail(sql) {
+  try {
+    const result = await sql`SELECT value FROM settings WHERE key = 'owner_email' LIMIT 1`;
+    return result.length > 0 && result[0].value ? result[0].value : null;
+  } catch (e) {
+    return null;
+  }
+}
 
 async function ensureEmailSentColumn(sql) {
   try {
@@ -41,7 +50,11 @@ export default async function handler(req, res) {
 
   try {
     const sql = neon(DATABASE_URL);
+    await sql`CREATE TABLE IF NOT EXISTS settings (key VARCHAR(255) PRIMARY KEY, value TEXT)`.catch(() => {});
     await ensureEmailSentColumn(sql);
+    
+    // Get owner email from settings
+    const ownerEmail = await getOwnerEmail(sql) || process.env.TO_EMAIL || 'muhammadwaqarsikandar@gmail.com';
     
     let clientName, contactName, email, phone, addressLine1, addressLine2, city, state, zip;
     let defendantName, caseNumber, courtJurisdiction, multipleDefendants, serviceType, deadlineDate;
@@ -129,14 +142,14 @@ export default async function handler(req, res) {
     `;
 
     const emailResult = await sendSMTPEmail({
-      to: TO_EMAIL,
+      to: ownerEmail,
       subject: `New Service Request - ${serviceType} from ${clientName}`,
       html: htmlContent,
       text: `New Service Request from ${clientName}. Contact: ${contactName}, ${email}, ${phone}. Service type: ${serviceType}.`,
     });
 
     const emailSentStatus = emailResult.success ? 1 : 0;
-    await sql`UPDATE service_requests SET email_sent = ${emailSentStatus} WHERE email = ${email || ''} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1`;
+    await sql`UPDATE service_requests SET email_sent = ${emailSentStatus} WHERE id = (SELECT id FROM service_requests WHERE email = ${email || ''} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1)`;
 
     return res.status(201).json({ success: true, message: 'Service request submitted successfully', emailSent: emailResult.success });
   } catch (err) {

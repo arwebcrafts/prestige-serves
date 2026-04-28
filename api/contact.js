@@ -1,7 +1,16 @@
 import { neon } from '@neondatabase/serverless';
-import { sendSMTPEmail, TO_EMAIL } from './smtp-email.js';
+import { sendSMTPEmail } from './smtp-email.js';
 
 const DATABASE_URL = process.env.DATABASE_URL;
+
+async function getOwnerEmail(sql) {
+  try {
+    const result = await sql`SELECT value FROM settings WHERE key = 'owner_email' LIMIT 1`;
+    return result.length > 0 && result[0].value ? result[0].value : null;
+  } catch (e) {
+    return null;
+  }
+}
 
 async function ensureEmailSentColumn(sql) {
   try {
@@ -33,7 +42,11 @@ export default async function handler(req, res) {
     const { firstName, lastName, company, email, phone, reason, county, state, caseDetails, urgency, consent } = req.body;
     
     const sql = neon(DATABASE_URL);
+    await sql`CREATE TABLE IF NOT EXISTS settings (key VARCHAR(255) PRIMARY KEY, value TEXT)`.catch(() => {});
     await ensureEmailSentColumn(sql);
+    
+    // Get owner email from settings
+    const ownerEmail = await getOwnerEmail(sql) || process.env.TO_EMAIL || 'muhammadwaqarsikandar@gmail.com';
     
     await sql`
       INSERT INTO contact_submissions (
@@ -59,7 +72,7 @@ export default async function handler(req, res) {
     `;
 
     const emailResult = await sendSMTPEmail({
-      to: TO_EMAIL,
+      to: ownerEmail,
       subject: `New Contact - ${reason} from ${firstName} ${lastName}`,
       html: htmlContent,
       text: `New Contact from ${firstName} ${lastName}. Company: ${company || 'N/A'}. Reason: ${reason}. Urgency: ${urgency}.`,

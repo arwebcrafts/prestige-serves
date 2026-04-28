@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
   
+  loadOwnerEmail();
   loadRequests();
   loadContacts();
 });
@@ -337,4 +338,51 @@ function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
+}
+
+function loadOwnerEmail() {
+  fetch('/api/admin/settings')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.ownerEmail) {
+        document.getElementById('owner-email-input').value = data.ownerEmail;
+      }
+    })
+    .catch(function(err) {
+      console.error('Error loading owner email:', err);
+    });
+}
+
+function saveOwnerEmail() {
+  const emailInput = document.getElementById('owner-email-input');
+  const statusEl = document.getElementById('email-save-status');
+  const email = emailInput.value.trim();
+  
+  if (!email) {
+    alert('Please enter a valid email address');
+    return;
+  }
+  
+  fetch('/api/admin/settings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ownerEmail: email })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.success) {
+      statusEl.textContent = 'Saved!';
+      statusEl.style.color = 'green';
+      statusEl.style.display = 'inline';
+      setTimeout(function() {
+        statusEl.style.display = 'none';
+      }, 3000);
+    }
+  })
+  .catch(function(err) {
+    console.error('Error saving owner email:', err);
+    statusEl.textContent = 'Error saving';
+    statusEl.style.color = 'red';
+    statusEl.style.display = 'inline';
+  });
 }

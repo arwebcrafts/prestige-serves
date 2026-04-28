@@ -825,6 +825,69 @@ const server = http.createServer(async (req, res) => {
         await sql`DELETE FROM service_requests WHERE id = ${id}`;
         jsonResponse(res, 200, { success: true, message: 'Deleted' });
       } catch (err) {
+        console.error('Admin delete request error:', err);
+        jsonResponse(res, 500, { success: false, message: 'Database error' });
+      }
+      return;
+    }
+
+    // Admin API - Delete contact submission
+    if (url.match(/^\/api\/admin\/contact\/\d+$/) && method === 'DELETE') {
+      const id = url.split('/').pop();
+      try {
+        const sql = getSql();
+        await sql`DELETE FROM contact_submissions WHERE id = ${id}`;
+        jsonResponse(res, 200, { success: true, message: 'Deleted' });
+      } catch (err) {
+        console.error('Admin delete contact error:', err);
+        jsonResponse(res, 500, { success: false, message: 'Database error' });
+      }
+      return;
+    }
+
+    // Settings API - Get owner email
+    if (url === '/api/admin/settings' && method === 'GET') {
+      try {
+        const sql = getSql();
+        const result = await sql`SELECT value FROM settings WHERE key = 'owner_email' LIMIT 1`;
+        const ownerEmail = result.length > 0 ? result[0].value : null;
+        jsonResponse(res, 200, { success: true, ownerEmail });
+      } catch (err) {
+        jsonResponse(res, 200, { success: true, ownerEmail: null });
+      }
+      return;
+    }
+
+    // Settings API - Update owner email
+    if (url === '/api/admin/settings' && method === 'POST') {
+      try {
+        const body = await parseBody(req);
+        const ownerEmail = body.ownerEmail || '';
+        const sql = getSql();
+        
+        // Ensure settings table and owner_email column exist
+        await sql`CREATE TABLE IF NOT EXISTS settings (key VARCHAR(255) PRIMARY KEY, value TEXT)`;
+        await sql`INSERT INTO settings (key, value) VALUES ('owner_email', ${ownerEmail}) ON CONFLICT (key) DO UPDATE SET value = ${ownerEmail}`;
+        
+        // Update TO_EMAIL global variable if needed
+        global.TO_EMAIL = ownerEmail || TO_EMAIL;
+        
+        jsonResponse(res, 200, { success: true, ownerEmail: global.TO_EMAIL });
+      } catch (err) {
+        console.error('Settings update error:', err);
+        jsonResponse(res, 500, { success: false, message: 'Database error' });
+      }
+      return;
+    }
+
+    // Admin API - Delete service request
+    if (url.match(/^\/api\/admin\/request\/\d+$/) && method === 'DELETE') {
+      const id = url.split('/').pop();
+      try {
+        const sql = getSql();
+        await sql`DELETE FROM service_requests WHERE id = ${id}`;
+        jsonResponse(res, 200, { success: true, message: 'Deleted' });
+      } catch (err) {
         console.error('Admin request delete error:', err);
         jsonResponse(res, 500, { success: false, message: 'Database error' });
       }
