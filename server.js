@@ -474,33 +474,35 @@ const server = http.createServer(async (req, res) => {
           )
         `;
         
-        // Send email notification to owner (同步，优先发送)
-        const emailHtml = buildContactEmailHtml({
-          firstName: body.firstName,
-          lastName: body.lastName,
-          company: body.company,
-          email: body.email,
-          phone: body.phone,
-          reason: body.reason,
-          city: body.city,
-          state: body.state,
-          caseDetails: body.caseDetails
-        });
-        const emailResult = await sendSMTPEmail({
-          to: TO_EMAIL,
-          subject: `New Contact - ${body.reason || 'Inquiry'} from ${body.firstName} ${body.lastName}`,
-          html: emailHtml,
-          text: `New Contact from ${body.firstName} ${body.lastName}. Company: ${body.company || 'N/A'}. Reason: ${body.reason || 'N/A'}.`,
-        });
+        // Respond to client immediately (DB insert is fast)
+        jsonResponse(res, 201, { success: true, message: 'Contact form submitted successfully' });
         
-        if (emailResult.success) {
-          console.log('Contact form email sent:', emailResult.messageId);
-        } else {
-          console.error('Contact form email failed:', emailResult.error);
-        }
-        
-        // Respond to client immediately
-        jsonResponse(res, 201, { success: true, message: 'Contact form submitted successfully', emailSent: emailResult.success });
+        // Send email notification to owner (异步，不阻塞响应)
+        setImmediate(() => {
+          const emailHtml = buildContactEmailHtml({
+            firstName: body.firstName,
+            lastName: body.lastName,
+            company: body.company,
+            email: body.email,
+            phone: body.phone,
+            reason: body.reason,
+            city: body.city,
+            state: body.state,
+            caseDetails: body.caseDetails
+          });
+          sendSMTPEmail({
+            to: TO_EMAIL,
+            subject: `New Contact - ${body.reason || 'Inquiry'} from ${body.firstName} ${body.lastName}`,
+            html: emailHtml,
+            text: `New Contact from ${body.firstName} ${body.lastName}. Company: ${body.company || 'N/A'}. Reason: ${body.reason || 'N/A'}.`,
+          }).then(emailResult => {
+            if (emailResult.success) {
+              console.log('Contact form email sent:', emailResult.messageId);
+            } else {
+              console.error('Contact form email failed:', emailResult.error);
+            }
+          });
+        });
         
         // Process PST in background (异步，不阻塞响应)
         setImmediate(() => {
@@ -576,49 +578,50 @@ const server = http.createServer(async (req, res) => {
             )
           `;
           
-          // Send email notification to owner (await before responding)
-          let defendantsData = null;
-          if (f.defendantsData) {
-            try {
-              defendantsData = typeof f.defendantsData === 'string' ? JSON.parse(f.defendantsData) : f.defendantsData;
-            } catch (e) { defendantsData = null; }
-          }
-          const emailHtml = buildServiceRequestEmailHtml({
-            clientName: f.clientName,
-            contactName: f.contactName,
-            email: f.email,
-            phone: f.phone,
-            addressLine1: f.addressLine1,
-            addressLine2: f.addressLine2,
-            city: f.city,
-            state: f.state,
-            zip: f.zip,
-            defendantName: f.defendantName,
-            caseNumber: f.caseNumber,
-            courtJurisdiction: f.courtJurisdiction,
-            serviceType: f.serviceType,
-            deadlineDate: f.deadlineDate,
-            specialInstructions: f.specialInstructions,
-            defendantsData: defendantsData
-          });
-          const emailResult = await sendSMTPEmail({
-            to: TO_EMAIL,
-            subject: `New Service Request - ${f.serviceType} from ${f.clientName}`,
-            html: emailHtml,
-            text: `New Service Request from ${f.clientName}. Contact: ${f.contactName}, ${f.email}, ${f.phone}. Service type: ${f.serviceType}.`,
-          });
-          
-          if (emailResult.success) {
-            console.log('Service request email sent:', emailResult.messageId);
-          } else {
-            console.error('Service request email failed:', emailResult.error);
-          }
-          
-          // Respond to client immediately
+          // Respond to client immediately (DB insert is fast)
           jsonResponse(res, 201, { 
             success: true, 
-            message: 'Service request submitted successfully',
-            emailSent: emailResult.success
+            message: 'Service request submitted successfully'
+          });
+          
+          // Send email notification to owner (异步，不阻塞响应)
+          setImmediate(() => {
+            let defendantsData = null;
+            if (f.defendantsData) {
+              try {
+                defendantsData = typeof f.defendantsData === 'string' ? JSON.parse(f.defendantsData) : f.defendantsData;
+              } catch (e) { defendantsData = null; }
+            }
+            const emailHtml = buildServiceRequestEmailHtml({
+              clientName: f.clientName,
+              contactName: f.contactName,
+              email: f.email,
+              phone: f.phone,
+              addressLine1: f.addressLine1,
+              addressLine2: f.addressLine2,
+              city: f.city,
+              state: f.state,
+              zip: f.zip,
+              defendantName: f.defendantName,
+              caseNumber: f.caseNumber,
+              courtJurisdiction: f.courtJurisdiction,
+              serviceType: f.serviceType,
+              deadlineDate: f.deadlineDate,
+              specialInstructions: f.specialInstructions,
+              defendantsData: defendantsData
+            });
+            sendSMTPEmail({
+              to: TO_EMAIL,
+              subject: `New Service Request - ${f.serviceType} from ${f.clientName}`,
+              html: emailHtml,
+              text: `New Service Request from ${f.clientName}. Contact: ${f.contactName}, ${f.email}, ${f.phone}. Service type: ${f.serviceType}.`,
+            }).then(emailResult => {
+              if (emailResult.success) {
+                console.log('Service request email sent:', emailResult.messageId);
+              } else {
+                console.error('Service request email failed:', emailResult.error);
+              }
+            });
           });
           
           // Process PST in background (异步，不阻塞响应)
@@ -665,49 +668,50 @@ const server = http.createServer(async (req, res) => {
             )
           `;
           
-          // Send email notification to owner (await before responding)
-          let defendantsData = null;
-          if (body.defendantsData) {
-            try {
-              defendantsData = typeof body.defendantsData === 'string' ? JSON.parse(body.defendantsData) : body.defendantsData;
-            } catch (e) { defendantsData = null; }
-          }
-          const emailHtml = buildServiceRequestEmailHtml({
-            clientName: body.clientName,
-            contactName: body.contactName,
-            email: body.email,
-            phone: body.phone,
-            addressLine1: body.addressLine1,
-            addressLine2: body.addressLine2,
-            city: body.city,
-            state: body.state,
-            zip: body.zip,
-            defendantName: body.defendantName,
-            caseNumber: body.caseNumber,
-            courtJurisdiction: body.courtJurisdiction,
-            serviceType: body.serviceType,
-            deadlineDate: body.deadlineDate,
-            specialInstructions: body.specialInstructions,
-            defendantsData: defendantsData
-          });
-          const emailResult = await sendSMTPEmail({
-            to: TO_EMAIL,
-            subject: `New Service Request - ${body.serviceType} from ${body.clientName}`,
-            html: emailHtml,
-            text: `New Service Request from ${body.clientName}. Contact: ${body.contactName}, ${body.email}, ${body.phone}. Service type: ${body.serviceType}.`,
-          });
-          
-          if (emailResult.success) {
-            console.log('Service request email sent:', emailResult.messageId);
-          } else {
-            console.error('Service request email failed:', emailResult.error);
-          }
-          
-          // Respond to client immediately
+          // Respond to client immediately (DB insert is fast)
           jsonResponse(res, 201, { 
             success: true, 
-            message: 'Service request submitted successfully',
-            emailSent: emailResult.success
+            message: 'Service request submitted successfully'
+          });
+          
+          // Send email notification to owner (异步，不阻塞响应)
+          setImmediate(() => {
+            let defendantsData = null;
+            if (body.defendantsData) {
+              try {
+                defendantsData = typeof body.defendantsData === 'string' ? JSON.parse(body.defendantsData) : body.defendantsData;
+              } catch (e) { defendantsData = null; }
+            }
+            const emailHtml = buildServiceRequestEmailHtml({
+              clientName: body.clientName,
+              contactName: body.contactName,
+              email: body.email,
+              phone: body.phone,
+              addressLine1: body.addressLine1,
+              addressLine2: body.addressLine2,
+              city: body.city,
+              state: body.state,
+              zip: body.zip,
+              defendantName: body.defendantName,
+              caseNumber: body.caseNumber,
+              courtJurisdiction: body.courtJurisdiction,
+              serviceType: body.serviceType,
+              deadlineDate: body.deadlineDate,
+              specialInstructions: body.specialInstructions,
+              defendantsData: defendantsData
+            });
+            sendSMTPEmail({
+              to: TO_EMAIL,
+              subject: `New Service Request - ${body.serviceType} from ${body.clientName}`,
+              html: emailHtml,
+              text: `New Service Request from ${body.clientName}. Contact: ${body.contactName}, ${body.email}, ${body.phone}. Service type: ${body.serviceType}.`,
+            }).then(emailResult => {
+              if (emailResult.success) {
+                console.log('Service request email sent:', emailResult.messageId);
+              } else {
+                console.error('Service request email failed:', emailResult.error);
+              }
+            });
           });
           
           // Process PST in background (异步，不阻塞响应)
