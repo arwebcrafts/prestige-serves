@@ -474,22 +474,7 @@ const server = http.createServer(async (req, res) => {
           )
         `;
         
-        // Submit to PST API if configured
-        const pstResult = await processContactFormToPST({
-          firstName: body.firstName,
-          lastName: body.lastName,
-          company: body.company,
-          email: body.email,
-          phone: body.phone,
-          city: body.city,
-          state: body.state
-        });
-        
-        if (pstResult.success) {
-          console.log('Contact form also saved to PST:', pstResult.entitySerialNumber);
-        }
-        
-        // Send email notification to owner
+        // Send email notification to owner (同步，优先发送)
         const emailHtml = buildContactEmailHtml({
           firstName: body.firstName,
           lastName: body.lastName,
@@ -514,7 +499,27 @@ const server = http.createServer(async (req, res) => {
           console.error('Contact form email failed:', emailResult.error);
         }
         
-        jsonResponse(res, 201, { success: true, message: 'Contact form submitted successfully', pstSync: pstResult.success, emailSent: emailResult.success });
+        // Respond to client immediately
+        jsonResponse(res, 201, { success: true, message: 'Contact form submitted successfully', emailSent: emailResult.success });
+        
+        // Process PST in background (异步，不阻塞响应)
+        setImmediate(() => {
+          processContactFormToPST({
+            firstName: body.firstName,
+            lastName: body.lastName,
+            company: body.company,
+            email: body.email,
+            phone: body.phone,
+            city: body.city,
+            state: body.state
+          }).then(pstResult => {
+            if (pstResult.success) {
+              console.log('Contact form also saved to PST:', pstResult.entitySerialNumber);
+            }
+          }).catch(err => {
+            console.error('Background PST contact error:', err);
+          });
+        });
       } catch (err) {
         console.error('Contact submission error:', err);
         jsonResponse(res, 500, { success: false, message: 'Database error' });
@@ -571,30 +576,7 @@ const server = http.createServer(async (req, res) => {
             )
           `;
           
-          // Submit to PST API if configured
-          const pstResult = await processServiceRequestToPST({
-            clientName: f.clientName,
-            contactName: f.contactName,
-            email: f.email,
-            phone: f.phone,
-            addressLine1: f.addressLine1,
-            city: f.city,
-            state: f.state,
-            zip: f.zip,
-            defendantName: f.defendantName,
-            caseNumber: f.caseNumber,
-            courtJurisdiction: f.courtJurisdiction,
-            serviceType: f.serviceType,
-            deadlineDate: f.deadlineDate,
-            specialInstructions: f.specialInstructions,
-            defendantsData: f.defendantsData
-          });
-          
-          if (pstResult.success) {
-            console.log('Service request also saved to PST:', pstResult.jobNumber);
-          }
-          
-          // Send email notification to owner
+          // Send email notification to owner (await before responding)
           let defendantsData = null;
           if (f.defendantsData) {
             try {
@@ -632,12 +614,38 @@ const server = http.createServer(async (req, res) => {
             console.error('Service request email failed:', emailResult.error);
           }
           
+          // Respond to client immediately
           jsonResponse(res, 201, { 
             success: true, 
             message: 'Service request submitted successfully',
-            pstSync: pstResult.success,
-            pstJobNumber: pstResult.jobNumber || null,
             emailSent: emailResult.success
+          });
+          
+          // Process PST in background (异步，不阻塞响应)
+          setImmediate(() => {
+            processServiceRequestToPST({
+              clientName: f.clientName,
+              contactName: f.contactName,
+              email: f.email,
+              phone: f.phone,
+              addressLine1: f.addressLine1,
+              city: f.city,
+              state: f.state,
+              zip: f.zip,
+              defendantName: f.defendantName,
+              caseNumber: f.caseNumber,
+              courtJurisdiction: f.courtJurisdiction,
+              serviceType: f.serviceType,
+              deadlineDate: f.deadlineDate,
+              specialInstructions: f.specialInstructions,
+              defendantsData: f.defendantsData
+            }).then(pstResult => {
+              if (pstResult.success) {
+                console.log('Service request also saved to PST:', pstResult.jobNumber);
+              }
+            }).catch(err => {
+              console.error('Background PST request error:', err);
+            });
           });
         } else {
           const body = await parseBody(req);
@@ -657,10 +665,7 @@ const server = http.createServer(async (req, res) => {
             )
           `;
           
-          // Submit to PST API if configured
-          const pstResult = await processServiceRequestToPST(body);
-          
-          // Send email notification to owner
+          // Send email notification to owner (await before responding)
           let defendantsData = null;
           if (body.defendantsData) {
             try {
@@ -698,12 +703,22 @@ const server = http.createServer(async (req, res) => {
             console.error('Service request email failed:', emailResult.error);
           }
           
+          // Respond to client immediately
           jsonResponse(res, 201, { 
             success: true, 
             message: 'Service request submitted successfully',
-            pstSync: pstResult.success,
-            pstJobNumber: pstResult.jobNumber || null,
             emailSent: emailResult.success
+          });
+          
+          // Process PST in background (异步，不阻塞响应)
+          setImmediate(() => {
+            processServiceRequestToPST(body).then(pstResult => {
+              if (pstResult.success) {
+                console.log('Service request also saved to PST:', pstResult.jobNumber);
+              }
+            }).catch(err => {
+              console.error('Background PST request error:', err);
+            });
           });
         }
       } catch (err) {
