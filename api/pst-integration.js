@@ -382,6 +382,16 @@ function getPSTClient() {
   const dbsCode = process.env.PST_DBS_CODE || 'DBD';
   const useTest = process.env.PST_USE_TEST_API === 'true';
 
+  // Console log for debugging - always shows in local console
+  console.log('=== getPSTClient called ===');
+  console.log('PST_API_USERNAME:', apiUsername ? 'SET' : 'NOT SET');
+  console.log('PST_API_PASSWORD:', apiPassword ? 'SET' : 'NOT SET');
+  console.log('PST_DBS_CODE:', dbsCode);
+  console.log('PST_USE_TEST_API:', useTest);
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+  console.log('VERCEL:', process.env.VERCEL);
+  console.log('============================');
+
   logger.info(LOG_CATEGORIES.PST_API, 'getPSTClient called', {
     hasUsername: !!apiUsername,
     hasPassword: !!apiPassword,
@@ -393,11 +403,13 @@ function getPSTClient() {
 
   if (!apiUsername || !apiPassword) {
     logger.warn(LOG_CATEGORIES.PST_API, 'PST API credentials not configured. Set PST_API_USERNAME and PST_API_PASSWORD in environment.');
+    console.log('=== getPSTClient returning NULL - credentials missing ===');
     return null;
   }
 
   const client = new PSTAPIClient(apiUsername, apiPassword, dbsCode, useTest);
   logger.info(LOG_CATEGORIES.PST_API, 'PST client created successfully');
+  console.log('=== getPSTClient returning client ===');
   return client;
 }
 
@@ -529,6 +541,11 @@ async function findOrCreateCase(pstClient, caseData) {
 // Process contact form submission to PST
 async function processContactFormToPST(formData) {
   const timer = perf.startTimer('processContactFormToPST');
+  
+  // Console log for debugging - always shows in local console
+  console.log('=== processContactFormToPST STARTED ===');
+  console.log('formData:', JSON.stringify(formData));
+  
   logger.info(LOG_CATEGORIES.PST_API, '========================================');
   logger.info(LOG_CATEGORIES.PST_API, 'processContactFormToPST STARTED', {
     firstName: formData.firstName,
@@ -538,9 +555,12 @@ async function processContactFormToPST(formData) {
   });
 
   const pstClient = getPSTClient();
+  console.log('pstClient:', pstClient ? 'CREATED' : 'NULL');
+  
   if (!pstClient) {
     timer.end();
     logger.warn(LOG_CATEGORIES.PST_API, 'PST client not configured, skipping PST contact submission');
+    console.log('=== processContactFormToPST ending - pstClient is NULL ===');
     return { success: false, message: 'PST not configured' };
   }
 
@@ -560,9 +580,11 @@ async function processContactFormToPST(formData) {
       ServerActive: false
     };
 
+    console.log('entityData to create:', JSON.stringify(entityData));
     logger.info(LOG_CATEGORIES.PST_API, 'Creating/finding entity for contact form', entityData);
     const entity = await findOrCreateEntity(pstClient, entityData);
     
+    console.log('findOrCreateEntity result:', entity);
     timer.end();
     if (entity) {
       logger.info(LOG_CATEGORIES.PST_API, '========================================');
@@ -572,10 +594,12 @@ async function processContactFormToPST(formData) {
         email: entity.EmailAddress,
         formType: 'contact'
       });
+      console.log('=== processContactFormToPST SUCCESS ===');
       return { success: true, entitySerialNumber: entity.SerialNumber };
     }
 
     logger.warn(LOG_CATEGORIES.PST_API, 'Contact form FAILED TO SAVE - no entity returned');
+    console.log('=== processContactFormToPST FAILED - no entity ===');
     return { success: false, message: 'Failed to create entity in PST' };
   } catch (error) {
     timer.end();
