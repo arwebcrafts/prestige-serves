@@ -5,7 +5,7 @@ const HOSTINGER_SMTP_PORT = parseInt(process.env.HOSTINGER_SMTP_PORT) || 465;
 const HOSTINGER_SMTP_SECURE = process.env.HOSTINGER_SMTP_SECURE === 'true' || true;
 const HOSTINGER_SMTP_USER = process.env.HOSTINGER_SMTP_USER;
 const HOSTINGER_SMTP_PASS = process.env.HOSTINGER_SMTP_PASS;
-const FROM_EMAIL = process.env.FROM_EMAIL || 'arwebcraftsagency.com';
+const FROM_EMAIL = process.env.FROM_EMAIL || HOSTINGER_SMTP_USER;
 const TO_EMAIL = process.env.TO_EMAIL || 'prestigeservesllc@gmail.com';
 
 let transporter = null;
