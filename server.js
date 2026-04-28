@@ -16,7 +16,8 @@ const HOSTINGER_SMTP_PORT = parseInt(process.env.HOSTINGER_SMTP_PORT) || 465;
 const HOSTINGER_SMTP_SECURE = process.env.HOSTINGER_SMTP_SECURE === 'true' || true;
 const HOSTINGER_SMTP_USER = process.env.HOSTINGER_SMTP_USER;
 const HOSTINGER_SMTP_PASS = process.env.HOSTINGER_SMTP_PASS;
-const FROM_EMAIL = process.env.FROM_EMAIL || 'arwebcraftsagency.com';
+const FROM_EMAIL = process.env.FROM_EMAIL || 'crm@arwebcrafts.com';
+const TO_EMAIL = process.env.TO_EMAIL || 'muhammadwaqarsikandar@gmail.com';
 
 let transporter = null;
 
@@ -189,7 +190,32 @@ const server = http.createServer(async (req, res) => {
           console.log('Contact form also saved to PST:', pstResult.entitySerialNumber);
         }
         
-        jsonResponse(res, 201, { success: true, message: 'Contact form submitted successfully', pstSync: pstResult.success });
+        // Send email notification to owner
+        const emailHtml = `
+          <h2>New Contact Form Submission</h2>
+          <p><strong>Name:</strong> ${body.firstName} ${body.lastName}</p>
+          <p><strong>Company:</strong> ${body.company || 'N/A'}</p>
+          <p><strong>Email:</strong> ${body.email}</p>
+          <p><strong>Phone:</strong> ${body.phone || 'N/A'}</p>
+          <p><strong>Reason:</strong> ${body.reason || 'N/A'}</p>
+          <p><strong>City:</strong> ${body.city || 'N/A'}</p>
+          <p><strong>State:</strong> ${body.state || 'N/A'}</p>
+          <p><strong>Case Details:</strong> ${body.caseDetails || 'None provided'}</p>
+        `;
+        const emailResult = await sendSMTPEmail({
+          to: TO_EMAIL,
+          subject: `New Contact - ${body.reason || 'Inquiry'} from ${body.firstName} ${body.lastName}`,
+          html: emailHtml,
+          text: `New Contact from ${body.firstName} ${body.lastName}. Company: ${body.company || 'N/A'}. Reason: ${body.reason || 'N/A'}.`,
+        });
+        
+        if (emailResult.success) {
+          console.log('Contact form email sent:', emailResult.messageId);
+        } else {
+          console.error('Contact form email failed:', emailResult.error);
+        }
+        
+        jsonResponse(res, 201, { success: true, message: 'Contact form submitted successfully', pstSync: pstResult.success, emailSent: emailResult.success });
       } catch (err) {
         console.error('Contact submission error:', err);
         jsonResponse(res, 500, { success: false, message: 'Database error' });
@@ -269,11 +295,40 @@ const server = http.createServer(async (req, res) => {
             console.log('Service request also saved to PST:', pstResult.jobNumber);
           }
           
+          // Send email notification to owner
+          const emailHtml = `
+            <h2>New Service Request</h2>
+            <p><strong>Client Name:</strong> ${f.clientName}</p>
+            <p><strong>Contact Name:</strong> ${f.contactName}</p>
+            <p><strong>Email:</strong> ${f.email}</p>
+            <p><strong>Phone:</strong> ${f.phone}</p>
+            <p><strong>Service Address:</strong> ${f.addressLine1}${f.addressLine2 ? ', ' + f.addressLine2 : ''}, ${f.city}, ${f.state} ${f.zip}</p>
+            <p><strong>Defendant:</strong> ${f.defendantName}</p>
+            <p><strong>Case Number:</strong> ${f.caseNumber || 'N/A'}</p>
+            <p><strong>Court:</strong> ${f.courtJurisdiction || 'N/A'}</p>
+            <p><strong>Service Type:</strong> ${f.serviceType}</p>
+            <p><strong>Deadline:</strong> ${f.deadlineDate || 'Not specified'}</p>
+            <p><strong>Special Instructions:</strong> ${f.specialInstructions || 'None'}</p>
+          `;
+          const emailResult = await sendSMTPEmail({
+            to: TO_EMAIL,
+            subject: `New Service Request - ${f.serviceType} from ${f.clientName}`,
+            html: emailHtml,
+            text: `New Service Request from ${f.clientName}. Contact: ${f.contactName}, ${f.email}, ${f.phone}. Service type: ${f.serviceType}.`,
+          });
+          
+          if (emailResult.success) {
+            console.log('Service request email sent:', emailResult.messageId);
+          } else {
+            console.error('Service request email failed:', emailResult.error);
+          }
+          
           jsonResponse(res, 201, { 
             success: true, 
             message: 'Service request submitted successfully',
             pstSync: pstResult.success,
-            pstJobNumber: pstResult.jobNumber || null
+            pstJobNumber: pstResult.jobNumber || null,
+            emailSent: emailResult.success
           });
         } else {
           const body = await parseBody(req);
@@ -296,11 +351,40 @@ const server = http.createServer(async (req, res) => {
           // Submit to PST API if configured
           const pstResult = await processServiceRequestToPST(body);
           
+          // Send email notification to owner
+          const emailHtml = `
+            <h2>New Service Request</h2>
+            <p><strong>Client Name:</strong> ${body.clientName}</p>
+            <p><strong>Contact Name:</strong> ${body.contactName}</p>
+            <p><strong>Email:</strong> ${body.email}</p>
+            <p><strong>Phone:</strong> ${body.phone}</p>
+            <p><strong>Service Address:</strong> ${body.addressLine1}${body.addressLine2 ? ', ' + body.addressLine2 : ''}, ${body.city}, ${body.state} ${body.zip}</p>
+            <p><strong>Defendant:</strong> ${body.defendantName}</p>
+            <p><strong>Case Number:</strong> ${body.caseNumber || 'N/A'}</p>
+            <p><strong>Court:</strong> ${body.courtJurisdiction || 'N/A'}</p>
+            <p><strong>Service Type:</strong> ${body.serviceType}</p>
+            <p><strong>Deadline:</strong> ${body.deadlineDate || 'Not specified'}</p>
+            <p><strong>Special Instructions:</strong> ${body.specialInstructions || 'None'}</p>
+          `;
+          const emailResult = await sendSMTPEmail({
+            to: TO_EMAIL,
+            subject: `New Service Request - ${body.serviceType} from ${body.clientName}`,
+            html: emailHtml,
+            text: `New Service Request from ${body.clientName}. Contact: ${body.contactName}, ${body.email}, ${body.phone}. Service type: ${body.serviceType}.`,
+          });
+          
+          if (emailResult.success) {
+            console.log('Service request email sent:', emailResult.messageId);
+          } else {
+            console.error('Service request email failed:', emailResult.error);
+          }
+          
           jsonResponse(res, 201, { 
             success: true, 
             message: 'Service request submitted successfully',
             pstSync: pstResult.success,
-            pstJobNumber: pstResult.jobNumber || null
+            pstJobNumber: pstResult.jobNumber || null,
+            emailSent: emailResult.success
           });
         }
       } catch (err) {
