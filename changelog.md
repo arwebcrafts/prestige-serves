@@ -2,6 +2,16 @@
 
 ## [1.1.1] - 2026-04-28
 
+### Added
+- Beautiful professional HTML email templates for contact and service request forms
+- Email templates include company branding, organized sections, clickable links, and mobile responsive design
+- Multiple defendants support in service request email with styled table
+
+### Changed
+- Form submissions now send beautifully designed HTML emails instead of plain text
+- PST API calls now run asynchronously in background (user gets immediate response)
+- Significantly reduced form submission wait time (~7s down from 30s+)
+
 ### Changed
 - Contact page hero section mobile height reduced for better mobile view
 - Hero content repositioned to bottom on mobile with smaller text sizes
