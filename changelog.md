@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.1.2] - 2026-04-28
+
+### Fixed
+- SMTP sender address fallback now uses `HOSTINGER_SMTP_USER` instead of invalid bare domain `arwebcraftsagency.com`
+- Fixed `FROM_EMAIL` environment variable issue causing email rejection on Vercel deployment
+
+### Added
+- Professional HTML email templates to API routes (`api/contact.js`, `api/request.js`)
+- Created `api/email-templates.js` with branded email templates matching `server.js` design
+- Email templates include gradient header, branded badges, card-based layout, and company footer
+- Added "Reply to [Name]" CTA button in contact emails
+
+### Added
+- Bulk select and delete functionality for dashboard tables
+- Checkbox column added to both requests and contacts tables
+- "Select All" / "Deselect All" / "Delete Selected" buttons for both tables
+- Individual delete buttons now available on contact table rows (matching requests table)
+- API endpoints: `DELETE /api/admin/contact/:id`, `DELETE /api/admin/request/:id`
+- API endpoints: `POST /api/admin/contacts/bulk-delete`, `POST /api/admin/requests/bulk-delete`
+
+### Fixed
+- Bulk delete queries now properly convert IDs to integers and use `ANY()` for NeonDB compatibility
+- Fixed `invalid input syntax for type integer` error when deleting multiple rows
+
 ## [1.1.1] - 2026-04-28
 
 ### Added
