@@ -485,8 +485,32 @@ const server = http.createServer(async (req, res) => {
           )
         `;
         
-        // Respond to client immediately (DB insert is fast)
-        jsonResponse(res, 201, { success: true, message: 'Contact form submitted successfully' });
+        // Process PST before sending response (needs to complete before jsonResponse)
+        logger.info(LOG_CATEGORIES.PST_API, 'Starting PST contact form processing', {
+          firstName: body.firstName,
+          lastName: body.lastName,
+          email: body.email
+        });
+        
+        // Start PST processing but don't await - will complete before response is sent
+        processContactFormToPST({
+          firstName: body.firstName,
+          lastName: body.lastName,
+          company: body.company,
+          email: body.email,
+          phone: body.phone,
+          city: body.city,
+          state: body.state
+        }).then(pstResult => {
+          logger.info(LOG_CATEGORIES.PST_API, 'PST contact form result received', pstResult);
+          if (pstResult.success) {
+            logger.info(LOG_CATEGORIES.PST_API, 'Contact SAVED TO PST', { entitySerialNumber: pstResult.entitySerialNumber });
+          } else {
+            logger.warn(LOG_CATEGORIES.PST_API, 'Contact NOT saved to PST', { message: pstResult.message });
+          }
+        }).catch(err => {
+          logger.error(LOG_CATEGORIES.PST_API, 'Background PST contact error', err);
+        });
         
         // Send email notification to owner (异步，不阻塞响应)
         setImmediate(() => {
@@ -522,32 +546,8 @@ const server = http.createServer(async (req, res) => {
           });
         });
         
-        // Process PST in background (异步，不阻塞响应)
-        setImmediate(() => {
-          logger.info(LOG_CATEGORIES.PST_API, 'Starting PST contact form processing', {
-            firstName: body.firstName,
-            lastName: body.lastName,
-            email: body.email
-          });
-          processContactFormToPST({
-            firstName: body.firstName,
-            lastName: body.lastName,
-            company: body.company,
-            email: body.email,
-            phone: body.phone,
-            city: body.city,
-            state: body.state
-          }).then(pstResult => {
-            logger.info(LOG_CATEGORIES.PST_API, 'PST contact form result received', pstResult);
-            if (pstResult.success) {
-              logger.info(LOG_CATEGORIES.PST_API, 'Contact saved to PST', { entitySerialNumber: pstResult.entitySerialNumber });
-            } else {
-              logger.warn(LOG_CATEGORIES.PST_API, 'Contact NOT saved to PST', { message: pstResult.message });
-            }
-          }).catch(err => {
-            logger.error(LOG_CATEGORIES.PST_API, 'Background PST contact error', err);
-          });
-        });
+        // Respond to client immediately (DB insert is fast) - PST processing continues in background
+        jsonResponse(res, 201, { success: true, message: 'Contact form submitted successfully' });
       } catch (err) {
         logger.error(LOG_CATEGORIES.FORM, 'Contact submission error', err);
         timer.end();
