@@ -498,7 +498,7 @@ const server = http.createServer(async (req, res) => {
           }).then(emailResult => {
             const emailSentStatus = emailResult.success ? 1 : 0;
             // Update email_sent column
-            getSql()`UPDATE contact_submissions SET email_sent = ${emailSentStatus} WHERE email = ${body.email} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1`
+            getSql()`UPDATE contact_submissions SET email_sent = ${emailSentStatus} WHERE id = (SELECT id FROM contact_submissions WHERE email = ${body.email} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1)`
               .then(() => console.log('Contact email_sent update completed'))
               .catch(dbErr => console.error('Contact email_sent update error:', dbErr));
             if (emailResult.success) {
@@ -624,7 +624,7 @@ const server = http.createServer(async (req, res) => {
               const emailSentStatus = emailResult.success ? 1 : 0;
               console.log('Updating email_sent to', emailSentStatus, 'for email:', f.email);
               // Update email_sent column - await the SQL query to catch errors
-              getSql()`UPDATE service_requests SET email_sent = ${emailSentStatus} WHERE email = ${f.email} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1`
+              getSql()`UPDATE service_requests SET email_sent = ${emailSentStatus} WHERE id = (SELECT id FROM service_requests WHERE email = ${f.email} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1)`
                 .then(() => console.log('email_sent update completed'))
                 .catch(dbErr => console.error('email_sent update error:', dbErr));
               if (emailResult.success) {
@@ -719,7 +719,7 @@ const server = http.createServer(async (req, res) => {
             }).then(emailResult => {
               const emailSentStatus = emailResult.success ? 1 : 0;
               // Update email_sent column
-              getSql()`UPDATE service_requests SET email_sent = ${emailSentStatus} WHERE email = ${body.email} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1`
+              getSql()`UPDATE service_requests SET email_sent = ${emailSentStatus} WHERE id = (SELECT id FROM service_requests WHERE email = ${body.email} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1)`
                 .then(() => console.log('Service (async) email_sent update completed'))
                 .catch(dbErr => console.error('Service (async) email_sent update error:', dbErr));
               if (emailResult.success) {
