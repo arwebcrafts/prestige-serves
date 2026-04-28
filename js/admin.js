@@ -1,5 +1,9 @@
 // Admin Dashboard JavaScript
 
+var REQUESTS_PAGE_SIZE = 10;
+var allRequests = [];
+var requestsPage = 1;
+
 document.addEventListener('DOMContentLoaded', function() {
   // Check if logged in
   if (!sessionStorage.getItem('adminLoggedIn')) {
@@ -17,40 +21,150 @@ function handleLogout() {
 }
 
 function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-  
-  document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
-  document.getElementById(`tab-${tab}`).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(function(btn) {
+    btn.classList.toggle('active', btn.getAttribute('data-tab') === tab);
+  });
+  document.querySelectorAll('.tab-content').forEach(function(content) {
+    content.classList.toggle('active', content.id === 'tab-' + tab);
+  });
+}
+
+function updateRequestStats(requests) {
+  var today = new Date().toDateString();
+  document.getElementById('requests-total').textContent = requests.length;
+  document.getElementById('requests-today').textContent = requests.filter(function(r) {
+    return new Date(r.created_at).toDateString() === today;
+  }).length;
+  document.getElementById('requests-emergency').textContent = requests.filter(function(r) {
+    return r.service_type && r.service_type.includes('Emergency');
+  }).length;
+}
+
+function renderRequestsPagination(total, page, pageSize) {
+  var el = document.getElementById('requests-pagination');
+  if (!el) return;
+  var pages = Math.max(1, Math.ceil(total / pageSize));
+  if (total === 0) {
+    el.innerHTML = '<span class="admin-pagination-info">No records</span>';
+    return;
+  }
+  var start = (page - 1) * pageSize + 1;
+  var end = Math.min(page * pageSize, total);
+  el.innerHTML =
+    '<span class="admin-pagination-info">Showing ' +
+    start +
+    '–' +
+    end +
+    ' of ' +
+    total +
+    '</span>' +
+    '<div class="admin-pagination-btns">' +
+    '<button type="button" class="btn-pagination"' +
+    (page <= 1 ? ' disabled' : '') +
+    ' onclick="goRequestsPage(' +
+    (page - 1) +
+    ')">Previous</button>' +
+    '<span class="admin-pagination-page">Page ' +
+    page +
+    ' of ' +
+    pages +
+    '</span>' +
+    '<button type="button" class="btn-pagination"' +
+    (page >= pages ? ' disabled' : '') +
+    ' onclick="goRequestsPage(' +
+    (page + 1) +
+    ')">Next</button>' +
+    '</div>';
+}
+
+function goRequestsPage(page) {
+  var pages = Math.max(1, Math.ceil(allRequests.length / REQUESTS_PAGE_SIZE));
+  if (page < 1) page = 1;
+  if (page > pages) page = pages;
+  requestsPage = page;
+  renderRequestsTable();
+}
+
+function renderRequestsTable() {
+  var tbody = document.getElementById('requests-body');
+  if (!tbody) return;
+  var total = allRequests.length;
+  var pages = Math.max(1, Math.ceil(total / REQUESTS_PAGE_SIZE));
+  if (requestsPage > pages) requestsPage = pages;
+  if (requestsPage < 1) requestsPage = 1;
+  var start = (requestsPage - 1) * REQUESTS_PAGE_SIZE;
+  var slice = allRequests.slice(start, start + REQUESTS_PAGE_SIZE);
+  tbody.innerHTML = slice
+    .map(function(r) {
+      return (
+        '<tr>' +
+        '<td>#' +
+        r.id +
+        '</td>' +
+        '<td>' +
+        formatDate(r.created_at) +
+        '</td>' +
+        '<td>' +
+        escapeHtml(r.client_name || '') +
+        '</td>' +
+        '<td>' +
+        escapeHtml(r.contact_name || '') +
+        '</td>' +
+        '<td>' +
+        escapeHtml(r.email || '') +
+        '</td>' +
+        '<td>' +
+        escapeHtml(r.phone || '') +
+        '</td>' +
+        '<td>' +
+        escapeHtml(r.service_type || '') +
+        '</td>' +
+        '<td><span class="status-badge">New</span></td>' +
+        '<td><span class="email-status-badge ' +
+        (r.email_sent === 1 ? 'success' : r.email_sent === 0 ? 'failed' : 'pending') +
+        '">' +
+        (r.email_sent === 1 ? 'Sent' : r.email_sent === 0 ? 'Failed' : 'Pending') +
+        '</span></td>' +
+        '<td><button type="button" class="action-btn view" onclick="viewRequest(' +
+        r.id +
+        ')">View</button> ' +
+        '<button type="button" class="action-btn delete" onclick="deleteRequestRow(' +
+        r.id +
+        ')">Delete</button></td>' +
+        '</tr>'
+      );
+    })
+    .join('');
+  renderRequestsPagination(total, requestsPage, REQUESTS_PAGE_SIZE);
+}
+
+async function deleteRequestRow(id) {
+  if (!confirm('Delete request #' + id + '? This cannot be undone.')) return;
+  try {
+    var res = await fetch('/api/admin/request/' + id, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Delete failed');
+    allRequests = allRequests.filter(function(r) {
+      return String(r.id) !== String(id);
+    });
+    closeDetailModal();
+    updateRequestStats(allRequests);
+    var pages = Math.max(1, Math.ceil(allRequests.length / REQUESTS_PAGE_SIZE));
+    if (requestsPage > pages) requestsPage = pages;
+    renderRequestsTable();
+  } catch (err) {
+    console.error(err);
+    alert('Could not delete this row. Check the server allows DELETE on /api/admin/request/:id');
+  }
 }
 
 async function loadRequests() {
   try {
-    const response = await fetch('/api/admin/requests');
-    const data = await response.json();
-    
-    const today = new Date().toDateString();
-    const requests = data.data || [];
-    
-    document.getElementById('requests-total').textContent = requests.length;
-    document.getElementById('requests-today').textContent = requests.filter(r => new Date(r.created_at).toDateString() === today).length;
-    document.getElementById('requests-emergency').textContent = requests.filter(r => r.service_type && r.service_type.includes('Emergency')).length;
-    
-    const tbody = document.getElementById('requests-body');
-    tbody.innerHTML = requests.map(r => `
-      <tr>
-        <td>#${r.id}</td>
-        <td>${formatDate(r.created_at)}</td>
-        <td>${escapeHtml(r.client_name || '')}</td>
-        <td>${escapeHtml(r.contact_name || '')}</td>
-        <td>${escapeHtml(r.email || '')}</td>
-        <td>${escapeHtml(r.phone || '')}</td>
-        <td>${escapeHtml(r.service_type || '')}</td>
-        <td><span class="status-badge">New</span></td>
-        <td><span class="email-status-badge ${r.email_sent === 1 ? 'success' : r.email_sent === 0 ? 'failed' : 'pending'}">${r.email_sent === 1 ? 'Sent' : r.email_sent === 0 ? 'Failed' : 'Pending'}</span></td>
-        <td><button class="action-btn view" onclick="viewRequest(${r.id})">View</button></td>
-      </tr>
-    `).join('');
+    var response = await fetch('/api/admin/requests');
+    var data = await response.json();
+    allRequests = data.data || [];
+    requestsPage = 1;
+    updateRequestStats(allRequests);
+    renderRequestsTable();
   } catch (err) {
     console.error('Error loading requests:', err);
   }

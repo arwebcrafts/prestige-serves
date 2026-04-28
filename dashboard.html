@@ -6,7 +6,7 @@
 <title>Prestige Serves — Admin Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/global.css">
 <link rel="stylesheet" href="css/components.css">
 <link rel="stylesheet" href="css/pages/admin.css">
@@ -28,8 +28,8 @@
   </div>
 
   <div class="dashboard-tabs">
-    <button class="tab-btn active" onclick="switchTab('requests')">Service Requests</button>
-    <button class="tab-btn" onclick="switchTab('contacts')">Contact Submissions</button>
+    <button type="button" class="tab-btn active" data-tab="requests" onclick="switchTab('requests')">Book a Service</button>
+    <button type="button" class="tab-btn" data-tab="contacts" onclick="switchTab('contacts')">Contact Submissions</button>
   </div>
 
   <div class="tab-content active" id="tab-requests">
@@ -65,6 +65,7 @@
         </thead>
         <tbody id="requests-body"></tbody>
       </table>
+      <div class="admin-pagination" id="requests-pagination" aria-label="Book a Service submissions pagination"></div>
     </div>
   </div>
 

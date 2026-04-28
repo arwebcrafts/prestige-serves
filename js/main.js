@@ -17,6 +17,7 @@ function showPage(page) {
 }
 
 function toggleServicesDropdown(e) {
+  if (e && e.preventDefault) e.preventDefault();
   e.stopPropagation();
   var menu = document.getElementById('services-menu');
   var dropdown = document.getElementById('services-dropdown');
@@ -48,6 +49,10 @@ function closeServicesDropdown() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+
   // Set active nav based on current page
   var path = window.location.pathname;
   var page = path.substring(path.lastIndexOf('/') + 1).replace('.html', '') || 'index';

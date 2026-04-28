@@ -10,7 +10,7 @@
 .contact-dark-section{background:var(--navy);color:#fff;padding:88px 72px;display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start;}
 .contact-dark-heading{font-size:52px;font-weight:300;line-height:1.1;margin-bottom:20px;color:#fff;}
 .contact-dark-sub{font-size:16px;color:rgba(255,255,255,0.85);line-height:1.7;margin-bottom:40px;font-style:italic;}
-.contact-dark-info h4{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent-gold);font-weight:700;margin-bottom:10px;margin-top:24px;}
+.contact-dark-info h4{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent-gold);font-weight:500;margin-bottom:10px;margin-top:24px;}
 .contact-dark-info h4:first-child{margin-top:0;}
 .contact-dark-info p,.contact-dark-info a{font-size:15px;color:#ffffff;line-height:1.8;text-decoration:none;display:block;}
 

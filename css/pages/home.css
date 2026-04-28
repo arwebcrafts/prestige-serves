@@ -1,7 +1,8 @@
 /* home.css — Home page specific styles */
 
-.testimonial-img{margin:0;}
-.testimonial-content{margin:0;}
+/* Keep horizontal inset for Lady Justice image; content padding set in components.css */
+.testimonial-img{margin:0 10px 0 15px;}
+.testimonial-content{margin:0 15px 0 0;}
 .pricing-item{margin:8px;display:flex;flex-direction:column;align-items:stretch;border:1px solid var(--border);padding:20px;transition:border-color 0.2s ease;}
 .pricing-item:hover{border-color:var(--accent-blue);}
 .pricing-real-icon{width:40px;height:40px;object-fit:contain;}
@@ -11,11 +12,11 @@
 .pricing-item:nth-child(3) .pricing-item-name{padding-top:30px;}
 .pricing-item:nth-child(1) .pricing-item-desc{padding-top:10px;}
 .pricing-item:nth-child(3) .pricing-item-desc{padding-top:10px;}
-.pricing-item-actions{margin-top:16px;display:flex;gap:8px;}
-.pricing-item-actions .pay-btn{display:inline-block;width:auto;margin-top:0;}
+.pricing-item-actions{margin-top:16px;display:flex;flex-direction:column;gap:8px;width:100%;align-self:stretch;}
+.pricing-item-actions .pay-btn,
+.pricing-item-actions .btn-outline.pay-btn{display:block;width:100%;max-width:100%;margin-top:0;box-sizing:border-box;text-align:center;}
 
 @media(max-width:768px){
-  .pricing-item-actions{flex-direction:column;}
   .pricing-item-actions .pay-btn{text-align:center;}
 }
 

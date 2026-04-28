@@ -14,7 +14,7 @@
 <link rel="canonical" href="https://www.prestigeserves.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/global.css">
 <link rel="stylesheet" href="css/components.css">
 <link rel="stylesheet" href="css/pages/process-serving.css">
@@ -26,8 +26,8 @@
   <section class="ps-hero">
     <img class="ps-bg" src="assets/images/prestige-serves-img-14.png" alt="Professional Process Serving Los Angeles">
     <nav class="ps-hero-nav">
-      <a class="nav-brand" onclick="window.location.href='contact.html'">
-        <img src="assets/images/mail.png" alt="Mail" style="width:80px;height:80px;object-fit:contain;">
+      <a class="nav-brand" href="contact.html">
+        <img src="assets/images/mail.png" alt="Mail">
       </a>
       <button class="nav-hamburger" aria-label="Menu" onclick="toggleMobileNav()">
         <span></span>
@@ -35,23 +35,23 @@
         <span></span>
       </button>
       <ul class="nav-links">
-        <li><a id="nav-home" onclick="window.location.href='index.html'">Home</a></li>
-        <li><a id="nav-about" onclick="window.location.href='about.html'">About</a></li>
+        <li><a id="nav-home" href="index.html">Home</a></li>
+        <li><a id="nav-about" href="about.html">About</a></li>
         <li class="dropdown" id="services-dropdown">
-          <a id="nav-services" style="cursor:pointer;" onclick="toggleServicesDropdown(event)">Services ▾</a>
+          <a id="nav-services" href="#" onclick="toggleServicesDropdown(event); return false;">Services ▾</a>
           <div class="dropdown-menu" id="services-menu">
-            <a onclick="window.location.href='process-serving.html'">Process Serving</a>
-            <a onclick="window.location.href='concierge.html'">Concierge</a>
-            <a onclick="window.location.href='efiling.html'">eFiling</a>
-            <a onclick="window.location.href='erecording.html'">eRecording</a>
-            <a onclick="window.location.href='nationwide.html'">Nationwide</a>
-            <a onclick="window.location.href='skip-tracing.html'">Skip Tracing</a>
-            <a onclick="window.location.href='services.html'">All Services</a>
+            <a href="process-serving.html">Process Serving</a>
+            <a href="concierge.html">Concierge</a>
+            <a href="efiling.html">eFiling</a>
+            <a href="erecording.html">eRecording</a>
+            <a href="nationwide.html">Nationwide</a>
+            <a href="skip-tracing.html">Skip Tracing</a>
+            <a href="services.html">All Services</a>
           </div>
         </li>
-        <li><a id="nav-payment" onclick="window.location.href='payment.html'">Payment</a></li>
-        <li><a id="nav-request" onclick="window.location.href='request.html'">Book a Service</a></li>
-        <li><a id="nav-contact" onclick="window.location.href='contact.html'">Contact</a></li>
+        <li><a id="nav-payment" href="payment.html">Payment</a></li>
+        <li><a id="nav-request" href="request.html">Book a Service</a></li>
+        <li><a id="nav-contact" href="contact.html">Contact</a></li>
       </ul>
     </nav>
     <img src="assets/images/top.png" alt="Follow us" style="position:fixed;top:4px;right:22px;width:72px;height:22px;z-index:1001;pointer-events:none;">

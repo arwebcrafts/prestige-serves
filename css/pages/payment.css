@@ -1,7 +1,7 @@
 /* payment.css — Payment page specific styles */
 
 .payment-hero{text-align:center;padding:72px 72px 48px;border-bottom:2px solid var(--text-dark);margin:40px 72px 0;}
-.payment-secure{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-blue);font-weight:600;margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.payment-secure{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-blue);font-weight:500;margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:8px;}
 .payment-title{font-size:clamp(32px,4vw,52px);font-weight:300;margin-bottom:14px;letter-spacing:-0.01em;}
 .payment-sub{font-size:15px;color:var(--text-muted);max-width:560px;margin:0 auto;}
 .payment-info-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:40px 72px;}
@@ -35,9 +35,17 @@
 .payment-sections{display:flex;transition:transform 0.3s ease;gap:24px;}
 .carousel-item{flex-shrink:0;width:calc(25% - 18px);}
 .carousel-item .payment-product{height:100%;box-sizing:border-box;}
-.carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border:1px solid var(--border);border-radius:50%;background:var(--bg-light);cursor:pointer;font-size:18px;z-index:10;}
-.carousel-arrow-left{left:72px;}
-.carousel-arrow-right{right:72px;}
+.carousel-arrow{width:44px;height:44px;border:1px solid var(--border);border-radius:50%;background:var(--bg-white);cursor:pointer;font-size:20px;line-height:1;z-index:10;display:flex;align-items:center;justify-content:center;color:var(--text-dark);transition:background 0.2s,border-color 0.2s;}
+.carousel-arrow:hover{background:var(--bg-warm);border-color:var(--text-muted);}
+
+/* Main product carousel: arrows sit outside the card strip */
+.payment-carousel-wrapper--main{display:flex;align-items:center;gap:12px;padding:0 24px;margin-bottom:48px;}
+.payment-carousel-wrapper--main .payment-slider{flex:1;min-width:0;}
+.payment-carousel-wrapper--main .carousel-arrow{position:static;transform:none;flex-shrink:0;}
+
+/* Add-Ons: single card centered */
+.payment-carousel-wrapper--addons .payment-sections{justify-content:center;}
+.payment-carousel-wrapper--addons .carousel-item{width:100%;max-width:340px;flex-shrink:0;}
 
 @media(max-width:960px){
   .payment-hero{margin:20px 28px 0;padding:40px 28px;}
@@ -46,6 +54,7 @@
   .payment-policies{grid-template-columns:1fr;}
   .payment-policy-col:first-child{border-right:none;border-bottom:2px solid var(--text-dark);}
   .carousel-item{width:calc(50% - 12px);}
+  .payment-carousel-wrapper--addons .carousel-item{width:100%;max-width:360px;}
 }
 
 /* MOBILE — payment */
@@ -127,6 +136,10 @@
     padding:0 20px !important;
     margin-bottom:32px !important;
   }
+  .payment-carousel-wrapper--main{
+    gap:8px !important;
+    padding:0 12px !important;
+  }
   .payment-slider{
     overflow:hidden;
   }
@@ -135,13 +148,15 @@
     height:36px !important;
     font-size:16px !important;
   }
-  .carousel-arrow-left{left:20px !important;}
-  .carousel-arrow-right{right:20px !important;}
   .payment-sections{
     gap:0 !important;
   }
   .carousel-item{
     flex-shrink:0;
     width:calc((100vw - 40px)) !important;
+  }
+  .payment-carousel-wrapper--addons .carousel-item{
+    width:100% !important;
+    max-width:100% !important;
   }
 }
