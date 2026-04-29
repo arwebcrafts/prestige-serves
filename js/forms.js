@@ -17,7 +17,9 @@ var SKIP_TRACE_SERVICE_TYPES = [
   'Court-Ready Skip Trace Report — $250'
 ];
 
-/** Store skip trace form data when user fills and saves the modal */
+/** Store home form defendants */
+var homeDefendantsArray = [];
+const HOME_MAX_DEFENDANTS = 10;
 var skipTraceFormData = null;
 var skipTraceModalFilled = false;
 
@@ -394,8 +396,16 @@ function initFutureDeadlineDateInputs(root) {
 function toggleHomeMultiDefTextarea() {
   var yes = document.querySelector('#home-form-container input[name="home_multiple_defendants"][value="yes"]');
   var ta = document.getElementById('home-additional-defendants');
+  var listContainer = document.getElementById('home-defendants-list-container');
+  var addBtn = document.getElementById('home-btn-add-defendant');
   if (!ta) return;
-  ta.style.display = yes && yes.checked ? 'block' : 'none';
+  var isYes = yes && yes.checked;
+  ta.style.display = isYes ? 'block' : 'none';
+  if (listContainer) listContainer.style.display = isYes ? 'flex' : 'none';
+  if (addBtn) addBtn.style.display = isYes ? 'block' : 'none';
+  if (isYes && homeDefendantsArray.length === 0 && typeof openHomeDefendantModal === 'function') {
+    setTimeout(function() { openHomeDefendantModal(-1); }, 100);
+  }
 }
 
 function syncHomeProcessServeSection() {
@@ -522,16 +532,7 @@ function submitHomeProcessServe(form, successId) {
   })());
   var multiYes = document.querySelector('#home-form-container input[name="home_multiple_defendants"][value="yes"]');
   fd.append('multiple_defendants', multiYes && multiYes.checked ? 'true' : 'false');
-  var addEl = document.getElementById('home-additional-defendants');
-  var extraLines = addEl ? addEl.value : '';
-  var defExtra = [];
-  if (multiYes && multiYes.checked && extraLines.trim()) {
-    extraLines.split('\n').forEach(function (line) {
-      var t = line.trim();
-      if (t) defExtra.push({ fullName: t });
-    });
-  }
-  fd.append('defendantsData', JSON.stringify(defExtra));
+  fd.append('defendantsData', JSON.stringify(homeDefendantsArray));
   fd.append('serviceType', (function () {
     var el = form.querySelector('[name="serviceType"]');
     return el ? el.value.trim() : '';
@@ -576,6 +577,8 @@ function submitHomeProcessServe(form, successId) {
       // TEMP DISABLED FOR DEBUG: if (stripeLinks[st]) { setTimeout(function () { window.location.href = stripeLinks[st]; }, 1500); }
       form.reset();
       syncHomeProcessServeSection();
+      homeDefendantsArray = [];
+      renderHomeDefendantsList();
       var hc = document.getElementById('home-form-container');
       if (hc) initFutureDeadlineDateInputs(hc);
       var fl = document.getElementById('home-file-list');
@@ -619,12 +622,13 @@ function buildContactForm(containerId, formId) {
       <div class="form-group"><label>Court / Jurisdiction</label><input type="text" name="courtJurisdiction"></div>
       <div class="form-group">
         <label>Are there multiple defendants to be served?</label>
-        <div class="form-hint" style="margin-bottom:10px;">Selecting &quot;Yes&quot; allows you to list additional names below (one per line).</div>
+        <div class="form-hint" style="margin-bottom:10px;">Selecting &quot;Yes&quot; opens the defendant entry form. You can add up to 10 defendants.</div>
         <div class="radio-toggle-group">
           <label class="radio-toggle"><input type="radio" name="home_multiple_defendants" value="yes" onchange="toggleHomeMultiDefTextarea()"><span>Yes</span></label>
           <label class="radio-toggle"><input type="radio" name="home_multiple_defendants" value="no" checked onchange="toggleHomeMultiDefTextarea()"><span>No</span></label>
         </div>
-        <textarea id="home-additional-defendants" name="home_additional_defendants" rows="3" placeholder="Additional defendant names, one per line" style="display:none;margin-top:10px;width:100%;box-sizing:border-box;"></textarea>
+        <div id="home-defendants-list-container" style="display:none; flex-direction:column; gap:10px; margin-top: 10px;"></div>
+        <button type="button" id="home-btn-add-defendant" class="btn-navy" style="display:none; width:auto; padding: 10px 20px; margin-top: 10px; background-color: #f4f4f4; color: #333; border: 1px solid #ccc;" onclick="openHomeDefendantModal(-1)">+ Add Defendant</button>
       </div>
       <div class="form-group">
         <label>Deadline Date</label>
@@ -1439,6 +1443,129 @@ function initFileUpload() {
     
     if (uploadText) uploadText.textContent = files.length === 1 ? '1 file selected' : files.length + ' files selected';
   });
+}
+
+// Home form defendant modal functions
+function openHomeDefendantModal(editIndex) {
+  var modal = document.getElementById('home-defendant-modal');
+  var title = document.getElementById('home-modal-title');
+
+  if (editIndex > -1) {
+    title.innerText = "Edit Defendant";
+    document.getElementById('home-def-edit-index').value = editIndex;
+    var def = homeDefendantsArray[editIndex];
+    document.getElementById('home-def-first-name').value = def.firstName || '';
+    document.getElementById('home-def-middle-name').value = def.middleName || '';
+    document.getElementById('home-def-last-name').value = def.lastName || '';
+    document.getElementById('home-def-gender').value = def.gender || '';
+    document.getElementById('home-def-relationship').value = def.relationship || '';
+    document.getElementById('home-def-address').value = def.address || '';
+    document.getElementById('home-def-city').value = def.city || '';
+    document.getElementById('home-def-city-value').value = def.city || '';
+    document.getElementById('home-def-state-input').value = def.state || '';
+    document.getElementById('home-def-state-value').value = def.state || '';
+    document.getElementById('home-def-zip').value = def.zip || '';
+    document.getElementById('home-def-dob').value = def.dob || '';
+    document.getElementById('home-def-phone').value = def.phone || '';
+    document.getElementById('home-def-aliases').value = def.aliases || '';
+    document.getElementById('home-def-employer').value = def.employer || '';
+    document.getElementById('home-def-physical').value = def.physical || '';
+    document.getElementById('home-def-notes').value = def.notes || '';
+  } else {
+    title.innerText = "Add Additional Defendant";
+    document.getElementById('home-def-edit-index').value = "-1";
+    clearHomeDefendantForm();
+  }
+
+  modal.style.display = 'flex';
+  initHomeDefendantsAutocomplete();
+}
+
+function closeHomeDefendantModal() {
+  document.getElementById('home-defendant-modal').style.display = 'none';
+}
+
+function clearHomeDefendantForm() {
+  var ids = [
+    'home-def-first-name','home-def-middle-name','home-def-last-name',
+    'home-def-gender','home-def-relationship','home-def-address',
+    'home-def-city','home-def-city-value','home-def-state-input',
+    'home-def-state-value','home-def-zip','home-def-dob',
+    'home-def-phone','home-def-aliases','home-def-employer',
+    'home-def-physical','home-def-notes'
+  ];
+  ids.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      if (el.tagName === 'SELECT') el.selectedIndex = 0;
+      else el.value = '';
+    }
+  });
+}
+
+function saveHomeDefendant() {
+  var firstName = document.getElementById('home-def-first-name').value.trim();
+  var lastName = document.getElementById('home-def-last-name').value.trim();
+  var address = document.getElementById('home-def-address').value.trim();
+  var cityVal = document.getElementById('home-def-city-value').value.trim() || document.getElementById('home-def-city').value.trim();
+
+  if (!firstName || !lastName || !address || !cityVal) {
+    alert("Please fill in all required fields (First Name, Last Name, Address, City).");
+    return;
+  }
+
+  var defendantData = {
+    firstName: firstName,
+    middleName: document.getElementById('home-def-middle-name').value.trim(),
+    lastName: lastName,
+    gender: document.getElementById('home-def-gender').value,
+    relationship: document.getElementById('home-def-relationship').value,
+    address: address,
+    city: cityVal,
+    state: document.getElementById('home-def-state-value').value.trim(),
+    zip: document.getElementById('home-def-zip').value.trim(),
+    dob: document.getElementById('home-def-dob').value,
+    phone: document.getElementById('home-def-phone').value.trim(),
+    aliases: document.getElementById('home-def-aliases').value.trim(),
+    employer: document.getElementById('home-def-employer').value.trim(),
+    physical: document.getElementById('home-def-physical').value.trim(),
+    notes: document.getElementById('home-def-notes').value.trim()
+  };
+
+  var editIndex = parseInt(document.getElementById('home-def-edit-index').value);
+  if (editIndex > -1) {
+    homeDefendantsArray[editIndex] = defendantData;
+  } else {
+    if (homeDefendantsArray.length < HOME_MAX_DEFENDANTS) {
+      homeDefendantsArray.push(defendantData);
+    } else {
+      alert('Maximum of ' + HOME_MAX_DEFENDANTS + ' defendants allowed.');
+      return;
+    }
+  }
+
+  renderHomeDefendantsList();
+  closeHomeDefendantModal();
+  toggleHomeMultiDefTextarea();
+}
+
+function renderHomeDefendantsList() {
+  var container = document.getElementById('home-defendants-list-container');
+  if (!container) return;
+  container.innerHTML = '';
+  homeDefendantsArray.forEach(function(def, index) {
+    var card = document.createElement('div');
+    card.className = 'defendant-card';
+    var mid = def.middleName ? ' ' + def.middleName + ' ' : ' ';
+    var fullName = def.firstName + mid + def.lastName;
+    card.innerHTML = '<div class="defendant-info"><h5>Defendant #' + (index + 2) + ': ' + fullName + '</h5><p>' + def.address + ', ' + def.city + '</p></div><button type="button" class="edit-def-btn" onclick="openHomeDefendantModal(' + index + ')">Edit</button>';
+    container.appendChild(card);
+  });
+}
+
+function initHomeDefendantsAutocomplete() {
+  initCityAutocomplete('home-def-city', 'home-def-city-value', 'home-def-city-dropdown', 'home-def-state-input');
+  initStateAutocomplete('home-def-state-input', 'home-def-state-value', 'home-def-state-dropdown', '');
 }
 
 // Initialize all autocomplete inputs

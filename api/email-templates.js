@@ -5,7 +5,7 @@ export function buildContactEmailHtml(data) {
   
   // Build Skip Trace section if present
   let skipTraceSection = '';
-  if (skipTraceData && (skipTraceData.firstName || skipTraceData.fullname)) {
+  if (skipTraceData && (skipTraceData.firstName || skipTraceData.fullname || (skipTraceData.defendants && skipTraceData.defendants.length))) {
     const st = skipTraceData;
     skipTraceSection = `
                       <tr>
@@ -131,6 +131,26 @@ export function buildContactEmailHtml(data) {
                             <tr>
                               <td style="padding:8px 0;font-size:12px;color:#94a3b8;text-transform:uppercase;">FCRA Certified</td>
                               <td style="padding:8px 0;font-size:14px;color:#16a34a;text-align:right;font-weight:600;">✓ Yes</td>
+                            </tr>` : ''}
+                            ${st.defendants && st.defendants.length ? `
+                            <tr>
+                              <td colspan="2" style="padding:12px 0 4px 0;font-size:12px;color:#94a3b8;text-transform:uppercase;">Additional Defendants</td>
+                            </tr>
+                            <tr>
+                              <td colspan="2" style="padding:0 0 8px 0;">
+                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#fff;border-radius:4px;overflow:hidden;border:1px solid #fecaca;">
+                                  <tr style="background-color:#dc2626;">
+                                    <td style="padding:6px 12px;font-size:10px;color:#fff;font-weight:600;">#</td>
+                                    <td style="padding:6px 12px;font-size:10px;color:#fff;font-weight:600;">Name</td>
+                                    <td style="padding:6px 12px;font-size:10px;color:#fff;font-weight:600;">Address</td>
+                                    <td style="padding:6px 12px;font-size:10px;color:#fff;font-weight:600;">City</td>
+                                    <td style="padding:6px 12px;font-size:10px;color:#fff;font-weight:600;">State</td>
+                                  </tr>
+                                  ${st.defendants.map(function(def, i) {
+                                    return '<tr style="border-bottom:1px solid #fecaca;"><td style="padding:7px 12px;font-size:12px;color:#94a3b8;">' + (i + 2) + '</td><td style="padding:7px 12px;font-size:13px;color:#333;">' + (def.firstName || '') + ' ' + (def.middleName || '') + ' ' + (def.lastName || '') + '</td><td style="padding:7px 12px;font-size:12px;color:#555;">' + (def.address || 'N/A') + '</td><td style="padding:7px 12px;font-size:12px;color:#555;">' + (def.city || 'N/A') + '</td><td style="padding:7px 12px;font-size:12px;color:#555;">' + (def.state || 'N/A') + '</td></tr>';
+                                  }).join('')}
+                                </table>
+                              </td>
                             </tr>` : ''}
                           </table>
                         </td>

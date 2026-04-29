@@ -49,7 +49,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { firstName, lastName, company, email, phone, reason, county, state, caseDetails, urgency, consent, skipTraceData } = req.body;
+    const { firstName, lastName, company, email, phone, reason, county, state, caseDetails, urgency, consent, skipTraceData, defendantsData } = req.body;
     
     const sql = neon(DATABASE_URL);
     await sql`CREATE TABLE IF NOT EXISTS settings (key VARCHAR(255) PRIMARY KEY, value TEXT)`.catch(() => {});
@@ -63,7 +63,13 @@ export default async function handler(req, res) {
     console.log('[DEBUG API contact] skipTraceData being inserted:', skipTraceData);
     console.log('[DEBUG API contact] JSON.stringify(skipTraceData):', skipTraceData ? JSON.stringify(skipTraceData) : null);
     
-    const skipTraceDataJson = skipTraceData ? JSON.stringify(skipTraceData) : null;
+    // Merge defendantsData into skipTraceData if present
+    var finalSkipTraceData = skipTraceData;
+    if (defendantsData && defendantsData.length) {
+      finalSkipTraceData = Object.assign({}, skipTraceData || {}, { defendants: defendantsData });
+    }
+    
+    const skipTraceDataJson = finalSkipTraceData ? JSON.stringify(finalSkipTraceData) : null;
     
     await sql`
       INSERT INTO contact_submissions (
@@ -78,7 +84,7 @@ export default async function handler(req, res) {
     console.log('[DEBUG API contact] Insert completed');
 
     const htmlContent = buildContactEmailHtml({
-      firstName, lastName, company, email, phone, reason, county, state, caseDetails, serviceType, urgency, skipTraceData
+      firstName, lastName, company, email, phone, reason, county, state, caseDetails, serviceType, urgency, skipTraceData: finalSkipTraceData
     });
 
     const emailResult = await sendSMTPEmail({

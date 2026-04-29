@@ -471,6 +471,16 @@ async function viewContact(id) {
           </div>
         </div>
         ` : ''}
+        ${skipTraceData.defendants && skipTraceData.defendants.length ? `
+        <div class="detail-section" style="border-left:3px solid #2d3a7c;padding-left:16px;margin-top:16px;">
+          <h4 style="color:#2d3a7c;">Additional Defendants</h4>
+          <div class="highlight">
+            ${skipTraceData.defendants.map(function(def, i) {
+              return '<p><strong>Defendant #' + (i + 2) + ':</strong> ' + escapeHtml((def.firstName || '') + ' ' + (def.middleName || '') + ' ' + (def.lastName || '')) + '</p><p style="margin-left:16px;font-size:13px;">Address: ' + escapeHtml(def.address || '') + ', ' + escapeHtml(def.city || '') + ', ' + escapeHtml(def.state || '') + '</p>';
+            }).join('')}
+          </div>
+        </div>
+        ` : ''}
       `;
     }
 
