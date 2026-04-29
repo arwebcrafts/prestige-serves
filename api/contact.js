@@ -63,13 +63,15 @@ export default async function handler(req, res) {
     console.log('[DEBUG API contact] skipTraceData being inserted:', skipTraceData);
     console.log('[DEBUG API contact] JSON.stringify(skipTraceData):', skipTraceData ? JSON.stringify(skipTraceData) : null);
     
+    const skipTraceDataJson = skipTraceData ? JSON.stringify(skipTraceData) : null;
+    
     await sql`
       INSERT INTO contact_submissions (
         first_name, last_name, company, email, phone,
         reason, county, state, case_details, urgency, consent, email_sent, skip_trace_data
       ) VALUES (
         ${firstName}, ${lastName}, ${company}, ${email}, ${phone},
-        ${reason}, ${county}, ${state}, ${caseDetails}, ${urgency}, ${consent || false}, -1, ${skipTraceData}
+        ${reason}, ${county}, ${state}, ${caseDetails}, ${urgency}, ${consent || false}, -1, ${skipTraceDataJson}
       )
     `;
     
