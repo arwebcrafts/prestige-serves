@@ -15,7 +15,7 @@ export function buildContactEmailHtml(data) {
                             ${st.serviceType ? `
                             <tr>
                               <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Service Type</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;font-weight:600;">${st.serviceType}</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;font-weight:600;">${(st.serviceType || '').replace(/[^\x00-\x7F]/g, function(c) { return '&#' + c.charCodeAt(0) + ';'; })}</td>
                             </tr>` : ''}
                             ${st.firstName || st.fullname ? `
                             <tr>
@@ -237,7 +237,7 @@ export function buildContactEmailHtml(data) {
                       <tr>
                         <td style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
                           <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Service Type</span>
-                          <p style="margin:5px 0 0 0;font-size:16px;color:#2563eb;font-weight:600;">${serviceType}</p>
+                          <p style="margin:5px 0 0 0;font-size:16px;color:#2563eb;font-weight:600;">${(serviceType || '').replace(/[^\x00-\x7F]/g, function(c) { return '&#' + c.charCodeAt(0) + ';'; })}</p>
                         </td>
                       </tr>
                       ` : ''}
