@@ -136,13 +136,6 @@ export function buildContactEmailHtml(data) {
                         </td>
                       </tr>`;
   }
-                              <td style="padding:8px 0;font-size:12px;color:#94a3b8;text-transform:uppercase;">FCRA Certified</td>
-                              <td style="padding:8px 0;font-size:14px;color:#16a34a;text-align:right;font-weight:600;">✓ Yes</td>
-                            </tr>` : ''}
-                          </table>
-                        </td>
-                      </tr>`;
-  }
   
   return `
 <!DOCTYPE html>
