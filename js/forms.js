@@ -433,6 +433,16 @@ function initHomeProcessServeSection() {
   syncHomeProcessServeSection();
   var hc = document.getElementById('home-form-container');
   if (hc) initFutureDeadlineDateInputs(hc);
+
+  // Attach radio button listeners AFTER form is built (inline onchange may fire before functions exist)
+  var radios = document.querySelectorAll('#home-form-container input[name="home_multiple_defendants"]');
+  radios.forEach(function(r) {
+    r.addEventListener('change', toggleHomeMultiDefTextarea);
+  });
+  // Also call once in case "No" is pre-selected or state needs syncing
+  toggleHomeMultiDefTextarea();
+  // Init file upload preview for home form
+  initHomeFileUploadPreview();
 }
 
 function initHomeFileUploadPreview() {
@@ -492,6 +502,7 @@ function validateHomeProcessServeFields(form) {
 function submitHomeProcessServe(form, successId) {
   console.log('[DEBUG submitHomeProcessServe] STARTING - form:', form.id || 'unknown');
   var fd = new FormData();
+  console.log('[DEBUG submitHomeProcessServe] home-svc-city-value:', document.getElementById('home-svc-city-value')?.value, 'home-svc-state-value:', document.getElementById('home-svc-state-value')?.value);
   var fnEl = form.querySelector('[name="firstName"]');
   var lnEl = form.querySelector('[name="lastName"]');
   var coEl = form.querySelector('[name="company"]');
@@ -1344,8 +1355,12 @@ function initCityAutocomplete(inputId, hiddenInputId, dropdownId, stateInputId) 
   }
 
   input.addEventListener('input', function() {
-    hiddenInput.value = '';
+    hiddenInput.value = this.value.trim();
     renderDropdown(this.value, getCurrentStateCities());
+  });
+
+  input.addEventListener('blur', function() {
+    hiddenInput.value = this.value.trim();
   });
 
   input.addEventListener('focus', function() {
