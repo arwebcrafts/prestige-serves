@@ -428,7 +428,7 @@ export function buildServiceRequestEmailHtml(data) {
                       <tr>
                         <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;">
                           <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Service Type</span>
-                          <p style="margin:5px 0 0 0;font-size:15px;color:#2563eb;font-weight:600;">${serviceType}</p>
+                          <p style="margin:5px 0 0 0;font-size:15px;color:#2563eb;font-weight:600;">${(serviceType || '').replace(/[^\x00-\x7F]/g, function(c) { return '&#' + c.charCodeAt(0) + ';'; })}</p>
                         </td>
                       </tr>
                       <tr>
@@ -442,6 +442,20 @@ export function buildServiceRequestEmailHtml(data) {
                         <td style="padding:10px 0;">
                           <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Special Instructions</span>
                           <p style="margin:5px 0 0 0;font-size:14px;line-height:1.5;color:#555555;">${specialInstructions}</p>
+                        </td>
+                      </tr>
+                      ` : ''}
+                      ${uploadedFiles && uploadedFiles.length ? `
+                      <tr>
+                        <td style="padding:10px 0;border-top:2px solid #e2e8f0;margin-top:10px;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Uploaded Files</span>
+                          <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;">
+                            ${uploadedFiles.map(function(f) {
+                              var fileUrl = f.url || '#';
+                              var fileName = f.name || 'Document';
+                              return '<a href="' + fileUrl + '" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#e8f0fe;padding:8px 14px;border-radius:6px;font-size:13px;color:#2563eb;text-decoration:none;font-weight:500;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>' + fileName + '</a>';
+                            }).join('')}
+                          </div>
                         </td>
                       </tr>
                       ` : ''}

@@ -138,7 +138,7 @@ export default async function handler(req, res) {
 
     const htmlContent = buildServiceRequestEmailHtml({
       clientName, contactName, email, phone, addressLine1, addressLine2, city, state, zip,
-      defendantName, caseNumber, courtJurisdiction, serviceType, deadlineDate, specialInstructions, defendantsData
+      defendantName, caseNumber, courtJurisdiction, serviceType, deadlineDate, specialInstructions, defendantsData, uploadedFiles
     });
 
     const emailResult = await sendSMTPEmail({
