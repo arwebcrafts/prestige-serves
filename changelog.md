@@ -11,6 +11,10 @@
   - Modal data is stored in database alongside the contact submission
   - Modal auto-opens when skip trace service is selected; form state resets after submission
 
+### Fixed
+- `urgency` field now properly captured from skip trace intake form (derived from "rush" selection → 'High' or 'Standard') and saved to `contact_submissions.urgency`
+- `skip_trace_data` JSONB column now actually saved to database on form submission (was being sent in payload but INSERT query was missing the column mapping)
+
 ## [1.1.2] - 2026-04-28
 
 ### Fixed
