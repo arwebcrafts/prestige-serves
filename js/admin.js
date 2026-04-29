@@ -382,7 +382,54 @@ async function viewContact(id) {
     const response = await fetch(`/api/admin/contact/${id}`);
     const data = await response.json();
     const c = data.data;
-    
+
+    // Parse skip trace data if present
+    var skipTraceData = null;
+    if (c.skip_trace_data) {
+      try {
+        skipTraceData = typeof c.skip_trace_data === 'string' ? JSON.parse(c.skip_trace_data) : c.skip_trace_data;
+      } catch(e) {
+        skipTraceData = c.skip_trace_data;
+      }
+    }
+
+    var skipTraceSection = '';
+    if (skipTraceData && skipTraceData.firstName) {
+      skipTraceSection = `
+        <div class="detail-section" style="border-left:3px solid #2d3a7c;padding-left:16px;margin-top:16px;">
+          <h4 style="color:#2d3a7c;">Skip Trace Intake Data</h4>
+          <div class="highlight">
+            <p><strong>Subject Name:</strong> ${escapeHtml((skipTraceData.firstName || '') + ' ' + (skipTraceData.lastName || ''))}</p>
+            ${skipTraceData.middleName ? '<p><strong>Middle Name:</strong> ' + escapeHtml(skipTraceData.middleName) + '</p>' : ''}
+            ${skipTraceData.aliases ? '<p><strong>Aliases/Maiden Name:</strong> ' + escapeHtml(skipTraceData.aliases) + '</p>' : ''}
+            <p><strong>Date of Birth:</strong> ${skipTraceData.dob ? formatDate(skipTraceData.dob) : ''}</p>
+            <p><strong>Last Known Phone:</strong> ${escapeHtml(skipTraceData.lastPhone || '')}</p>
+            <p><strong>Last Known Address:</strong> ${escapeHtml(skipTraceData.lastAddress || '')}</p>
+            <p><strong>Last Known Email:</strong> ${escapeHtml(skipTraceData.lastEmail || '')}</p>
+            <p><strong>Social Media:</strong> ${escapeHtml(skipTraceData.social || '')}</p>
+          </div>
+        </div>
+        <div class="detail-section" style="border-left:3px solid #2d3a7c;padding-left:16px;">
+          <h4 style="color:#2d3a7c;">Search Details</h4>
+          <p><strong>Purpose:</strong> ${escapeHtml(skipTraceData.purpose || '')}</p>
+          <p><strong>Case / File Number:</strong> ${escapeHtml(skipTraceData.caseNumber || '')}</p>
+          <p><strong>Court / Jurisdiction:</strong> ${escapeHtml(skipTraceData.court || '')}</p>
+          <p><strong>Deadline:</strong> ${skipTraceData.deadline ? formatDate(skipTraceData.deadline) : ''}</p>
+          <p><strong>Role / Relationship:</strong> ${escapeHtml(skipTraceData.role || '')}</p>
+          <p><strong>State of Jurisdiction:</strong> ${escapeHtml(skipTraceData.jurisdiction || '')}</p>
+        </div>
+        ${skipTraceData.notes ? `
+        <div class="detail-section" style="border-left:3px solid #2d3a7c;padding-left:16px;">
+          <h4 style="color:#2d3a7c;">Additional Notes</h4>
+          <p>${escapeHtml(skipTraceData.notes)}</p>
+        </div>
+        ` : ''}
+        <div class="detail-section" style="border-left:3px solid #2d3a7c;padding-left:16px;">
+          <p><span style="display:inline-block;background:#e8f7ee;color:#16a34a;border:1px solid #b4d8b8;border-radius:4px;padding:4px 10px;font-size:12px;font-weight:500;">FCRA Certified</span></p>
+        </div>
+      `;
+    }
+
     document.getElementById('modal-detail-title').textContent = `Contact #${id}`;
     document.getElementById('modal-detail-body').innerHTML = `
       <div class="detail-section">
@@ -407,13 +454,14 @@ async function viewContact(id) {
           <p>${escapeHtml(c.case_details || '')}</p>
         </div>
       </div>
+      ${skipTraceSection}
       <div class="detail-section">
         <h4>Submission Info</h4>
         <p><strong>Submitted:</strong> ${formatDate(c.created_at)}</p>
         <p><strong>Email Sent:</strong> <span class="email-status-badge ${c.email_sent === 1 ? 'success' : c.email_sent === 0 ? 'failed' : 'pending'}">${c.email_sent === 1 ? 'Sent' : c.email_sent === 0 ? 'Failed' : 'Pending'}</span></p>
       </div>
     `;
-    
+
     document.getElementById('detail-modal').style.display = 'flex';
   } catch (err) {
     console.error('Error loading contact:', err);
