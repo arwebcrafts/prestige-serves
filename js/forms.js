@@ -8,6 +8,194 @@ var HOME_PROCESS_SERVE_TYPES = [
   'Emergency Serve — $249.99 (Same-day, approval required)'
 ];
 
+/** Skip trace service types that require intake form modal */
+var SKIP_TRACE_SERVICE_TYPES = [
+  'Standard Skip Trace — $75',
+  'Enhanced Trace — $150',
+  'Rush Trace (same/next-day) — $225',
+  'Business / Agent Verification — $225',
+  'Court-Ready Skip Trace Report — $250'
+];
+
+/** Store skip trace form data when user fills and saves the modal */
+var skipTraceFormData = null;
+var skipTraceModalFilled = false;
+
+/** Detect if service type is skip trace */
+function isSkipTraceService(val) {
+  return SKIP_TRACE_SERVICE_TYPES.indexOf(val) !== -1;
+}
+
+/** Show skip trace intake modal */
+function openSkipTraceModal() {
+  var modal = document.getElementById('skip-trace-modal');
+  var body = document.getElementById('skip-trace-modal-body');
+  if (!modal || !body) return;
+
+  // Inject skip trace form HTML
+  body.innerHTML = `
+    <div style="background:#fff;border-radius:6px;overflow:hidden;">
+      <div style="background:#f5f4f1;padding:20px 28px;border-bottom:1px solid #d5d2cc;">
+        <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#2d3a7c;font-weight:500;margin-bottom:8px;">✦ Skip Trace Intake</div>
+        <h2 style="font-size:28px;font-weight:300;margin:0 0 6px;letter-spacing:-.01em;">Skip Trace Request</h2>
+        <p style="font-size:14px;color:#666;font-style:italic;margin:0;">FCRA permissible purpose required. Fields marked * are required.</p>
+      </div>
+      <div style="padding:24px 28px 28px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Full Name <span style="color:#999">*</span></label><input type="text" id="st-fullname" placeholder="Jane Smith" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Company / Firm</label><input type="text" id="st-company" placeholder="Acme Collections LLC" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Email <span style="color:#999">*</span></label><input type="email" id="st-email" placeholder="jane@firm.com" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Phone <span style="color:#999">*</span></label><input type="tel" id="st-phone" placeholder="(555) 000-0000" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Role</label>
+            <select id="st-role" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;background:#fff;">
+              <option value="">Select...</option>
+              <option>Attorney</option>
+              <option>Process server</option>
+              <option>Debt collector</option>
+              <option>Bail bondsman</option>
+              <option>Private investigator</option>
+              <option>Insurance adjuster</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">State of Jurisdiction <span style="color:#999">*</span></label><input type="text" id="st-jurisdiction" placeholder="e.g. California" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+        </div>
+
+        <div style="border:1px solid #d5d2cc;border-radius:4px;margin-bottom:18px;overflow:hidden;">
+          <div style="background:#f5f4f1;padding:12px 20px;border-bottom:1px solid #d5d2cc;font-size:12px;font-weight:500;color:#333;letter-spacing:.04em;">Subject Information</div>
+          <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">First Name <span style="color:#999">*</span></label><input type="text" id="st-first" placeholder="John" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Last Name <span style="color:#999">*</span></label><input type="text" id="st-last" placeholder="Doe" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Middle Name</label><input type="text" id="st-middle" placeholder="Optional" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Maiden Name / Aliases</label><input type="text" id="st-aliases" placeholder="Former names, nicknames" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Date of Birth <span style="color:#999">*</span></label><input type="date" id="st-dob" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Last Known Phone</label><input type="tel" id="st-phone2" placeholder="(555) 000-0000" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field" style="grid-column:1/-1;"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Last Known Address <span style="color:#999">*</span></label><input type="text" id="st-address" placeholder="Street, city, state, zip" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Last Known Email</label><input type="email" id="st-email2" placeholder="subject@email.com" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Social Media Handles</label><input type="text" id="st-social" placeholder="@username / platform" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Purpose of Search <span style="color:#999">*</span></label>
+            <select id="st-purpose" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;background:#fff;">
+              <option value="">Select...</option>
+              <option>Debt collection</option>
+              <option>Legal service / process</option>
+              <option>Child custody / family law</option>
+              <option>Estate / probate</option>
+              <option>Bail recovery</option>
+              <option>Insurance investigation</option>
+              <option>Background verification</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Case / File Number</label><input type="text" id="st-case" placeholder="Optional reference" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Court / Jurisdiction</label><input type="text" id="st-court" placeholder="Required for court-ready reports" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Deadline <span style="color:#999">*</span></label><input type="date" id="st-deadline" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+          <div class="field" style="grid-column:1/-1;"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Additional Notes / Known Information</label>
+            <textarea id="st-notes" placeholder="Known relatives, employers, vehicles, frequented locations, prior addresses..." style="font-family:var(--serif);font-size:15px;padding:12px 16px;border:1px solid #d5d2cc;border-radius:10px;outline:none;width:100%;box-sizing:border-box;min-height:72px;resize:vertical;"></textarea>
+          </div>
+        </div>
+
+        <div style="border:1px solid #d5d2cc;border-radius:4px;padding:16px 20px;margin-bottom:18px;background:#f9f9f9;">
+          <label style="font-size:13px;color:#333;line-height:1.6;display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
+            <input type="checkbox" id="st-fcra" style="margin-top:2px;accent-color:#2d3a7c;">
+            <span>I certify that I have a permissible purpose under the Fair Credit Reporting Act (FCRA) for this request and am authorized to request this information.</span>
+          </label>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid #d5d2cc;">
+          <p style="font-size:12px;color:#888;font-style:italic;max-width:380px;line-height:1.6;margin:0;">By saving, you confirm all FCRA certifications above. Skip trace form must be completed before submitting.</p>
+          <div style="display:flex;gap:10px;">
+            <button type="button" onclick="closeSkipTraceModal()" style="font-family:var(--serif);font-size:13px;color:#666;background:none;border:1.5px solid #d5d2cc;border-radius:100px;padding:11px 22px;cursor:pointer;letter-spacing:.03em;">Cancel</button>
+            <button type="button" onclick="saveSkipTraceForm()" style="font-family:var(--serif);font-size:14px;font-weight:400;background:#2d3a7c;color:#fff;border:none;border-radius:100px;padding:13px 28px;cursor:pointer;letter-spacing:.04em;white-space:nowrap;">Save & Continue</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  modal.style.display = 'flex';
+  skipTraceModalFilled = false;
+}
+
+function closeSkipTraceModal() {
+  var modal = document.getElementById('skip-trace-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function saveSkipTraceForm() {
+  var fullname = document.getElementById('st-fullname').value.trim();
+  var email = document.getElementById('st-email').value.trim();
+  var phone = document.getElementById('st-phone').value.trim();
+  var jurisdiction = document.getElementById('st-jurisdiction').value.trim();
+  var first = document.getElementById('st-first').value.trim();
+  var last = document.getElementById('st-last').value.trim();
+  var dob = document.getElementById('st-dob').value.trim();
+  var address = document.getElementById('st-address').value.trim();
+  var purpose = document.getElementById('st-purpose').value.trim();
+  var deadline = document.getElementById('st-deadline').value.trim();
+  var fcra = document.getElementById('st-fcra').checked;
+
+  if (!fullname || !email || !phone || !jurisdiction || !first || !last || !dob || !address || !purpose || !deadline) {
+    alert('Please fill in all required fields.');
+    return;
+  }
+  if (!fcra) {
+    alert('Please check the FCRA certification checkbox.');
+    return;
+  }
+
+  skipTraceFormData = {
+    fullname: fullname,
+    company: document.getElementById('st-company').value.trim(),
+    email: email,
+    phone: phone,
+    role: document.getElementById('st-role').value,
+    jurisdiction: jurisdiction,
+    firstName: first,
+    lastName: last,
+    middleName: document.getElementById('st-middle').value.trim(),
+    aliases: document.getElementById('st-aliases').value.trim(),
+    dob: dob,
+    lastPhone: document.getElementById('st-phone2').value.trim(),
+    lastAddress: address,
+    lastEmail: document.getElementById('st-email2').value.trim(),
+    social: document.getElementById('st-social').value.trim(),
+    purpose: purpose,
+    caseNumber: document.getElementById('st-case').value.trim(),
+    court: document.getElementById('st-court').value.trim(),
+    deadline: deadline,
+    notes: document.getElementById('st-notes').value.trim(),
+    fcraCertified: true
+  };
+  skipTraceModalFilled = true;
+  closeSkipTraceModal();
+  // Show toast to confirm saved
+  var toast = document.getElementById('toast');
+  if (toast) {
+    toast.textContent = 'Skip trace details saved. You may now submit the form.';
+    toast.className = 'toast show ok';
+    setTimeout(function() { toast.classList.remove('show'); }, 3500);
+  }
+}
+
+function initHomeSkipTraceSection() {
+  var sel = document.querySelector('#home-form-container select[name="serviceType"]');
+  if (!sel) return;
+  sel.addEventListener('change', function() {
+    if (isSkipTraceService(sel.value)) {
+      openSkipTraceModal();
+    } else {
+      // Reset skip trace data if user switches away from skip trace service
+      if (skipTraceModalFilled) {
+        skipTraceFormData = null;
+        skipTraceModalFilled = false;
+      }
+    }
+  });
+}
+
 function tomorrowDateInputMinLocal() {
   var d = new Date();
   d.setHours(0, 0, 0, 0);
@@ -369,6 +557,13 @@ function handleFormSubmit(event, id, formType) {
         submitHomeProcessServe(form, id);
         return;
       }
+      /* Skip trace service types require intake form to be filled first */
+      const isSkipTrace = isSkipTraceService(serviceTypeVal);
+      if (isSkipTrace && !skipTraceModalFilled) {
+        alert('Please complete the Skip Trace Intake form before submitting. Select a skip trace service to open the form.');
+        openSkipTraceModal();
+        return;
+      }
       const formData = {
         firstName: form.querySelector('[name="firstName"]')?.value || '',
         lastName: form.querySelector('[name="lastName"]')?.value || '',
@@ -380,7 +575,8 @@ function handleFormSubmit(event, id, formType) {
         state: document.getElementById('state-value')?.value || '',
         caseDetails: form.querySelector('[name="caseDetails"]')?.value || '',
         serviceType: form.querySelector('[name="serviceType"]')?.value || '',
-        consent: form.querySelector('[name="consent"]')?.checked || false
+        consent: form.querySelector('[name="consent"]')?.checked || false,
+        skipTraceData: skipTraceFormData
       };
       fetch('/api/contact', {
         method: 'POST',
@@ -407,6 +603,10 @@ function handleFormSubmit(event, id, formType) {
       setTimeout(() => { window.location.href = stripeLinks[serviceTypeVal]; }, 1500);
     }
     form.reset();
+    if (isSkipTraceService(serviceTypeVal)) {
+      skipTraceFormData = null;
+      skipTraceModalFilled = false;
+    }
   }
 }
 
@@ -1076,4 +1276,6 @@ document.addEventListener('DOMContentLoaded', function() {
   initStateAutocomplete('state-input', 'state-value', 'state-dropdown', 'CA');
   initFileUpload();
   initFutureDeadlineDateInputs();
+  initHomeProcessServeSection();
+  initHomeSkipTraceSection();
 });

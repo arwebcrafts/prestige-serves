@@ -229,5 +229,23 @@
 <script src="js/main.js" defer></script>
 <script src="js/forms.js" defer></script>
 <script src="js/ui.js" defer></script>
+<style>
+#skip-trace-modal .modal-content { max-width: 860px; }
+#skip-trace-modal .modal-body { padding: 0; }
+.skip-trace-modal-wrap { max-height: 85vh; overflow-y: auto; }
+</style>
+</head>
+<body>
+<div id="skip-trace-modal" class="modal-overlay" style="display:none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Skip Trace Intake Form</h3>
+      <span class="modal-close" onclick="closeSkipTraceModal()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="skip-trace-modal-wrap" id="skip-trace-modal-body"></div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
