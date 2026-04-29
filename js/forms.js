@@ -32,37 +32,80 @@ function openSkipTraceModal() {
   var body = document.getElementById('skip-trace-modal-body');
   if (!modal || !body) return;
 
-  // Inject skip trace form HTML
+  // Inject skip trace form HTML — mirrors skip-trace-intake-form.html
   body.innerHTML = `
-    <div style="background:#fff;border-radius:6px;overflow:hidden;">
+    <div style="background:#fff;border-radius:6px;overflow:hidden;max-height:85vh;overflow-y:auto;">
       <div style="background:#f5f4f1;padding:20px 28px;border-bottom:1px solid #d5d2cc;">
         <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#2d3a7c;font-weight:500;margin-bottom:8px;">✦ Skip Trace Intake</div>
         <h2 style="font-size:28px;font-weight:300;margin:0 0 6px;letter-spacing:-.01em;">Skip Trace Request</h2>
-        <p style="font-size:14px;color:#666;font-style:italic;margin:0;">FCRA permissible purpose required. Fields marked * are required.</p>
+        <p style="font-size:14px;color:#666;font-style:italic;margin:0;">FCRA permissible purpose required. Fields marked * are required. Conditional fields appear based on service type selected.</p>
       </div>
       <div style="padding:24px 28px 28px;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
-          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Full Name <span style="color:#999">*</span></label><input type="text" id="st-fullname" placeholder="Jane Smith" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
-          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Company / Firm</label><input type="text" id="st-company" placeholder="Acme Collections LLC" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
-          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Email <span style="color:#999">*</span></label><input type="email" id="st-email" placeholder="jane@firm.com" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
-          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Phone <span style="color:#999">*</span></label><input type="tel" id="st-phone" placeholder="(555) 000-0000" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
-          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Role</label>
-            <select id="st-role" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;background:#fff;">
-              <option value="">Select...</option>
-              <option>Attorney</option>
-              <option>Process server</option>
-              <option>Debt collector</option>
-              <option>Bail bondsman</option>
-              <option>Private investigator</option>
-              <option>Insurance adjuster</option>
-              <option>Other</option>
-            </select>
+
+        <!-- Section 01: Client -->
+        <div style="border:1px solid #d5d2cc;border-radius:4px;margin-bottom:18px;overflow:hidden;">
+          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;">01 — Client / Requester Information</div>
+          <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Full Name <span style="color:#999">*</span></label><input type="text" id="st-fullname" placeholder="Jane Smith" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Company / Firm</label><input type="text" id="st-company" placeholder="Acme Collections LLC" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Email <span style="color:#999">*</span></label><input type="email" id="st-email" placeholder="jane@firm.com" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Phone <span style="color:#999">*</span></label><input type="tel" id="st-phone" placeholder="(555) 000-0000" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Role</label>
+              <select id="st-role" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;background:#fff;">
+                <option value="">Select...</option>
+                <option>Attorney</option>
+                <option>Process server</option>
+                <option>Debt collector</option>
+                <option>Bail bondsman</option>
+                <option>Private investigator</option>
+                <option>Insurance adjuster</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">State of Jurisdiction <span style="color:#999">*</span></label><input type="text" id="st-jurisdiction" placeholder="e.g. California" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
           </div>
-          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">State of Jurisdiction <span style="color:#999">*</span></label><input type="text" id="st-jurisdiction" placeholder="e.g. California" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
         </div>
 
+        <!-- Section 02: Service Type -->
         <div style="border:1px solid #d5d2cc;border-radius:4px;margin-bottom:18px;overflow:hidden;">
-          <div style="background:#f5f4f1;padding:12px 20px;border-bottom:1px solid #d5d2cc;font-size:12px;font-weight:500;color:#333;letter-spacing:.04em;">Subject Information</div>
+          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;">02 — Service Type <span style="color:#999">*</span></div>
+          <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <label class="svc-card" onclick="selectModalService(this,'standard')" style="border:1px solid #d5d2cc;border-radius:6px;padding:16px;cursor:pointer;transition:border-color .2s,background .2s;display:block;background:#fff;">
+              <input type="radio" name="st-service" value="standard" style="display:none;">
+              <div style="font-size:15px;font-weight:600;margin-bottom:4px;color:#1a1a1a;">Standard Skip Trace</div>
+              <div style="font-size:12.5px;color:#666;margin-bottom:10px;line-height:1.5;">Current address, phone, and basic identity verification. Suitable for general locates.</div>
+              <span style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;background:#e8f7ee;color:#16a34a;border:1px solid #b4d8b8;"><span style="width:5px;height:5px;border-radius:50%;background:#16a34a;"></span>Standard Priority</span>
+            </label>
+            <label class="svc-card" onclick="selectModalService(this,'deep')" style="border:1px solid #d5d2cc;border-radius:6px;padding:16px;cursor:pointer;transition:border-color .2s,background .2s;display:block;background:#fff;">
+              <input type="radio" name="st-service" value="deep" style="display:none;">
+              <div style="font-size:15px;font-weight:600;margin-bottom:4px;color:#1a1a1a;">Deep Skip Trace</div>
+              <div style="font-size:12.5px;color:#666;margin-bottom:10px;line-height:1.5;">Full profile including associates, assets, employment history, and digital footprint.</div>
+              <span style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;background:#e8f0fc;color:#2563eb;border:1px solid #b4c8e8;"><span style="width:5px;height:5px;border-radius:50%;background:#2563eb;"></span>Elevated Priority</span>
+            </label>
+            <label class="svc-card" onclick="selectModalService(this,'court')" style="border:1px solid #d5d2cc;border-radius:6px;padding:16px;cursor:pointer;transition:border-color .2s,background .2s;display:block;background:#fff;">
+              <input type="radio" name="st-service" value="court" style="display:none;">
+              <div style="font-size:15px;font-weight:600;margin-bottom:4px;color:#1a1a1a;">Court-Ready / Affidavit-Grade</div>
+              <div style="font-size:12.5px;color:#666;margin-bottom:10px;line-height:1.5;">Documented, certified report with sourcing suitable for legal proceedings and filings.</div>
+              <span style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;background:#fef3e2;color:#b7770d;border:1px solid #e8d0a8;"><span style="width:5px;height:5px;border-radius:50%;background:#b7770d;"></span>High Priority</span>
+            </label>
+            <label class="svc-card" onclick="selectModalService(this,'process')" style="border:1px solid #d5d2cc;border-radius:6px;padding:16px;cursor:pointer;transition:border-color .2s,background .2s;display:block;background:#fff;">
+              <input type="radio" name="st-service" value="process" style="display:none;">
+              <div style="font-size:15px;font-weight:600;margin-bottom:4px;color:#1a1a1a;">Process Server Locate</div>
+              <div style="font-size:12.5px;color:#666;margin-bottom:10px;line-height:1.5;">Rapid current-address confirmation for same-day or next-day service of process.</div>
+              <span style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;background:#fce8e8;color:#c0392b;border:1px solid #e8b4b4;"><span style="width:5px;height:5px;border-radius:50%;background:#c0392b;"></span>Critical Priority</span>
+            </label>
+          </div>
+          <!-- Urgency Panel -->
+          <div id="modalUrgPanel" style="display:none;margin:0 20px 20px;border:1px solid #d5d2cc;border-radius:6px;overflow:hidden;">
+            <div id="modalUrgHeader" style="padding:10px 16px;background:#f5f4f1;border-bottom:1px solid #d5d2cc;font-size:10.5px;color:#666;letter-spacing:.06em;display:flex;align-items:center;gap:10px;"></div>
+            <div id="modalUrgRows" style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;"></div>
+            <div id="modalEscInstruction" style="margin:0 16px 14px;border-radius:4px;padding:10px 14px;font-size:12px;line-height:1.6;border-left:3px solid;"></div>
+          </div>
+        </div>
+
+        <!-- Section 03: Subject Information -->
+        <div style="border:1px solid #d5d2cc;border-radius:4px;margin-bottom:18px;overflow:hidden;">
+          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;">03 — Subject Information</div>
           <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">First Name <span style="color:#999">*</span></label><input type="text" id="st-first" placeholder="John" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Last Name <span style="color:#999">*</span></label><input type="text" id="st-last" placeholder="Doe" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
@@ -73,40 +116,78 @@ function openSkipTraceModal() {
             <div class="field" style="grid-column:1/-1;"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Last Known Address <span style="color:#999">*</span></label><input type="text" id="st-address" placeholder="Street, city, state, zip" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Last Known Email</label><input type="email" id="st-email2" placeholder="subject@email.com" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Social Media Handles</label><input type="text" id="st-social" placeholder="@username / platform" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <!-- Extended fields (shown conditionally) -->
+            <div id="modalExtendedFields" style="display:contents;"></div>
           </div>
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
-          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Purpose of Search <span style="color:#999">*</span></label>
-            <select id="st-purpose" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;background:#fff;">
-              <option value="">Select...</option>
-              <option>Debt collection</option>
-              <option>Legal service / process</option>
-              <option>Child custody / family law</option>
-              <option>Estate / probate</option>
-              <option>Bail recovery</option>
-              <option>Insurance investigation</option>
-              <option>Background verification</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Case / File Number</label><input type="text" id="st-case" placeholder="Optional reference" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
-          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Court / Jurisdiction</label><input type="text" id="st-court" placeholder="Required for court-ready reports" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
-          <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Deadline <span style="color:#999">*</span></label><input type="date" id="st-deadline" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
-          <div class="field" style="grid-column:1/-1;"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Additional Notes / Known Information</label>
-            <textarea id="st-notes" placeholder="Known relatives, employers, vehicles, frequented locations, prior addresses..." style="font-family:var(--serif);font-size:15px;padding:12px 16px;border:1px solid #d5d2cc;border-radius:10px;outline:none;width:100%;box-sizing:border-box;min-height:72px;resize:vertical;"></textarea>
+        <!-- Section 04: Case Details -->
+        <div style="border:1px solid #d5d2cc;border-radius:4px;margin-bottom:18px;overflow:hidden;">
+          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;">04 — Case Details</div>
+          <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Purpose of Search <span style="color:#999">*</span></label>
+              <select id="st-purpose" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;background:#fff;">
+                <option value="">Select...</option>
+                <option>Debt collection</option>
+                <option>Legal service / process</option>
+                <option>Child custody / family law</option>
+                <option>Estate / probate</option>
+                <option>Bail recovery</option>
+                <option>Insurance investigation</option>
+                <option>Background verification</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Case / File Number</label><input type="text" id="st-case" placeholder="Optional reference" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Court / Jurisdiction</label><input type="text" id="st-court" placeholder="Required for court-ready reports" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Deadline <span style="color:#999">*</span></label><input type="date" id="st-deadline" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Rush Request?</label>
+              <select id="st-rush" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;background:#fff;">
+                <option value="no">No</option>
+                <option value="yes">Yes — I understand rush fees apply</option>
+              </select>
+            </div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Prior Search Attempted?</label>
+              <select id="st-prior" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;background:#fff;">
+                <option value="no">No</option>
+                <option value="yes">Yes — see notes below</option>
+              </select>
+            </div>
+            <div class="field" style="grid-column:1/-1;"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Additional Notes / Known Information</label>
+              <textarea id="st-notes" placeholder="Known relatives, employers, vehicles, frequented locations, prior addresses..." style="font-family:var(--serif);font-size:15px;padding:12px 16px;border:1px solid #d5d2cc;border-radius:10px;outline:none;width:100%;box-sizing:border-box;min-height:72px;resize:vertical;"></textarea>
+            </div>
           </div>
         </div>
 
-        <div style="border:1px solid #d5d2cc;border-radius:4px;padding:16px 20px;margin-bottom:18px;background:#f9f9f9;">
-          <label style="font-size:13px;color:#333;line-height:1.6;display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
-            <input type="checkbox" id="st-fcra" style="margin-top:2px;accent-color:#2d3a7c;">
-            <span>I certify that I have a permissible purpose under the Fair Credit Reporting Act (FCRA) for this request and am authorized to request this information.</span>
-          </label>
+        <!-- Section 05: Compliance -->
+        <div style="border:1px solid #d5d2cc;border-radius:4px;margin-bottom:18px;overflow:hidden;">
+          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;">05 — Compliance & Authorization <span style="color:#999">*</span></div>
+          <div style="padding:16px 20px;display:flex;flex-direction:column;gap:0;">
+            <label style="font-size:13px;color:#333;line-height:1.55;display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:10px 0;border-bottom:1px solid #e8e6e1;">
+              <input type="checkbox" id="st-fcra1" required style="margin-top:2px;accent-color:#2d3a7c;flex-shrink:0;">
+              <span>I certify that I have a permissible purpose under the Fair Credit Reporting Act (FCRA) for this request and that I am authorized to request this information.</span>
+            </label>
+            <label style="font-size:13px;color:#333;line-height:1.55;display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:10px 0;border-bottom:1px solid #e8e6e1;">
+              <input type="checkbox" id="st-fcra2" required style="margin-top:2px;accent-color:#2d3a7c;flex-shrink:0;">
+              <span>I acknowledge that any DMV or driver record data is accessed solely under Driver's Privacy Protection Act (DPPA)-compliant purposes.</span>
+            </label>
+            <label style="font-size:13px;color:#333;line-height:1.55;display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:10px 0;border-bottom:1px solid #e8e6e1;">
+              <input type="checkbox" id="st-fcra3" required style="margin-top:2px;accent-color:#2d3a7c;flex-shrink:0;">
+              <span>I confirm this information will not be used for stalking, harassment, or any unlawful purpose, and that I assume full legal responsibility for its use.</span>
+            </label>
+            <label style="font-size:13px;color:#333;line-height:1.55;display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:10px 0;border-bottom:1px solid #e8e6e1;">
+              <input type="checkbox" id="st-fcra4" required style="margin-top:2px;accent-color:#2d3a7c;flex-shrink:0;">
+              <span>I have read and agree to the terms of service, refund policy, and no-results policy.</span>
+            </label>
+            <label style="font-size:13px;color:#333;line-height:1.55;display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:10px 0;">
+              <input type="checkbox" id="st-fcra5" required style="margin-top:2px;accent-color:#2d3a7c;flex-shrink:0;">
+              <span>I understand that results are not guaranteed and that the refund policy applies as stated in the service agreement.</span>
+            </label>
+          </div>
         </div>
 
         <div style="display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid #d5d2cc;">
-          <p style="font-size:12px;color:#888;font-style:italic;max-width:380px;line-height:1.6;margin:0;">By saving, you confirm all FCRA certifications above. Skip trace form must be completed before submitting.</p>
+          <p style="font-size:12px;color:#888;font-style:italic;max-width:380px;line-height:1.6;margin:0;">By submitting this form you acknowledge all compliance certifications above. Skip trace form must be completed before submitting.</p>
           <div style="display:flex;gap:10px;">
             <button type="button" onclick="closeSkipTraceModal()" style="font-family:var(--serif);font-size:13px;color:#666;background:none;border:1.5px solid #d5d2cc;border-radius:100px;padding:11px 22px;cursor:pointer;letter-spacing:.03em;">Cancel</button>
             <button type="button" onclick="saveSkipTraceForm()" style="font-family:var(--serif);font-size:14px;font-weight:400;background:#2d3a7c;color:#fff;border:none;border-radius:100px;padding:13px 28px;cursor:pointer;letter-spacing:.04em;white-space:nowrap;">Save & Continue</button>
@@ -119,62 +200,113 @@ function openSkipTraceModal() {
   skipTraceModalFilled = false;
 }
 
+// Service type selection in modal
+var modalUrgData = {
+  standard: { label: 'Standard Priority', pillClass: 'p-standard', dotColor: '#16a34a', sla: '3–5 business days', queue: 'General Queue', escalate: 'None required', notify: 'Email on completion', esc: 'Assign to next available analyst. No supervisor flag needed. Standard verification sources only.', escColor: '#16a34a', escBorder: '#b4d8b8', escBg: '#e8f7ee' },
+  deep: { label: 'Elevated Priority', pillClass: 'p-elevated', dotColor: '#2563eb', sla: '1–2 business days', queue: 'Priority Queue', escalate: 'Lead analyst review', notify: 'Email + SMS on completion', esc: 'Flag to lead analyst immediately. Ensure all extended sources are queried — associates, assets, employment, digital. Review before delivery.', escColor: '#2563eb', escBorder: '#b4c8e8', escBg: '#e8f0fc' },
+  court: { label: 'High Priority', pillClass: 'p-high', dotColor: '#b7770d', sla: '24 hours', queue: 'Expedited Legal Queue', escalate: 'Supervisor sign-off required', notify: 'Email + SMS + call on delivery', esc: 'Route to senior analyst immediately. Supervisor must review and sign off before any report is sent. Document all sources thoroughly for affidavit use.', escColor: '#b7770d', escBorder: '#e8d0a8', escBg: '#fef3e2' },
+  process: { label: 'Critical Priority', pillClass: 'p-critical', dotColor: '#c0392b', sla: '2–4 hours', queue: 'Emergency Queue — immediate pickup', escalate: 'On-call manager notified by phone', notify: 'Call client immediately on locate', esc: 'STOP current non-critical tasks. Assign the next available analyst right now. Notify the on-call manager by phone immediately. Client must be reached by phone — do not rely on email. Clock starts on receipt.', escColor: '#c0392b', escBorder: '#e8b4b4', escBg: '#fce8e8' }
+};
+
+function selectModalService(el, type) {
+  document.querySelectorAll('#skip-trace-modal-body .svc-card').forEach(function(c) { c.style.borderColor = '#d5d2cc'; c.style.background = '#fff'; });
+  el.style.borderColor = '#2d3a7c';
+  el.style.background = '#f0f3f8';
+  var d = modalUrgData[type];
+  var panel = document.getElementById('modalUrgPanel');
+  if (!panel) return;
+  panel.style.display = 'block';
+  var header = document.getElementById('modalUrgHeader');
+  if (header) header.innerHTML = '<span style="color:#666;">INTERNAL ESCALATION KEY</span> <span style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;background:' + d.escBg + ';color:' + d.escColor + ';border:1px solid ' + d.escBorder + ';"><span style="width:5px;height:5px;border-radius:50%;background:' + d.dotColor + ';"></span>' + d.label + '</span>';
+  var rows = document.getElementById('modalUrgRows');
+  if (rows) rows.innerHTML = '<div style="display:flex;justify-content:space-between;font-size:12.5px;padding-bottom:8px;border-bottom:1px solid #e8e6e1;"><span style="color:#888;">SLA</span><span style="font-weight:500;color:#333;">' + d.sla + '</span></div><div style="display:flex;justify-content:space-between;font-size:12.5px;padding-bottom:8px;border-bottom:1px solid #e8e6e1;"><span style="color:#888;">Queue</span><span style="font-weight:500;color:#333;">' + d.queue + '</span></div><div style="display:flex;justify-content:space-between;font-size:12.5px;padding-bottom:8px;border-bottom:1px solid #e8e6e1;"><span style="color:#888;">Escalation</span><span style="font-weight:500;color:#333;">' + d.escalate + '</span></div><div style="display:flex;justify-content:space-between;font-size:12.5px;"><span style="color:#888;">Client Notification</span><span style="font-weight:500;color:#333;">' + d.notify + '</span></div>';
+  var esc = document.getElementById('modalEscInstruction');
+  if (esc) { esc.style.background = d.escBg; esc.style.borderLeftColor = d.escBorder; esc.style.color = d.escColor; esc.innerHTML = '<strong>Team Instruction:</strong> ' + d.esc; }
+  // Show extended fields for deep/court/process
+  var ext = document.getElementById('modalExtendedFields');
+  if (!ext) return;
+  if (type === 'deep' || type === 'court' || type === 'process') {
+    ext.innerHTML = '<div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">SSN — Last 4 Digits</label><input type="text" id="st-ssn" maxlength="4" placeholder="XXXX" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div><div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Driver\'s License / State</label><input type="text" id="st-dl" placeholder="DL# — State" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div><div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Vehicle Info</label><input type="text" id="st-vehicle" placeholder="Make, model, plate number" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div><div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Known Employer</label><input type="text" id="st-employer" placeholder="Company name and location" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>';
+    ext.style.display = 'contents';
+  } else {
+    ext.innerHTML = '';
+    ext.style.display = 'contents';
+  }
+}
+
 function closeSkipTraceModal() {
   var modal = document.getElementById('skip-trace-modal');
   if (modal) modal.style.display = 'none';
 }
 
 function saveSkipTraceForm() {
-  var fullname = document.getElementById('st-fullname').value.trim();
-  var email = document.getElementById('st-email').value.trim();
-  var phone = document.getElementById('st-phone').value.trim();
-  var jurisdiction = document.getElementById('st-jurisdiction').value.trim();
-  var first = document.getElementById('st-first').value.trim();
-  var last = document.getElementById('st-last').value.trim();
-  var dob = document.getElementById('st-dob').value.trim();
-  var address = document.getElementById('st-address').value.trim();
-  var purpose = document.getElementById('st-purpose').value.trim();
-  var deadline = document.getElementById('st-deadline').value.trim();
-  var fcra = document.getElementById('st-fcra').checked;
+  var fullname = document.getElementById('st-fullname') ? document.getElementById('st-fullname').value.trim() : '';
+  var email = document.getElementById('st-email') ? document.getElementById('st-email').value.trim() : '';
+  var phone = document.getElementById('st-phone') ? document.getElementById('st-phone').value.trim() : '';
+  var jurisdiction = document.getElementById('st-jurisdiction') ? document.getElementById('st-jurisdiction').value.trim() : '';
+  var first = document.getElementById('st-first') ? document.getElementById('st-first').value.trim() : '';
+  var last = document.getElementById('st-last') ? document.getElementById('st-last').value.trim() : '';
+  var dob = document.getElementById('st-dob') ? document.getElementById('st-dob').value.trim() : '';
+  var address = document.getElementById('st-address') ? document.getElementById('st-address').value.trim() : '';
+  var purpose = document.getElementById('st-purpose') ? document.getElementById('st-purpose').value.trim() : '';
+  var deadline = document.getElementById('st-deadline') ? document.getElementById('st-deadline').value.trim() : '';
+
+  // Check required checkboxes
+  var fcra1 = document.getElementById('st-fcra1') ? document.getElementById('st-fcra1').checked : false;
+  var fcra2 = document.getElementById('st-fcra2') ? document.getElementById('st-fcra2').checked : false;
+  var fcra3 = document.getElementById('st-fcra3') ? document.getElementById('st-fcra3').checked : false;
+  var fcra4 = document.getElementById('st-fcra4') ? document.getElementById('st-fcra4').checked : false;
+  var fcra5 = document.getElementById('st-fcra5') ? document.getElementById('st-fcra5').checked : false;
 
   if (!fullname || !email || !phone || !jurisdiction || !first || !last || !dob || !address || !purpose || !deadline) {
     alert('Please fill in all required fields.');
     return;
   }
-  if (!fcra) {
-    alert('Please check the FCRA certification checkbox.');
+  if (!fcra1 || !fcra2 || !fcra3 || !fcra4 || !fcra5) {
+    alert('Please check all five compliance certification checkboxes.');
     return;
   }
 
+  // Get selected service type
+  var selectedSvc = document.querySelector('#skip-trace-modal-body input[name="st-service"]:checked');
+  var serviceTypeMap = { standard: 'Standard Skip Trace', deep: 'Deep Skip Trace', court: 'Court-Ready / Affidavit-Grade', process: 'Process Server Locate' };
+  var serviceTypeVal = selectedSvc ? (serviceTypeMap[selectedSvc.value] || '') : '';
+
   console.log('[DEBUG saveSkipTraceForm] All required fields validated');
-  console.log('[DEBUG saveSkipTraceForm] fullname:', fullname, 'first:', first, 'last:', last);
+  console.log('[DEBUG saveSkipTraceForm] fullname:', fullname, 'first:', first, 'last:', last, 'serviceType:', serviceTypeVal);
 
   skipTraceFormData = {
     fullname: fullname,
-    company: document.getElementById('st-company').value.trim(),
+    company: document.getElementById('st-company') ? document.getElementById('st-company').value.trim() : '',
     email: email,
     phone: phone,
-    role: document.getElementById('st-role').value,
+    role: document.getElementById('st-role') ? document.getElementById('st-role').value : '',
     jurisdiction: jurisdiction,
+    serviceType: serviceTypeVal,
     firstName: first,
     lastName: last,
-    middleName: document.getElementById('st-middle').value.trim(),
-    aliases: document.getElementById('st-aliases').value.trim(),
+    middleName: document.getElementById('st-middle') ? document.getElementById('st-middle').value.trim() : '',
+    aliases: document.getElementById('st-aliases') ? document.getElementById('st-aliases').value.trim() : '',
     dob: dob,
-    lastPhone: document.getElementById('st-phone2').value.trim(),
+    lastPhone: document.getElementById('st-phone2') ? document.getElementById('st-phone2').value.trim() : '',
     lastAddress: address,
-    lastEmail: document.getElementById('st-email2').value.trim(),
-    social: document.getElementById('st-social').value.trim(),
+    lastEmail: document.getElementById('st-email2') ? document.getElementById('st-email2').value.trim() : '',
+    social: document.getElementById('st-social') ? document.getElementById('st-social').value.trim() : '',
+    ssn: document.getElementById('st-ssn') ? document.getElementById('st-ssn').value.trim() : '',
+    dl: document.getElementById('st-dl') ? document.getElementById('st-dl').value.trim() : '',
+    vehicle: document.getElementById('st-vehicle') ? document.getElementById('st-vehicle').value.trim() : '',
+    employer: document.getElementById('st-employer') ? document.getElementById('st-employer').value.trim() : '',
     purpose: purpose,
-    caseNumber: document.getElementById('st-case').value.trim(),
-    court: document.getElementById('st-court').value.trim(),
+    caseNumber: document.getElementById('st-case') ? document.getElementById('st-case').value.trim() : '',
+    court: document.getElementById('st-court') ? document.getElementById('st-court').value.trim() : '',
     deadline: deadline,
-    notes: document.getElementById('st-notes').value.trim(),
+    rush: document.getElementById('st-rush') ? document.getElementById('st-rush').value : 'no',
+    priorSearch: document.getElementById('st-prior') ? document.getElementById('st-prior').value : 'no',
+    notes: document.getElementById('st-notes') ? document.getElementById('st-notes').value.trim() : '',
     fcraCertified: true
   };
   skipTraceModalFilled = true;
   closeSkipTraceModal();
-  // Show toast to confirm saved
   var toast = document.getElementById('toast');
   if (toast) {
     toast.textContent = 'Skip trace details saved. You may now submit the form.';
