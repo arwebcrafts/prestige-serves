@@ -78,10 +78,25 @@ function buildContactEmailHtml(data) {
                         <td style="padding:25px;background-color:#fef3f2;">
                           <p style="margin:0 0 15px 0;font-size:14px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:1px;">Skip Trace Intake Data</p>
                           <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                            ${st.serviceType ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Service Type</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;font-weight:600;">${st.serviceType}</td>
+                            </tr>` : ''}
                             ${st.firstName || st.fullname ? `
                             <tr>
                               <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Subject Name</td>
                               <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.firstName || ''} ${st.lastName || ''} ${st.fullname || ''}</td>
+                            </tr>` : ''}
+                            ${st.middleName ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Middle Name</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.middleName}</td>
+                            </tr>` : ''}
+                            ${st.aliases ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Aliases / Maiden Name</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.aliases}</td>
                             </tr>` : ''}
                             ${st.dob ? `
                             <tr>
@@ -103,6 +118,31 @@ function buildContactEmailHtml(data) {
                               <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Last Known Email</td>
                               <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.lastEmail}</td>
                             </tr>` : ''}
+                            ${st.social ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Social Media</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.social}</td>
+                            </tr>` : ''}
+                            ${st.ssn ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">SSN (Last 4)</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">****${st.ssn}</td>
+                            </tr>` : ''}
+                            ${st.dl ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Driver's License</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.dl}</td>
+                            </tr>` : ''}
+                            ${st.vehicle ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Vehicle</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.vehicle}</td>
+                            </tr>` : ''}
+                            ${st.employer ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Known Employer</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.employer}</td>
+                            </tr>` : ''}
                             ${st.purpose ? `
                             <tr>
                               <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Purpose</td>
@@ -122,6 +162,31 @@ function buildContactEmailHtml(data) {
                             <tr>
                               <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Deadline</td>
                               <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.deadline}</td>
+                            </tr>` : ''}
+                            ${st.rush ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Rush Request</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#dc2626;text-align:right;font-weight:600;">${st.rush === 'yes' ? 'Yes — rush fees apply' : 'No'}</td>
+                            </tr>` : ''}
+                            ${st.priorSearch ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Prior Search Attempted</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.priorSearch === 'yes' ? 'Yes' : 'No'}</td>
+                            </tr>` : ''}
+                            ${st.role ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Role / Relationship</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.role}</td>
+                            </tr>` : ''}
+                            ${st.jurisdiction ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">State of Jurisdiction</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.jurisdiction}</td>
+                            </tr>` : ''}
+                            ${st.notes ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Additional Notes</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.notes}</td>
                             </tr>` : ''}
                             ${st.fcraCertified ? `
                             <tr>
