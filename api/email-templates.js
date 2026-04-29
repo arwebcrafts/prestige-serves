@@ -291,31 +291,29 @@ export function buildServiceRequestEmailHtml(data) {
   
   let defendantsHtml = '';
   if (defendantsData && defendantsData.length > 0) {
-    const defRows = defendantsData.map((def, i) => `
-      <tr>
-        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:14px;color:#555555;">${i + 2}</td>
-        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:14px;color:#333333;">${def.firstName} ${def.lastName || ''}</td>
-        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:14px;color:#555555;">${def.address || 'N/A'}</td>
-        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:14px;color:#555555;">${def.city || 'N/A'}</td>
-      </tr>
-    `).join('');
-    
-    defendantsHtml = `
-      <tr>
-        <td style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
-          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Additional Defendants</span>
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:10px;background-color:#f8fafc;border-radius:6px;overflow:hidden;">
-            <tr style="background-color:#1a3a5c;">
-              <td style="padding:10px 15px;font-size:12px;color:#ffffff;font-weight:600;">#</td>
-              <td style="padding:10px 15px;font-size:12px;color:#ffffff;font-weight:600;">Name</td>
-              <td style="padding:10px 15px;font-size:12px;color:#ffffff;font-weight:600;">Address</td>
-              <td style="padding:10px 15px;font-size:12px;color:#ffffff;font-weight:600;">City</td>
-            </tr>
-            ${defRows}
-          </table>
-        </td>
-      </tr>
-    `;
+    const defCards = defendantsData.map(function(def, i) {
+      var name = (def.firstName || '') + ' ' + (def.middleName || '') + ' ' + (def.lastName || '');
+      var rows = [];
+      if (def.gender) rows.push('<tr><td style="padding:4px 0;font-size:12px;color:#94a3b8;width:130px;">Gender</td><td style="padding:4px 0;font-size:13px;color:#333;">' + def.gender + '</td></tr>');
+      if (def.relationship) rows.push('<tr><td style="padding:4px 0;font-size:12px;color:#94a3b8;">Relationship</td><td style="padding:4px 0;font-size:13px;color:#333;">' + def.relationship + '</td></tr>');
+      rows.push('<tr><td style="padding:4px 0;font-size:12px;color:#94a3b8;">Address</td><td style="padding:4px 0;font-size:13px;color:#333;">' + (def.address || 'N/A') + '</td></tr>');
+      rows.push('<tr><td style="padding:4px 0;font-size:12px;color:#94a3b8;">City / State / ZIP</td><td style="padding:4px 0;font-size:13px;color:#333;">' + (def.city || 'N/A') + ', ' + (def.state || '') + ' ' + (def.zip || '') + '</td></tr>');
+      if (def.dob) rows.push('<tr><td style="padding:4px 0;font-size:12px;color:#94a3b8;">DOB</td><td style="padding:4px 0;font-size:13px;color:#333;">' + def.dob + '</td></tr>');
+      if (def.phone) rows.push('<tr><td style="padding:4px 0;font-size:12px;color:#94a3b8;">Phone</td><td style="padding:4px 0;font-size:13px;color:#333;">' + def.phone + '</td></tr>');
+      if (def.aliases) rows.push('<tr><td style="padding:4px 0;font-size:12px;color:#94a3b8;">Known Aliases</td><td style="padding:4px 0;font-size:13px;color:#333;">' + def.aliases + '</td></tr>');
+      if (def.employer) rows.push('<tr><td style="padding:4px 0;font-size:12px;color:#94a3b8;">Employer</td><td style="padding:4px 0;font-size:13px;color:#333;">' + def.employer + '</td></tr>');
+      if (def.physical) rows.push('<tr><td style="padding:4px 0;font-size:12px;color:#94a3b8;">Physical Description</td><td style="padding:4px 0;font-size:13px;color:#333;">' + def.physical + '</td></tr>');
+      if (def.notes) rows.push('<tr><td style="padding:4px 0;font-size:12px;color:#94a3b8;">Notes</td><td style="padding:4px 0;font-size:13px;color:#555;">' + def.notes + '</td></tr>');
+      return '<div style="border:1px solid #e2e8f0;border-radius:8px;margin-bottom:12px;overflow:hidden;">' +
+        '<div style="background:#1a3a5c;padding:8px 16px;font-size:13px;color:#fff;font-weight:600;">Defendant #' + (i + 2) + ': ' + name.trim() + '</div>' +
+        '<div style="padding:12px 16px;background:#f8fafc;">' +
+        '<table role="presentation" width="100%" cellspacing="0" cellpadding="0">' + rows.join('') + '</table>' +
+        '</div></div>';
+    }).join('');
+    defendantsHtml = '<tr><td style="padding:12px 0;border-bottom:1px solid #e2e8f0;">' +
+      '<span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Additional Defendants</span>' +
+      '<div style="margin-top:10px;">' + defCards + '</div>' +
+      '</td></tr>';
   }
   
   return `
