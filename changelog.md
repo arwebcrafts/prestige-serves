@@ -15,6 +15,11 @@
 - `urgency` field now properly captured from skip trace intake form (derived from "rush" selection → 'High' or 'Standard') and saved to `contact_submissions.urgency`
 - `skip_trace_data` JSONB column now actually saved to database on form submission (was being sent in payload but INSERT query was missing the column mapping)
 
+### Changed
+- Contact email template now includes Service Type and Urgency fields when available
+- Added "Skip Trace Intake Data" section to contact email — renders when `skipTraceData` is present with all fields: Subject Name, DOB, Last Known Phone/Address/Email, Purpose, Case/File Number, Court/Jurisdiction, Deadline, FCRA Certified
+- Skip trace section styled with red background (#fef3f2) to match dashboard visual
+
 ## [1.1.2] - 2026-04-28
 
 ### Fixed
