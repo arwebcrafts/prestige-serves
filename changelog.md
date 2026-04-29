@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.1.4] - 2026-04-29
+
+### Added
+- Section 05 "Supporting Documents" in skip trace intake modal with file upload capability
+  - Accepts PDF, DOC, DOCX, JPG, PNG files via drag-and-drop or click-to-upload
+  - Uploaded files stored in `skip_trace_data.uploadedFiles` array with name and upload timestamp
+  - Preview section displays uploaded file names with remove button
+
+### Changed
+- Dashboard skip trace display enhanced with all intake form fields:
+  - Service Type badge (color-coded by type: Standard Skip Trace, Enhanced Trace, Rush Trace, Business/Agent Verification, Court-Ready Skip Trace Report)
+  - Rush Request toggle (Yes/No)
+  - Prior Search Attempted toggle (Yes/No)
+  - State of Jurisdiction field
+  - Uploaded file names list with paperclip icon
+  - Full SSN, Driver's License, Vehicle (Make/Model/Color/Plate), Employer/Position/Address fields
+  - All FCRA compliance checkboxes displayed
+- All contact email templates updated to include every skip trace field:
+  - Service Type, Rush Request, Prior Search Attempted, State of Jurisdiction
+  - Uploaded file names list
+  - SSN (masked), Driver's License, Vehicle, Employer details
+  - All 5 FCRA compliance certification checkboxes
+  - Role selection (Attorney/Process Server/Client/Investigator/Other) with optional text
+
+### Fixed
+- Removed duplicate FCRA section rendering in email templates (`email-templates.js`)
+- `skip_trace_data` JSONB now correctly saved and displayed for all skip trace submissions
+
 ## [1.1.3] - 2026-04-29
 
 ### Added

@@ -1,5 +1,55 @@
 # API Integration Changelog
 
+## Version 1.1.0 - Skip Trace Intake Integration
+
+**Date:** April 29, 2026
+
+### Overview
+Added a complete skip trace intake modal on the contact/home form triggered when a user selects a skip trace service type. All captured intake data is saved to the local database and synced to the PST system.
+
+### Changes
+
+#### Skip Trace Intake Modal
+- Auto-opens when user selects any skip trace service type (Standard Skip Trace, Enhanced Trace, Rush Trace, Business/Agent Verification, Court-Ready Skip Trace Report)
+- Intake form captures comprehensive subject information and is required before the main contact form can be submitted
+- Modal captures:
+  - Subject name, DOB, last known phone/address/email
+  - Middle name, aliases, social security number
+  - Driver's license, vehicle information (make/model/color/plate)
+  - Employer name/position/address
+  - Service type, rush request, prior search attempted
+  - State of jurisdiction, case/file number, court name
+  - Purpose of trace and notes
+  - 5 FCRA compliance certifications
+  - Supporting documents (file upload with drag-and-drop)
+  - Role selection (Attorney/Process Server/Client/Investigator/Other)
+
+#### Database Changes
+- `contact_submissions` table stores `skip_trace_data` as JSONB alongside form submission
+- `urgency` field derived from rush selection ('High' or 'Standard') saved to `contact_submissions.urgency`
+- `skip_trace_data.uploadedFiles` array stores uploaded file names and timestamps
+
+#### Dashboard Integration
+- Skip trace data displayed in contact submission detail modal on `dashboard.html`
+- Color-coded service type badge, rush/prior search toggles, uploaded files list
+- Full subject details, SSN (masked), vehicle, employer, FCRA compliance displayed
+
+#### Email Integration
+- All skip trace fields rendered in contact email templates (branded HTML)
+- Service type, rush request, prior search, jurisdiction, uploaded files shown
+- SSN masked display, vehicle/employer details included
+- FCRA certification checkboxes displayed
+- Role selection shown with optional text
+
+### Related Commits
+- `333ef71` - Add Section 05 Supporting Documents with file upload to skip trace modal
+- `81ea5a1` - Enhance dashboard skip trace display
+- `4e5b642` - Enhance all contact email templates: add all skip trace fields
+- `5779991` - Save and display uploaded file names in skipTraceData, dashboard, and email
+- `d5113dd` - Fix duplicate FCRA section in email-templates.js
+
+---
+
 ## Version 1.0.0 - PST API Integration
 
 **Date:** April 28, 2026
