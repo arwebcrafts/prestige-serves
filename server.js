@@ -188,6 +188,11 @@ function buildContactEmailHtml(data) {
                               <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Additional Notes</td>
                               <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.notes}</td>
                             </tr>` : ''}
+                            ${st.uploadedFiles && st.uploadedFiles.length ? `
+                            <tr>
+                              <td style="padding:8px 0;font-size:12px;color:#94a3b8;text-transform:uppercase;">Uploaded Files</td>
+                              <td style="padding:8px 0;font-size:14px;color:#333333;text-align:right;">${st.uploadedFiles.join(', ')}</td>
+                            </tr>` : ''}
                             ${st.fcraCertified ? `
                             <tr>
                               <td style="padding:8px 0;font-size:12px;color:#94a3b8;text-transform:uppercase;">FCRA Certified</td>

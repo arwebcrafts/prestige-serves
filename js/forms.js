@@ -339,7 +339,8 @@ function saveSkipTraceForm() {
     rush: document.getElementById('st-rush') ? document.getElementById('st-rush').value : 'no',
     priorSearch: document.getElementById('st-prior') ? document.getElementById('st-prior').value : 'no',
     notes: document.getElementById('st-notes') ? document.getElementById('st-notes').value.trim() : '',
-    fcraCertified: true
+    fcraCertified: true,
+    uploadedFiles: modalUploadedFiles.length ? modalUploadedFiles.map(function(f) { return f.name; }) : []
   };
   skipTraceModalFilled = true;
   closeSkipTraceModal();

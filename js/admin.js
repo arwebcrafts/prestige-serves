@@ -463,6 +463,14 @@ async function viewContact(id) {
         <div class="detail-section" style="border-left:3px solid #2d3a7c;padding-left:16px;">
           <p><span style="display:inline-block;background:#e8f7ee;color:#16a34a;border:1px solid #b4d8b8;border-radius:4px;padding:4px 10px;font-size:12px;font-weight:500;">FCRA Certified</span></p>
         </div>
+        ${skipTraceData.uploadedFiles && skipTraceData.uploadedFiles.length ? `
+        <div class="detail-section" style="border-left:3px solid #2d3a7c;padding-left:16px;">
+          <h4 style="color:#2d3a7c;">Uploaded Files</h4>
+          <div class="highlight">
+            ${skipTraceData.uploadedFiles.map(function(f) { return '<p>📎 ' + escapeHtml(f) + '</p>'; }).join('')}
+          </div>
+        </div>
+        ` : ''}
       `;
     }
 
