@@ -481,10 +481,16 @@ function validateHomeProcessServeFields(form) {
     mark(dd, true);
     alert('Please choose a deadline date in the future.');
   }
+  console.log('[DEBUG validateHomeProcessServeFields] ok:', ok, 'a1:', a1 ? a1.value : 'null', 'city:', cv ? cv.value : 'null', 'state:', sv ? sv.value : 'null', 'zip:', zp ? zp.value : 'null', 'def:', defn ? defn.value : 'null', 'files:', fi ? fi.files.length : 'null');
+  if (!ok) {
+    alert('Please fill in all required fields: Service Address, City, State, ZIP, Defendant Name, and upload at least one file.');
+    return false;
+  }
   return ok;
 }
 
 function submitHomeProcessServe(form, successId) {
+  console.log('[DEBUG submitHomeProcessServe] STARTING - form:', form.id || 'unknown');
   var fd = new FormData();
   var fnEl = form.querySelector('[name="firstName"]');
   var lnEl = form.querySelector('[name="lastName"]');
@@ -729,8 +735,10 @@ function handleFormSubmit(event, id, formType) {
       const isHomeProcess =
         Boolean(form.closest('#home-form-container')) &&
         HOME_PROCESS_SERVE_TYPES.indexOf(serviceTypeVal) !== -1;
+      console.log('[DEBUG] isHomeProcess:', isHomeProcess, '| closest:', Boolean(form.closest('#home-form-container')), '| indexOf:', HOME_PROCESS_SERVE_TYPES.indexOf(serviceTypeVal));
       if (isHomeProcess) {
         if (!validateHomeProcessServeFields(form)) return;
+        console.log('[DEBUG] Calling submitHomeProcessServe');
         submitHomeProcessServe(form, id);
         return;
       }
