@@ -159,9 +159,22 @@ function openSkipTraceModal() {
           </div>
         </div>
 
-        <!-- Section 05: Compliance -->
+        <!-- Section 05: Document Upload -->
         <div style="border:1px solid #d5d2cc;border-radius:4px;margin-bottom:18px;overflow:hidden;">
-          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;">05 — Compliance & Authorization <span style="color:#999">*</span></div>
+          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;">05 — Supporting Documents</div>
+          <div style="padding:20px;">
+            <div onclick="document.getElementById('st-files').click()" style="border:1.5px dashed #d5d2cc;border-radius:6px;background:#fff;padding:24px;text-align:center;cursor:pointer;transition:border-color .2s;" onmouseover="this.style.borderColor='#2d3a7c'" onmouseout="this.style.borderColor='#d5d2cc'">
+              <input type="file" id="st-files" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" style="display:none;" onchange="handleModalFiles(this.files)">
+              <div style="color:#666;font-size:14px;margin-bottom:4px;">Click to upload or drag files here</div>
+              <div style="color:#999;font-size:12px;font-style:italic;">PDF, DOC, JPG, PNG — prior reports, court orders, subpoenas, ID verification</div>
+            </div>
+            <div id="modalFileList" style="display:flex;flex-direction:column;gap:8px;margin-top:14px;"></div>
+          </div>
+        </div>
+
+        <!-- Section 06: Compliance -->
+        <div style="border:1px solid #d5d2cc;border-radius:4px;margin-bottom:18px;overflow:hidden;">
+          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;">06 — Compliance & Authorization <span style="color:#999">*</span></div>
           <div style="padding:16px 20px;display:flex;flex-direction:column;gap:0;">
             <label style="font-size:13px;color:#333;line-height:1.55;display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:10px 0;border-bottom:1px solid #e8e6e1;">
               <input type="checkbox" id="st-fcra1" required style="margin-top:2px;accent-color:#2d3a7c;flex-shrink:0;">
@@ -198,6 +211,8 @@ function openSkipTraceModal() {
   `;
   modal.style.display = 'flex';
   skipTraceModalFilled = false;
+  modalUploadedFiles = [];
+  renderModalFileList();
 }
 
 // Service type selection in modal
@@ -237,6 +252,27 @@ function selectModalService(el, type) {
 function closeSkipTraceModal() {
   var modal = document.getElementById('skip-trace-modal');
   if (modal) modal.style.display = 'none';
+}
+
+var modalUploadedFiles = [];
+function handleModalFiles(files) {
+  Array.from(files).forEach(function(f) {
+    if (!modalUploadedFiles.find(function(x) { return x.name === f.name; })) {
+      modalUploadedFiles.push(f);
+    }
+  });
+  renderModalFileList();
+}
+function renderModalFileList() {
+  var list = document.getElementById('modalFileList');
+  if (!list) return;
+  list.innerHTML = modalUploadedFiles.map(function(f, i) {
+    return '<div style="display:flex;align-items:center;justify-content:space-between;background:#f5f4f1;border:1px solid #d5d2cc;border-radius:4px;padding:8px 14px;font-size:12.5px;color:#2e2e2e;font-family:var(--serif);"><span>' + f.name + ' <span style="color:#999">(' + (f.size/1024).toFixed(1) + ' KB)</span></span><button onclick="removeModalFile(' + i + ')" style="background:none;border:none;color:#999;cursor:pointer;font-size:18px;line-height:1;padding:0 4px;">×</button></div>';
+  }).join('');
+}
+function removeModalFile(i) {
+  modalUploadedFiles.splice(i, 1);
+  renderModalFileList();
 }
 
 function saveSkipTraceForm() {
