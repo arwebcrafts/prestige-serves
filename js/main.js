@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initCountyDropdown();
     initHomeProcessServeSection();
     initHomeFileUploadPreview();
+    initHomeSkipTraceSection();
     console.log('All home form init done');
   }
 });

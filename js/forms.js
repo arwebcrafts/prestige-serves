@@ -146,6 +146,9 @@ function saveSkipTraceForm() {
     return;
   }
 
+  console.log('[DEBUG saveSkipTraceForm] All required fields validated');
+  console.log('[DEBUG saveSkipTraceForm] fullname:', fullname, 'first:', first, 'last:', last);
+
   skipTraceFormData = {
     fullname: fullname,
     company: document.getElementById('st-company').value.trim(),
@@ -549,6 +552,9 @@ function handleFormSubmit(event, id, formType) {
   if (allFilled) {
     if (formType === 'contact') {
       const serviceTypeVal = form.querySelector('[name="serviceType"]')?.value || '';
+      console.log('[DEBUG] serviceTypeVal:', serviceTypeVal);
+      console.log('[DEBUG] skipTraceModalFilled:', skipTraceModalFilled);
+      console.log('[DEBUG] skipTraceFormData:', skipTraceFormData);
       const isHomeProcess =
         Boolean(form.closest('#home-form-container')) &&
         HOME_PROCESS_SERVE_TYPES.indexOf(serviceTypeVal) !== -1;
@@ -559,6 +565,7 @@ function handleFormSubmit(event, id, formType) {
       }
       /* Skip trace service types require intake form to be filled first */
       const isSkipTrace = isSkipTraceService(serviceTypeVal);
+      console.log('[DEBUG] isSkipTrace:', isSkipTrace);
       if (isSkipTrace && !skipTraceModalFilled) {
         alert('Please complete the Skip Trace Intake form before submitting. Select a skip trace service to open the form.');
         openSkipTraceModal();
@@ -578,11 +585,23 @@ function handleFormSubmit(event, id, formType) {
         consent: form.querySelector('[name="consent"]')?.checked || false,
         skipTraceData: skipTraceFormData
       };
+      console.log('[DEBUG] formData being sent:', JSON.stringify(formData, null, 2));
       fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
-      }).catch(err => console.error('Form submission error:', err));
+      })
+      .then(function(res) {
+        console.log('[DEBUG] API response status:', res.status);
+        return res.json();
+      })
+      .then(function(data) {
+        console.log('[DEBUG] API response data:', data);
+        if (data.success) {
+          showToast && showToast('Request submitted successfully!', 'ok');
+        }
+      })
+      .catch(err => console.error('Form submission error:', err));
     }
     const el = document.getElementById(id);
     if (el) el.classList.add('show');

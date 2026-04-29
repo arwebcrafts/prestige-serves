@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skip Trace Intake Form — Prestige Serves LLC</title>
+<meta name="description" content="Professional skip trace intake form for legal, process serving, and investigative requests. FCRA-compliant service by Prestige Serves LLC.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/global.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages/request.css">
+<style>
+:root {
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --accent-blue: #2d3a7c;
+  --bg-warm: #e8e6e1;
+  --bg-white: #ffffff;
+  --border: #d5d2cc;
+  --text-dark: #1a1a1a;
+  --text-body: #2e2e2e;
+  --text-muted: #666;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--serif); font-weight: 400; color: var(--text-dark); background: var(--bg-white); line-height: 1.6; }
+input, textarea, select, button { font-family: var(--serif); }
+
+.intake-hero {
+  background: var(--bg-warm);
+  border-bottom: 1px solid var(--border);
+  padding: 48px 72px 40px;
+}
+.intake-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-blue);
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+.intake-title {
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+}
+.intake-sub {
+  font-size: 15px;
+  color: var(--text-muted);
+  font-style: italic;
+  max-width: 600px;
+  line-height: 1.7;
+}
+.intake-badge {
+  display: inline-block;
+  font-family: var(--serif);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 2px;
+  margin-top: 12px;
+}
+
+.intake-body {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 40px 72px 72px;
+}
+
+.intake-section {
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.intake-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-warm);
+}
+.intake-section-num {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent-blue);
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.intake-section-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dark);
+  letter-spacing: 0.04em;
+}
+.intake-section-body {
+  padding: 24px;
+}
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.full { grid-column: 1 / -1; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--text-dark);
+}
+.field .req { color: var(--text-muted); font-weight: 400; }
+.field input,
+.field select,
+.field textarea {
+  font-family: var(--serif);
+  font-size: 15px;
+  padding: 13px 18px;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  background: var(--bg-white);
+  color: var(--text-dark);
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.field textarea {
+  border-radius: 10px;
+  resize: vertical;
+  min-height: 80px;
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--accent-blue);
+}
+.field input::placeholder,
+.field textarea::placeholder { color: var(--text-muted); }
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+  padding-right: 44px;
+  cursor: pointer;
+}
+.field select option { background: #f5f5f5; color: var(--text-dark); }
+
+/* Service Cards */
+.service-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.svc-card {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  position: relative;
+  background: var(--bg-white);
+}
+.svc-card:hover { border-color: var(--accent-blue); }
+.svc-card.selected { border-color: var(--accent-blue); background: #f0f3f8; }
+.svc-card input[type=radio] { position: absolute; opacity: 0; pointer-events: none; }
+.svc-name { font-size: 16px; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; }
+.svc-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin-bottom: 12px; }
+
+/* Urgency Pills */
+.urg-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.p-critical { background: #fce8e8; color: #c0392b; border: 1px solid #e8b4b4; }
+.p-high     { background: #fef3e2; color: #b7770d; border: 1px solid #e8d0a8; }
+.p-elevated { background: #e8f0fc; color: #2563eb; border: 1px solid #b4c8e8; }
+.p-standard { background: #e8f7ee; color: #16a34a; border: 1px solid #b4d8b8; }
+.dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+
+/* Urgency Panel */
+.urg-panel {
+  display: none;
+  margin-top: 20px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.urg-panel.active { display: block; }
+.urg-panel-header {
+  padding: 12px 18px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-warm);
+}
+.urg-rows { padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.urg-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13.5px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.urg-row:last-of-type { border-bottom: none; padding-bottom: 0; }
+.urg-k { color: var(--text-muted); font-size: 12px; letter-spacing: 0.04em; }
+.urg-v { color: var(--text-dark); font-weight: 500; font-size: 13.5px; }
+.esc-instruction {
+  margin: 0 18px 16px;
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  border-left: 3px solid;
+}
+
+/* File Upload */
+.upload-zone {
+  border: 1.5px dashed var(--border);
+  border-radius: 6px;
+  background: var(--bg-white);
+  padding: 28px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  position: relative;
+}
+.upload-zone:hover { border-color: var(--accent-blue); }
+.upload-zone input[type=file] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+.upload-icon { width: 28px; height: 28px; margin: 0 auto 8px; color: var(--text-muted); }
+.upload-label { font-size: 14px; color: var(--text-body); margin-bottom: 4px; }
+.upload-hint { font-size: 11.5px; color: var(--text-muted); font-family: var(--serif); font-style: italic; }
+.file-list { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-warm);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 14px;
+  font-size: 12.5px;
+  color: var(--text-body);
+  font-family: var(--serif);
+}
+.file-remove {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 4px;
+  transition: color 0.15s;
+}
+.file-remove:hover { color: #c0392b; }
+
+/* Compliance Checkboxes */
+.check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13.5px;
+  color: var(--text-body);
+  line-height: 1.55;
+}
+.check-row:last-child { border-bottom: none; }
+.check-row input[type=checkbox] {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--accent-blue);
+  cursor: pointer;
+}
+
+/* Submit Area */
+.submit-area {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.submit-note { font-size: 12.5px; color: var(--text-muted); font-style: italic; line-height: 1.6; max-width: 400px; }
+.submit-actions { display: flex; gap: 12px; flex-shrink: 0; }
+
+.btn-submit {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  background: var(--accent-blue);
+  color: #fff;
+  border: none;
+  border-radius: 100px;
+  padding: 14px 32px;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.btn-submit:hover { background: #1e293f; }
+
+.btn-reset {
+  font-family: var(--serif);
+  font-size: 13px;
+  color: var(--text-muted);
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: 100px;
+  padding: 13px 24px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  letter-spacing: 0.03em;
+}
+.btn-reset:hover { color: var(--text-dark); border-color: var(--text-dark); }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  color: var(--text-dark);
+  font-family: var(--serif);
+  font-size: 13px;
+  padding: 12px 20px;
+  border-radius: 6px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  z-index: 999;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.ok { border-color: #b8d8b8; color: #2d622d; background: #f0f8f0; }
+.toast.err { border-color: #d8b4b4; color: #c0392b; background: #fce8e8; }
+
+@media (max-width: 768px) {
+  .intake-hero { padding: 36px 20px 28px; }
+  .intake-body { padding: 28px 20px 56px; }
+  .grid-2, .grid-3, .service-grid { grid-template-columns: 1fr; }
+  .submit-area { flex-direction: column; align-items: stretch; }
+  .submit-note { max-width: 100%; }
+  .submit-actions { flex-direction: column; }
+  .btn-submit, .btn-reset { text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="contact.html">
+    <img src="assets/images/mail.png" alt="Mail">
+    Prestige Serves
+  </a>
+  <button class="nav-hamburger" aria-label="Menu" onclick="toggleMobileNav()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a id="nav-home" href="index.html">Home</a></li>
+    <li><a id="nav-about" href="about.html">About</a></li>
+    <li class="dropdown" id="services-dropdown">
+      <a id="nav-services" href="#" onclick="toggleServicesDropdown(event); return false;">Services ▾</a>
+      <div class="dropdown-menu" id="services-menu">
+        <a href="process-serving.html">Process Serving</a>
+        <a href="concierge.html">Concierge</a>
+        <a href="efiling.html">eFiling</a>
+        <a href="erecording.html">eRecording</a>
+        <a href="nationwide.html">Nationwide</a>
+        <a href="skip-tracing.html">Skip Tracing</a>
+        <a href="services.html">All Services</a>
+      </div>
+    </li>
+    <li><a id="nav-payment" href="payment.html">Payment</a></li>
+    <li><a id="nav-request" href="request.html">Book a Service</a></li>
+    <li><a id="nav-contact" href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+<img src="assets/images/top.png" alt="Follow us" style="position:fixed;top:4px;right:22px;width:72px;height:22px;z-index:1001;pointer-events:none;">
+
+<div class="page active">
+  <div class="intake-hero">
+    <div class="intake-eyebrow">✦ Skip Trace Intake</div>
+    <h1 class="intake-title">Skip Trace Request</h1>
+    <p class="intake-sub">All information is handled under FCRA permissible purpose guidelines. Fields marked <span style="color:var(--text-muted)">*</span> are required. Conditional fields appear based on service type selected.</p>
+    <div class="intake-badge">Confidential — Internal Use</div>
+  </div>
+
+  <div class="intake-body">
+
+    <!-- Section 01: Client -->
+    <div class="intake-section">
+      <div class="intake-section-header">
+        <span class="intake-section-num">01</span>
+        <span class="intake-section-title">Client / Requester Information</span>
+      </div>
+      <div class="intake-section-body">
+        <div class="grid-2">
+          <div class="field"><label>Full Name <span class="req">*</span></label><input type="text" name="fullname" id="st-fullname" placeholder="Jane Smith"></div>
+          <div class="field"><label>Company / Firm Name</label><input type="text" name="company" id="st-company" placeholder="Acme Collections LLC"></div>
+          <div class="field"><label>Email <span class="req">*</span></label><input type="email" name="email" id="st-email" placeholder="jane@firm.com"></div>
+          <div class="field"><label>Phone <span class="req">*</span></label><input type="tel" name="phone" id="st-phone" placeholder="(555) 000-0000"></div>
+          <div class="field"><label>Role / Relationship to Case</label>
+            <select name="role" id="st-role">
+              <option value="">Select...</option>
+              <option>Attorney</option>
+              <option>Process server</option>
+              <option>Debt collector</option>
+              <option>Bail bondsman</option>
+              <option>Private investigator</option>
+              <option>Insurance adjuster</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field"><label>State of Jurisdiction <span class="req">*</span></label><input type="text" name="jurisdiction" id="st-jurisdiction" placeholder="e.g. California"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 02: Service Type -->
+    <div class="intake-section">
+      <div class="intake-section-header">
+        <span class="intake-section-num">02</span>
+        <span class="intake-section-title">Service Type <span class="req">*</span></span>
+      </div>
+      <div class="intake-section-body">
+        <div class="service-grid" id="svcGrid">
+          <label class="svc-card" onclick="selectService(this, 'standard')">
+            <input type="radio" name="service" value="standard">
+            <div class="svc-name">Standard Skip Trace</div>
+            <div class="svc-desc">Current address, phone, and basic identity verification. Suitable for general locates.</div>
+            <span class="urg-pill p-standard"><span class="dot" style="background:#16a34a;"></span>Standard Priority</span>
+          </label>
+          <label class="svc-card" onclick="selectService(this, 'deep')">
+            <input type="radio" name="service" value="deep">
+            <div class="svc-name">Deep Skip Trace</div>
+            <div class="svc-desc">Full profile including associates, assets, employment history, and digital footprint.</div>
+            <span class="urg-pill p-elevated"><span class="dot" style="background:#2563eb;"></span>Elevated Priority</span>
+          </label>
+          <label class="svc-card" onclick="selectService(this, 'court')">
+            <input type="radio" name="service" value="court">
+            <div class="svc-name">Court-Ready / Affidavit-Grade</div>
+            <div class="svc-desc">Documented, certified report with sourcing suitable for legal proceedings and filings.</div>
+            <span class="urg-pill p-high"><span class="dot" style="background:#b7770d;"></span>High Priority</span>
+          </label>
+          <label class="svc-card" onclick="selectService(this, 'process')">
+            <input type="radio" name="service" value="process">
+            <div class="svc-name">Process Server Locate</div>
+            <div class="svc-desc">Rapid current-address confirmation for same-day or next-day service of process.</div>
+            <span class="urg-pill p-critical"><span class="dot" style="background:#c0392b;"></span>Critical Priority</span>
+          </label>
+        </div>
+
+        <div class="urg-panel" id="urgPanel">
+          <div class="urg-panel-header">
+            <span style="color:var(--text-muted)">INTERNAL ESCALATION KEY</span>
+            <span id="urgPillLabel"></span>
+          </div>
+          <div class="urg-rows" id="urgRows"></div>
+          <div class="esc-instruction" id="escInstruction"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 03: Subject -->
+    <div class="intake-section">
+      <div class="intake-section-header">
+        <span class="intake-section-num">03</span>
+        <span class="intake-section-title">Subject Information</span>
+      </div>
+      <div class="intake-section-body">
+        <div class="grid-2">
+          <div class="field"><label>First Name <span class="req">*</span></label><input type="text" name="firstName" id="st-first" placeholder="John"></div>
+          <div class="field"><label>Last Name <span class="req">*</span></label><input type="text" name="lastName" id="st-last" placeholder="Doe"></div>
+          <div class="field"><label>Middle Name</label><input type="text" name="middleName" id="st-middle" placeholder="Optional"></div>
+          <div class="field"><label>Maiden Name / Aliases</label><input type="text" name="aliases" id="st-aliases" placeholder="Former names, nicknames"></div>
+          <div class="field"><label>Date of Birth <span class="req">*</span></label><input type="date" name="dob" id="st-dob"></div>
+          <div class="field"><label>Last Known Phone</label><input type="tel" name="lastPhone" id="st-phone2" placeholder="(555) 000-0000"></div>
+          <div class="field full"><label>Last Known Address <span class="req">*</span></label><input type="text" name="lastAddress" id="st-address" placeholder="Street, city, state, zip"></div>
+          <div class="field"><label>Last Known Email</label><input type="email" name="lastEmail" id="st-email2" placeholder="subject@email.com"></div>
+          <div class="field"><label>Social Media Handles</label><input type="text" name="social" id="st-social" placeholder="@username / platform"></div>
+          <div id="extendedFields" style="display:contents"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 04: Case Details -->
+    <div class="intake-section">
+      <div class="intake-section-header">
+        <span class="intake-section-num">04</span>
+        <span class="intake-section-title">Case Details</span>
+      </div>
+      <div class="intake-section-body">
+        <div class="grid-2">
+          <div class="field"><label>Purpose of Search <span class="req">*</span></label>
+            <select name="purpose" id="st-purpose">
+              <option value="">Select...</option>
+              <option>Debt collection</option>
+              <option>Legal service / process</option>
+              <option>Child custody / family law</option>
+              <option>Estate / probate</option>
+              <option>Bail recovery</option>
+              <option>Insurance investigation</option>
+              <option>Background verification</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field"><label>Case / File Number</label><input type="text" name="caseNumber" id="st-case" placeholder="Optional reference"></div>
+          <div class="field"><label>Court / Jurisdiction</label><input type="text" name="court" id="st-court" placeholder="Required for court-ready reports"></div>
+          <div class="field"><label>Deadline <span class="req">*</span></label><input type="date" name="deadline" id="st-deadline"></div>
+          <div class="field"><label>Rush Request?</label>
+            <select name="rush" id="st-rush">
+              <option value="no">No</option>
+              <option value="yes">Yes — I understand rush fees apply</option>
+            </select>
+          </div>
+          <div class="field"><label>Prior Search Attempted?</label>
+            <select name="priorSearch" id="st-prior">
+              <option value="no">No</option>
+              <option value="yes">Yes — see notes below</option>
+            </select>
+          </div>
+          <div class="field full"><label>Additional Notes / Known Information</label>
+            <textarea name="notes" id="st-notes" placeholder="Any other details that may help — known relatives, employers, vehicles, frequented locations, prior addresses, etc."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 05: Document Upload -->
+    <div class="intake-section">
+      <div class="intake-section-header">
+        <span class="intake-section-num">05</span>
+        <span class="intake-section-title">Supporting Documents</span>
+      </div>
+      <div class="intake-section-body">
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" onchange="handleFiles(this.files)">
+          <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12V4M8 8l4-4 4 4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="upload-label">Click to upload or drag files here</div>
+          <div class="upload-hint">PDF, DOC, JPG, PNG — prior reports, court orders, subpoenas, ID verification</div>
+        </div>
+        <div class="file-list" id="fileList"></div>
+      </div>
+    </div>
+
+    <!-- Section 06: Compliance -->
+    <div class="intake-section">
+      <div class="intake-section-header">
+        <span class="intake-section-num">06</span>
+        <span class="intake-section-title">Compliance & Authorization <span class="req">*</span></span>
+      </div>
+      <div class="intake-section-body">
+        <label class="check-row"><input type="checkbox" required> I certify that I have a permissible purpose under the Fair Credit Reporting Act (FCRA) for this request and that I am authorized to request this information.</label>
+        <label class="check-row"><input type="checkbox" required> I acknowledge that any DMV or driver record data is accessed solely under Driver's Privacy Protection Act (DPPA)-compliant purposes.</label>
+        <label class="check-row"><input type="checkbox" required> I confirm this information will not be used for stalking, harassment, or any unlawful purpose, and that I assume full legal responsibility for its use.</label>
+        <label class="check-row"><input type="checkbox" required> I have read and agree to the terms of service, refund policy, and no-results policy.</label>
+        <label class="check-row"><input type="checkbox" required> I understand that results are not guaranteed and that the refund policy applies as stated in the service agreement.</label>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-area">
+      <p class="submit-note">By submitting this form you acknowledge all compliance certifications above. Your request will be assigned and you will receive a confirmation within 15 minutes during business hours.</p>
+      <div class="submit-actions">
+        <button class="btn-reset" type="button" onclick="resetForm()">Clear Form</button>
+        <button class="btn-submit" type="button" onclick="submitForm()">Submit Request</button>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div><div class="footer-brand-name">Prestige Serves</div><div class="footer-tagline">Reliable. Professional. Fast.</div></div>
+    <div class="footer-col"><h4>Location</h4><p>1240 S Corning St., Suite 105</p><p>Los Angeles, CA 90035</p></div>
+    <div class="footer-col"><h4>Contact</h4><a href="mailto:prestigeservesllc@gmail.com">prestigeservesllc@gmail.com</a><a href="tel:6092405665">609.240.5665</a></div>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const urgData = {
+  standard: {
+    label: 'Standard Priority', pillClass: 'p-standard', dotColor: '#16a34a',
+    sla: '3–5 business days', queue: 'General Queue', escalate: 'None required', notify: 'Email on completion',
+    esc: 'Assign to next available analyst. No supervisor flag needed. Standard verification sources only.',
+    escColor: '#16a34a', escBorder: '#b4d8b8', escBg: '#e8f7ee'
+  },
+  deep: {
+    label: 'Elevated Priority', pillClass: 'p-elevated', dotColor: '#2563eb',
+    sla: '1–2 business days', queue: 'Priority Queue', escalate: 'Lead analyst review', notify: 'Email + SMS on completion',
+    esc: 'Flag to lead analyst immediately. Ensure all extended sources are queried — associates, assets, employment, digital. Review before delivery.',
+    escColor: '#2563eb', escBorder: '#b4c8e8', escBg: '#e8f0fc'
+  },
+  court: {
+    label: 'High Priority', pillClass: 'p-high', dotColor: '#b7770d',
+    sla: '24 hours', queue: 'Expedited Legal Queue', escalate: 'Supervisor sign-off required', notify: 'Email + SMS + call on delivery',
+    esc: 'Route to senior analyst immediately. Supervisor must review and sign off before any report is sent. Document all sources thoroughly for affidavit use.',
+    escColor: '#b7770d', escBorder: '#e8d0a8', escBg: '#fef3e2'
+  },
+  process: {
+    label: 'Critical Priority', pillClass: 'p-critical', dotColor: '#c0392b',
+    sla: '2–4 hours', queue: 'Emergency Queue — immediate pickup', escalate: 'On-call manager notified by phone', notify: 'Call client immediately on locate',
+    esc: 'STOP current non-critical tasks. Assign the next available analyst right now. Notify the on-call manager by phone immediately. Client must be reached by phone — do not rely on email. Clock starts on receipt.',
+    escColor: '#c0392b', escBorder: '#e8b4b4', escBg: '#fce8e8'
+  }
+};
+
+function selectService(el, type) {
+  document.querySelectorAll('.svc-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+
+  const d = urgData[type];
+  const panel = document.getElementById('urgPanel');
+  panel.classList.add('active');
+
+  document.getElementById('urgPillLabel').innerHTML =
+    `<span class="urg-pill ${d.pillClass}"><span class="dot" style="background:${d.dotColor};"></span>${d.label}</span>`;
+
+  document.getElementById('urgRows').innerHTML = `
+    <div class="urg-row"><span class="urg-k">SLA</span><span class="urg-v">${d.sla}</span></div>
+    <div class="urg-row"><span class="urg-k">Queue</span><span class="urg-v">${d.queue}</span></div>
+    <div class="urg-row"><span class="urg-k">Escalation</span><span class="urg-v">${d.escalate}</span></div>
+    <div class="urg-row"><span class="urg-k">Client Notification</span><span class="urg-v">${d.notify}</span></div>
+  `;
+
+  const esc = document.getElementById('escInstruction');
+  esc.style.background = d.escBg;
+  esc.style.borderLeftColor = d.escBorder;
+  esc.style.color = d.escColor;
+  esc.innerHTML = `<strong>Team Instruction:</strong> ${d.esc}`;
+
+  const ext = document.getElementById('extendedFields');
+  if (type === 'deep' || type === 'court' || type === 'process') {
+    ext.innerHTML = `
+      <div class="field"><label>SSN — Last 4 Digits</label><input type="text" maxlength="4" placeholder="XXXX"></div>
+      <div class="field"><label>Driver's License / State</label><input type="text" placeholder="DL# — State"></div>
+      <div class="field"><label>Vehicle Info</label><input type="text" placeholder="Make, model, plate number"></div>
+      <div class="field"><label>Known Employer</label><input type="text" placeholder="Company name and location"></div>
+    `;
+    ext.style.display = 'contents';
+  } else {
+    ext.innerHTML = '';
+    ext.style.display = 'contents';
+  }
+}
+
+let uploadedFiles = [];
+function handleFiles(files) {
+  Array.from(files).forEach(f => {
+    if (!uploadedFiles.find(x => x.name === f.name)) uploadedFiles.push(f);
+  });
+  renderFiles();
+}
+function renderFiles() {
+  const list = document.getElementById('fileList');
+  list.innerHTML = uploadedFiles.map((f, i) =>
+    `<div class="file-item">
+      <span>${f.name} <span style="color:var(--text-muted)">(${(f.size/1024).toFixed(1)} KB)</span></span>
+      <button class="file-remove" onclick="removeFile(${i})" title="Remove">×</button>
+    </div>`
+  ).join('');
+}
+function removeFile(i) {
+  uploadedFiles.splice(i, 1);
+  renderFiles();
+}
+
+const zone = document.getElementById('uploadZone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor = 'var(--accent-blue)'; });
+zone.addEventListener('dragleave', () => { zone.style.borderColor = ''; });
+zone.addEventListener('drop', e => {
+  e.preventDefault();
+  zone.style.borderColor = '';
+  handleFiles(e.dataTransfer.files);
+});
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (type || 'ok');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+function submitForm() {
+  const checks = document.querySelectorAll('input[type=checkbox]');
+  let allChecked = true;
+  checks.forEach(c => { if (!c.checked) allChecked = false; });
+  if (!allChecked) { showToast('Please complete all compliance checkboxes.', 'err'); return; }
+
+  const selectedCard = document.querySelector('.svc-card.selected');
+  if (!selectedCard) { showToast('Please select a service type.', 'err'); return; }
+
+  // Build skip trace data object from form fields
+  const skipTraceData = {
+    fullname: document.getElementById('st-fullname')?.value?.trim() || '',
+    company: document.getElementById('st-company')?.value?.trim() || '',
+    email: document.getElementById('st-email')?.value?.trim() || '',
+    phone: document.getElementById('st-phone')?.value?.trim() || '',
+    role: document.getElementById('st-role')?.value || '',
+    jurisdiction: document.getElementById('st-jurisdiction')?.value?.trim() || '',
+    serviceType: selectedCard.querySelector('.svc-name')?.textContent || '',
+    firstName: document.getElementById('st-first')?.value?.trim() || '',
+    lastName: document.getElementById('st-last')?.value?.trim() || '',
+    middleName: document.getElementById('st-middle')?.value?.trim() || '',
+    aliases: document.getElementById('st-aliases')?.value?.trim() || '',
+    dob: document.getElementById('st-dob')?.value || '',
+    lastPhone: document.getElementById('st-phone2')?.value?.trim() || '',
+    lastAddress: document.getElementById('st-address')?.value?.trim() || '',
+    lastEmail: document.getElementById('st-email2')?.value?.trim() || '',
+    social: document.getElementById('st-social')?.value?.trim() || '',
+    purpose: document.getElementById('st-purpose')?.value || '',
+    caseNumber: document.getElementById('st-case')?.value?.trim() || '',
+    court: document.getElementById('st-court')?.value?.trim() || '',
+    deadline: document.getElementById('st-deadline')?.value || '',
+    rush: document.getElementById('st-rush')?.value || 'no',
+    priorSearch: document.getElementById('st-prior')?.value || 'no',
+    notes: document.getElementById('st-notes')?.value?.trim() || '',
+    fcraCertified: true
+  };
+
+  // Parse fullname into firstName/lastName if not separately provided
+  if (!skipTraceData.firstName && skipTraceData.fullname) {
+    const parts = skipTraceData.fullname.split(' ');
+    skipTraceData.firstName = parts[0] || '';
+    skipTraceData.lastName = parts.slice(1).join(' ') || '';
+  }
+
+  console.log('[DEBUG skip-trace-intake-form] skipTraceData:', skipTraceData);
+
+  const formData = {
+    firstName: skipTraceData.firstName,
+    lastName: skipTraceData.lastName,
+    company: skipTraceData.company,
+    email: skipTraceData.email,
+    phone: skipTraceData.phone,
+    reason: 'Skip Tracing',
+    county: '',
+    state: skipTraceData.jurisdiction,
+    caseDetails: `Service Type: ${skipTraceData.serviceType}\nPurpose: ${skipTraceData.purpose}\nCase: ${skipTraceData.caseNumber}\nCourt: ${skipTraceData.court}\nDeadline: ${skipTraceData.deadline}\nNotes: ${skipTraceData.notes}`,
+    urgency: skipTraceData.rush === 'yes' ? 'High' : 'Standard',
+    consent: true,
+    skipTraceData: skipTraceData
+  };
+
+  fetch('/api/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      showToast('Request submitted successfully! Confirmation will follow shortly.', 'ok');
+      resetForm();
+    } else {
+      showToast(data.message || 'Submission failed. Please try again.', 'err');
+    }
+  })
+  .catch(err => {
+    console.error('Skip trace form submission error:', err);
+    showToast('Submission failed. Please try again.', 'err');
+  });
+}
+
+function resetForm() {
+  document.querySelectorAll('input:not([type=radio]):not([type=checkbox])').forEach(i => i.value = '');
+  document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+  document.querySelectorAll('textarea').forEach(t => t.value = '');
+  document.querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false);
+  document.querySelectorAll('.svc-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('urgPanel').classList.remove('active');
+  document.getElementById('extendedFields').innerHTML = '';
+  uploadedFiles = [];
+  renderFiles();
+}
+</script>
+
+<script src="js/main.js" defer></script>
+<script src="js/forms.js" defer></script>
+<script src="js/ui.js" defer></script>
+</body>
+</html>
