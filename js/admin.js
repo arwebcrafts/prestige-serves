@@ -436,14 +436,21 @@ async function viewContact(id) {
             <p><strong>Last Known Address:</strong> ${escapeHtml(skipTraceData.lastAddress || '')}</p>
             <p><strong>Last Known Email:</strong> ${escapeHtml(skipTraceData.lastEmail || '')}</p>
             <p><strong>Social Media:</strong> ${escapeHtml(skipTraceData.social || '')}</p>
+            ${skipTraceData.ssn ? '<p><strong>SSN (Last 4):</strong> ****' + escapeHtml(skipTraceData.ssn) + '</p>' : ''}
+            ${skipTraceData.dl ? '<p><strong>Driver\'s License:</strong> ' + escapeHtml(skipTraceData.dl) + '</p>' : ''}
+            ${skipTraceData.vehicle ? '<p><strong>Vehicle:</strong> ' + escapeHtml(skipTraceData.vehicle) + '</p>' : ''}
+            ${skipTraceData.employer ? '<p><strong>Known Employer:</strong> ' + escapeHtml(skipTraceData.employer) + '</p>' : ''}
           </div>
         </div>
         <div class="detail-section" style="border-left:3px solid #2d3a7c;padding-left:16px;">
           <h4 style="color:#2d3a7c;">Search Details</h4>
+          ${skipTraceData.serviceType ? '<p><strong>Service Type:</strong> ' + escapeHtml(skipTraceData.serviceType) + '</p>' : ''}
           <p><strong>Purpose:</strong> ${escapeHtml(skipTraceData.purpose || '')}</p>
           <p><strong>Case / File Number:</strong> ${escapeHtml(skipTraceData.caseNumber || '')}</p>
           <p><strong>Court / Jurisdiction:</strong> ${escapeHtml(skipTraceData.court || '')}</p>
           <p><strong>Deadline:</strong> ${skipTraceData.deadline ? formatDate(skipTraceData.deadline) : ''}</p>
+          <p><strong>Rush Request:</strong> ${skipTraceData.rush === 'yes' ? '<span style="color:#c0392b;font-weight:600;">Yes — rush fees apply</span>' : 'No'}</p>
+          <p><strong>Prior Search Attempted:</strong> ${skipTraceData.priorSearch === 'yes' ? 'Yes' : 'No'}</p>
           <p><strong>Role / Relationship:</strong> ${escapeHtml(skipTraceData.role || '')}</p>
           <p><strong>State of Jurisdiction:</strong> ${escapeHtml(skipTraceData.jurisdiction || '')}</p>
         </div>
