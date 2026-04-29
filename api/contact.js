@@ -22,6 +22,14 @@ async function ensureEmailSentColumn(sql) {
   }
 }
 
+async function ensureSkipTraceDataColumn(sql) {
+  try {
+    await sql`ALTER TABLE contact_submissions ADD COLUMN IF NOT EXISTS skip_trace_data JSONB`;
+  } catch (e) {
+    // Column may already exist
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -41,11 +49,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { firstName, lastName, company, email, phone, reason, county, state, caseDetails, urgency, consent } = req.body;
+    const { firstName, lastName, company, email, phone, reason, county, state, caseDetails, urgency, consent, skipTraceData } = req.body;
     
     const sql = neon(DATABASE_URL);
     await sql`CREATE TABLE IF NOT EXISTS settings (key VARCHAR(255) PRIMARY KEY, value TEXT)`.catch(() => {});
     await ensureEmailSentColumn(sql);
+    await ensureSkipTraceDataColumn(sql);
     
     // Get owner email from settings
     const ownerEmail = await getOwnerEmail(sql) || process.env.TO_EMAIL || 'muhammadwaqarsikandar@gmail.com';
@@ -53,10 +62,10 @@ export default async function handler(req, res) {
     await sql`
       INSERT INTO contact_submissions (
         first_name, last_name, company, email, phone,
-        reason, county, state, case_details, urgency, consent, email_sent
+        reason, county, state, case_details, urgency, consent, email_sent, skip_trace_data
       ) VALUES (
         ${firstName}, ${lastName}, ${company}, ${email}, ${phone},
-        ${reason}, ${county}, ${state}, ${caseDetails}, ${urgency}, ${consent || false}, -1
+        ${reason}, ${county}, ${state}, ${caseDetails}, ${urgency}, ${consent || false}, -1, ${skipTraceData ? JSON.stringify(skipTraceData) : null}
       )
     `;
 
