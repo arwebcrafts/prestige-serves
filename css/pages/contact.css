@@ -4,8 +4,18 @@
 .ps-hero img.ps-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;}
 .ps-bg-mobile{display:none;}
 .ps-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top, rgba(10,15,35,0.72) 0%, rgba(10,15,35,0.35) 55%, rgba(10,15,35,0.08) 100%);}
-.ps-hero-overlay-light{position:absolute;inset:0;background:rgba(0,0,0,0.4);}
+.ps-hero-overlay-light{position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0.08) 100%);}
 .ps-hero-content{position:relative;z-index:2;padding:56px 72px;color:#fff;}
+
+/* Sharper hero photo: higher-res asset + crisper compositing (contact only) */
+#page-contact .ps-hero img.ps-bg{
+  transform:translateZ(0);
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+#page-contact .ps-hero-overlay-light{
+  pointer-events:none;
+}
 
 .contact-dark-section{background:var(--navy);color:#fff;padding:88px 72px;display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start;}
 .contact-dark-heading{font-size:52px;font-weight:300;line-height:1.1;margin-bottom:20px;color:#fff;}

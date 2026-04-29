@@ -1,14 +1,81 @@
 /* erecording.css — eRecording page specific styles */
 
-.ps-hero{position:relative;min-height:440px;overflow:hidden;display:flex;align-items:flex-end;}
-.ps-hero img.ps-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;}
+/* Hero: 550px band, image fills frame (no side gutters) */
+.ps-hero{
+  position:relative;
+  width:100vw;
+  max-width:100vw;
+  height:550px;
+  margin-left:calc(50% - 50vw);
+  margin-right:calc(50% - 50vw);
+  overflow:hidden;
+  display:block;
+}
+.ps-hero img.ps-bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:0;
+  display:block;
+  object-fit:cover;
+  object-position:center;
+}
+.ps-hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:rgba(0,0,0,0.2);
+}
 .ps-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top, rgba(10,15,35,0.72) 0%, rgba(10,15,35,0.35) 55%, rgba(10,15,35,0.08) 100%);}
-.ps-hero-overlay-light{position:absolute;inset:0;background:rgba(0,0,0,0.65);}
-.ps-hero-content{position:relative;z-index:2;padding:56px 72px;color:#fff;}
-.ps-hero-title{font-size:clamp(32px,4vw,56px);font-weight:300;line-height:1.1;letter-spacing:-0.01em;}
-.ps-hero-title-line{display:block;}
-.ps-hero-title-line:first-child{border-bottom:2px solid rgba(255,255,255,0.7);padding-bottom:12px;margin-bottom:12px;}
-.ps-hero-sub{font-size:16px;font-style:italic;opacity:0.85;}
+.ps-hero-overlay-light{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  background:rgba(0,0,0,0.65);
+}
+.ps-hero-content{
+  position:absolute;
+  inset:0;
+  z-index:3;
+  padding:56px 72px;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  text-align:left;
+  gap:8px;
+}
+.ps-hero-title{
+  font-size:clamp(32px,4vw,56px);
+  font-weight:300;
+  line-height:1.1;
+  letter-spacing:-0.01em;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  text-align:left;
+}
+.ps-hero-title-line{
+  display:inline-block;
+  max-width:100%;
+}
+.ps-hero-title-line:first-child{
+  border-bottom:2px solid rgba(255,255,255,0.7);
+  padding-bottom:12px;
+  margin-bottom:12px;
+}
+.ps-hero-sub{
+  font-size:16px;
+  font-style:italic;
+  opacity:0.85;
+  max-width:36em;
+  margin:0;
+}
 
 @media(max-width:960px){
   .ps-hero-content{padding:40px 28px;}
@@ -17,7 +84,7 @@
 /* MOBILE — erecording */
 @media(max-width:768px){
   .ps-hero{
-    min-height:320px;
+    height:min(550px,85vh);
   }
   .ps-hero-content{
     padding:28px 20px 36px;

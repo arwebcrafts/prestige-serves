@@ -29,12 +29,56 @@
 .payment-section-header{padding:0 72px;margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;}
 .skip-trace-section{padding:0 72px;margin-bottom:48px;}
 
-/* Carousel */
+/* Carousel — main strip only (add-ons keeps simple centered card) */
 .payment-carousel-wrapper{padding:0 72px;margin-bottom:48px;position:relative;}
 .payment-slider{overflow:hidden;position:relative;}
-.payment-sections{display:flex;transition:transform 0.3s ease;gap:24px;}
-.carousel-item{flex-shrink:0;width:calc(25% - 18px);}
-.carousel-item .payment-product{height:100%;box-sizing:border-box;}
+.payment-sections{display:flex;transition:transform 0.3s ease;}
+.payment-carousel-wrapper--main .payment-slider{
+  container-type:inline-size;
+  container-name:payment-slider;
+  --carousel-slides:4;
+  --carousel-gap:24px;
+}
+.payment-carousel-wrapper--main .payment-sections{gap:var(--carousel-gap);}
+.payment-carousel-wrapper--main .carousel-item{
+  flex-shrink:0;
+  flex-basis:calc((100cqi - (var(--carousel-slides) - 1) * var(--carousel-gap)) / var(--carousel-slides));
+  min-width:0;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+}
+/* Equal-height cards in a row; PayPal + Card sit on the same baseline across the row */
+.payment-carousel-wrapper--main .carousel-item .payment-product{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  height:100%;
+  min-height:100%;
+  box-sizing:border-box;
+}
+.payment-carousel-wrapper--main .payment-product > p{
+  flex:1 1 auto;
+  margin-bottom:12px;
+  min-height:0;
+}
+.payment-carousel-wrapper--main .payment-product > button.pay-btn:first-of-type{
+  margin-top:auto;
+}
+/* Skip trace tier icons inside payment carousel (skip-tracing.css not loaded on payment.html) */
+.payment-carousel-wrapper--main .payment-product .skip-trace-icon{
+  margin:0 auto 20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.payment-carousel-wrapper--main .payment-product .skip-trace-icon img{
+  width:88px;
+  height:88px;
+  object-fit:contain;
+  display:block;
+}
 .carousel-arrow{width:44px;height:44px;border:1px solid var(--border);border-radius:50%;background:var(--bg-white);cursor:pointer;font-size:20px;line-height:1;z-index:10;display:flex;align-items:center;justify-content:center;color:var(--text-dark);transition:background 0.2s,border-color 0.2s;}
 .carousel-arrow:hover{background:var(--bg-warm);border-color:var(--text-muted);}
 
@@ -44,8 +88,13 @@
 .payment-carousel-wrapper--main .carousel-arrow{position:static;transform:none;flex-shrink:0;}
 
 /* Add-Ons: single card centered */
-.payment-carousel-wrapper--addons .payment-sections{justify-content:center;}
-.payment-carousel-wrapper--addons .carousel-item{width:100%;max-width:340px;flex-shrink:0;}
+.payment-carousel-wrapper--addons .payment-sections{justify-content:center;gap:0;}
+.payment-carousel-wrapper--addons .carousel-item{
+  flex:0 0 100%;
+  width:100%;
+  max-width:340px;
+  flex-shrink:0;
+}
 
 @media(max-width:960px){
   .payment-hero{margin:20px 28px 0;padding:40px 28px;}
@@ -53,7 +102,7 @@
   .payment-info-cards,.payment-policies{margin:20px 28px;}
   .payment-policies{grid-template-columns:1fr;}
   .payment-policy-col:first-child{border-right:none;border-bottom:2px solid var(--text-dark);}
-  .carousel-item{width:calc(50% - 12px);}
+  .payment-carousel-wrapper--main .payment-slider{--carousel-slides:2;}
   .payment-carousel-wrapper--addons .carousel-item{width:100%;max-width:360px;}
 }
 
@@ -148,12 +197,12 @@
     height:36px !important;
     font-size:16px !important;
   }
-  .payment-sections{
-    gap:0 !important;
+  .payment-carousel-wrapper--main .payment-slider{
+    --carousel-slides:1;
+    --carousel-gap:0px;
   }
-  .carousel-item{
-    flex-shrink:0;
-    width:calc((100vw - 40px)) !important;
+  .payment-carousel-wrapper--main .payment-sections{
+    gap:0 !important;
   }
   .payment-carousel-wrapper--addons .carousel-item{
     width:100% !important;

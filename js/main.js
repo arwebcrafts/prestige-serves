@@ -81,8 +81,12 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('state-value content:', document.getElementById('state-value') ? document.getElementById('state-value').value : 'N/A');
     initStateAutocomplete('state-input', 'state-value', 'state-dropdown', 'CA');
     initCityAutocomplete('city-input', 'city-value', 'city-dropdown', 'state-input');
+    initStateAutocomplete('home-svc-state-input', 'home-svc-state-value', 'home-svc-state-dropdown', 'CA');
+    initCityAutocomplete('home-svc-city-input', 'home-svc-city-value', 'home-svc-city-dropdown', 'home-svc-state-input');
     initReasonDropdown();
     initCountyDropdown();
+    initHomeProcessServeSection();
+    initHomeFileUploadPreview();
     console.log('All home form init done');
   }
 });

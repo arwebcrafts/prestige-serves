@@ -1,8 +1,9 @@
 /* process-serving.css — Process Serving page specific styles */
 
 .ps-hero{position:relative;min-height:620px;overflow:hidden;display:flex;flex-direction:column;}
-.ps-hero img.ps-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;}
-.ps-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top, rgba(10,15,35,0.72) 0%, rgba(10,15,35,0.35) 55%, rgba(10,15,35,0.08) 100%);}
+.ps-hero img.ps-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;}
+/* Sits above photo, below nav/content — slightly darkens image for readable white text */
+.ps-hero-overlay{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to bottom, rgba(10,15,40,0.42) 0%, rgba(10,15,40,0.28) 45%, rgba(10,15,40,0.55) 100%);}
 .ps-hero-nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:20px 72px;background:transparent;}
 .ps-hero-nav .nav-brand{color:#fff;text-decoration:none;display:flex;align-items:center;gap:12px;font-size:20px;font-weight:400;}
 .ps-hero-nav .nav-links{display:flex;list-style:none;margin:0;padding:0;gap:8px;}
@@ -19,6 +20,80 @@
 .ps-hero-title-line:first-child{position:relative;display:inline-block;margin-bottom:15px;z-index:1;}
 .ps-hero-title-line:first-child::after{content:"";position:absolute;left:0;bottom:-4px;width:100%;height:18px;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 15" preserveAspectRatio="none"><path d="M0,8 Q50,-1 100,5 Q50,15 0,10 Z" fill="rgba(255,255,255,0.9)"/></svg>');background-size:100% 100%;background-repeat:no-repeat;z-index:-1;}
 .ps-hero-sub{font-size:16px;font-style:italic;opacity:0.85;}
+.ps-hero-sub-link{color:inherit;font-style:italic;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;font-weight:500;}
+.ps-hero-sub-link:hover{opacity:1;text-decoration-thickness:2px;}
+
+/* --- Process Serving: pricing (title + lede on one band; cards: icon column + name/desc aligned) --- */
+.ps-pricing-section{
+  padding:56px 72px;
+  border-top:1px solid var(--border);
+}
+.ps-pricing-intro{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  justify-content:center;
+  gap:6px 22px;
+  margin-bottom:40px;
+}
+.ps-pricing-title{
+  margin:0;
+  font-size:36px;
+  font-weight:300;
+  color:var(--accent-blue);
+  line-height:1.2;
+}
+.ps-pricing-lede{
+  margin:0;
+  font-size:15px;
+  color:var(--text-muted);
+  line-height:1.5;
+  max-width:42em;
+}
+.ps-pricing-grid.pricing-grid{
+  max-width:920px;
+  margin:0 auto;
+}
+.ps-pricing-section .pricing-item{
+  margin:0;
+  display:grid;
+  grid-template-columns:108px minmax(0, 1fr);
+  grid-template-rows:auto auto;
+  column-gap:20px;
+  row-gap:6px;
+  align-items:start;
+  text-align:left;
+  border:1px solid var(--border);
+  padding:24px 22px;
+  box-sizing:border-box;
+}
+.ps-pricing-section .pricing-item-head{
+  grid-row:1 / -1;
+  grid-column:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:10px;
+  margin-bottom:0;
+}
+.ps-pricing-section .pricing-item-name{
+  grid-column:2;
+  grid-row:1;
+  margin:0;
+}
+.ps-pricing-section .pricing-item-desc{
+  grid-column:2;
+  grid-row:2;
+  margin:0;
+}
+.ps-pricing-section .pricing-real-icon{
+  width:72px !important;
+  height:72px !important;
+  max-width:72px !important;
+  max-height:72px !important;
+  object-fit:contain !important;
+}
 
 /* --- Fix Mobile Menu on Transparent Nav --- */
 @media(max-width:960px){
@@ -59,12 +134,28 @@
 
   /* Pricing section */
   .ps-pricing-section{padding:40px 20px !important;}
-  .ps-pricing-section h2{font-size:28px !important;}
-  .pricing-grid{max-width:100% !important;display:flex;flex-direction:column;gap:20px;}
-  .pricing-item{padding:20px;border:1px solid var(--border);}
-  .pricing-item-head{display:flex;align-items:center;gap:12px;}
-  .pricing-real-icon{width:48px;height:48px;object-fit:contain;}
-  .pricing-item-price{font-size:22px;font-weight:600;}
+  .ps-pricing-intro{
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    margin-bottom:28px;
+    text-align:center;
+  }
+  .ps-pricing-title{font-size:28px !important;}
+  .ps-pricing-lede{font-size:14px;text-align:center;max-width:100%;}
+  .ps-pricing-grid.pricing-grid{max-width:100% !important;display:flex;flex-direction:column;gap:16px;}
+  .ps-pricing-section .pricing-item{
+    grid-template-columns:76px minmax(0, 1fr);
+    padding:18px 16px;
+    column-gap:14px;
+  }
+  .ps-pricing-section .pricing-real-icon{
+    width:56px !important;
+    height:56px !important;
+    max-width:56px !important;
+    max-height:56px !important;
+  }
+  .ps-pricing-section .pricing-item-price{font-size:20px;font-weight:600;}
 
   /* Document types section - 4 columns become 2x2 grid */
   .ps-docs-section{padding:40px 20px !important;}

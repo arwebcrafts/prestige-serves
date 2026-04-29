@@ -1,5 +1,43 @@
 /* skip-tracing.css — Skip Tracing page specific styles */
 
+/* Skip trace product cards — raster icons on white */
+#skip-trace-products.skip-trace-products{
+  --skip-trace-product-bg:#fff;
+}
+#skip-trace-products .payment-product{
+  background:var(--skip-trace-product-bg);
+  border-color:var(--border);
+}
+#skip-trace-products .payment-product:hover{
+  border-color:var(--accent-blue);
+}
+#skip-trace-products .skip-trace-icon{
+  width:100%;
+  max-width:104px;
+  aspect-ratio:1;
+  margin:0 auto 20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  background:var(--skip-trace-product-bg);
+  border-radius:6px;
+}
+#skip-trace-products .skip-trace-icon img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+#skip-trace-products .payment-product h3{
+  font-family:Georgia,'Times New Roman',Times,serif;
+  font-weight:600;
+  color:var(--text-dark);
+}
+#skip-trace-products .pay-btn{
+  font-size:16px;
+}
+
 /* Full-bleed hero + cover image (avoids side “pillar” gaps / letterboxed asset edges) */
 .st-hero{
   position:relative;

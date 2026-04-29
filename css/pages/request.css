@@ -174,16 +174,19 @@
   display: inline-block;
 }
 
-/* Hide the default radio circle entirely */
+/* Cover full label for reliable clicks / change events (zero-size radios often fail on mobile) */
 .radio-toggle input[type="radio"] {
   position: absolute;
   opacity: 0;
   cursor: pointer;
-  height: 0;
-  width: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  z-index: 2;
 }
 
-/* Style the text to look like a button */
+/* Style the text to look like a button (clicks pass through to stretched radio above) */
 .radio-toggle span {
   display: flex;
   align-items: center;
@@ -197,6 +200,9 @@
   font-weight: 500;
   transition: all 0.2s ease;
   user-select: none;
+  pointer-events: none;
+  position: relative;
+  z-index: 0;
 }
 
 /* Add a subtle hover effect for unselected buttons */

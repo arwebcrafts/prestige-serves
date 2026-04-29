@@ -1,8 +1,288 @@
 // Form building and handling
 
+/** Process-serve tiers on home/contact — expands extra intake fields */
+var HOME_PROCESS_SERVE_TYPES = [
+  'Standard Service — $97.99 (5–7 business days)',
+  'Rush Service — $119.99 (3 business days)',
+  'Priority Serve — $149.99 (2 business days)',
+  'Emergency Serve — $249.99 (Same-day, approval required)'
+];
+
+function tomorrowDateInputMinLocal() {
+  var d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 1);
+  var y = d.getFullYear();
+  var m = String(d.getMonth() + 1).padStart(2, '0');
+  var day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+
+function applyDeadlineFutureMin(inputEl) {
+  if (!inputEl || inputEl.type !== 'date') return;
+  inputEl.min = tomorrowDateInputMinLocal();
+}
+
+/** Deadline / scheduling fields only: mark inputs with data-min-tomorrow (not DOB / birthdates). */
+function initFutureDeadlineDateInputs(root) {
+  var base = root || document;
+  base.querySelectorAll('input[type="date"][data-min-tomorrow]').forEach(function (el) {
+    applyDeadlineFutureMin(el);
+  });
+}
+
+function toggleHomeMultiDefTextarea() {
+  var yes = document.querySelector('#home-form-container input[name="home_multiple_defendants"][value="yes"]');
+  var ta = document.getElementById('home-additional-defendants');
+  if (!ta) return;
+  ta.style.display = yes && yes.checked ? 'block' : 'none';
+}
+
+function syncHomeProcessServeSection() {
+  var wrap = document.getElementById('home-process-extra');
+  var sel = document.querySelector('#home-form-container select[name="serviceType"]');
+  if (!wrap || !sel) return;
+  var show = HOME_PROCESS_SERVE_TYPES.indexOf(sel.value) !== -1;
+  wrap.style.display = show ? 'block' : 'none';
+  wrap.querySelectorAll('[data-home-required]').forEach(function (el) {
+    if (show) el.setAttribute('required', 'required');
+    else el.removeAttribute('required');
+  });
+  if (!show) {
+    var dd = document.getElementById('home-deadlineDate');
+    if (dd) dd.value = '';
+  } else {
+    initFutureDeadlineDateInputs(wrap);
+  }
+}
+
+function initHomeProcessServeSection() {
+  var sel = document.querySelector('#home-form-container select[name="serviceType"]');
+  if (!sel) return;
+  sel.addEventListener('change', syncHomeProcessServeSection);
+  syncHomeProcessServeSection();
+  var hc = document.getElementById('home-form-container');
+  if (hc) initFutureDeadlineDateInputs(hc);
+}
+
+function initHomeFileUploadPreview() {
+  var fileInput = document.getElementById('home-file-input');
+  var fileList = document.getElementById('home-file-list');
+  var uploadText = document.getElementById('home-file-upload-text');
+  if (!fileInput || !fileList) return;
+  fileInput.addEventListener('change', function () {
+    var files = Array.from(fileInput.files);
+    if (files.length === 0) {
+      fileList.innerHTML = '';
+      if (uploadText) uploadText.textContent = '+ Add a File';
+      return;
+    }
+    var html = '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+    files.forEach(function (file) {
+      html += '<span style="background:#e8f0fe;padding:6px 12px;border-radius:4px;font-size:12px;">' + file.name + '</span>';
+    });
+    html += '</div>';
+    fileList.innerHTML = html;
+    if (uploadText) uploadText.textContent = files.length === 1 ? '1 file selected' : files.length + ' files selected';
+  });
+}
+
+function validateHomeProcessServeFields(form) {
+  var ok = true;
+  function mark(el, bad) {
+    if (!el) return;
+    el.style.border = bad ? '2px solid #e74c3c' : '';
+    if (bad) ok = false;
+  }
+  var a1 = form.querySelector('[name="serve_addressLine1"]');
+  mark(a1, !(a1 && a1.value.trim()));
+  var cv = document.getElementById('home-svc-city-value');
+  mark(document.getElementById('home-svc-city-input'), !(cv && cv.value.trim()));
+  var sv = document.getElementById('home-svc-state-value');
+  mark(document.getElementById('home-svc-state-input'), !(sv && sv.value.trim()));
+  var zp = form.querySelector('[name="serve_zip"]');
+  mark(zp, !(zp && zp.value.trim()));
+  var defn = form.querySelector('[name="defendantName"]');
+  mark(defn, !(defn && defn.value.trim()));
+  var fi = document.getElementById('home-file-input');
+  mark(fi, !(fi && fi.files && fi.files.length));
+  var dd = document.getElementById('home-deadlineDate');
+  if (dd && dd.value && dd.min && dd.value < dd.min) {
+    mark(dd, true);
+    alert('Please choose a deadline date in the future.');
+  }
+  return ok;
+}
+
+function submitHomeProcessServe(form, successId) {
+  var fd = new FormData();
+  var fnEl = form.querySelector('[name="firstName"]');
+  var lnEl = form.querySelector('[name="lastName"]');
+  var coEl = form.querySelector('[name="company"]');
+  var firstName = fnEl ? fnEl.value.trim() : '';
+  var lastName = lnEl ? lnEl.value.trim() : '';
+  var company = coEl ? coEl.value.trim() : '';
+  fd.append('clientName', company || (firstName + ' ' + lastName).trim());
+  fd.append('contactName', (firstName + ' ' + lastName).trim());
+  fd.append('email', (function () {
+    var e = form.querySelector('[name="email"]');
+    return e ? e.value.trim() : '';
+  })());
+  fd.append('phone', (function () {
+    var p = form.querySelector('[name="phone"]');
+    return p ? p.value.trim() : '';
+  })());
+  fd.append('addressLine1', (function () {
+    var el = form.querySelector('[name="serve_addressLine1"]');
+    return el ? el.value.trim() : '';
+  })());
+  fd.append('addressLine2', (function () {
+    var el = form.querySelector('[name="serve_addressLine2"]');
+    return el ? el.value.trim() : '';
+  })());
+  var cvel = document.getElementById('home-svc-city-value');
+  var svel = document.getElementById('home-svc-state-value');
+  fd.append('city', cvel ? cvel.value.trim() : '');
+  fd.append('state', svel ? svel.value.trim() : '');
+  fd.append('zip', (function () {
+    var el = form.querySelector('[name="serve_zip"]');
+    return el ? el.value.trim() : '';
+  })());
+  fd.append('defendantName', (function () {
+    var el = form.querySelector('[name="defendantName"]');
+    return el ? el.value.trim() : '';
+  })());
+  fd.append('caseNumber', (function () {
+    var el = form.querySelector('[name="caseNumber"]');
+    return el ? el.value.trim() : '';
+  })());
+  fd.append('courtJurisdiction', (function () {
+    var el = form.querySelector('[name="courtJurisdiction"]');
+    return el ? el.value.trim() : '';
+  })());
+  var multiYes = document.querySelector('#home-form-container input[name="home_multiple_defendants"][value="yes"]');
+  fd.append('multiple_defendants', multiYes && multiYes.checked ? 'true' : 'false');
+  var addEl = document.getElementById('home-additional-defendants');
+  var extraLines = addEl ? addEl.value : '';
+  var defExtra = [];
+  if (multiYes && multiYes.checked && extraLines.trim()) {
+    extraLines.split('\n').forEach(function (line) {
+      var t = line.trim();
+      if (t) defExtra.push({ fullName: t });
+    });
+  }
+  fd.append('defendantsData', JSON.stringify(defExtra));
+  fd.append('serviceType', (function () {
+    var el = form.querySelector('[name="serviceType"]');
+    return el ? el.value.trim() : '';
+  })());
+  var dl = document.getElementById('home-deadlineDate');
+  fd.append('deadlineDate', dl && dl.value ? dl.value : '');
+  var reasonEl = document.getElementById('reason-value');
+  var reason = reasonEl ? reasonEl.value : '';
+  var caseDetailsEl = form.querySelector('[name="caseDetails"]');
+  var caseDetails = caseDetailsEl ? caseDetailsEl.value.trim() : '';
+  var specialEl = form.querySelector('[name="home_specialInstructions"]');
+  var special = specialEl ? specialEl.value.trim() : '';
+  var merged = '';
+  if (reason) merged += 'Reason for contact: ' + reason + '\n\n';
+  merged += 'Brief case details:\n' + caseDetails;
+  if (special) merged += '\n\nSpecial instructions:\n' + special;
+  fd.append('specialInstructions', merged);
+
+  var fileInput = document.getElementById('home-file-input');
+  if (fileInput && fileInput.files.length) {
+    for (var i = 0; i < fileInput.files.length; i++) {
+      fd.append('files', fileInput.files[i]);
+    }
+  }
+
+  fetch('/api/request', { method: 'POST', body: fd })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      if (!data.success) {
+        alert(data.message || 'Could not submit request. Please try again.');
+        return;
+      }
+      var el = document.getElementById(successId);
+      if (el) el.classList.add('show');
+      var stripeLinks = {
+        'Standard Service — $97.99 (5–7 business days)': 'https://buy.stripe.com/8x24gz7C11J9dHj3Ix6sw04',
+        'Rush Service — $119.99 (3 business days)': 'https://buy.stripe.com/6oU6oH2hHevV1YB4MB6sw09',
+        'Priority Serve — $149.99 (2 business days)': 'https://buy.stripe.com/bJeaEX09z3RhgTvcf36sw02',
+        'Emergency Serve — $249.99 (Same-day, approval required)': 'https://buy.stripe.com/00w4gz1dD1J9fPr0wl6sw03'
+      };
+      var st = (form.querySelector('[name="serviceType"]') || {}).value || '';
+      if (stripeLinks[st]) {
+        setTimeout(function () { window.location.href = stripeLinks[st]; }, 1500);
+      }
+      form.reset();
+      syncHomeProcessServeSection();
+      var hc = document.getElementById('home-form-container');
+      if (hc) initFutureDeadlineDateInputs(hc);
+      var fl = document.getElementById('home-file-list');
+      var ut = document.getElementById('home-file-upload-text');
+      if (fl) fl.innerHTML = '';
+      if (ut) ut.textContent = '+ Add a File';
+      toggleHomeMultiDefTextarea();
+    })
+    .catch(function (err) {
+      console.error('Home process serve submit error:', err);
+      alert('Submission failed. Please try again.');
+    });
+}
+
 function buildContactForm(containerId, formId) {
   const c = document.getElementById(containerId);
   if (!c) return;
+  const homeProcessExtra = formId === 'home' ? `
+    <div id="home-process-extra" class="home-process-extra" style="display:none;">
+      <p class="form-hint" style="margin:12px 0 16px;font-style:italic;">Complete process serving details below.</p>
+      <div class="form-group">
+        <label>Service Address <span class="req">(required)</span></label>
+        <input type="text" name="serve_addressLine1" data-home-required placeholder="Address Line 1" style="margin-bottom:8px;">
+        <input type="text" name="serve_addressLine2" placeholder="Address Line 2" style="margin-bottom:8px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <div class="city-select-wrapper">
+            <input type="text" id="home-svc-city-input" placeholder="City" autocomplete="off">
+            <input type="hidden" id="home-svc-city-value" value="">
+            <div class="city-dropdown" id="home-svc-city-dropdown"></div>
+          </div>
+          <div class="state-select-wrapper">
+            <input type="text" id="home-svc-state-input" placeholder="State" autocomplete="off">
+            <input type="hidden" id="home-svc-state-value" value="CA">
+            <div class="state-dropdown" id="home-svc-state-dropdown"></div>
+          </div>
+          <input type="text" name="serve_zip" data-home-required placeholder="ZIP">
+        </div>
+      </div>
+      <div class="form-group"><label>Defendant / Recipient Full Name <span class="req">(required)</span></label><input type="text" name="defendantName" data-home-required></div>
+      <div class="form-group"><label>Case Number</label><input type="text" name="caseNumber"></div>
+      <div class="form-group"><label>Court / Jurisdiction</label><input type="text" name="courtJurisdiction"></div>
+      <div class="form-group">
+        <label>Are there multiple defendants to be served?</label>
+        <div class="form-hint" style="margin-bottom:10px;">Selecting &quot;Yes&quot; allows you to list additional names below (one per line).</div>
+        <div class="radio-toggle-group">
+          <label class="radio-toggle"><input type="radio" name="home_multiple_defendants" value="yes" onchange="toggleHomeMultiDefTextarea()"><span>Yes</span></label>
+          <label class="radio-toggle"><input type="radio" name="home_multiple_defendants" value="no" checked onchange="toggleHomeMultiDefTextarea()"><span>No</span></label>
+        </div>
+        <textarea id="home-additional-defendants" name="home_additional_defendants" rows="3" placeholder="Additional defendant names, one per line" style="display:none;margin-top:10px;width:100%;box-sizing:border-box;"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Deadline Date</label>
+        <input type="date" name="deadlineDate" id="home-deadlineDate" data-min-tomorrow>
+      </div>
+      <div class="form-group">
+        <label>File Upload <span class="req">(required)</span></label>
+        <div class="form-hint" style="margin-bottom:8px;">Upload all documents to be served (PDF preferred). Multiple files accepted.</div>
+        <div class="file-upload-area" onclick="this.querySelector('input').click()">
+          <input type="file" id="home-file-input" name="files" style="display:none;" multiple accept=".pdf,.doc,.docx" data-home-required>
+          <span id="home-file-upload-text">+ Add a File</span>
+        </div>
+        <div id="home-file-list" style="margin-top:8px;font-size:13px;color:#333;"></div>
+      </div>
+      <div class="form-group"><label>Special Instructions</label><textarea name="home_specialInstructions" rows="3"></textarea></div>
+    </div>` : '';
   c.innerHTML = `
     <form onsubmit="handleFormSubmit(event, '${formId}-success', 'contact')">
     <div class="form-row">
@@ -45,8 +325,9 @@ function buildContactForm(containerId, formId) {
     </div>
     <div class="form-group">
       <label>Service Type <span class="req">(required)</span></label>
-      <select name="serviceType" required><option value="">Select an option</option><option>Standard Service — $97.99 (5–7 business days)</option><option>Rush Service — $119.99 (3 business days)</option><option>Priority Serve — $149.99 (2 business days)</option><option>Emergency Serve — $249.99 (Same-day, approval required)</option><option>Standard Skip Trace — $75</option><option>Enhanced Trace — $150</option><option>Rush Trace (same/next-day) — $225</option><option>Business / Agent Verification — $95</option><option>Court-Ready Skip Trace Report — $250</option></select>
+      <select name="serviceType" required><option value="">Select an option</option><option>Standard Service — $97.99 (5–7 business days)</option><option>Rush Service — $119.99 (3 business days)</option><option>Priority Serve — $149.99 (2 business days)</option><option>Emergency Serve — $249.99 (Same-day, approval required)</option><option>Standard Skip Trace — $75</option><option>Enhanced Trace — $150</option><option>Rush Trace (same/next-day) — $225</option><option>Business / Agent Verification — $225</option><option>Court-Ready Skip Trace Report — $250</option></select>
     </div>
+    ${homeProcessExtra}
     <div class="form-checkbox">
       <input type="checkbox" id="${formId}-consent" name="consent" required>
       <label for="${formId}-consent">I understand that submitting this form does not guarantee service and all requests are subject to review and availability.</label>
@@ -74,9 +355,20 @@ function handleFormSubmit(event, id, formType) {
   if (consent && !consent.checked) {
     allFilled = false;
     consent.style.outline = '2px solid #e74c3c';
+  } else if (consent) {
+    consent.style.outline = '';
   }
   if (allFilled) {
     if (formType === 'contact') {
+      const serviceTypeVal = form.querySelector('[name="serviceType"]')?.value || '';
+      const isHomeProcess =
+        Boolean(form.closest('#home-form-container')) &&
+        HOME_PROCESS_SERVE_TYPES.indexOf(serviceTypeVal) !== -1;
+      if (isHomeProcess) {
+        if (!validateHomeProcessServeFields(form)) return;
+        submitHomeProcessServe(form, id);
+        return;
+      }
       const formData = {
         firstName: form.querySelector('[name="firstName"]')?.value || '',
         lastName: form.querySelector('[name="lastName"]')?.value || '',
@@ -107,7 +399,7 @@ function handleFormSubmit(event, id, formType) {
       'Standard Skip Trace — $75': 'https://buy.stripe.com/00w00j3lL9bBfPr5QF6sw08',
       'Enhanced Trace — $150': 'https://buy.stripe.com/8x24gz7C11J9dHj3Ix6sw04',
       'Rush Trace (same/next-day) — $225': 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
-      'Business / Agent Verification — $95': 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
+      'Business / Agent Verification — $225': 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
       'Court-Ready Skip Trace Report — $250': 'https://buy.stripe.com/cNieVd1dD87xcDfenb6sw0a'
     };
     const serviceTypeVal = form.querySelector('[name="serviceType"]')?.value || '';
@@ -166,7 +458,7 @@ function handleRequestSubmit(event) {
   const formData = new FormData(form);
   formData.set('city', cityValue || '');
   formData.set('state', stateValue || '');
-  formData.set('multiple_defendants', document.querySelector('input[name="multiple_defendants"][value="yes"]')?.checked ? 'true' : 'false');
+  formData.set('multiple_defendants', form.querySelector('input[name="multiple_defendants"][value="yes"]')?.checked ? 'true' : 'false');
   
   if (defendantsArray.length > 0) {
     formData.set('defendantsData', JSON.stringify(defendantsArray));
@@ -188,7 +480,7 @@ function handleRequestSubmit(event) {
         'Standard Skip Trace — $75': 'https://buy.stripe.com/00w00j3lL9bBfPr5QF6sw08',
         'Enhanced Trace — $150': 'https://buy.stripe.com/8x24gz7C11J9dHj3Ix6sw04',
         'Rush Trace (same/next-day) — $225': 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
-        'Business / Agent Verification — $95': 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
+        'Business / Agent Verification — $225': 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
         'Court-Ready Skip Trace Report — $250': 'https://buy.stripe.com/cNieVd1dD87xcDfenb6sw0a'
       };
       document.getElementById('req-success').classList.add('show');
@@ -473,9 +765,14 @@ let defendantsArray = [];
 const MAX_DEFENDANTS = 10;
 
 function toggleDefendantUI() {
-  const isYes = document.querySelector('input[name="multiple_defendants"][value="yes"]').checked;
+  const form = document.getElementById('request-form');
+  if (!form) return;
+  const yesRadio = form.querySelector('input[name="multiple_defendants"][value="yes"]');
   const listContainer = document.getElementById('defendants-list-container');
   const addBtn = document.getElementById('btn-add-defendant');
+  if (!yesRadio || !listContainer || !addBtn) return;
+
+  const isYes = yesRadio.checked;
 
   if (isYes) {
     listContainer.style.display = 'flex';
@@ -483,6 +780,12 @@ function toggleDefendantUI() {
       addBtn.style.display = 'block';
     } else {
       addBtn.style.display = 'none';
+    }
+    // Open the existing modal once when enabling multiple defendants so users can add via the full form
+    if (defendantsArray.length === 0 && typeof openDefendantModal === 'function') {
+      requestAnimationFrame(function () {
+        openDefendantModal(-1);
+      });
     }
   } else {
     listContainer.style.display = 'none';
@@ -757,6 +1060,14 @@ function initFileUpload() {
 
 // Initialize all autocomplete inputs
 document.addEventListener('DOMContentLoaded', function() {
+  var reqForm = document.getElementById('request-form');
+  if (reqForm) {
+    reqForm.querySelectorAll('input[name="multiple_defendants"]').forEach(function (r) {
+      r.addEventListener('change', toggleDefendantUI);
+    });
+    toggleDefendantUI();
+  }
+
   initCityAutocomplete('req-city-input', 'req-city-value', 'req-city-dropdown', 'req-state-input');
   initCityAutocomplete('def-city', 'def-city-value', 'def-city-dropdown', 'def-state-input');
   initCountryAutocomplete('def-country-input', 'def-country-value', 'def-country-dropdown');
@@ -764,4 +1075,5 @@ document.addEventListener('DOMContentLoaded', function() {
   initStateAutocomplete('req-state-input', 'req-state-value', 'req-state-dropdown', 'CA');
   initStateAutocomplete('state-input', 'state-value', 'state-dropdown', 'CA');
   initFileUpload();
+  initFutureDeadlineDateInputs();
 });
