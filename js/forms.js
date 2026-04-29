@@ -404,9 +404,7 @@ function submitHomeProcessServe(form, successId) {
         'Emergency Serve — $249.99 (Same-day, approval required)': 'https://buy.stripe.com/00w4gz1dD1J9fPr0wl6sw03'
       };
       var st = (form.querySelector('[name="serviceType"]') || {}).value || '';
-      if (stripeLinks[st]) {
-        setTimeout(function () { window.location.href = stripeLinks[st]; }, 1500);
-      }
+      // TEMP DISABLED FOR DEBUG: if (stripeLinks[st]) { setTimeout(function () { window.location.href = stripeLinks[st]; }, 1500); }
       form.reset();
       syncHomeProcessServeSection();
       var hc = document.getElementById('home-form-container');
@@ -701,9 +699,7 @@ function handleRequestSubmit(event) {
         'Court-Ready Skip Trace Report — $250': 'https://buy.stripe.com/cNieVd1dD87xcDfenb6sw0a'
       };
       document.getElementById('req-success').classList.add('show');
-      if (stripeLinks[serviceType]) {
-        setTimeout(() => { window.location.href = stripeLinks[serviceType]; }, 1500);
-      }
+      // TEMP DISABLED FOR DEBUG: if (stripeLinks[serviceType]) { setTimeout(() => { window.location.href = stripeLinks[serviceType]; }, 1500); }
       form.reset();
       defendantsArray = [];
       renderDefendantsList();
