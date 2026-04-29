@@ -472,16 +472,18 @@ const server = http.createServer(async (req, res) => {
         const body = await parseBody(req);
         const sql = getSql();
         
-        // Ensure email_sent column exists
+        // Ensure email_sent and skip_trace_data columns exist
         await sql`ALTER TABLE contact_submissions ADD COLUMN IF NOT EXISTS email_sent INTEGER DEFAULT -1`;
+        await sql`ALTER TABLE contact_submissions ADD COLUMN IF NOT EXISTS skip_trace_data JSONB`;
         
+        const skipTraceDataJson = body.skipTraceData ? JSON.stringify(body.skipTraceData) : null;
         await sql`
           INSERT INTO contact_submissions (
             first_name, last_name, company, email, phone,
-            reason, county, state, case_details, urgency, consent, email_sent
+            reason, county, state, case_details, urgency, consent, email_sent, skip_trace_data
           ) VALUES (
             ${body.firstName}, ${body.lastName}, ${body.company}, ${body.email}, ${body.phone},
-            ${body.reason}, ${body.county}, ${body.state}, ${body.caseDetails}, ${body.urgency}, ${body.consent || false}, -1
+            ${body.reason}, ${body.county}, ${body.state}, ${body.caseDetails}, ${body.urgency}, ${body.consent || false}, -1, ${skipTraceDataJson}
           )
         `;
         

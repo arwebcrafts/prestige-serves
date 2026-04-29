@@ -579,6 +579,7 @@ function handleFormSubmit(event, id, formType) {
         city: document.getElementById('city-value')?.value || '',
         state: document.getElementById('state-value')?.value || '',
         caseDetails: form.querySelector('[name="caseDetails"]')?.value || '',
+        urgency: form.querySelector('[name="urgency"]')?.value || (skipTraceFormData && skipTraceFormData.rush ? (skipTraceFormData.rush === 'yes' ? 'High' : 'Standard') : ''),
         serviceType: form.querySelector('[name="serviceType"]')?.value || '',
         consent: form.querySelector('[name="consent"]')?.checked || false,
         skipTraceData: skipTraceFormData
