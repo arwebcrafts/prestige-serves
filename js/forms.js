@@ -618,9 +618,7 @@ function handleFormSubmit(event, id, formType) {
       'Court-Ready Skip Trace Report — $250': 'https://buy.stripe.com/cNieVd1dD87xcDfenb6sw0a'
     };
     const serviceTypeVal = form.querySelector('[name="serviceType"]')?.value || '';
-    if (stripeLinks[serviceTypeVal]) {
-      setTimeout(() => { window.location.href = stripeLinks[serviceTypeVal]; }, 1500);
-    }
+    // TEMP DISABLED FOR DEBUG: if (stripeLinks[serviceTypeVal]) { setTimeout(() => { window.location.href = stripeLinks[serviceTypeVal]; }, 1500); }
     form.reset();
     if (isSkipTraceService(serviceTypeVal)) {
       skipTraceFormData = null;
