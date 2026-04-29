@@ -335,7 +335,7 @@ async function viewRequest(id) {
         <p><strong>Defendant:</strong> ${escapeHtml(r.defendant_name || '')}</p>
         <p><strong>Case Number:</strong> ${escapeHtml(r.case_number || '')}</p>
         <p><strong>Court:</strong> ${escapeHtml(r.court_jurisdiction || '')}</p>
-        <p><strong>Service Type:</strong> ${escapeHtml(r.service_type || '')}</p>
+        <p><strong>Service Type:</strong> ${escapeHtml((r.service_type || '').replace(/[^\x00-\x7F]/g, function(c) { return '&#' + c.charCodeAt(0) + ';'; }))}</p>
         <p><strong>Deadline:</strong> ${r.deadline_date ? formatDate(r.deadline_date) : 'Not specified'}</p>
         <p><strong>Multiple Defendants:</strong> ${r.multiple_defendants ? 'Yes' : 'No'}</p>
       </div>
@@ -343,10 +343,24 @@ async function viewRequest(id) {
       <div class="detail-section">
         <h4>Additional Defendants</h4>
         <div class="highlight">
-          ${(typeof r.defendants_data === 'string' ? JSON.parse(r.defendants_data) : r.defendants_data).map((d, i) => `
-            <p><strong>Defendant #${i+2}:</strong> ${escapeHtml(d.firstName || '')} ${escapeHtml(d.lastName || '')}</p>
-            <p>Address: ${escapeHtml(d.address || '')}, ${escapeHtml(d.city || '')}, ${escapeHtml(d.state || '')}</p>
-          `).join('')}
+          ${(function() {
+            var defs = typeof r.defendants_data === 'string' ? JSON.parse(r.defendants_data) : r.defendants_data;
+            return defs.map(function(d, i) {
+              return '<div style="border:1px solid #e2e8f0;border-radius:6px;padding:12px 16px;margin-bottom:12px;background:#f8fafc;">' +
+                '<p style="margin:0 0 8px 0;font-size:14px;font-weight:700;color:#1a3a5c;"><strong>Defendant #' + (i + 2) + ':</strong> ' + escapeHtml((d.firstName || '') + ' ' + (d.middleName || '') + ' ' + (d.lastName || '')) + '</p>' +
+                (d.gender ? '<p style="margin:0 0 4px 0;font-size:13px;"><strong>Gender:</strong> ' + escapeHtml(d.gender) + '</p>' : '') +
+                (d.relationship ? '<p style="margin:0 0 4px 0;font-size:13px;"><strong>Relationship:</strong> ' + escapeHtml(d.relationship) + '</p>' : '') +
+                '<p style="margin:0 0 4px 0;font-size:13px;"><strong>Address:</strong> ' + escapeHtml(d.address || '') + '</p>' +
+                '<p style="margin:0 0 4px 0;font-size:13px;"><strong>City:</strong> ' + escapeHtml(d.city || '') + ' <strong>State:</strong> ' + escapeHtml(d.state || '') + ' <strong>ZIP:</strong> ' + escapeHtml(d.zip || '') + '</p>' +
+                (d.dob ? '<p style="margin:0 0 4px 0;font-size:13px;"><strong>DOB:</strong> ' + escapeHtml(d.dob) + '</p>' : '') +
+                (d.phone ? '<p style="margin:0 0 4px 0;font-size:13px;"><strong>Phone:</strong> ' + escapeHtml(d.phone) + '</p>' : '') +
+                (d.aliases ? '<p style="margin:0 0 4px 0;font-size:13px;"><strong>Known Aliases:</strong> ' + escapeHtml(d.aliases) + '</p>' : '') +
+                (d.employer ? '<p style="margin:0 0 4px 0;font-size:13px;"><strong>Employer:</strong> ' + escapeHtml(d.employer) + '</p>' : '') +
+                (d.physical ? '<p style="margin:0 0 4px 0;font-size:13px;"><strong>Physical Description:</strong> ' + escapeHtml(d.physical) + '</p>' : '') +
+                (d.notes ? '<p style="margin:0 0 4px 0;font-size:13px;"><strong>Notes:</strong> ' + escapeHtml(d.notes) + '</p>' : '') +
+                '</div>';
+            }).join('');
+          })()}
         </div>
       </div>
       ` : ''}
