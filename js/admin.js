@@ -383,18 +383,47 @@ async function viewContact(id) {
     const data = await response.json();
     const c = data.data;
 
+    console.log('[DEBUG viewContact] Full contact object:', JSON.stringify(c, null, 2));
+    console.log('[DEBUG viewContact] c.skip_trace_data:', c.skip_trace_data);
+    console.log('[DEBUG viewContact] type:', typeof c.skip_trace_data);
+    console.log('[DEBUG viewContact] c.skip_trace_data keys:', c.skip_trace_data ? Object.keys(c.skip_trace_data) : 'N/A');
+
     // Parse skip trace data if present
     var skipTraceData = null;
     if (c.skip_trace_data) {
       try {
-        skipTraceData = typeof c.skip_trace_data === 'string' ? JSON.parse(c.skip_trace_data) : c.skip_trace_data;
+        // Handle case where Neon returns JSONB as string or already parsed object
+        if (typeof c.skip_trace_data === 'string') {
+          skipTraceData = JSON.parse(c.skip_trace_data);
+        } else if (typeof c.skip_trace_data === 'object' && c.skip_trace_data !== null) {
+          skipTraceData = c.skip_trace_data;
+        } else {
+          // Try parsing anyway in case it's a different format
+          skipTraceData = JSON.parse(JSON.stringify(c.skip_trace_data));
+        }
+        console.log('[DEBUG viewContact] parsed skipTraceData:', skipTraceData);
       } catch(e) {
         skipTraceData = c.skip_trace_data;
+        console.log('[DEBUG viewContact] parse error, using raw:', skipTraceData);
       }
     }
 
     var skipTraceSection = '';
-    if (skipTraceData && skipTraceData.firstName) {
+    console.log('[DEBUG viewContact] skipTraceData exists:', !!skipTraceData, 'skipTraceData.firstName:', skipTraceData?.firstName, 'skipTraceData.fullname:', skipTraceData?.fullname);
+    
+    // Also check for fullname as fallback (some forms send fullname instead of firstName/lastName)
+    const hasSkipTraceData = skipTraceData && (skipTraceData.firstName || skipTraceData.fullname);
+    
+    if (hasSkipTraceData) {
+      console.log('[DEBUG viewContact] Skip trace section WILL render');
+      
+      // Handle fullname fallback
+      if (!skipTraceData.firstName && skipTraceData.fullname) {
+        const nameParts = skipTraceData.fullname.split(' ');
+        skipTraceData.firstName = nameParts[0] || '';
+        skipTraceData.lastName = nameParts.slice(1).join(' ') || '';
+      }
+      
       skipTraceSection = `
         <div class="detail-section" style="border-left:3px solid #2d3a7c;padding-left:16px;margin-top:16px;">
           <h4 style="color:#2d3a7c;">Skip Trace Intake Data</h4>

@@ -59,15 +59,21 @@ export default async function handler(req, res) {
     // Get owner email from settings
     const ownerEmail = await getOwnerEmail(sql) || process.env.TO_EMAIL || 'muhammadwaqarsikandar@gmail.com';
     
+    // Debug: log what we're about to insert
+    console.log('[DEBUG API contact] skipTraceData being inserted:', skipTraceData);
+    console.log('[DEBUG API contact] JSON.stringify(skipTraceData):', skipTraceData ? JSON.stringify(skipTraceData) : null);
+    
     await sql`
       INSERT INTO contact_submissions (
         first_name, last_name, company, email, phone,
         reason, county, state, case_details, urgency, consent, email_sent, skip_trace_data
       ) VALUES (
         ${firstName}, ${lastName}, ${company}, ${email}, ${phone},
-        ${reason}, ${county}, ${state}, ${caseDetails}, ${urgency}, ${consent || false}, -1, ${skipTraceData ? JSON.stringify(skipTraceData) : null}
+        ${reason}, ${county}, ${state}, ${caseDetails}, ${urgency}, ${consent || false}, -1, ${skipTraceData}
       )
     `;
+    
+    console.log('[DEBUG API contact] Insert completed');
 
     const htmlContent = buildContactEmailHtml({
       firstName, lastName, company, email, phone, reason, county, state, caseDetails, urgency

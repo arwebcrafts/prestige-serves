@@ -36,7 +36,11 @@ export default async function handler(req, res) {
     const result = await sql`SELECT * FROM contact_submissions WHERE id = ${id}`;
     
     if (result.length > 0) {
-      return res.status(200).json({ success: true, data: result[0] });
+      // Debug: log the skip_trace_data if present
+      const row = result[0];
+      console.log('[DEBUG API /contact/:id] id:', id, 'skip_trace_data:', row.skip_trace_data, 'type:', typeof row.skip_trace_data);
+      
+      return res.status(200).json({ success: true, data: row });
     } else {
       return res.status(404).json({ success: false, message: 'Not found' });
     }
