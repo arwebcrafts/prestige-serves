@@ -395,12 +395,9 @@ function initFutureDeadlineDateInputs(root) {
 
 function toggleHomeMultiDefTextarea() {
   var yes = document.querySelector('#home-form-container input[name="home_multiple_defendants"][value="yes"]');
-  var ta = document.getElementById('home-additional-defendants');
   var listContainer = document.getElementById('home-defendants-list-container');
   var addBtn = document.getElementById('home-btn-add-defendant');
-  if (!ta) return;
   var isYes = yes && yes.checked;
-  ta.style.display = isYes ? 'block' : 'none';
   if (listContainer) listContainer.style.display = isYes ? 'flex' : 'none';
   if (addBtn) addBtn.style.display = isYes ? 'block' : 'none';
   if (isYes && homeDefendantsArray.length === 0 && typeof openHomeDefendantModal === 'function') {
@@ -641,8 +638,8 @@ function buildContactForm(containerId, formId) {
         <label>Are there multiple defendants to be served?</label>
         <div class="form-hint" style="margin-bottom:10px;">Selecting &quot;Yes&quot; opens the defendant entry form. You can add up to 10 defendants.</div>
         <div class="radio-toggle-group">
-          <label class="radio-toggle"><input type="radio" name="home_multiple_defendants" value="yes" onchange="toggleHomeMultiDefTextarea()"><span>Yes</span></label>
-          <label class="radio-toggle"><input type="radio" name="home_multiple_defendants" value="no" checked onchange="toggleHomeMultiDefTextarea()"><span>No</span></label>
+          <label class="radio-toggle"><input type="radio" name="home_multiple_defendants" value="yes"><span>Yes</span></label>
+          <label class="radio-toggle"><input type="radio" name="home_multiple_defendants" value="no" checked><span>No</span></label>
         </div>
         <div id="home-defendants-list-container" style="display:none; flex-direction:column; gap:10px; margin-top: 10px;"></div>
         <button type="button" id="home-btn-add-defendant" class="btn-navy" style="display:none; width:auto; padding: 10px 20px; margin-top: 10px; background-color: #f4f4f4; color: #333; border: 1px solid #ccc;" onclick="openHomeDefendantModal(-1)">+ Add Defendant</button>
