@@ -78,7 +78,7 @@ export default async function handler(req, res) {
     console.log('[DEBUG API contact] Insert completed');
 
     const htmlContent = buildContactEmailHtml({
-      firstName, lastName, company, email, phone, reason, county, state, caseDetails, urgency
+      firstName, lastName, company, email, phone, reason, county, state, caseDetails, serviceType, urgency, skipTraceData
     });
 
     const emailResult = await sendSMTPEmail({

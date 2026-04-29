@@ -67,7 +67,72 @@ async function sendSMTPEmail({ to, subject, html, text }) {
 
 // Beautiful Email Templates
 function buildContactEmailHtml(data) {
-  const { firstName, lastName, company, email, phone, reason, city, state, caseDetails } = data;
+  const { firstName, lastName, company, email, phone, reason, city, state, caseDetails, serviceType, urgency, skipTraceData } = data;
+  
+  // Build Skip Trace section if present
+  let skipTraceSection = '';
+  if (skipTraceData && (skipTraceData.firstName || skipTraceData.fullname)) {
+    const st = skipTraceData;
+    skipTraceSection = `
+                      <tr>
+                        <td style="padding:25px;background-color:#fef3f2;">
+                          <p style="margin:0 0 15px 0;font-size:14px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:1px;">Skip Trace Intake Data</p>
+                          <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                            ${st.firstName || st.fullname ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Subject Name</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.firstName || ''} ${st.lastName || ''} ${st.fullname || ''}</td>
+                            </tr>` : ''}
+                            ${st.dob ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Date of Birth</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.dob}</td>
+                            </tr>` : ''}
+                            ${st.lastPhone ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Last Known Phone</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.lastPhone}</td>
+                            </tr>` : ''}
+                            ${st.lastAddress ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Last Known Address</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.lastAddress}</td>
+                            </tr>` : ''}
+                            ${st.lastEmail ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Last Known Email</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.lastEmail}</td>
+                            </tr>` : ''}
+                            ${st.purpose ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Purpose</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.purpose}</td>
+                            </tr>` : ''}
+                            ${st.caseNumber ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Case / File Number</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.caseNumber}</td>
+                            </tr>` : ''}
+                            ${st.court ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Court / Jurisdiction</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.court}</td>
+                            </tr>` : ''}
+                            ${st.deadline ? `
+                            <tr>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Deadline</td>
+                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.deadline}</td>
+                            </tr>` : ''}
+                            ${st.fcraCertified ? `
+                            <tr>
+                              <td style="padding:8px 0;font-size:12px;color:#94a3b8;text-transform:uppercase;">FCRA Certified</td>
+                              <td style="padding:8px 0;font-size:14px;color:#16a34a;text-align:right;font-weight:600;">✓ Yes</td>
+                            </tr>` : ''}
+                          </table>
+                        </td>
+                      </tr>`;
+  }
+  
   return `
 <!DOCTYPE html>
 <html>
@@ -138,12 +203,28 @@ function buildContactEmailHtml(data) {
                           <p style="margin:5px 0 0 0;font-size:16px;color:#2563eb;font-weight:600;">${reason || 'General Inquiry'}</p>
                         </td>
                       </tr>
+                      ${serviceType ? `
+                      <tr>
+                        <td style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Service Type</span>
+                          <p style="margin:5px 0 0 0;font-size:16px;color:#2563eb;font-weight:600;">${serviceType}</p>
+                        </td>
+                      </tr>
+                      ` : ''}
                       <tr>
                         <td style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
                           <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Location</span>
                           <p style="margin:5px 0 0 0;font-size:16px;color:#333333;">${city || ''} ${state || ''}</p>
                         </td>
                       </tr>
+                      ${urgency ? `
+                      <tr>
+                        <td style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
+                          <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Urgency</span>
+                          <p style="margin:5px 0 0 0;font-size:16px;color:#dc2626;font-weight:600;">${urgency}</p>
+                        </td>
+                      </tr>
+                      ` : ''}
                       <tr>
                         <td style="padding:12px 0;">
                           <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Message</span>
@@ -153,6 +234,7 @@ function buildContactEmailHtml(data) {
                     </table>
                   </td>
                 </tr>
+                ${skipTraceSection}
               </table>
             </td>
           </tr>
@@ -526,7 +608,10 @@ const server = http.createServer(async (req, res) => {
             reason: body.reason,
             city: body.city,
             state: body.state,
-            caseDetails: body.caseDetails
+            caseDetails: body.caseDetails,
+            serviceType: body.serviceType,
+            urgency: body.urgency,
+            skipTraceData: body.skipTraceData
           });
           sendSMTPEmail({
             to: TO_EMAIL,
