@@ -7,7 +7,8 @@
   - Service types that trigger modal: Standard Skip Trace ($75), Enhanced Trace ($150), Rush Trace ($225), Business/Agent Verification ($225), Court-Ready Skip Trace Report ($250)
   - Modal captures subject information, FCRA compliance, case details, and deadline
   - User must complete and save the intake form before the main form can be submitted
-  - Skip trace data is included in form submission payload
+  - **Database**: Added `skip_trace_data` JSONB column to `contact_submissions` table
+  - Modal data is stored in database alongside the contact submission
   - Modal auto-opens when skip trace service is selected; form state resets after submission
 
 ## [1.1.2] - 2026-04-28
