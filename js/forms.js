@@ -354,14 +354,14 @@ function saveSkipTraceForm() {
   }
 }
 
-function initHomeSkipTraceSection() {
-  var sel = document.querySelector('#home-form-container select[name="serviceType"]');
+function initHomeSkipTraceSection(containerId) {
+  var cid = containerId || 'home-form-container';
+  var sel = document.querySelector('#' + cid + ' select[name="serviceType"]');
   if (!sel) return;
   sel.addEventListener('change', function() {
     if (isSkipTraceService(sel.value)) {
       openSkipTraceModal();
     } else {
-      // Reset skip trace data if user switches away from skip trace service
       if (skipTraceModalFilled) {
         skipTraceFormData = null;
         skipTraceModalFilled = false;
@@ -393,8 +393,9 @@ function initFutureDeadlineDateInputs(root) {
   });
 }
 
-function toggleHomeMultiDefTextarea() {
-  var yes = document.querySelector('#home-form-container input[name="home_multiple_defendants"][value="yes"]');
+function toggleHomeMultiDefTextarea(containerId) {
+  var cid = containerId || 'home-form-container';
+  var yes = document.querySelector('#' + cid + ' input[name="home_multiple_defendants"][value="yes"]');
   var listContainer = document.getElementById('home-defendants-list-container');
   var addBtn = document.getElementById('home-btn-add-defendant');
   var isYes = yes && yes.checked;
@@ -405,9 +406,10 @@ function toggleHomeMultiDefTextarea() {
   }
 }
 
-function syncHomeProcessServeSection() {
+function syncHomeProcessServeSection(containerId) {
+  var cid = containerId || 'home-form-container';
   var wrap = document.getElementById('home-process-extra');
-  var sel = document.querySelector('#home-form-container select[name="serviceType"]');
+  var sel = document.querySelector('#' + cid + ' select[name="serviceType"]');
   if (!wrap || !sel) return;
   var show = HOME_PROCESS_SERVE_TYPES.indexOf(sel.value) !== -1;
   wrap.style.display = show ? 'block' : 'none';
@@ -423,22 +425,22 @@ function syncHomeProcessServeSection() {
   }
 }
 
-function initHomeProcessServeSection() {
-  var sel = document.querySelector('#home-form-container select[name="serviceType"]');
+function initHomeProcessServeSection(containerId) {
+  var cid = containerId || 'home-form-container';
+  var sel = document.querySelector('#' + cid + ' select[name="serviceType"]');
   if (!sel) return;
-  sel.addEventListener('change', syncHomeProcessServeSection);
-  syncHomeProcessServeSection();
-  var hc = document.getElementById('home-form-container');
+  var wrap = document.getElementById('home-process-extra');
+
+  sel.addEventListener('change', function() { syncHomeProcessServeSection(cid); });
+  syncHomeProcessServeSection(cid);
+  var hc = document.getElementById(cid);
   if (hc) initFutureDeadlineDateInputs(hc);
 
-  // Attach radio button listeners AFTER form is built (inline onchange may fire before functions exist)
-  var radios = document.querySelectorAll('#home-form-container input[name="home_multiple_defendants"]');
+  var radios = document.querySelectorAll('#' + cid + ' input[name="home_multiple_defendants"]');
   radios.forEach(function(r) {
-    r.addEventListener('change', toggleHomeMultiDefTextarea);
+    r.addEventListener('change', function() { toggleHomeMultiDefTextarea(cid); });
   });
-  // Also call once in case "No" is pre-selected or state needs syncing
-  toggleHomeMultiDefTextarea();
-  // Init file upload preview for home form
+  toggleHomeMultiDefTextarea(cid);
   initHomeFileUploadPreview();
 }
 
@@ -610,7 +612,9 @@ function submitHomeProcessServe(form, successId) {
 function buildContactForm(containerId, formId) {
   const c = document.getElementById(containerId);
   if (!c) return;
-  const homeProcessExtra = formId === 'home' ? `
+  const isHome = formId === 'home';
+  const isContact = formId === 'contact';
+  const processExtra = (isHome || isContact) ? `
     <div id="home-process-extra" class="home-process-extra" style="display:none;">
       <p class="form-hint" style="margin:12px 0 16px;font-style:italic;">Complete process serving details below.</p>
       <div class="form-group">
@@ -703,7 +707,7 @@ function buildContactForm(containerId, formId) {
       <label>Service Type <span class="req">(required)</span></label>
       <select name="serviceType" required><option value="">Select an option</option><option>Standard Service — $97.99 (5–7 business days)</option><option>Rush Service — $119.99 (3 business days)</option><option>Priority Serve — $149.99 (2 business days)</option><option>Emergency Serve — $249.99 (Same-day, approval required)</option><option>Standard Skip Trace — $75</option><option>Enhanced Trace — $150</option><option>Rush Trace (same/next-day) — $225</option><option>Business / Agent Verification — $225</option><option>Court-Ready Skip Trace Report — $250</option></select>
     </div>
-    ${homeProcessExtra}
+    ${processExtra}
     <div class="form-checkbox">
       <input type="checkbox" id="${formId}-consent" name="consent" required>
       <label for="${formId}-consent">I understand that submitting this form does not guarantee service and all requests are subject to review and availability.</label>
@@ -741,7 +745,7 @@ function handleFormSubmit(event, id, formType) {
       console.log('[DEBUG] skipTraceModalFilled:', skipTraceModalFilled);
       console.log('[DEBUG] skipTraceFormData:', skipTraceFormData);
       const isHomeProcess =
-        Boolean(form.closest('#home-form-container')) &&
+        (Boolean(form.closest('#home-form-container')) || Boolean(form.closest('#contact-form-container'))) &&
         HOME_PROCESS_SERVE_TYPES.indexOf(serviceTypeVal) !== -1;
       console.log('[DEBUG] isHomeProcess:', isHomeProcess, '| closest:', Boolean(form.closest('#home-form-container')), '| indexOf:', HOME_PROCESS_SERVE_TYPES.indexOf(serviceTypeVal));
       if (isHomeProcess) {

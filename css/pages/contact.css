@@ -52,6 +52,26 @@
 #contact-form-container .btn-navy{color:#2d3a7c !important;background:#ffffff !important;border:2px solid #2d3a7c !important;}
 #contact-form-container .btn-navy:hover{color:#ffffff !important;background:#2d3a7c !important;border:2px solid #2d3a7c !important;}
 
+#contact-form-container .home-process-extra{margin-top:8px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.2);}
+#contact-form-container .home-process-extra .form-hint{color:rgba(255,255,255,0.6) !important;}
+#contact-form-container .home-process-extra input,
+#contact-form-container .home-process-extra textarea{background:rgba(255,255,255,0.95) !important;border:0.5px solid rgba(255,255,255,0.3) !important;color:#000000 !important;}
+#contact-form-container .home-process-extra input::placeholder,
+#contact-form-container .home-process-extra textarea::placeholder{color:#000000 !important;}
+#contact-form-container .home-process-extra label{color:#ffffff !important;}
+#contact-form-container .home-process-extra .req{color:rgba(255,255,255,0.7) !important;}
+#contact-form-container .home-process-extra select{background:rgba(255,255,255,0.95) !important;border:0.5px solid rgba(255,255,255,0.3) !important;color:#000000 !important;}
+#contact-form-container .home-process-extra select option{background:#f5f5f5;color:#000000;}
+#contact-form-container .home-process-extra .file-upload-area{background:rgba(255,255,255,0.95) !important;border:0.5px dashed rgba(255,255,255,0.4) !important;color:#000000 !important;}
+#contact-form-container .home-process-extra .city-select-wrapper input,
+#contact-form-container .home-process-extra .state-select-wrapper input{background:rgba(255,255,255,0.95) !important;color:#000000 !important;}
+#contact-form-container .home-process-extra .city-dropdown,
+#contact-form-container .home-process-extra .state-dropdown{background:#fff;}
+#contact-form-container .home-process-extra .city-option,
+#contact-form-container .home-process-extra .state-option{color:#000000;}
+#contact-form-container .home-process-extra .radio-toggle span{color:#ffffff;}
+#contact-form-container .home-process-extra .defendant-card{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);}
+
 @media(max-width:960px){
   .contact-dark-section{display:flex !important;flex-direction:column;padding:40px 28px;gap:40px;}
   .contact-dark-section > div{width:100%;max-width:100%;box-sizing:border-box;}
