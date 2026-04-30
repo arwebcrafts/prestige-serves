@@ -197,7 +197,7 @@ function renderRequestsTable() {
         escapeHtml(r.phone || '') +
         '</td>' +
         '<td>' +
-        escapeHtml(r.service_type || '') +
+        (r.service_type ? r.service_type.replace(/[^\x00-\x7F]/g, function(c) { return '&#' + c.charCodeAt(0) + ';'; }) : '') +
         '</td>' +
         '<td>' +
         escapeHtml(r.case_number || '') +
