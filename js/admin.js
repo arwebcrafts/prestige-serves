@@ -150,6 +150,12 @@ function renderRequestsTable() {
         '<td>' +
         escapeHtml(r.service_type || '') +
         '</td>' +
+        '<td>' +
+        escapeHtml(r.case_number || '') +
+        '</td>' +
+        '<td>' +
+        (r.deadline_date ? formatDate(r.deadline_date) : '') +
+        '</td>' +
         '<td><span class="status-badge">New</span></td>' +
         '<td><span class="email-status-badge ' +
         (r.email_sent === 1 ? 'success' : r.email_sent === 0 ? 'failed' : 'pending') +
@@ -314,6 +320,8 @@ async function loadContacts() {
         <td>${escapeHtml(c.email || '')}</td>
         <td>${escapeHtml(c.phone || '')}</td>
         <td>${escapeHtml(c.reason || '')}</td>
+        <td>${escapeHtml(c.case_number || '')}</td>
+        <td>${c.deadline_date ? formatDate(c.deadline_date) : ''}</td>
         <td>${getUrgencyBadge(c.urgency)}</td>
         <td><span class="email-status-badge ${c.email_sent === 1 ? 'success' : c.email_sent === 0 ? 'failed' : 'pending'}">${c.email_sent === 1 ? 'Sent' : c.email_sent === 0 ? 'Failed' : 'Pending'}</span></td>
         <td><button class="action-btn view" onclick="viewContact(${c.id})">View</button> <button class="action-btn delete" onclick="deleteContactRow(${c.id})">Delete</button></td>
