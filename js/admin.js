@@ -10,6 +10,25 @@ var allContacts = [];
 var contactsPage = 1;
 var selectedContacts = new Set();
 
+function getUrgencyBadge(urgency) {
+  var u = urgency || '';
+  var styles = {
+    'Standard': 'background:#e8f7ee;color:#16a34a;border:1px solid #b4d8b8;',
+    'Elevated': 'background:#e8f0fc;color:#2563eb;border:1px solid #b4c8e8;',
+    'High': 'background:#fef3e2;color:#b7770d;border:1px solid #e8d0a8;',
+    'Critical': 'background:#fce8e8;color:#c0392b;border:1px solid #e8b4b4;'
+  };
+  var dotColors = {
+    'Standard': '#16a34a',
+    'Elevated': '#2563eb',
+    'High': '#b7770d',
+    'Critical': '#c0392b'
+  };
+  var cls = styles[u] || 'background:#f5f5f5;color:#666;border:1px solid #ddd;';
+  var dot = dotColors[u] || '#999';
+  return '<span class="status-badge" style="' + cls + '"><span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:5px;height:5px;border-radius:50%;background:' + dot + ';display:inline-block;"></span>' + u + '</span></span>';
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   // Check if logged in
   if (!sessionStorage.getItem('adminLoggedIn')) {
@@ -295,7 +314,7 @@ async function loadContacts() {
         <td>${escapeHtml(c.email || '')}</td>
         <td>${escapeHtml(c.phone || '')}</td>
         <td>${escapeHtml(c.reason || '')}</td>
-        <td><span class="status-badge">${escapeHtml(c.urgency || '')}</span></td>
+        <td>${getUrgencyBadge(c.urgency)}</td>
         <td><span class="email-status-badge ${c.email_sent === 1 ? 'success' : c.email_sent === 0 ? 'failed' : 'pending'}">${c.email_sent === 1 ? 'Sent' : c.email_sent === 0 ? 'Failed' : 'Pending'}</span></td>
         <td><button class="action-btn view" onclick="viewContact(${c.id})">View</button> <button class="action-btn delete" onclick="deleteContactRow(${c.id})">Delete</button></td>
       </tr>
@@ -514,7 +533,7 @@ async function viewContact(id) {
         <p><strong>Reason:</strong> ${escapeHtml(c.reason || '')}</p>
         <p><strong>County/City:</strong> ${escapeHtml(c.county || '')}</p>
         <p><strong>State:</strong> ${escapeHtml(c.state || '')}</p>
-        <p><strong>Urgency:</strong> ${escapeHtml(c.urgency || '')}</p>
+        <p><strong>Urgency:</strong> ${getUrgencyBadge(c.urgency)}</p>
       </div>
       <div class="detail-section">
         <h4>Case Details</h4>
@@ -672,9 +691,7 @@ function renderContactsTable() {
         '<td>' +
         escapeHtml(c.reason || '') +
         '</td>' +
-        '<td><span class="status-badge">' +
-        escapeHtml(c.urgency || '') +
-        '</span></td>' +
+        '<td>' + getUrgencyBadge(c.urgency) + '</td>' +
         '<td><span class="email-status-badge ' +
         (c.email_sent === 1 ? 'success' : c.email_sent === 0 ? 'failed' : 'pending') +
         '">' +
