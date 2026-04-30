@@ -1354,6 +1354,12 @@ function initCityAutocomplete(inputId, hiddenInputId, dropdownId, stateInputId) 
       const stateMatch = stateInput ? stateInput.value.match(/\(([A-Z]{2})\)/) : null;
       if (stateMatch) stateCode = stateMatch[1];
     }
+    // If no state code (international address), return all cities as fallback
+    if (!stateCode) {
+      var allCities = [];
+      Object.values(citiesByState).forEach(function(arr) { allCities = allCities.concat(arr); });
+      return allCities;
+    }
     console.log('getCurrentStateCities: stateCode=', stateCode, 'stateInput=', stateInput ? stateInput.value : 'null');
     return getCitiesForState(stateCode);
   }
