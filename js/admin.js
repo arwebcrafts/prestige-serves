@@ -133,7 +133,7 @@ function renderRequestsTable() {
         r.id +
         '</td>' +
         '<td>' +
-        formatDate(r.created_at) +
+        formatDateColor(r.created_at) +
         '</td>' +
         '<td>' +
         escapeHtml(r.client_name || '') +
@@ -397,7 +397,7 @@ async function viewRequest(id) {
       </div>
       <div class="detail-section">
         <h4>Submission Info</h4>
-        <p><strong>Submitted:</strong> ${formatDate(r.created_at)}</p>
+        <p><strong>Submitted:</strong> ${formatDateColor(r.created_at)}</p>
         <p><strong>Email Sent:</strong> <span class="email-status-badge ${r.email_sent === 1 ? 'success' : r.email_sent === 0 ? 'failed' : 'pending'}">${r.email_sent === 1 ? 'Sent' : r.email_sent === 0 ? 'Failed' : 'Pending'}</span></p>
       </div>
       ${r.uploaded_files ? `
@@ -552,7 +552,7 @@ async function viewContact(id) {
       ${skipTraceSection}
       <div class="detail-section">
         <h4>Submission Info</h4>
-        <p><strong>Submitted:</strong> ${formatDate(c.created_at)}</p>
+        <p><strong>Submitted:</strong> ${formatDateColor(c.created_at)}</p>
         <p><strong>Email Sent:</strong> <span class="email-status-badge ${c.email_sent === 1 ? 'success' : c.email_sent === 0 ? 'failed' : 'pending'}">${c.email_sent === 1 ? 'Sent' : c.email_sent === 0 ? 'Failed' : 'Pending'}</span></p>
       </div>
     `;
@@ -682,7 +682,7 @@ function renderContactsTable() {
         c.id +
         '</td>' +
         '<td>' +
-        formatDate(c.created_at) +
+        formatDateColor(c.created_at) +
         '</td>' +
         '<td>' +
         escapeHtml((c.first_name || '') + ' ' + (c.last_name || '')) +
@@ -730,6 +730,29 @@ function formatDate(dateStr) {
     hour: '2-digit',
     minute: '2-digit'
   });
+}
+
+function getDateColor(dateStr) {
+  if (!dateStr) return '';
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const d = new Date(dateStr);
+  d.setHours(0, 0, 0, 0);
+  const diffDays = Math.round((now - d) / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return '#16a34a';       // green - today
+  if (diffDays === 1) return '#2563eb';       // blue - yesterday
+  if (diffDays === 2) return '#c0392b';      // red - 2 days ago
+  return '#666';                             // gray - older
+}
+
+function formatDateColor(dateStr) {
+  if (!dateStr) return '<span style="color:#999;">—</span>';
+  const color = getDateColor(dateStr);
+  const formatted = new Date(dateStr).toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+  return '<span style="color:' + color + ';font-weight:500;">' + formatted + '</span>';
 }
 
 function escapeHtml(str) {
