@@ -1,5 +1,36 @@
 # Changelog
 
+## [1.1.5] - 2026-04-30
+
+### Added
+- Service Type conditional form expansion on contact page (same behavior as home page):
+  - Selecting a process serving tier (Standard/Rush/Priority/Emergency) reveals additional fields:
+    service address, city/state/ZIP, defendant name, case number, court/jurisdiction,
+    multiple defendants toggle, deadline date, file upload, special instructions
+  - Skip trace service types open the skip trace intake modal for full intake form
+- Defendant modal for adding/editing multiple defendants on contact page
+- Skip trace modal added to contact page
+- `request.css` linked on contact page for modal overlay styles
+
+### Changed
+- `buildContactForm` now renders process-extra section for both `home` and `contact` form types
+- `syncHomeProcessServeSection` and `initHomeProcessServeSection` now accept `containerId` parameter
+  to target the correct form's service type select and radio buttons
+- `toggleHomeMultiDefTextarea` now accepts `containerId` and correctly resolves which form's UI to update
+- `initHomeSkipTraceSection` now accepts `containerId` parameter
+- `handleFormSubmit` detects process-serve types from both `#home-form-container` and `#contact-form-container`
+- `saveHomeDefendant` determines active form by checking which "Yes" radio is checked, not modal DOM position
+- Defendant list renders immediately after saving (no longer requires No → Yes toggle to show list)
+- Contact form process-extra section styled for dark navy background with white text inputs
+- Radio toggle buttons: inactive state uses dark gray (#333 on #f9f9f9), active state uses white on navy (#2d3a7c)
+- City autocomplete falls back to all US cities when no state is selected (for international addresses)
+- Defendant card styling: navy left border, semi-transparent white background, improved spacing, Edit button styled for dark theme
+
+### Fixed
+- Form container detection in `saveHomeDefendant` now checks active "Yes" radio instead of modal position in DOM
+- Removed auto-open of defendant modal when switching to "Yes" (user must click "+ Add Defendant" button)
+- City autocomplete working for international addresses (Pakistan cities now show when no US state selected)
+
 ## [1.1.4] - 2026-04-29
 
 ### Added
