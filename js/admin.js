@@ -934,26 +934,19 @@ function getFilteredContacts() {
 function fixEncoding(str) {
   if (!str) return '';
   var result = str;
-  // Fix em-dash (—) = C2 A9 in a corrupted stream looks like "â "
-  result = result.split('â ').join('— ');
-  // Fix en-dash (–) corrupted as "â7" 
-  result = result.split('â7').join('–7');
-  // Fix other corrupted UTF-8 sequences
-  result = result.split('â€"').join('—');
-  result = result.split('â€"').join('—');
-  result = result.split('â€').join('—');
-  result = result.split('â"' + '').join('–');
-  result = result.split('â"').join('–');
+  result = result.split('â ').join('-- ');
+  result = result.split('â7').join('-7');
+  result = result.split('â€"').join('--');
+  result = result.split('â€"').join('--');
+  result = result.split('â€').join('--');
+  result = result.split('â"' + '').join('-');
+  result = result.split('â"').join('-');
   result = result.split('â€"').join('');
   result = result.split('â€').join('');
   result = result.split('â').join('');
   result = result.split('Â').join('');
   result = result.replace(/[Ã]+/g, '');
-  return result
-    .replace(/"/g, '"')
-    .replace(/"/g, '"')
-    .replace(/'/g, ''')
-    .replace(/'/g, ''');
+  return result;
 }
 
 function escapeHtml(str) {
