@@ -314,7 +314,7 @@ async function loadContacts() {
       <tr>
         <td><input type="checkbox" class="contact-checkbox" value="${c.id}"${selectedContacts.has(String(c.id)) ? ' checked' : ''} onchange="updateContactSelection(this)"></td>
         <td>#${c.id}</td>
-        <td>${formatDate(c.created_at)}</td>
+        <td>${formatDateColor(c.created_at)}</td>
         <td>${escapeHtml((c.first_name || '') + ' ' + (c.last_name || ''))}</td>
         <td>${escapeHtml(c.company || '')}</td>
         <td>${escapeHtml(c.email || '')}</td>
