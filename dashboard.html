@@ -63,6 +63,7 @@
         <button type="button" class="btn-primary" onclick="deselectAllRequests()" style="padding:8px 16px;margin-right:5px;">Deselect All</button>
         <button type="button" class="action-btn delete" onclick="deleteSelectedRequests()" style="padding:8px 16px;">Delete Selected</button>
       </div>
+      <div id="requests-date-filter" style="margin-bottom:10px;"></div>
       <table class="data-table" id="requests-table">
         <thead>
           <tr>
@@ -104,6 +105,8 @@
         <button type="button" class="btn-primary" onclick="deselectAllContacts()" style="padding:8px 16px;margin-right:5px;">Deselect All</button>
         <button type="button" class="action-btn delete" onclick="deleteSelectedContacts()" style="padding:8px 16px;">Delete Selected</button>
       </div>
+      <div id="contacts-date-filter" style="margin-bottom:10px;"></div>
+      <div id="contacts-urgency-filter" style="margin-bottom:10px;"></div>
       <table class="data-table" id="contacts-table">
         <thead>
           <tr>
@@ -124,6 +127,7 @@
         </thead>
         <tbody id="contacts-body"></tbody>
       </table>
+      <div class="admin-pagination" id="contacts-pagination" aria-label="Contact submissions pagination"></div>
     </div>
   </div>
 </div>

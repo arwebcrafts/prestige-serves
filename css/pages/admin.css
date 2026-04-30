@@ -378,6 +378,74 @@
   border: 1px solid #f5c6c7;
 }
 
+/* Date filter buttons */
+.date-filter-btn {
+  background: transparent;
+  border: 1px solid #ddd;
+  color: #666;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-right: 5px;
+  transition: all 0.2s;
+}
+
+.date-filter-btn:hover {
+  border-color: #1a2332;
+  color: #1a2332;
+}
+
+.date-filter-btn.active {
+  background: #1a2332;
+  border-color: #1a2332;
+  color: #fff;
+}
+
+/* Urgency filter buttons */
+.urgency-filter-btn {
+  background: transparent;
+  border: 1px solid #ddd;
+  color: #666;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-right: 5px;
+  transition: all 0.2s;
+}
+
+.urgency-filter-btn:hover {
+  border-color: #1a2332;
+  color: #1a2332;
+}
+
+.urgency-filter-btn.active {
+  background: #1a2332;
+  border-color: #1a2332;
+  color: #fff;
+}
+
+.urgency-filter-btn.urgency-standard.active {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+
+.urgency-filter-btn.urgency-elevated.active {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.urgency-filter-btn.urgency-high.active {
+  background: #b7770d;
+  border-color: #b7770d;
+}
+
+.urgency-filter-btn.urgency-critical.active {
+  background: #c0392b;
+  border-color: #c0392b;
+}
+
 /* Modal reuse from request.css */
 .modal-overlay {
   display: none;

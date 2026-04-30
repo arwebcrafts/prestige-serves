@@ -4,11 +4,14 @@ var REQUESTS_PAGE_SIZE = 10;
 var allRequests = [];
 var requestsPage = 1;
 var selectedRequests = new Set();
+var requestsDateFilter = null;
 
 var CONTACTS_PAGE_SIZE = 10;
 var allContacts = [];
 var contactsPage = 1;
 var selectedContacts = new Set();
+var contactsDateFilter = null;
+var contactsUrgencyFilter = null;
 
 function getUrgencyBadge(urgency) {
   var u = urgency || '';
@@ -66,6 +69,50 @@ function updateRequestStats(requests) {
   }).length;
 }
 
+function getUniqueRequestDates() {
+  var dateMap = {};
+  allRequests.forEach(function(r) {
+    if (r.created_at) {
+      var d = new Date(r.created_at);
+      var key = d.toISOString().split('T')[0];
+      if (!dateMap[key]) {
+        dateMap[key] = { date: d, count: 0 };
+      }
+      dateMap[key].count++;
+    }
+  });
+  return Object.keys(dateMap).sort().reverse().slice(0, 10).map(function(k) {
+    return dateMap[k];
+  });
+}
+
+function renderRequestsDateFilter() {
+  var container = document.getElementById('requests-date-filter');
+  if (!container) return;
+  var dates = getUniqueRequestDates();
+  var html = '<button type="button" class="date-filter-btn' + (requestsDateFilter === null ? ' active' : '') + '" onclick="setRequestsDateFilter(null)">All</button>';
+  dates.forEach(function(item) {
+    var label = item.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    html += '<button type="button" class="date-filter-btn' + (requestsDateFilter === item.date.toISOString() ? ' active' : '') + '" onclick="setRequestsDateFilter(\'' + item.date.toISOString() + '\')">' + label + ' (' + item.count + ')</button>';
+  });
+  container.innerHTML = html;
+}
+
+function setRequestsDateFilter(dateStr) {
+  requestsDateFilter = dateStr;
+  requestsPage = 1;
+  renderRequestsDateFilter();
+  renderRequestsTable();
+}
+
+function getFilteredRequests() {
+  if (!requestsDateFilter) return allRequests;
+  return allRequests.filter(function(r) {
+    if (!r.created_at) return false;
+    return r.created_at.startsWith(requestsDateFilter);
+  });
+}
+
 function renderRequestsPagination(total, page, pageSize) {
   var el = document.getElementById('requests-pagination');
   if (!el) return;
@@ -104,7 +151,8 @@ function renderRequestsPagination(total, page, pageSize) {
 }
 
 function goRequestsPage(page) {
-  var pages = Math.max(1, Math.ceil(allRequests.length / REQUESTS_PAGE_SIZE));
+  var filteredRequests = getFilteredRequests();
+  var pages = Math.max(1, Math.ceil(filteredRequests.length / REQUESTS_PAGE_SIZE));
   if (page < 1) page = 1;
   if (page > pages) page = pages;
   requestsPage = page;
@@ -114,12 +162,13 @@ function goRequestsPage(page) {
 function renderRequestsTable() {
   var tbody = document.getElementById('requests-body');
   if (!tbody) return;
-  var total = allRequests.length;
+  var filteredRequests = getFilteredRequests();
+  var total = filteredRequests.length;
   var pages = Math.max(1, Math.ceil(total / REQUESTS_PAGE_SIZE));
   if (requestsPage > pages) requestsPage = pages;
   if (requestsPage < 1) requestsPage = 1;
   var start = (requestsPage - 1) * REQUESTS_PAGE_SIZE;
-  var slice = allRequests.slice(start, start + REQUESTS_PAGE_SIZE);
+  var slice = filteredRequests.slice(start, start + REQUESTS_PAGE_SIZE);
   tbody.innerHTML = slice
     .map(function(r) {
       return (
@@ -186,8 +235,7 @@ async function deleteRequestRow(id) {
     selectedRequests.delete(String(id));
     closeDetailModal();
     updateRequestStats(allRequests);
-    var pages = Math.max(1, Math.ceil(allRequests.length / REQUESTS_PAGE_SIZE));
-    if (requestsPage > pages) requestsPage = pages;
+    renderRequestsDateFilter();
     renderRequestsTable();
   } catch (err) {
     console.error(err);
@@ -273,8 +321,7 @@ async function deleteSelectedRequests() {
     selectedRequests.clear();
     closeDetailModal();
     updateRequestStats(allRequests);
-    var pages = Math.max(1, Math.ceil(allRequests.length / REQUESTS_PAGE_SIZE));
-    if (requestsPage > pages) requestsPage = pages;
+    renderRequestsDateFilter();
     renderRequestsTable();
   } catch (err) {
     console.error(err);
@@ -288,7 +335,9 @@ async function loadRequests() {
     var data = await response.json();
     allRequests = data.data || [];
     requestsPage = 1;
+    requestsDateFilter = null;
     updateRequestStats(allRequests);
+    renderRequestsDateFilter();
     renderRequestsTable();
   } catch (err) {
     console.error('Error loading requests:', err);
@@ -308,25 +357,12 @@ async function loadContacts() {
     
     allContacts = contacts;
     contactsPage = 1;
+    contactsDateFilter = null;
+    contactsUrgencyFilter = null;
     
-    const tbody = document.getElementById('contacts-body');
-    tbody.innerHTML = contacts.map(c => `
-      <tr>
-        <td><input type="checkbox" class="contact-checkbox" value="${c.id}"${selectedContacts.has(String(c.id)) ? ' checked' : ''} onchange="updateContactSelection(this)"></td>
-        <td>#${c.id}</td>
-        <td>${formatDateColor(c.created_at)}</td>
-        <td>${escapeHtml((c.first_name || '') + ' ' + (c.last_name || ''))}</td>
-        <td>${escapeHtml(c.company || '')}</td>
-        <td>${escapeHtml(c.email || '')}</td>
-        <td>${escapeHtml(c.phone || '')}</td>
-        <td>${escapeHtml(c.reason || '')}</td>
-        <td>${escapeHtml(c.case_number || '')}</td>
-        <td>${c.deadline_date ? formatDate(c.deadline_date) : ''}</td>
-        <td>${getUrgencyBadge(c.urgency)}</td>
-        <td><span class="email-status-badge ${c.email_sent === 1 ? 'success' : c.email_sent === 0 ? 'failed' : 'pending'}">${c.email_sent === 1 ? 'Sent' : c.email_sent === 0 ? 'Failed' : 'Pending'}</span></td>
-        <td><button class="action-btn view" onclick="viewContact(${c.id})">View</button> <button class="action-btn delete" onclick="deleteContactRow(${c.id})">Delete</button></td>
-      </tr>
-    `).join('');
+    renderContactsDateFilter();
+    renderContactsUrgencyFilter();
+    renderContactsTable();
   } catch (err) {
     console.error('Error loading contacts:', err);
   }
@@ -574,6 +610,8 @@ async function deleteContactRow(id) {
     selectedContacts.delete(String(id));
     closeDetailModal();
     document.getElementById('contacts-total').textContent = allContacts.length;
+    renderContactsDateFilter();
+    renderContactsUrgencyFilter();
     renderContactsTable();
   } catch (err) {
     console.error(err);
@@ -659,6 +697,8 @@ async function deleteSelectedContacts() {
     selectedContacts.clear();
     closeDetailModal();
     document.getElementById('contacts-total').textContent = allContacts.length;
+    renderContactsDateFilter();
+    renderContactsUrgencyFilter();
     renderContactsTable();
   } catch (err) {
     console.error(err);
@@ -669,7 +709,14 @@ async function deleteSelectedContacts() {
 function renderContactsTable() {
   var tbody = document.getElementById('contacts-body');
   if (!tbody) return;
-  tbody.innerHTML = allContacts
+  var filteredContacts = getFilteredContacts();
+  var total = filteredContacts.length;
+  var pages = Math.max(1, Math.ceil(total / CONTACTS_PAGE_SIZE));
+  if (contactsPage > pages) contactsPage = pages;
+  if (contactsPage < 1) contactsPage = 1;
+  var start = (contactsPage - 1) * CONTACTS_PAGE_SIZE;
+  var slice = filteredContacts.slice(start, start + CONTACTS_PAGE_SIZE);
+  tbody.innerHTML = slice
     .map(function(c) {
       return (
         '<tr>' +
@@ -699,6 +746,12 @@ function renderContactsTable() {
         '<td>' +
         escapeHtml(c.reason || '') +
         '</td>' +
+        '<td>' +
+        escapeHtml(c.case_number || '') +
+        '</td>' +
+        '<td>' +
+        (c.deadline_date ? formatDate(c.deadline_date) : '') +
+        '</td>' +
         '<td>' + getUrgencyBadge(c.urgency) + '</td>' +
         '<td><span class="email-status-badge ' +
         (c.email_sent === 1 ? 'success' : c.email_sent === 0 ? 'failed' : 'pending') +
@@ -714,6 +767,53 @@ function renderContactsTable() {
       );
     })
     .join('');
+  renderContactsPagination(total, contactsPage, CONTACTS_PAGE_SIZE);
+}
+
+function renderContactsPagination(total, page, pageSize) {
+  var el = document.getElementById('contacts-pagination');
+  if (!el) return;
+  var pages = Math.max(1, Math.ceil(total / pageSize));
+  if (total === 0) {
+    el.innerHTML = '<span class="admin-pagination-info">No records</span>';
+    return;
+  }
+  var start = (page - 1) * pageSize + 1;
+  var end = Math.min(page * pageSize, total);
+  el.innerHTML =
+    '<span class="admin-pagination-info">Showing ' +
+    start +
+    '–' +
+    end +
+    ' of ' +
+    total +
+    '</span>' +
+    '<div class="admin-pagination-btns">' +
+    '<button type="button" class="btn-pagination"' +
+    (page <= 1 ? ' disabled' : '') +
+    ' onclick="goContactsPage(' +
+    (page - 1) +
+    ')">Previous</button>' +
+    '<span class="admin-pagination-page">Page ' +
+    page +
+    ' of ' +
+    pages +
+    '</span>' +
+    '<button type="button" class="btn-pagination"' +
+    (page >= pages ? ' disabled' : '') +
+    ' onclick="goContactsPage(' +
+    (page + 1) +
+    ')">Next</button>' +
+    '</div>';
+}
+
+function goContactsPage(page) {
+  var filteredContacts = getFilteredContacts();
+  var pages = Math.max(1, Math.ceil(filteredContacts.length / CONTACTS_PAGE_SIZE));
+  if (page < 1) page = 1;
+  if (page > pages) page = pages;
+  contactsPage = page;
+  renderContactsTable();
 }
 
 function closeDetailModal() {
@@ -753,6 +853,82 @@ function formatDateColor(dateStr) {
     hour: '2-digit', minute: '2-digit'
   });
   return '<span style="color:' + color + ';font-weight:500;">' + formatted + '</span>';
+}
+
+function getUniqueContactsDates() {
+  var dateMap = {};
+  allContacts.forEach(function(c) {
+    if (c.created_at) {
+      var d = new Date(c.created_at);
+      var key = d.toISOString().split('T')[0];
+      if (!dateMap[key]) {
+        dateMap[key] = { date: d, count: 0 };
+      }
+      dateMap[key].count++;
+    }
+  });
+  return Object.keys(dateMap).sort().reverse().slice(0, 10).map(function(k) {
+    return dateMap[k];
+  });
+}
+
+function renderContactsDateFilter() {
+  var container = document.getElementById('contacts-date-filter');
+  if (!container) return;
+  var dates = getUniqueContactsDates();
+  var html = '<button type="button" class="date-filter-btn' + (contactsDateFilter === null ? ' active' : '') + '" onclick="setContactsDateFilter(null)">All</button>';
+  dates.forEach(function(item) {
+    var label = item.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    html += '<button type="button" class="date-filter-btn' + (contactsDateFilter === item.date.toISOString() ? ' active' : '') + '" onclick="setContactsDateFilter(\'' + item.date.toISOString() + '\')">' + label + ' (' + item.count + ')</button>';
+  });
+  container.innerHTML = html;
+}
+
+function renderContactsUrgencyFilter() {
+  var container = document.getElementById('contacts-urgency-filter');
+  if (!container) return;
+  var urgencies = ['Standard', 'Elevated', 'High', 'Critical'];
+  var counts = {
+    'Standard': allContacts.filter(function(c) { return c.urgency === 'Standard'; }).length,
+    'Elevated': allContacts.filter(function(c) { return c.urgency === 'Elevated'; }).length,
+    'High': allContacts.filter(function(c) { return c.urgency === 'High'; }).length,
+    'Critical': allContacts.filter(function(c) { return c.urgency === 'Critical'; }).length
+  };
+  var html = '<button type="button" class="urgency-filter-btn' + (contactsUrgencyFilter === null ? ' active' : '') + '" onclick="setContactsUrgencyFilter(null)">All</button>';
+  urgencies.forEach(function(u) {
+    html += '<button type="button" class="urgency-filter-btn urgency-' + u.toLowerCase() + (contactsUrgencyFilter === u ? ' active' : '') + '" onclick="setContactsUrgencyFilter(\'' + u + '\')">' + u + ' (' + counts[u] + ')</button>';
+  });
+  container.innerHTML = html;
+}
+
+function setContactsUrgencyFilter(urgency) {
+  contactsUrgencyFilter = urgency;
+  contactsPage = 1;
+  renderContactsUrgencyFilter();
+  renderContactsTable();
+}
+
+function setContactsDateFilter(dateStr) {
+  contactsDateFilter = dateStr;
+  contactsPage = 1;
+  renderContactsDateFilter();
+  renderContactsTable();
+}
+
+function getFilteredContacts() {
+  var filtered = allContacts;
+  if (contactsDateFilter) {
+    filtered = filtered.filter(function(c) {
+      if (!c.created_at) return false;
+      return c.created_at.startsWith(contactsDateFilter);
+    });
+  }
+  if (contactsUrgencyFilter) {
+    filtered = filtered.filter(function(c) {
+      return c.urgency === contactsUrgencyFilter;
+    });
+  }
+  return filtered;
 }
 
 function escapeHtml(str) {
