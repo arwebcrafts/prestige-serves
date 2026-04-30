@@ -1577,11 +1577,11 @@ function saveHomeDefendant() {
   }
 
   console.log('[DEBUG saveHomeDefendant] homeDefendantsArray length:', homeDefendantsArray.length);
-  console.log('[DEBUG saveHomeDefendant] formContainer:', formContainer);
   renderHomeDefendantsList();
   closeHomeDefendantModal();
-  // Detect which form container the modal belongs to and call toggle with correct ID
-  var formContainer = document.getElementById('contact-form-container') && document.getElementById('contact-form-container').contains(document.getElementById('home-defendant-modal')) ? 'contact-form-container' : 'home-form-container';
+  // Determine which form container is active by checking which "Yes" radio is checked
+  var contactYes = document.querySelector('#contact-form-container input[name="home_multiple_defendants"][value="yes"]');
+  var formContainer = (contactYes && contactYes.checked) ? 'contact-form-container' : 'home-form-container';
   console.log('[DEBUG saveHomeDefendant] formContainer determined:', formContainer);
   toggleHomeMultiDefTextarea(formContainer);
 }
