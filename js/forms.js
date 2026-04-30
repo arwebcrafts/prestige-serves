@@ -404,6 +404,9 @@ function toggleHomeMultiDefTextarea(containerId) {
   if (isYes && homeDefendantsArray.length === 0 && typeof openHomeDefendantModal === 'function') {
     setTimeout(function() { openHomeDefendantModal(-1); }, 100);
   }
+  if (isYes && homeDefendantsArray.length > 0) {
+    renderHomeDefendantsList();
+  }
 }
 
 function syncHomeProcessServeSection(containerId) {
