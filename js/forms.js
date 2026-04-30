@@ -401,9 +401,6 @@ function toggleHomeMultiDefTextarea(containerId) {
   var isYes = yes && yes.checked;
   if (listContainer) listContainer.style.display = isYes ? 'flex' : 'none';
   if (addBtn) addBtn.style.display = isYes ? 'block' : 'none';
-  if (isYes && homeDefendantsArray.length === 0 && typeof openHomeDefendantModal === 'function') {
-    setTimeout(function() { openHomeDefendantModal(-1); }, 100);
-  }
   if (isYes && homeDefendantsArray.length > 0) {
     renderHomeDefendantsList();
   }
