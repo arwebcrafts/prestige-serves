@@ -1579,7 +1579,9 @@ function saveHomeDefendant() {
 
   renderHomeDefendantsList();
   closeHomeDefendantModal();
-  toggleHomeMultiDefTextarea();
+  // Detect which form container the modal belongs to and call toggle with correct ID
+  var formContainer = document.getElementById('contact-form-container') && document.getElementById('contact-form-container').contains(document.getElementById('home-defendant-modal')) ? 'contact-form-container' : 'home-form-container';
+  toggleHomeMultiDefTextarea(formContainer);
 }
 
 function renderHomeDefendantsList() {
