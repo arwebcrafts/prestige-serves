@@ -395,6 +395,7 @@ function initFutureDeadlineDateInputs(root) {
 
 function toggleHomeMultiDefTextarea(containerId) {
   var cid = containerId || 'home-form-container';
+  console.log('[DEBUG toggleHomeMultiDefTextarea] cid:', cid, 'homeDefendantsArray length:', homeDefendantsArray.length);
   var yes = document.querySelector('#' + cid + ' input[name="home_multiple_defendants"][value="yes"]');
   var listContainer = document.getElementById('home-defendants-list-container');
   var addBtn = document.getElementById('home-btn-add-defendant');
@@ -402,6 +403,7 @@ function toggleHomeMultiDefTextarea(containerId) {
   if (listContainer) listContainer.style.display = isYes ? 'flex' : 'none';
   if (addBtn) addBtn.style.display = isYes ? 'block' : 'none';
   if (isYes && homeDefendantsArray.length > 0) {
+    console.log('[DEBUG toggleHomeMultiDefTextarea] calling renderHomeDefendantsList');
     renderHomeDefendantsList();
   }
 }
@@ -1574,15 +1576,19 @@ function saveHomeDefendant() {
     }
   }
 
+  console.log('[DEBUG saveHomeDefendant] homeDefendantsArray length:', homeDefendantsArray.length);
+  console.log('[DEBUG saveHomeDefendant] formContainer:', formContainer);
   renderHomeDefendantsList();
   closeHomeDefendantModal();
   // Detect which form container the modal belongs to and call toggle with correct ID
   var formContainer = document.getElementById('contact-form-container') && document.getElementById('contact-form-container').contains(document.getElementById('home-defendant-modal')) ? 'contact-form-container' : 'home-form-container';
+  console.log('[DEBUG saveHomeDefendant] formContainer determined:', formContainer);
   toggleHomeMultiDefTextarea(formContainer);
 }
 
 function renderHomeDefendantsList() {
   var container = document.getElementById('home-defendants-list-container');
+  console.log('[DEBUG renderHomeDefendantsList] container:', container, 'array length:', homeDefendantsArray.length);
   if (!container) return;
   container.innerHTML = '';
   homeDefendantsArray.forEach(function(def, index) {
