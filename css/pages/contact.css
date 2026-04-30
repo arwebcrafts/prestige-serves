@@ -69,8 +69,9 @@
 #contact-form-container .home-process-extra .state-dropdown{background:#fff;}
 #contact-form-container .home-process-extra .city-option,
 #contact-form-container .home-process-extra .state-option{color:#000000;}
-#contact-form-container .home-process-extra .radio-toggle span{color:#ffffff;}
 #contact-form-container .home-process-extra .defendant-card{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);}
+#contact-form-container .home-process-extra .radio-toggle span{background-color:#f9f9f9;color:#333;border:1px solid #ddd;}
+#contact-form-container .home-process-extra .radio-toggle input:checked ~ span{background-color:#2d3a7c;color:#fff;border-color:#2d3a7c;}
 
 @media(max-width:960px){
   .contact-dark-section{display:flex !important;flex-direction:column;padding:40px 28px;gap:40px;}
