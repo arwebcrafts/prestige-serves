@@ -69,7 +69,11 @@
 #contact-form-container .home-process-extra .state-dropdown{background:#fff;}
 #contact-form-container .home-process-extra .city-option,
 #contact-form-container .home-process-extra .state-option{color:#000000;}
-#contact-form-container .home-process-extra .defendant-card{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);}
+#contact-form-container .home-process-extra .defendant-card{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-left:3px solid #2d3a7c;padding:12px 15px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+#contact-form-container .home-process-extra .defendant-info h5{font-size:14px;font-weight:600;color:#ffffff;margin:0 0 4px;}
+#contact-form-container .home-process-extra .defendant-info p{font-size:13px;color:rgba(255,255,255,0.75);margin:0;}
+#contact-form-container .home-process-extra .edit-def-btn{background:none;border:1px solid rgba(255,255,255,0.35);color:#ffffff;padding:6px 14px;border-radius:4px;font-size:13px;cursor:pointer;white-space:nowrap;}
+#contact-form-container .home-process-extra .edit-def-btn:hover{background:rgba(255,255,255,0.15);}
 #contact-form-container .home-process-extra .radio-toggle span{background-color:#f9f9f9;color:#333;border:1px solid #ddd;}
 #contact-form-container .home-process-extra .radio-toggle input:checked ~ span{background-color:#2d3a7c;color:#fff;border-color:#2d3a7c;}
 
