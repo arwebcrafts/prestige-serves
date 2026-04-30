@@ -197,7 +197,7 @@ function renderRequestsTable() {
         escapeHtml(r.phone || '') +
         '</td>' +
         '<td>' +
-        (r.service_type ? r.service_type.replace(/[^\x00-\x7F]/g, function(c) { return '&#' + c.charCodeAt(0) + ';'; }) : '') +
+        fixEncoding(r.service_type || '') +
         '</td>' +
         '<td>' +
         escapeHtml(r.case_number || '') +
@@ -398,7 +398,7 @@ async function viewRequest(id) {
         <p><strong>Defendant:</strong> ${escapeHtml(r.defendant_name || '')}</p>
         <p><strong>Case Number:</strong> ${escapeHtml(r.case_number || '')}</p>
         <p><strong>Court:</strong> ${escapeHtml(r.court_jurisdiction || '')}</p>
-        <p><strong>Service Type:</strong> ${escapeHtml((r.service_type || '').replace(/[^\x00-\x7F]/g, function(c) { return '&#' + c.charCodeAt(0) + ';'; }))}</p>
+        <p><strong>Service Type:</strong> ${fixEncoding(r.service_type || '')}</p>
         <p><strong>Deadline:</strong> ${r.deadline_date ? formatDate(r.deadline_date) : 'Not specified'}</p>
         <p><strong>Multiple Defendants:</strong> ${r.multiple_defendants ? 'Yes' : 'No'}</p>
       </div>
@@ -929,6 +929,18 @@ function getFilteredContacts() {
     });
   }
   return filtered;
+}
+
+function fixEncoding(str) {
+  if (!str) return '';
+  return str
+    .replace(/â€"/g, '—')
+    .replace(/â€"/g, '–')
+    .replace(/â€"/g, '"')
+    .replace(/â€"/g, '"')
+    .replace(/â€¢/g, '•')
+    .replace(/â€"/g, '"')
+    .replace(/â€"/g, '"');
 }
 
 function escapeHtml(str) {
