@@ -527,25 +527,155 @@
   border-left: 3px solid #1a2332;
 }
 
-/* Mobile */
+/* Mobile — Admin Dashboard */
 @media(max-width: 768px) {
+  /* Nav */
   .admin-nav {
     padding: 12px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
   }
-  
+  .admin-nav-brand {
+    font-size: 16px;
+  }
+
+  /* Container */
   .admin-container {
-    padding: 16px;
+    padding: 12px 12px 24px;
   }
-  
+
+  /* Header */
+  .admin-header h1 {
+    font-size: 24px;
+  }
+
+  /* Settings row — stack vertically on mobile */
+  .settings-section {
+    padding: 14px;
+  }
+  .settings-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .settings-row label {
+    font-size: 13px;
+  }
+  .settings-row input[type="email"] {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+  .settings-row .btn-primary {
+    width: 100%;
+    padding: 10px 16px;
+  }
+  #email-save-status {
+    margin-left: 0;
+  }
+
+  /* Tabs — horizontal scroll instead of wrapping */
+  .dashboard-tabs {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    border-bottom: 2px solid #e0e0e0;
+  }
+  .dashboard-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .tab-btn {
+    padding: 10px 18px;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  /* Stats — 2-column grid on mobile */
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    padding: 14px;
+  }
+  .stat-card h3 {
+    font-size: 28px;
+  }
+  .stat-card p {
+    font-size: 12px;
+  }
+
+  /* Table — horizontal scroll with momentum */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
   .data-table {
+    min-width: 700px;
     font-size: 11px;
   }
-  
   .data-table th, .data-table td {
     padding: 8px 10px;
   }
-  
-  .stats-grid {
-    grid-template-columns: 1fr;
+
+  /* Checkbox column touch target */
+  .data-table td:first-child,
+  .data-table th:first-child {
+    min-width: 44px;
+    text-align: center;
+  }
+
+  /* Action button touch targets */
+  .action-btn {
+    padding: 8px 10px;
+    font-size: 11px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+  }
+
+  /* Pagination */
+  .admin-pagination {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px;
+  }
+  .admin-pagination-btns {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Modal — bottom sheet on mobile */
+  .modal-overlay {
+    padding: 12px;
+    align-items: flex-end;
+  }
+  .modal-content {
+    max-width: 100%;
+    max-height: 85vh;
+    border-radius: 12px 12px 0 0;
+  }
+  .modal-header {
+    padding: 16px;
+  }
+  .modal-body {
+    padding: 16px;
+  }
+
+  /* Date + urgency filter row wrapping */
+  #requests-date-filter,
+  #contacts-date-filter,
+  #contacts-urgency-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .date-filter-btn,
+  .urgency-filter-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+    margin-right: 0;
   }
 }

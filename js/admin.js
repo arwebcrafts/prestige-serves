@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
   loadOwnerEmail();
   loadRequests();
   loadContacts();
+  makeTabsScrollable();
 });
 
 function handleLogout() {
@@ -222,6 +223,7 @@ function renderRequestsTable() {
     })
     .join('');
   renderRequestsPagination(total, requestsPage, REQUESTS_PAGE_SIZE);
+  makeTablesScrollable();
 }
 
 async function deleteRequestRow(id) {
@@ -768,6 +770,7 @@ function renderContactsTable() {
     })
     .join('');
   renderContactsPagination(total, contactsPage, CONTACTS_PAGE_SIZE);
+  makeTablesScrollable();
 }
 
 function renderContactsPagination(total, page, pageSize) {
@@ -954,6 +957,28 @@ function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
+}
+
+// Ensure tables scroll horizontally on mobile
+function makeTablesScrollable() {
+  document.querySelectorAll('.table-container').forEach(function(container) {
+    container.style.overflowX = 'auto';
+    container.style.webkitOverflowScrolling = 'touch';
+  });
+}
+
+// Ensure tab bar scrolls horizontally on mobile
+function makeTabsScrollable() {
+  var tabs = document.querySelector('.dashboard-tabs');
+  if (tabs) {
+    tabs.style.overflowX = 'auto';
+    tabs.style.whiteSpace = 'nowrap';
+    tabs.style.scrollbarWidth = 'none';
+    tabs.style.msOverflowStyle = 'none';
+    var style = document.createElement('style');
+    style.textContent = '.dashboard-tabs::-webkit-scrollbar { display: none; }';
+    document.head.appendChild(style);
+  }
 }
 
 function loadOwnerEmail() {
