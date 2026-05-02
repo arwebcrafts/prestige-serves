@@ -218,3 +218,28 @@
   border-color: #1a2332;
   box-shadow: 0 2px 8px rgba(26, 35, 50, 0.2);
 }
+
+/* Skip Trace Modal — responsive */
+@media (max-width: 600px) {
+  #skip-trace-modal .modal-content { max-width: 100%; }
+  #skip-trace-modal .modal-overlay { padding: 0; align-items: flex-end; }
+  #skip-trace-modal .modal-body { padding: 0; }
+  #skip-trace-modal .skip-trace-modal-wrap { max-height: 90vh; }
+
+  .skip-trace-grid { grid-template-columns: 1fr !important; }
+  .skip-trace-grid .field.full-width { grid-column: 1 / -1; }
+
+  .svc-card { margin-bottom: 0; }
+
+  .skip-trace-footer { flex-direction: column; gap: 12px; align-items: stretch; }
+  .skip-trace-footer p { max-width: 100%; }
+  .skip-trace-footer-btns { justify-content: stretch; }
+  .skip-trace-footer-btns button { width: 100%; text-align: center; }
+}
+
+@media (max-width: 420px) {
+  .skip-trace-modal-header h2 { font-size: 22px; }
+  .skip-trace-section-header { font-size: 10px !important; padding: 8px 14px !important; }
+  .skip-trace-section-body { padding: 14px !important; gap: 10px !important; }
+  .skip-trace-upload-area { padding: 16px 12px !important; }
+}

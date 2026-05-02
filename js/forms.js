@@ -37,7 +37,7 @@ function openSkipTraceModal() {
   // Inject skip trace form HTML — mirrors skip-trace-intake-form.html
   body.innerHTML = `
     <div style="background:#fff;border-radius:6px;overflow:hidden;max-height:85vh;overflow-y:auto;">
-      <div style="background:#f5f4f1;padding:20px 28px;border-bottom:1px solid #d5d2cc;">
+      <div style="background:#f5f4f1;padding:20px 28px;border-bottom:1px solid #d5d2cc;" class="skip-trace-modal-header">
         <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#2d3a7c;font-weight:500;margin-bottom:8px;">✦ Skip Trace Intake</div>
         <h2 style="font-size:28px;font-weight:300;margin:0 0 6px;letter-spacing:-.01em;">Skip Trace Request</h2>
         <p style="font-size:14px;color:#666;font-style:italic;margin:0;">FCRA permissible purpose required. Fields marked * are required. Conditional fields appear based on service type selected.</p>
@@ -46,8 +46,8 @@ function openSkipTraceModal() {
 
         <!-- Section 01: Client -->
         <div style="border:1px solid #d5d2cc;border-radius:4px;margin-bottom:18px;overflow:hidden;">
-          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;">01 — Client / Requester Information</div>
-          <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;" class="skip-trace-section-header">01 — Client / Requester Information</div>
+          <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;" class="skip-trace-grid">
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Full Name <span style="color:#999">*</span></label><input type="text" id="st-fullname" placeholder="Jane Smith" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Company / Firm</label><input type="text" id="st-company" placeholder="Acme Collections LLC" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Email <span style="color:#999">*</span></label><input type="email" id="st-email" placeholder="jane@firm.com" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
@@ -70,8 +70,8 @@ function openSkipTraceModal() {
 
         <!-- Section 02: Service Type -->
         <div style="border:1px solid #d5d2cc;border-radius:4px;margin-bottom:18px;overflow:hidden;">
-          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;">02 — Service Type <span style="color:#999">*</span></div>
-          <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;" class="skip-trace-section-header">02 — Service Type <span style="color:#999">*</span></div>
+          <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;" class="skip-trace-grid skip-trace-section-body">
             <label class="svc-card" onclick="selectModalService(this,'standard')" style="border:1px solid #d5d2cc;border-radius:6px;padding:16px;cursor:pointer;transition:border-color .2s,background .2s;display:block;background:#fff;">
               <input type="radio" name="st-service" value="standard" style="display:none;">
               <div style="font-size:15px;font-weight:600;margin-bottom:4px;color:#1a1a1a;">Standard Skip Trace</div>
@@ -107,15 +107,15 @@ function openSkipTraceModal() {
 
         <!-- Section 03: Subject Information -->
         <div style="border:1px solid #d5d2cc;border-radius:4px;margin-bottom:18px;overflow:hidden;">
-          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;">03 — Subject Information</div>
-          <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;" class="skip-trace-section-header">03 — Subject Information</div>
+          <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;" class="skip-trace-grid">
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">First Name <span style="color:#999">*</span></label><input type="text" id="st-first" placeholder="John" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Last Name <span style="color:#999">*</span></label><input type="text" id="st-last" placeholder="Doe" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Middle Name</label><input type="text" id="st-middle" placeholder="Optional" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Maiden Name / Aliases</label><input type="text" id="st-aliases" placeholder="Former names, nicknames" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Date of Birth <span style="color:#999">*</span></label><input type="date" id="st-dob" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Last Known Phone</label><input type="tel" id="st-phone2" placeholder="609-240-5665" pattern="\d{3}-\d{3}-\d{4}" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
-            <div class="field" style="grid-column:1/-1;"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Last Known Address <span style="color:#999">*</span></label><input type="text" id="st-address" placeholder="Street, city, state, zip" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field full-width"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Last Known Address <span style="color:#999">*</span></label><input type="text" id="st-address" placeholder="Street, city, state, zip" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Last Known Email</label><input type="email" id="st-email2" placeholder="subject@email.com" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Social Media Handles</label><input type="text" id="st-social" placeholder="@username / platform" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <!-- Extended fields (shown conditionally) -->
@@ -125,8 +125,8 @@ function openSkipTraceModal() {
 
         <!-- Section 04: Case Details -->
         <div style="border:1px solid #d5d2cc;border-radius:4px;margin-bottom:18px;overflow:hidden;">
-          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;">04 — Case Details</div>
-          <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;" class="skip-trace-section-header">04 — Case Details</div>
+          <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;" class="skip-trace-grid">
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Purpose of Search <span style="color:#999">*</span></label>
               <select id="st-purpose" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;background:#fff;">
                 <option value="">Select...</option>
@@ -155,7 +155,7 @@ function openSkipTraceModal() {
                 <option value="yes">Yes — see notes below</option>
               </select>
             </div>
-            <div class="field" style="grid-column:1/-1;"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Additional Notes / Known Information</label>
+            <div class="field full-width"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Additional Notes / Known Information</label>
               <textarea id="st-notes" placeholder="Known relatives, employers, vehicles, frequented locations, prior addresses..." style="font-family:var(--serif);font-size:15px;padding:12px 16px;border:1px solid #d5d2cc;border-radius:10px;outline:none;width:100%;box-sizing:border-box;min-height:72px;resize:vertical;"></textarea>
             </div>
           </div>
@@ -163,9 +163,9 @@ function openSkipTraceModal() {
 
         <!-- Section 05: Document Upload -->
         <div style="border:1px solid #d5d2cc;border-radius:4px;margin-bottom:18px;overflow:hidden;">
-          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;">05 — Supporting Documents</div>
-          <div style="padding:20px;">
-            <div onclick="document.getElementById('st-files').click()" style="border:1.5px dashed #d5d2cc;border-radius:6px;background:#fff;padding:24px;text-align:center;cursor:pointer;transition:border-color .2s;" onmouseover="this.style.borderColor='#2d3a7c'" onmouseout="this.style.borderColor='#d5d2cc'">
+          <div style="background:#f5f4f1;padding:10px 20px;border-bottom:1px solid #d5d2cc;font-size:11px;font-weight:500;color:#2d3a7c;letter-spacing:.1em;text-transform:uppercase;" class="skip-trace-section-header">05 — Supporting Documents</div>
+          <div style="padding:20px;" class="skip-trace-section-body">
+            <div onclick="document.getElementById('st-files').click()" style="border:1.5px dashed #d5d2cc;border-radius:6px;background:#fff;padding:24px;text-align:center;cursor:pointer;transition:border-color .2s;" class="skip-trace-upload-area" onmouseover="this.style.borderColor='#2d3a7c'" onmouseout="this.style.borderColor='#d5d2cc'">
               <input type="file" id="st-files" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" style="display:none;" onchange="handleModalFiles(this.files)">
               <div style="color:#666;font-size:14px;margin-bottom:4px;">Click to upload or drag files here</div>
               <div style="color:#999;font-size:12px;font-style:italic;">PDF, DOC, JPG, PNG — prior reports, court orders, subpoenas, ID verification</div>
@@ -201,11 +201,11 @@ function openSkipTraceModal() {
           </div>
         </div>
 
-        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid #d5d2cc;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid #d5d2cc;" class="skip-trace-footer">
           <p style="font-size:12px;color:#888;font-style:italic;max-width:380px;line-height:1.6;margin:0;">By submitting this form you acknowledge all compliance certifications above. Skip trace form must be completed before submitting.</p>
-          <div style="display:flex;gap:10px;">
+          <div style="display:flex;gap:10px;" class="skip-trace-footer-btns">
             <button type="button" onclick="closeSkipTraceModal()" style="font-family:var(--serif);font-size:13px;color:#666;background:none;border:1.5px solid #d5d2cc;border-radius:100px;padding:11px 22px;cursor:pointer;letter-spacing:.03em;">Cancel</button>
-            <button type="button" onclick="saveSkipTraceForm()" style="font-family:var(--serif);font-size:14px;font-weight:400;background:#2d3a7c;color:#fff;border:none;border-radius:100px;padding:13px 28px;cursor:pointer;letter-spacing:.04em;white-space:nowrap;">Save & Continue</button>
+            <button type="button" onclick="saveSkipTraceForm()" style="font-family:var(--serif);font-size:14px;font-weight:400;background:#2d3a7c;color:#fff;border:none;border-radius:100px;padding:13px 28px;cursor:pointer;letter-spacing:.04em;white-space:nowrap;">Save &amp; Continue</button>
           </div>
         </div>
       </div>
