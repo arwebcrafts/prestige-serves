@@ -356,6 +356,8 @@ function saveSkipTraceForm() {
 
 function initHomeSkipTraceSection(containerId) {
   var cid = containerId || 'home-form-container';
+  // request.html uses #request-form instead of #home-form-container
+  if (!document.querySelector('#' + cid)) cid = 'request-form';
   var sel = document.querySelector('#' + cid + ' select[name="serviceType"]');
   if (!sel) return;
   sel.addEventListener('change', function() {
@@ -395,6 +397,7 @@ function initFutureDeadlineDateInputs(root) {
 
 function toggleHomeMultiDefTextarea(containerId) {
   var cid = containerId || 'home-form-container';
+  if (!document.querySelector('#' + cid)) cid = 'request-form';
   console.log('[DEBUG toggleHomeMultiDefTextarea] cid:', cid, 'homeDefendantsArray length:', homeDefendantsArray.length);
   var yes = document.querySelector('#' + cid + ' input[name="home_multiple_defendants"][value="yes"]');
   var listContainer = document.getElementById('home-defendants-list-container');
@@ -410,6 +413,7 @@ function toggleHomeMultiDefTextarea(containerId) {
 
 function syncHomeProcessServeSection(containerId) {
   var cid = containerId || 'home-form-container';
+  if (!document.querySelector('#' + cid)) cid = 'request-form';
   var wrap = document.getElementById('home-process-extra');
   var sel = document.querySelector('#' + cid + ' select[name="serviceType"]');
   if (!wrap || !sel) return;
@@ -429,6 +433,8 @@ function syncHomeProcessServeSection(containerId) {
 
 function initHomeProcessServeSection(containerId) {
   var cid = containerId || 'home-form-container';
+  // request.html uses #request-form instead of #home-form-container
+  if (!document.querySelector('#' + cid)) cid = 'request-form';
   var sel = document.querySelector('#' + cid + ' select[name="serviceType"]');
   if (!sel) return;
   var wrap = document.getElementById('home-process-extra');

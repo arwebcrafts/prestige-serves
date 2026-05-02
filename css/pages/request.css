@@ -220,6 +220,53 @@
 }
 
 /* Skip Trace Modal — responsive */
+#request-form .home-process-extra {
+  margin-top: 8px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+#request-form .home-process-extra .form-hint {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+#request-form .home-process-extra .defendant-card {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-left: 4px solid #1a2332;
+  padding: 15px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#request-form .home-process-extra .defendant-info h5 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+#request-form .home-process-extra .defendant-info p {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+}
+
+#request-form .home-process-extra .edit-def-btn {
+  background: none;
+  border: 1px solid #ccc;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+#request-form .home-process-extra .edit-def-btn:hover {
+  background: #eee;
+}
+
 @media (max-width: 600px) {
   #skip-trace-modal .modal-content { max-width: 100%; }
   #skip-trace-modal .modal-overlay { padding: 0; align-items: flex-end; }
