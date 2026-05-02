@@ -284,9 +284,46 @@
   .skip-trace-footer-btns button { width: 100%; text-align: center; }
 }
 
+/* Defendant Modal — responsive */
+#defendant-modal .modal-overlay {
+  padding: 0;
+  align-items: flex-end;
+}
+
+#defendant-modal .modal-content {
+  max-width: 100%;
+  border-radius: 16px 16px 0 0;
+  max-height: 92vh;
+  overflow-y: auto;
+}
+
+#defendant-modal .modal-body {
+  padding: 20px;
+}
+
+#defendant-modal .modal-body [style*="grid-template-columns:1fr 1fr 1fr"] {
+  grid-template-columns: 1fr !important;
+}
+
+#defendant-modal .modal-body [style*="grid-template-columns:1fr 1fr"] {
+  grid-template-columns: 1fr !important;
+}
+
 @media (max-width: 420px) {
   .skip-trace-modal-header h2 { font-size: 22px; }
   .skip-trace-section-header { font-size: 10px !important; padding: 8px 14px !important; }
   .skip-trace-section-body { padding: 14px !important; gap: 10px !important; }
   .skip-trace-upload-area { padding: 16px 12px !important; }
+}
+
+@media (min-width: 601px) {
+  #defendant-modal .modal-overlay {
+    align-items: center;
+  }
+
+  #defendant-modal .modal-content {
+    border-radius: 8px;
+    max-width: 600px;
+    max-height: 90vh;
+  }
 }
