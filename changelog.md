@@ -181,11 +181,11 @@
 - Mobile responsive styles for skip-tracing page sections (When Skip Tracing Is Recommended, Pricing, What We Need from You, Important Notes, FAQ)
 
 ### Changed
-- Removed dark overlay (`.ps-hero-overlay`) from hero images on all service pages (`process-serving.html`, `nationwide.html`, `erecording.html`, `efiling.html`, `concierge.html`)
+- Removed dark overlay (`.ps-hero-overlay`) from hero images on all service pages (`process-serving.html`, `nationwide.html`, `e-Recording.html`, `efiling.html`, `concierge.html`)
 - Updated contact hero text color to `--accent-gold` with bold font weight
 - Changed "Request Process Serving" nav link to "Book a Service" across all 13 HTML pages
 - Updated Service Type dropdown options in `request.html` and `forms.js` to skip tracing options (Standard Skip Trace $75, Enhanced Trace $150, Rush Trace $225, Business/Agent Verification $95, Court-Ready Skip Trace Report $250)
-- Increased side padding on grid sections (courts, counties, states, who-we-serve) on mobile view across `efiling.css`, `erecording.css`, `nationwide.css`, `concierge.css`
+- Increased side padding on grid sections (courts, counties, states, who-we-serve) on mobile view across `efiling.css`, `e-Recording.css`, `nationwide.css`, `concierge.css`
 
 ### Fixed
 - Contact nav link (`li:last-child`) was hidden on mobile/tablet — removed `display:none` rule from `global.css`
@@ -255,7 +255,7 @@
 - `toggleMobileNav()` JavaScript function in `js/ui.js` for mobile menu toggle
 - Mobile nav overlay with stacked menu items and full-screen coverage
 - Mobile-specific styles for hero sections, services grids, pricing, testimonials, forms, and footer
-- Additional mobile styles for all page-specific CSS files (about, services, request, payment, process-serving, contact, concierge, efiling, erecording, nationwide, skip-tracing, home)
+- Additional mobile styles for all page-specific CSS files (about, services, request, payment, process-serving, contact, concierge, efiling, e-Recording, nationwide, skip-tracing, home)
 
 ### Changed
 - All grid layouts (hero, pricing, testimonials, contact, coverage) now stack vertically on mobile
@@ -338,7 +338,7 @@
 - Added PayPal button container to `payment.html` (placeholder div for client's own PayPal button code)
 - Initialized git repo and pushed to GitHub (https://github.com/arwebcrafts/prestige-serves)
 - Made service icon boxes on `services.html` clickable with light blue hover effect (`#d0e4f7`)
-- Service boxes route to `process-serving.html` (Service of Process, eFiling, eRecording, Nationwide, Concierge) or `skip-tracing.html` (Skip Tracing)
+- Service boxes route to `process-serving.html` (Process Serving, eFiling, e-Recording, Nationwide, Concierge) or `skip-tracing.html` (Skip Tracing)
 - "Request Process Serving" nav link now routes to `services.html` (all services page) for service selection before request form
 - Simplified home page contact section — "Prestige Serves" in gold with tagline in white, form on right
 - Form labels and inputs on dark backgrounds now use white text for legibility

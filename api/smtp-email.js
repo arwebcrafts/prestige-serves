@@ -7,7 +7,7 @@ const HOSTINGER_SMTP_SECURE = process.env.HOSTINGER_SMTP_SECURE === 'true' || tr
 const HOSTINGER_SMTP_USER = process.env.HOSTINGER_SMTP_USER;
 const HOSTINGER_SMTP_PASS = process.env.HOSTINGER_SMTP_PASS;
 const FROM_EMAIL = process.env.FROM_EMAIL || HOSTINGER_SMTP_USER;
-const TO_EMAIL = process.env.TO_EMAIL || 'prestigeservesllc@gmail.com';
+const TO_EMAIL = process.env.TO_EMAIL || 'info@prestigeserves.com ';
 
 let transporter = null;
 

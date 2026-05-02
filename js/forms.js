@@ -93,7 +93,7 @@ function openSkipTraceModal() {
             <label class="svc-card" onclick="selectModalService(this,'process')" style="border:1px solid #d5d2cc;border-radius:6px;padding:16px;cursor:pointer;transition:border-color .2s,background .2s;display:block;background:#fff;">
               <input type="radio" name="st-service" value="process" style="display:none;">
               <div style="font-size:15px;font-weight:600;margin-bottom:4px;color:#1a1a1a;">Process Server Locate</div>
-              <div style="font-size:12.5px;color:#666;margin-bottom:10px;line-height:1.5;">Rapid current-address confirmation for same-day or next-day service of process.</div>
+              <div style="font-size:12.5px;color:#666;margin-bottom:10px;line-height:1.5;">Rapid current-address confirmation for same-day or next-day Process Serving.</div>
               <span style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;background:#fce8e8;color:#c0392b;border:1px solid #e8b4b4;"><span style="width:5px;height:5px;border-radius:50%;background:#c0392b;"></span>Critical Priority</span>
             </label>
           </div>
@@ -1021,7 +1021,7 @@ const reasonOptions = [
   'Process Serving',
   'Concierge',
   'eFiling',
-  'eRecording',
+  'e-Recording',
   'Nationwide',
   'Skip Tracing',
   'All Services',

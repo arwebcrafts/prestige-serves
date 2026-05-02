@@ -1,4 +1,4 @@
-/* erecording.css — eRecording page specific styles */
+/* e-Recording.css — e-Recording page specific styles */
 
 /* Hero: 550px band, image fills frame (no side gutters) */
 .ps-hero{
@@ -81,7 +81,7 @@
   .ps-hero-content{padding:40px 28px;}
 }
 
-/* MOBILE — erecording */
+/* MOBILE — e-Recording */
 @media(max-width:768px){
   .ps-hero{
     height:min(550px,85vh);

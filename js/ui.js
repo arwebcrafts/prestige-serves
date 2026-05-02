@@ -164,10 +164,10 @@ function proceedToCheckout() {
     if (url && url.indexOf('REPLACE') === -1) {
       window.open(url, '_blank');
     } else {
-      alert('Checkout link not yet configured.\nPlease contact: prestigeservesllc@gmail.com\nor call 609-240-5665 to complete your order.');
+      alert('Checkout link not yet configured.\nPlease contact: info@prestigeserves.com \nor call 609-240-5665 to complete your order.');
     }
   } else {
-    alert('Please contact us at prestigeservesllc@gmail.com or call 609-240-5665 to complete your order.');
+    alert('Please contact us at info@prestigeserves.com  or call 609-240-5665 to complete your order.');
   }
 }
 
@@ -269,10 +269,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // Process Serving FAQ
   if (document.getElementById('ps-faq')) {
     buildFAQ('ps-faq', [
-      {q:"What exactly is 'Service of Process'?",a:"Service of process is the legal procedure of delivering documents (like a summons, complaint, or subpoena) to a defendant or witness to notify them of legal action. It is a constitutional requirement to ensure 'due process' so the other party has a chance to respond."},
+      {q:"What exactly is 'Process Serving'?",a:"Process Serving is the legal procedure of delivering documents (like a summons, complaint, or subpoena) to a defendant or witness to notify them of legal action. It is a constitutional requirement to ensure 'due process' so the other party has a chance to respond."},
       {q:"How much does a process server cost in Los Angeles?",a:"Rates vary based on the location and speed of service required. Our Routine LA service starts at competitive rates. Contact us for a free quote."},
       {q:"What happens if the defendant avoids service?",a:"We utilize advanced techniques to effectuate service on evasive individuals, including surveillance (stakeouts) and comprehensive background checks to verify active addresses."},
-      {q:"Is your service valid for California courts?",a:"Yes. All our servers are registered and bonded in accordance with California law, ensuring that your service of process will be upheld by the judge."},
+      {q:"Is your service valid for California courts?",a:"Yes. All our servers are registered and bonded in accordance with California law, ensuring that your Process Serving will be upheld by the judge."},
       {q:"Do you serve nationwide or just in Los Angeles?",a:"We are based in Los Angeles but handle service across the entire United States. For nationwide jobs, we act as your project manager, utilizing our vetted network of affiliates."},
       {q:"Logistics & Turnaround Times",a:"<strong>Standard:</strong> First attempt within 5–7 business days with 3 attempts.<br><strong>Rush:</strong> First attempt within 3 business days with 2–3 attempts.<br><strong>Priority:</strong> First attempt within 2 business days.<br><strong>Emergency:</strong> Immediate dispatch."},
       {q:"How many attempts do I get?",a:"Our standard fee includes up to 3 attempts at a single address. We make attempts at different times of day (morning, afternoon, evening) and usually one weekend attempt to maximize the chances of contact."},

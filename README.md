@@ -4,7 +4,7 @@ Professional process serving website for Prestige Serves LLC, a premium litigati
 
 ## Overview
 
-This is a multi-page static website for Prestige Serves LLC, providing information about their services including process serving, skip tracing, eFiling, eRecording, and legal courier services across Los Angeles.
+This is a multi-page static website for Prestige Serves LLC, providing information about their services including process serving, skip tracing, eFiling, e-Recording, and legal courier services across Los Angeles.
 
 ## Getting Started
 
@@ -45,8 +45,8 @@ prestige-serves/
 
 ## Services
 
-- **Service of Process** — California-focused document delivery
-- **eFiling / eRecording** — Court filing and recording services
+- **Process Serving** — California-focused document delivery
+- **eFiling / e-Recording** — Court filing and recording services
 - **Skip Tracing** — Locate individuals or business agents
 - **Nationwide Service** — Document service across the US
 - **Concierge** — Full-service litigation support
@@ -82,7 +82,7 @@ To add PayPal payments, paste your PayPal hosted button code into the `<div id="
 1240 S Corning Street, Suite 105
 Los Angeles, CA 90035
 
-Email: prestigeservesllc@gmail.com
+Email: info@prestigeserves.com 
 Phone: 609-240-5665
 
 ## Tech Stack

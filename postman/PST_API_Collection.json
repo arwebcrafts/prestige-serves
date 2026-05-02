@@ -1,0 +1,281 @@
+{
+	"info": {
+		"name": "PST API - Prestige Serves",
+		"description": "PST API collection for Prestige Serves project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "pst_base_url",
+			"value": "https://pstapi.dbsinfo.com",
+			"type": "string"
+		},
+		{
+			"key": "pst_username",
+			"value": "ApiUserPRB",
+			"type": "string"
+		},
+		{
+			"key": "pst_password",
+			"value": "f801-0aA^C3A92eB28eB",
+			"type": "string"
+		},
+		{
+			"key": "pst_dbscode",
+			"value": "PRB",
+			"type": "string"
+		},
+		{
+			"key": "pst_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{pst_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "1. Get Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    var jsonData = pm.response.json();",
+							"    pm.collectionVariables.set('pst_token', jsonData.access_token);",
+							"    pm.environment.set('pst_token', jsonData.access_token);",
+							"    console.log('Token obtained:', jsonData.access_token.substring(0, 20) + '...');",
+							"}",
+							"",
+							"pm.test('Status is 200', function() {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has access_token', function() {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('access_token');",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "apiusername",
+							"value": "{{pst_username}}",
+							"type": "text"
+						},
+						{
+							"key": "apipassword",
+							"value": "{{pst_password}}",
+							"type": "text"
+						},
+						{
+							"key": "dbscode",
+							"value": "{{pst_dbscode}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{pst_base_url}}/token",
+					"host": ["{{pst_base_url}}"],
+					"path": ["token"]
+				}
+			}
+		},
+		{
+			"name": "2. Search Entities",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{pst_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "*/*"
+					}
+				],
+				"url": {
+					"raw": "{{pst_base_url}}/entities?SearchText=muhammadwaqar.sikandar%40gmail.com&EntityType=Client&ActiveOnly=true",
+					"host": ["{{pst_base_url}}"],
+					"path": ["entities"],
+					"query": [
+						{
+							"key": "SearchText",
+							"value": "muhammadwaqar.sikandar@gmail.com"
+						},
+						{
+							"key": "EntityType",
+							"value": "Client"
+						},
+						{
+							"key": "ActiveOnly",
+							"value": "true"
+						}
+					]
+				}
+			}
+		},
+		{
+			"name": "3. Get Entity by ID",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{pst_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "*/*"
+					}
+				],
+				"url": {
+					"raw": "{{pst_base_url}}/entities/2",
+					"host": ["{{pst_base_url}}"],
+					"path": ["entities", "2"]
+				}
+			}
+		},
+		{
+			"name": "4. Create Entity",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{pst_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Entity\": {\n        \"FirmName\": \"Test Company\",\n        \"FirstName\": \"John\",\n        \"LastName\": \"Doe\",\n        \"EmailAddress\": \"john.doe@example.com\",\n        \"Phone\": \"555-123-4567\",\n        \"City\": \"Los Angeles\",\n        \"State\": \"CA\",\n        \"IsClient\": true,\n        \"IsAttorney\": false,\n        \"IsServer\": false,\n        \"ClientActive\": true,\n        \"ServerActive\": false\n    }\n}"
+				},
+				"url": {
+					"raw": "{{pst_base_url}}/entities",
+					"host": ["{{pst_base_url}}"],
+					"path": ["entities"]
+				}
+			}
+		},
+		{
+			"name": "5. Search Jobs",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{pst_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "*/*"
+					}
+				],
+				"url": {
+					"raw": "{{pst_base_url}}/jobs",
+					"host": ["{{pst_base_url}}"],
+					"path": ["jobs"]
+				}
+			}
+		},
+		{
+			"name": "6. Create Job",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{pst_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Job\": {\n        \"ClientSerialNumber\": 2,\n        \"DocumentsToServe\": \"Summons and Complaint\",\n        \"ReceivedDateTime\": \"2026-04-30\",\n        \"Priority\": \"Standard\",\n        \"PartyToBeServed\": {\n            \"FirstName\": \"Jane\",\n            \"LastName\": \"Smith\",\n            \"AddressType\": \"Home\",\n            \"Address1\": \"123 Main St\",\n            \"City\": \"Los Angeles\",\n            \"State\": \"CA\",\n            \"Zip\": \"90001\"\n        },\n        \"CreateServeeDetails\": [{\n            \"FirstName\": \"Jane\",\n            \"LastName\": \"Smith\",\n            \"Address1\": \"123 Main St\",\n            \"City\": \"Los Angeles\",\n            \"State\": \"CA\",\n            \"Zip\": \"90001\",\n            \"PartyType\": \"NaturalPerson\",\n            \"IsActualService\": true\n        }]\n    }\n}"
+				},
+				"url": {
+					"raw": "{{pst_base_url}}/jobs",
+					"host": ["{{pst_base_url}}"],
+					"path": ["jobs"]
+				}
+			}
+		}
+	]
+}
