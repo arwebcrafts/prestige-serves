@@ -875,10 +875,14 @@ function handleRequestSubmit(event) {
   const formData = new FormData(form);
   formData.set('city', cityValue || '');
   formData.set('state', stateValue || '');
-  formData.set('multiple_defendants', form.querySelector('input[name="multiple_defendants"][value="yes"]')?.checked ? 'true' : 'false');
+  // Check both the original multiple_defendants toggle and the home_process_extra toggle
+  const isMultiDef = form.querySelector('input[name="home_multiple_defendants"][value="yes"]')?.checked || form.querySelector('input[name="multiple_defendants"][value="yes"]')?.checked;
+  formData.set('multiple_defendants', isMultiDef ? 'true' : 'false');
   
-  if (defendantsArray.length > 0) {
-    formData.set('defendantsData', JSON.stringify(defendantsArray));
+  // Merge defendants from both arrays (homeDefendantsArray from #home-process-extra, defendantsArray from original modal)
+  var allDefendants = [...defendantsArray, ...homeDefendantsArray];
+  if (allDefendants.length > 0) {
+    formData.set('defendantsData', JSON.stringify(allDefendants));
   }
 
   fetch('/api/request', {
@@ -904,13 +908,22 @@ function handleRequestSubmit(event) {
       // TEMP DISABLED FOR DEBUG: if (stripeLinks[serviceType]) { setTimeout(() => { window.location.href = stripeLinks[serviceType]; }, 1500); }
       form.reset();
       defendantsArray = [];
+      homeDefendantsArray = [];
       renderDefendantsList();
+      renderHomeDefendantsList();
       document.getElementById('defendants-list-container').style.display = 'none';
       document.getElementById('btn-add-defendant').style.display = 'none';
-      document.querySelector('input[name="multiple_defendants"][value="no"]').checked = true;
+      document.getElementById('home-defendants-list-container').style.display = 'none';
+      document.getElementById('home-btn-add-defendant').style.display = 'none';
+      document.querySelector('input[name="home_multiple_defendants"][value="no"]').checked = true;
+      var origNo = document.querySelector('input[name="multiple_defendants"][value="no"]');
+      if (origNo) origNo.checked = true;
       document.getElementById('file-list').innerHTML = '';
       const uploadText = document.getElementById('file-upload-text');
       if (uploadText) uploadText.textContent = '+ Add a File';
+      // Also hide #home-process-extra after reset
+      var reqExtra = document.getElementById('home-process-extra');
+      if (reqExtra) reqExtra.style.display = 'none';
     }
   })
   .catch(err => console.error('Request submission error:', err));
