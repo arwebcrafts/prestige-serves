@@ -99,7 +99,7 @@
     <div class="form-group"><label>Client / Firm Name <span class="req">(required)</span></label><input type="text" name="clientName" required></div>
     <div class="form-group"><label>Contact Name <span class="req">(required)</span></label><input type="text" name="contactName" required></div>
     <div class="form-group"><label>Email Address <span class="req">(required)</span></label><input type="email" name="email" required></div>
-    <div class="form-group"><label>Phone Number <span class="req">(required)</span></label><input type="tel" name="phone" required></div>
+    <div class="form-group"><label>Phone Number <span class="req">(required)</span></label><input type="tel" name="phone" placeholder="609-240-5665" pattern="\d{3}-\d{3}-\d{4}" required></div>
     <div class="form-group">
       <label>Service Address <span class="req">(required)</span></label>
       <input type="text" name="addressLine1" placeholder="Address Line 1" style="margin-bottom:8px;">
@@ -240,7 +240,7 @@
         </div>
         <div class="form-group">
           <label>Phone Number</label>
-          <input type="tel" id="def-phone" placeholder="+1 000 000 0000">
+          <input type="tel" id="def-phone" placeholder="609-240-5665" pattern="\d{3}-\d{3}-\d{4}">
         </div>
       </div>
       <div class="form-group">

@@ -88,6 +88,26 @@ document.addEventListener('DOMContentLoaded', function() {
     initHomeProcessServeSection();
     initHomeFileUploadPreview();
     initHomeSkipTraceSection();
+    initPhoneAutoFormat();
     console.log('All home form init done');
   }
 });
+
+function initPhoneAutoFormat() {
+  document.querySelectorAll('input[type="tel"]').forEach(function(input) {
+    // Only auto-format inputs with a pattern set (our xxx-xxx-xxxx format)
+    if (!input.hasAttribute('pattern') || input.getAttribute('pattern') !== '\\d{3}-\\d{3}-\\d{4}') return;
+    input.addEventListener('input', function(e) {
+      var raw = e.target.value.replace(/\D/g, '').substring(0, 10);
+      if (raw.length >= 6) {
+        e.target.value = raw.substring(0, 3) + '-' + raw.substring(3, 6) + '-' + raw.substring(6);
+      } else if (raw.length >= 4) {
+        e.target.value = raw.substring(0, 3) + '-' + raw.substring(3);
+      } else if (raw.length > 0) {
+        e.target.value = raw;
+      } else {
+        e.target.value = '';
+      }
+    });
+  });
+}
