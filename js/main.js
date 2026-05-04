@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initHomeFileUploadPreview();
     initHomeSkipTraceSection();
     initPhoneAutoFormat();
+    initPhoneAutoFormatObserver();
     console.log('All home form init done');
   }
 });
@@ -112,6 +113,9 @@ function initPhoneAutoFormat() {
   document.querySelectorAll('input[type="tel"]').forEach(function(input) {
     // Only auto-format inputs with our xxx-xxx-xxxx pattern
     if (!input.hasAttribute('pattern') || input.getAttribute('pattern') !== '\\d{3}-\\d{3}-\\d{4}') return;
+    // Skip if already has listeners (avoid duplicates)
+    if (input.dataset.phoneFormatted) return;
+    input.dataset.phoneFormatted = '1';
 
     // Format on input (real-time typing)
     input.addEventListener('input', function(e) {
@@ -125,5 +129,40 @@ function initPhoneAutoFormat() {
         e.target.value = formatted;
       }
     });
+  });
+}
+
+// Watch for dynamically added phone inputs (e.g., skip-trace modal) and apply formatting
+function initPhoneAutoFormatObserver() {
+  if (!MutationObserver) return;
+  var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      mutation.addedNodes.forEach(function(node) {
+        if (node.nodeType !== 1) return;
+        if (node.tagName === 'INPUT' && node.type === 'tel' && node.hasAttribute('pattern')) {
+          applyPhoneFormatToInput(node);
+        }
+        var inputs = node.querySelectorAll ? node.querySelectorAll('input[type="tel"][pattern]') : [];
+        inputs.forEach(function(input) {
+          if (!input.dataset.phoneFormatted) applyPhoneFormatToInput(input);
+        });
+      });
+    });
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
+function applyPhoneFormatToInput(input) {
+  if (!input.hasAttribute('pattern') || input.getAttribute('pattern') !== '\\d{3}-\\d{3}-\\d{4}') return;
+  if (input.dataset.phoneFormatted) return;
+  input.dataset.phoneFormatted = '1';
+  input.addEventListener('input', function(e) {
+    e.target.value = formatPhoneValue(e.target.value);
+  });
+  input.addEventListener('blur', function(e) {
+    var formatted = formatPhoneValue(e.target.value);
+    if (formatted !== e.target.value) {
+      e.target.value = formatted;
+    }
   });
 }
