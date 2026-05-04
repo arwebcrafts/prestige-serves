@@ -88,10 +88,12 @@ document.addEventListener('DOMContentLoaded', function() {
     initHomeProcessServeSection();
     initHomeFileUploadPreview();
     initHomeSkipTraceSection();
-    initPhoneAutoFormat();
-    initPhoneAutoFormatObserver();
     console.log('All home form init done');
   }
+
+  // Phone auto-format runs on ALL pages — independent of home-form-container
+  initPhoneAutoFormat();
+  initPhoneAutoFormatObserver();
 });
 
 function formatPhoneValue(raw) {
