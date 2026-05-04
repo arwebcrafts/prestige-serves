@@ -86,6 +86,7 @@
   align-items: center;
   padding: 20px;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* Modal Content Box */
@@ -97,6 +98,29 @@
   border-radius: 8px;
   overflow-y: auto;
   box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+/* Skip Trace Modal — single scrollbar (only modal-content scrolls, not the overlay) */
+#skip-trace-modal.modal-overlay {
+  overflow: hidden;
+  padding: 0;
+  align-items: flex-end;
+}
+@media (min-width: 601px) {
+  #skip-trace-modal.modal-overlay {
+    align-items: center;
+  }
+}
+#skip-trace-modal .modal-content {
+  max-height: 92vh;
+  overflow-y: auto;
+  border-radius: 12px 12px 0 0;
+}
+@media (min-width: 601px) {
+  #skip-trace-modal .modal-content {
+    border-radius: 12px;
+    max-height: 90vh;
+  }
 }
 
 .modal-header {
