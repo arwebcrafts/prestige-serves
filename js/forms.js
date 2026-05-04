@@ -34,9 +34,12 @@ function openSkipTraceModal() {
   var body = document.getElementById('skip-trace-modal-body');
   if (!modal || !body) return;
 
+  // Prevent background page scrolling when modal is open
+  document.body.style.overflow = 'hidden';
+
   // Inject skip trace form HTML — mirrors skip-trace-intake-form.html
   body.innerHTML = `
-    <div style="background:#fff;border-radius:6px;overflow:hidden;max-height:85vh;overflow-y:auto;">
+    <div style="background:#fff;border-radius:6px;overflow:hidden;">
       <div style="background:#f5f4f1;padding:20px 28px;border-bottom:1px solid #d5d2cc;" class="skip-trace-modal-header">
         <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#2d3a7c;font-weight:500;margin-bottom:8px;">✦ Skip Trace Intake</div>
         <h2 style="font-size:28px;font-weight:300;margin:0 0 6px;letter-spacing:-.01em;">Skip Trace Request</h2>
@@ -254,6 +257,7 @@ function selectModalService(el, type) {
 function closeSkipTraceModal() {
   var modal = document.getElementById('skip-trace-modal');
   if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 var modalUploadedFiles = [];
