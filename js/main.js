@@ -93,20 +93,36 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+function formatPhoneValue(raw) {
+  var digits = (raw || '').replace(/\D/g, '').substring(0, 10);
+  if (digits.length >= 6) {
+    return digits.substring(0, 3) + '-' + digits.substring(3, 6) + '-' + digits.substring(6);
+  } else if (digits.length >= 4) {
+    return digits.substring(0, 3) + '-' + digits.substring(3);
+  } else if (digits.length > 0) {
+    return digits;
+  }
+  return '';
+}
+
+// Expose globally for use across scripts
+window.formatPhoneValue = formatPhoneValue;
+
 function initPhoneAutoFormat() {
   document.querySelectorAll('input[type="tel"]').forEach(function(input) {
-    // Only auto-format inputs with a pattern set (our xxx-xxx-xxxx format)
+    // Only auto-format inputs with our xxx-xxx-xxxx pattern
     if (!input.hasAttribute('pattern') || input.getAttribute('pattern') !== '\\d{3}-\\d{3}-\\d{4}') return;
+
+    // Format on input (real-time typing)
     input.addEventListener('input', function(e) {
-      var raw = e.target.value.replace(/\D/g, '').substring(0, 10);
-      if (raw.length >= 6) {
-        e.target.value = raw.substring(0, 3) + '-' + raw.substring(3, 6) + '-' + raw.substring(6);
-      } else if (raw.length >= 4) {
-        e.target.value = raw.substring(0, 3) + '-' + raw.substring(3);
-      } else if (raw.length > 0) {
-        e.target.value = raw;
-      } else {
-        e.target.value = '';
+      e.target.value = formatPhoneValue(e.target.value);
+    });
+
+    // Ensure formatting on blur — handles values set programmatically
+    input.addEventListener('blur', function(e) {
+      var formatted = formatPhoneValue(e.target.value);
+      if (formatted !== e.target.value) {
+        e.target.value = formatted;
       }
     });
   });
