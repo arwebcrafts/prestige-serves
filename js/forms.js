@@ -724,6 +724,11 @@ function buildContactForm(containerId, formId) {
     <div class="form-success" id="${formId}-success">Thank you! We'll be in touch shortly.</div>
     </form>
   `;
+
+  // Apply phone auto-format to any tel inputs just added to the DOM
+  if (window.initPhoneAutoFormat) {
+    window.initPhoneAutoFormat();
+  }
 }
 
 function handleFormSubmit(event, id, formType) {
@@ -1243,7 +1248,7 @@ function openDefendantModal(editIndex = -1) {
     document.getElementById('def-state-input').value = def.state;
     document.getElementById('def-state-value').value = def.state;
     document.getElementById('def-dob').value = def.dob;
-    document.getElementById('def-phone').value = def.phone;
+    document.getElementById('def-phone').value = formatPhoneValue(def.phone);
     document.getElementById('def-aliases').value = def.aliases;
     document.getElementById('def-employer').value = def.employer;
     document.getElementById('def-physical').value = def.physical;
@@ -1517,7 +1522,7 @@ function openHomeDefendantModal(editIndex) {
     document.getElementById('home-def-state-value').value = def.state || '';
     document.getElementById('home-def-zip').value = def.zip || '';
     document.getElementById('home-def-dob').value = def.dob || '';
-    document.getElementById('home-def-phone').value = def.phone || '';
+    document.getElementById('home-def-phone').value = formatPhoneValue(def.phone || '');
     document.getElementById('home-def-aliases').value = def.aliases || '';
     document.getElementById('home-def-employer').value = def.employer || '';
     document.getElementById('home-def-physical').value = def.physical || '';

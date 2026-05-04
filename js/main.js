@@ -108,6 +108,7 @@ function formatPhoneValue(raw) {
 
 // Expose globally for use across scripts
 window.formatPhoneValue = formatPhoneValue;
+window.initPhoneAutoFormat = initPhoneAutoFormat;
 
 function initPhoneAutoFormat() {
   document.querySelectorAll('input[type="tel"]').forEach(function(input) {
