@@ -1,17 +1,31 @@
 // Admin Dashboard JavaScript
 
-var REQUESTS_PAGE_SIZE = 10;
+var requestsPageSize = 10;
 var allRequests = [];
 var requestsPage = 1;
 var selectedRequests = new Set();
-var requestsDateFilter = null;
+var requestsDatePreset = 'all';
+var requestsDateFrom = '';
+var requestsDateTo = '';
+var requestsSearch = '';
+var requestsServiceFilter = '';
+var requestsStateFilter = '';
+var requestsEmailSentFilter = '';
+var requestsEmergencyOnly = false;
 
-var CONTACTS_PAGE_SIZE = 10;
+var contactsPageSize = 10;
 var allContacts = [];
 var contactsPage = 1;
 var selectedContacts = new Set();
-var contactsDateFilter = null;
-var contactsUrgencyFilter = null;
+var contactsDatePreset = 'all';
+var contactsDateFrom = '';
+var contactsDateTo = '';
+var contactsSearch = '';
+var contactsUrgencyFilter = '';
+var contactsReasonFilter = '';
+var contactsStateFilter = '';
+var contactsEmailSentFilter = '';
+var contactsSkipTraceFilter = '';
 
 function getUrgencyBadge(urgency) {
   var u = urgency || '';
@@ -52,66 +66,393 @@ function handleLogout() {
 
 function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(function(btn) {
-    btn.classList.toggle('active', btn.getAttribute('data-tab') === tab);
+    var on = btn.getAttribute('data-tab') === tab;
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-selected', on ? 'true' : 'false');
   });
   document.querySelectorAll('.tab-content').forEach(function(content) {
     content.classList.toggle('active', content.id === 'tab-' + tab);
   });
 }
 
-function updateRequestStats(requests) {
-  var today = new Date().toDateString();
-  document.getElementById('requests-total').textContent = requests.length;
-  document.getElementById('requests-today').textContent = requests.filter(function(r) {
-    return new Date(r.created_at).toDateString() === today;
-  }).length;
-  document.getElementById('requests-emergency').textContent = requests.filter(function(r) {
-    return r.service_type && r.service_type.includes('Emergency');
-  }).length;
+function getPresetTimeRange(preset, dateFrom, dateTo) {
+  var now = new Date();
+  var endToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+  if (!preset || preset === 'all') return null;
+  if (preset === 'custom') {
+    var a = dateFrom ? new Date(dateFrom + 'T00:00:00') : null;
+    var b = dateTo ? new Date(dateTo + 'T23:59:59.999') : null;
+    if (a && isNaN(a.getTime())) a = null;
+    if (b && isNaN(b.getTime())) b = null;
+    if (!a && !b) return null;
+    return { start: a, end: b };
+  }
+  var d = new Date(now);
+  if (preset === 'last_week') {
+    var startLw = new Date(d);
+    startLw.setDate(d.getDate() - 7);
+    startLw.setHours(0, 0, 0, 0);
+    return { start: startLw, end: endToday };
+  }
+  if (preset === 'last_month') {
+    var sm = new Date(d.getFullYear(), d.getMonth() - 1, 1);
+    var em = new Date(d.getFullYear(), d.getMonth(), 0, 23, 59, 59, 999);
+    return { start: sm, end: em };
+  }
+  if (preset === 'this_month') {
+    return { start: new Date(d.getFullYear(), d.getMonth(), 1, 0, 0, 0, 0), end: endToday };
+  }
+  if (preset === 'this_year') {
+    return { start: new Date(d.getFullYear(), 0, 1, 0, 0, 0, 0), end: endToday };
+  }
+  if (preset === 'last_year') {
+    var y = d.getFullYear() - 1;
+    return { start: new Date(y, 0, 1, 0, 0, 0, 0), end: new Date(y, 11, 31, 23, 59, 59, 999) };
+  }
+  return null;
 }
 
-function getUniqueRequestDates() {
-  var dateMap = {};
-  allRequests.forEach(function(r) {
-    if (r.created_at) {
-      var d = new Date(r.created_at);
-      var key = d.toISOString().split('T')[0];
-      if (!dateMap[key]) {
-        dateMap[key] = { date: d, count: 0 };
-      }
-      dateMap[key].count++;
-    }
-  });
-  return Object.keys(dateMap).sort().reverse().slice(0, 10).map(function(k) {
-    return dateMap[k];
-  });
+function createdInTimeRange(createdAt, range) {
+  if (!range) return true;
+  if (!createdAt) return false;
+  var t = new Date(createdAt).getTime();
+  if (isNaN(t)) return false;
+  if (range.start && t < range.start.getTime()) return false;
+  if (range.end && t > range.end.getTime()) return false;
+  return true;
 }
 
-function renderRequestsDateFilter() {
-  var container = document.getElementById('requests-date-filter');
-  if (!container) return;
-  var dates = getUniqueRequestDates();
-  var html = '<button type="button" class="date-filter-btn' + (requestsDateFilter === null ? ' active' : '') + '" onclick="setRequestsDateFilter(null)">All</button>';
-  dates.forEach(function(item) {
-    var label = item.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    html += '<button type="button" class="date-filter-btn' + (requestsDateFilter === item.date.toISOString() ? ' active' : '') + '" onclick="setRequestsDateFilter(\'' + item.date.toISOString() + '\')">' + label + ' (' + item.count + ')</button>';
-  });
-  container.innerHTML = html;
-}
-
-function setRequestsDateFilter(dateStr) {
-  requestsDateFilter = dateStr;
-  requestsPage = 1;
-  renderRequestsDateFilter();
-  renderRequestsTable();
+function requestMatchesSearch(r, q) {
+  if (!q) return true;
+  var s = q.toLowerCase();
+  var hay = [
+    r.client_name,
+    r.contact_name,
+    r.email,
+    r.phone,
+    r.service_type,
+    r.case_number,
+    r.city,
+    r.state,
+    r.zip,
+    r.defendant_name,
+    r.court_jurisdiction
+  ]
+    .join(' ')
+    .toLowerCase();
+  return hay.indexOf(s) !== -1;
 }
 
 function getFilteredRequests() {
-  if (!requestsDateFilter) return allRequests;
+  var range = getPresetTimeRange(requestsDatePreset, requestsDateFrom, requestsDateTo);
   return allRequests.filter(function(r) {
-    if (!r.created_at) return false;
-    return r.created_at.startsWith(requestsDateFilter);
+    if (!createdInTimeRange(r.created_at, range)) return false;
+    if (!requestMatchesSearch(r, requestsSearch)) return false;
+    if (requestsEmergencyOnly) {
+      if (!r.service_type || String(r.service_type).indexOf('Emergency') === -1) return false;
+    }
+    if (requestsServiceFilter && String(r.service_type || '') !== requestsServiceFilter) return false;
+    if (requestsStateFilter) {
+      if (String(r.state || '').toUpperCase() !== String(requestsStateFilter).toUpperCase()) return false;
+    }
+    if (requestsEmailSentFilter === 'sent' && Number(r.email_sent) !== 1) return false;
+    if (requestsEmailSentFilter === 'failed' && Number(r.email_sent) !== 0) return false;
+    if (requestsEmailSentFilter === 'pending') {
+      var es = r.email_sent;
+      if (es === 1 || es === 0) return false;
+    }
+    return true;
   });
+}
+
+function updateRequestStats() {
+  var totalEl = document.getElementById('requests-total');
+  if (!totalEl) return;
+  var filtered = getFilteredRequests();
+  var today = new Date().toDateString();
+  totalEl.textContent = allRequests.length;
+  var fc = document.getElementById('requests-filtered-count');
+  if (fc) fc.textContent = filtered.length;
+  document.getElementById('requests-today').textContent = filtered.filter(function(r) {
+    return r.created_at && new Date(r.created_at).toDateString() === today;
+  }).length;
+  document.getElementById('requests-emergency').textContent = filtered.filter(function(r) {
+    return r.service_type && String(r.service_type).indexOf('Emergency') !== -1;
+  }).length;
+}
+
+function renderRequestsFilterMeta() {
+  var el = document.getElementById('requests-filter-meta');
+  if (!el) return;
+  var n = getFilteredRequests().length;
+  var m = allRequests.length;
+  el.textContent = n === m ? 'Showing all ' + m + ' loaded record(s).' : 'Filters match ' + n + ' of ' + m + ' loaded record(s).';
+}
+
+function getUniqueRequestField(field) {
+  var set = {};
+  allRequests.forEach(function(r) {
+    var v = r[field];
+    if (v != null && String(v).trim() !== '') set[String(v).trim()] = true;
+  });
+  return Object.keys(set).sort();
+}
+
+function escapeAttr(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+function csvCell(val) {
+  var str = val == null ? '' : String(val);
+  str = str.replace(/\r?\n/g, ' ');
+  if (/[",\n]/.test(str)) return '"' + str.replace(/"/g, '""') + '"';
+  return str;
+}
+
+function downloadCsv(filename, csvLines) {
+  var blob = new Blob(['\uFEFF' + csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportRequestsCsv() {
+  var rows = getFilteredRequests();
+  if (!rows.length) {
+    alert('No rows to export for the current filters.');
+    return;
+  }
+  var keys = [
+    'id',
+    'created_at',
+    'client_name',
+    'contact_name',
+    'email',
+    'phone',
+    'service_type',
+    'case_number',
+    'deadline_date',
+    'address_line1',
+    'city',
+    'state',
+    'zip',
+    'defendant_name',
+    'court_jurisdiction',
+    'email_sent'
+  ];
+  var lines = [keys.join(',')];
+  rows.forEach(function(r) {
+    lines.push(keys.map(function(k) {
+      return csvCell(r[k]);
+    }).join(','));
+  });
+  downloadCsv('prestige-requests-' + new Date().toISOString().slice(0, 10) + '.csv', lines);
+}
+
+function refreshRequestsDataView() {
+  updateRequestStats();
+  renderRequestsFilterMeta();
+  renderRequestsTable();
+}
+
+function setRequestsPreset(preset) {
+  requestsDatePreset = preset;
+  if (preset !== 'custom') {
+    requestsDateFrom = '';
+    requestsDateTo = '';
+  }
+  requestsPage = 1;
+  updateRequestStats();
+  renderRequestsFilterMeta();
+  renderRequestsToolbar();
+  renderRequestsTable();
+}
+
+function onRequestCustomDateChange() {
+  var f = document.getElementById('req-date-from');
+  var t = document.getElementById('req-date-to');
+  requestsDateFrom = f && f.value ? f.value : '';
+  requestsDateTo = t && t.value ? t.value : '';
+  requestsDatePreset = 'custom';
+  requestsPage = 1;
+  updateRequestStats();
+  renderRequestsFilterMeta();
+  renderRequestsToolbar();
+  renderRequestsTable();
+}
+
+var __reqSearchTimer = null;
+function scheduleRequestSearch(raw) {
+  clearTimeout(__reqSearchTimer);
+  __reqSearchTimer = setTimeout(function() {
+    requestsSearch = raw;
+    requestsPage = 1;
+    refreshRequestsDataView();
+  }, 280);
+}
+
+function setRequestsServiceFilter(v) {
+  requestsServiceFilter = v;
+  requestsPage = 1;
+  refreshRequestsDataView();
+}
+
+function setRequestsStateFilter(v) {
+  requestsStateFilter = v;
+  requestsPage = 1;
+  refreshRequestsDataView();
+}
+
+function setRequestsEmailSentFilter(v) {
+  requestsEmailSentFilter = v;
+  requestsPage = 1;
+  refreshRequestsDataView();
+}
+
+function setRequestsEmergencyOnly(checked) {
+  requestsEmergencyOnly = !!checked;
+  requestsPage = 1;
+  refreshRequestsDataView();
+}
+
+function setRequestsPageSize(v) {
+  var n = parseInt(v, 10);
+  if (!isNaN(n) && n > 0) requestsPageSize = n;
+  requestsPage = 1;
+  refreshRequestsDataView();
+}
+
+function resetRequestsFilters() {
+  requestsDatePreset = 'all';
+  requestsDateFrom = '';
+  requestsDateTo = '';
+  requestsSearch = '';
+  requestsServiceFilter = '';
+  requestsStateFilter = '';
+  requestsEmailSentFilter = '';
+  requestsEmergencyOnly = false;
+  requestsPageSize = 10;
+  requestsPage = 1;
+  renderRequestsToolbar();
+  refreshRequestsDataView();
+}
+
+function presetBtnClass(id, current) {
+  return 'preset-btn' + (current === id ? ' active' : '');
+}
+
+function renderRequestsToolbar() {
+  var el = document.getElementById('requests-toolbar');
+  if (!el) return;
+  var services = getUniqueRequestField('service_type');
+  var states = getUniqueRequestField('state');
+  var svcOpts =
+    '<option value="">All services</option>' +
+    services
+      .map(function(s) {
+        return (
+          '<option value="' +
+          escapeAttr(s) +
+          '"' +
+          (requestsServiceFilter === s ? ' selected' : '') +
+          '>' +
+          escapeHtml(s) +
+          '</option>'
+        );
+      })
+      .join('');
+  var stOpts =
+    '<option value="">All states</option>' +
+    states
+      .map(function(s) {
+        return (
+          '<option value="' +
+          escapeAttr(s) +
+          '"' +
+          (requestsStateFilter === s ? ' selected' : '') +
+          '>' +
+          escapeHtml(s) +
+          '</option>'
+        );
+      })
+      .join('');
+  var emailOpts = [
+    { v: '', l: 'Email status (all)' },
+    { v: 'sent', l: 'Sent' },
+    { v: 'failed', l: 'Failed' },
+    { v: 'pending', l: 'Pending' }
+  ]
+    .map(function(o) {
+      return '<option value="' + o.v + '"' + (requestsEmailSentFilter === o.v ? ' selected' : '') + '>' + o.l + '</option>';
+    })
+    .join('');
+  el.innerHTML =
+    '<div class="dashboard-toolbar-inner">' +
+    '<div class="dashboard-toolbar-row">' +
+    '<span class="dashboard-filter-label">Date range</span>' +
+    '<button type="button" class="' +
+    presetBtnClass('all', requestsDatePreset) +
+    '" onclick="setRequestsPreset(\'all\')">All time</button>' +
+    '<button type="button" class="' +
+    presetBtnClass('last_week', requestsDatePreset) +
+    '" onclick="setRequestsPreset(\'last_week\')">Last week</button>' +
+    '<button type="button" class="' +
+    presetBtnClass('last_month', requestsDatePreset) +
+    '" onclick="setRequestsPreset(\'last_month\')">Last month</button>' +
+    '<button type="button" class="' +
+    presetBtnClass('this_month', requestsDatePreset) +
+    '" onclick="setRequestsPreset(\'this_month\')">This month</button>' +
+    '<button type="button" class="' +
+    presetBtnClass('this_year', requestsDatePreset) +
+    '" onclick="setRequestsPreset(\'this_year\')">This year</button>' +
+    '<button type="button" class="' +
+    presetBtnClass('last_year', requestsDatePreset) +
+    '" onclick="setRequestsPreset(\'last_year\')">Last year</button>' +
+    '<span class="dashboard-filter-label dashboard-filter-label-gap">Custom</span>' +
+    '<input type="date" id="req-date-from" class="dashboard-date-input" value="' +
+    escapeAttr(requestsDateFrom) +
+    '" onchange="onRequestCustomDateChange()" aria-label="From date">' +
+    '<span class="dashboard-date-sep">—</span>' +
+    '<input type="date" id="req-date-to" class="dashboard-date-input" value="' +
+    escapeAttr(requestsDateTo) +
+    '" onchange="onRequestCustomDateChange()" aria-label="To date">' +
+    '</div>' +
+    '<div class="dashboard-toolbar-row">' +
+    '<span class="dashboard-filter-label">Search</span>' +
+    '<input type="search" id="req-search" class="dashboard-search-input" placeholder="Client, email, case #, phone…" value="' +
+    escapeAttr(requestsSearch) +
+    '" oninput="scheduleRequestSearch(this.value)" aria-label="Search requests">' +
+    '<span class="dashboard-filter-label">Filters</span>' +
+    '<select class="dashboard-select" onchange="setRequestsServiceFilter(this.value)" aria-label="Service type">' +
+    svcOpts +
+    '</select>' +
+    '<select class="dashboard-select" onchange="setRequestsStateFilter(this.value)" aria-label="State">' +
+    stOpts +
+    '</select>' +
+    '<select class="dashboard-select" onchange="setRequestsEmailSentFilter(this.value)" aria-label="Email sent status">' +
+    emailOpts +
+    '</select>' +
+    '<label class="dashboard-check-label"><input type="checkbox"' +
+    (requestsEmergencyOnly ? ' checked' : '') +
+    ' onchange="setRequestsEmergencyOnly(this.checked)"> Emergency only</label>' +
+    '<span class="dashboard-filter-label dashboard-filter-label-gap">Rows / page</span>' +
+    '<select class="dashboard-select dashboard-select-narrow" onchange="setRequestsPageSize(this.value)" aria-label="Page size">' +
+    ['10', '25', '50', '100']
+      .map(function(ps) {
+        return '<option value="' + ps + '"' + (String(requestsPageSize) === ps ? ' selected' : '') + '>' + ps + '</option>';
+      })
+      .join('') +
+    '</select>' +
+    '</div>' +
+    '<div class="dashboard-toolbar-actions">' +
+    '<button type="button" class="btn-toolbar-export" onclick="exportRequestsCsv()">Export CSV</button>' +
+    '<button type="button" class="btn-toolbar-reset" onclick="resetRequestsFilters()">Reset filters</button>' +
+    '</div>' +
+    '</div>';
 }
 
 function renderRequestsPagination(total, page, pageSize) {
@@ -153,7 +494,7 @@ function renderRequestsPagination(total, page, pageSize) {
 
 function goRequestsPage(page) {
   var filteredRequests = getFilteredRequests();
-  var pages = Math.max(1, Math.ceil(filteredRequests.length / REQUESTS_PAGE_SIZE));
+  var pages = Math.max(1, Math.ceil(filteredRequests.length / requestsPageSize));
   if (page < 1) page = 1;
   if (page > pages) page = pages;
   requestsPage = page;
@@ -165,11 +506,11 @@ function renderRequestsTable() {
   if (!tbody) return;
   var filteredRequests = getFilteredRequests();
   var total = filteredRequests.length;
-  var pages = Math.max(1, Math.ceil(total / REQUESTS_PAGE_SIZE));
+  var pages = Math.max(1, Math.ceil(total / requestsPageSize));
   if (requestsPage > pages) requestsPage = pages;
   if (requestsPage < 1) requestsPage = 1;
-  var start = (requestsPage - 1) * REQUESTS_PAGE_SIZE;
-  var slice = filteredRequests.slice(start, start + REQUESTS_PAGE_SIZE);
+  var start = (requestsPage - 1) * requestsPageSize;
+  var slice = filteredRequests.slice(start, start + requestsPageSize);
   tbody.innerHTML = slice
     .map(function(r) {
       return (
@@ -222,7 +563,7 @@ function renderRequestsTable() {
       );
     })
     .join('');
-  renderRequestsPagination(total, requestsPage, REQUESTS_PAGE_SIZE);
+  renderRequestsPagination(total, requestsPage, requestsPageSize);
   makeTablesScrollable();
 }
 
@@ -236,9 +577,8 @@ async function deleteRequestRow(id) {
     });
     selectedRequests.delete(String(id));
     closeDetailModal();
-    updateRequestStats(allRequests);
-    renderRequestsDateFilter();
-    renderRequestsTable();
+    renderRequestsToolbar();
+    refreshRequestsDataView();
   } catch (err) {
     console.error(err);
     alert('Could not delete this row. Check the server allows DELETE on /api/admin/request/:id');
@@ -322,9 +662,8 @@ async function deleteSelectedRequests() {
     });
     selectedRequests.clear();
     closeDetailModal();
-    updateRequestStats(allRequests);
-    renderRequestsDateFilter();
-    renderRequestsTable();
+    renderRequestsToolbar();
+    refreshRequestsDataView();
   } catch (err) {
     console.error(err);
     alert('Could not delete selected rows');
@@ -337,10 +676,17 @@ async function loadRequests() {
     var data = await response.json();
     allRequests = data.data || [];
     requestsPage = 1;
-    requestsDateFilter = null;
-    updateRequestStats(allRequests);
-    renderRequestsDateFilter();
-    renderRequestsTable();
+    requestsDatePreset = 'all';
+    requestsDateFrom = '';
+    requestsDateTo = '';
+    requestsSearch = '';
+    requestsServiceFilter = '';
+    requestsStateFilter = '';
+    requestsEmailSentFilter = '';
+    requestsEmergencyOnly = false;
+    requestsPageSize = 10;
+    renderRequestsToolbar();
+    refreshRequestsDataView();
   } catch (err) {
     console.error('Error loading requests:', err);
   }
@@ -348,23 +694,22 @@ async function loadRequests() {
 
 async function loadContacts() {
   try {
-    const response = await fetch('/api/admin/contacts');
-    const data = await response.json();
-    
-    const today = new Date().toDateString();
-    const contacts = data.data || [];
-    
-    document.getElementById('contacts-total').textContent = contacts.length;
-    document.getElementById('contacts-today').textContent = contacts.filter(c => new Date(c.created_at).toDateString() === today).length;
-    
-    allContacts = contacts;
+    var response = await fetch('/api/admin/contacts');
+    var data = await response.json();
+    allContacts = data.data || [];
     contactsPage = 1;
-    contactsDateFilter = null;
-    contactsUrgencyFilter = null;
-    
-    renderContactsDateFilter();
-    renderContactsUrgencyFilter();
-    renderContactsTable();
+    contactsDatePreset = 'all';
+    contactsDateFrom = '';
+    contactsDateTo = '';
+    contactsSearch = '';
+    contactsUrgencyFilter = '';
+    contactsReasonFilter = '';
+    contactsStateFilter = '';
+    contactsEmailSentFilter = '';
+    contactsSkipTraceFilter = '';
+    contactsPageSize = 10;
+    renderContactsToolbar();
+    refreshContactsDataView();
   } catch (err) {
     console.error('Error loading contacts:', err);
   }
@@ -611,10 +956,7 @@ async function deleteContactRow(id) {
     });
     selectedContacts.delete(String(id));
     closeDetailModal();
-    document.getElementById('contacts-total').textContent = allContacts.length;
-    renderContactsDateFilter();
-    renderContactsUrgencyFilter();
-    renderContactsTable();
+    refreshContactsDataView();
   } catch (err) {
     console.error(err);
     alert('Could not delete this contact');
@@ -698,10 +1040,7 @@ async function deleteSelectedContacts() {
     });
     selectedContacts.clear();
     closeDetailModal();
-    document.getElementById('contacts-total').textContent = allContacts.length;
-    renderContactsDateFilter();
-    renderContactsUrgencyFilter();
-    renderContactsTable();
+    refreshContactsDataView();
   } catch (err) {
     console.error(err);
     alert('Could not delete selected contacts');
@@ -713,11 +1052,11 @@ function renderContactsTable() {
   if (!tbody) return;
   var filteredContacts = getFilteredContacts();
   var total = filteredContacts.length;
-  var pages = Math.max(1, Math.ceil(total / CONTACTS_PAGE_SIZE));
+  var pages = Math.max(1, Math.ceil(total / contactsPageSize));
   if (contactsPage > pages) contactsPage = pages;
   if (contactsPage < 1) contactsPage = 1;
-  var start = (contactsPage - 1) * CONTACTS_PAGE_SIZE;
-  var slice = filteredContacts.slice(start, start + CONTACTS_PAGE_SIZE);
+  var start = (contactsPage - 1) * contactsPageSize;
+  var slice = filteredContacts.slice(start, start + contactsPageSize);
   tbody.innerHTML = slice
     .map(function(c) {
       return (
@@ -769,7 +1108,7 @@ function renderContactsTable() {
       );
     })
     .join('');
-  renderContactsPagination(total, contactsPage, CONTACTS_PAGE_SIZE);
+  renderContactsPagination(total, contactsPage, contactsPageSize);
   makeTablesScrollable();
 }
 
@@ -812,7 +1151,7 @@ function renderContactsPagination(total, page, pageSize) {
 
 function goContactsPage(page) {
   var filteredContacts = getFilteredContacts();
-  var pages = Math.max(1, Math.ceil(filteredContacts.length / CONTACTS_PAGE_SIZE));
+  var pages = Math.max(1, Math.ceil(filteredContacts.length / contactsPageSize));
   if (page < 1) page = 1;
   if (page > pages) page = pages;
   contactsPage = page;
@@ -858,80 +1197,363 @@ function formatDateColor(dateStr) {
   return '<span style="color:' + color + ';font-weight:500;">' + formatted + '</span>';
 }
 
-function getUniqueContactsDates() {
-  var dateMap = {};
-  allContacts.forEach(function(c) {
-    if (c.created_at) {
-      var d = new Date(c.created_at);
-      var key = d.toISOString().split('T')[0];
-      if (!dateMap[key]) {
-        dateMap[key] = { date: d, count: 0 };
-      }
-      dateMap[key].count++;
+function contactHasSkipTrace(c) {
+  if (!c || !c.skip_trace_data) return false;
+  var st = c.skip_trace_data;
+  if (typeof st === 'string') {
+    try {
+      st = JSON.parse(st);
+    } catch (e1) {
+      return false;
     }
-  });
-  return Object.keys(dateMap).sort().reverse().slice(0, 10).map(function(k) {
-    return dateMap[k];
-  });
+  }
+  if (!st || typeof st !== 'object') return false;
+  return !!(st.firstName || st.fullname);
 }
 
-function renderContactsDateFilter() {
-  var container = document.getElementById('contacts-date-filter');
-  if (!container) return;
-  var dates = getUniqueContactsDates();
-  var html = '<button type="button" class="date-filter-btn' + (contactsDateFilter === null ? ' active' : '') + '" onclick="setContactsDateFilter(null)">All</button>';
-  dates.forEach(function(item) {
-    var label = item.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    html += '<button type="button" class="date-filter-btn' + (contactsDateFilter === item.date.toISOString() ? ' active' : '') + '" onclick="setContactsDateFilter(\'' + item.date.toISOString() + '\')">' + label + ' (' + item.count + ')</button>';
-  });
-  container.innerHTML = html;
-}
-
-function renderContactsUrgencyFilter() {
-  var container = document.getElementById('contacts-urgency-filter');
-  if (!container) return;
-  var urgencies = ['Standard', 'Elevated', 'High', 'Critical'];
-  var counts = {
-    'Standard': allContacts.filter(function(c) { return c.urgency === 'Standard'; }).length,
-    'Elevated': allContacts.filter(function(c) { return c.urgency === 'Elevated'; }).length,
-    'High': allContacts.filter(function(c) { return c.urgency === 'High'; }).length,
-    'Critical': allContacts.filter(function(c) { return c.urgency === 'Critical'; }).length
-  };
-  var html = '<button type="button" class="urgency-filter-btn' + (contactsUrgencyFilter === null ? ' active' : '') + '" onclick="setContactsUrgencyFilter(null)">All</button>';
-  urgencies.forEach(function(u) {
-    html += '<button type="button" class="urgency-filter-btn urgency-' + u.toLowerCase() + (contactsUrgencyFilter === u ? ' active' : '') + '" onclick="setContactsUrgencyFilter(\'' + u + '\')">' + u + ' (' + counts[u] + ')</button>';
-  });
-  container.innerHTML = html;
-}
-
-function setContactsUrgencyFilter(urgency) {
-  contactsUrgencyFilter = urgency;
-  contactsPage = 1;
-  renderContactsUrgencyFilter();
-  renderContactsTable();
-}
-
-function setContactsDateFilter(dateStr) {
-  contactsDateFilter = dateStr;
-  contactsPage = 1;
-  renderContactsDateFilter();
-  renderContactsTable();
+function contactMatchesSearch(c, q) {
+  if (!q) return true;
+  var s = q.toLowerCase();
+  var hay = [
+    c.first_name,
+    c.last_name,
+    c.company,
+    c.email,
+    c.phone,
+    c.reason,
+    c.case_number,
+    c.county,
+    c.state,
+    c.case_details
+  ]
+    .join(' ')
+    .toLowerCase();
+  return hay.indexOf(s) !== -1;
 }
 
 function getFilteredContacts() {
-  var filtered = allContacts;
-  if (contactsDateFilter) {
-    filtered = filtered.filter(function(c) {
-      if (!c.created_at) return false;
-      return c.created_at.startsWith(contactsDateFilter);
-    });
+  var range = getPresetTimeRange(contactsDatePreset, contactsDateFrom, contactsDateTo);
+  return allContacts.filter(function(c) {
+    if (!createdInTimeRange(c.created_at, range)) return false;
+    if (!contactMatchesSearch(c, contactsSearch)) return false;
+    if (contactsUrgencyFilter && String(c.urgency || '') !== contactsUrgencyFilter) return false;
+    if (contactsReasonFilter && String(c.reason || '') !== contactsReasonFilter) return false;
+    if (contactsStateFilter && String(c.state || '').toUpperCase() !== String(contactsStateFilter).toUpperCase()) return false;
+    if (contactsEmailSentFilter === 'sent' && Number(c.email_sent) !== 1) return false;
+    if (contactsEmailSentFilter === 'failed' && Number(c.email_sent) !== 0) return false;
+    if (contactsEmailSentFilter === 'pending') {
+      var es = c.email_sent;
+      if (es === 1 || es === 0) return false;
+    }
+    if (contactsSkipTraceFilter === 'yes' && !contactHasSkipTrace(c)) return false;
+    if (contactsSkipTraceFilter === 'no' && contactHasSkipTrace(c)) return false;
+    return true;
+  });
+}
+
+function getUniqueContactField(field) {
+  var set = {};
+  allContacts.forEach(function(c) {
+    var v = c[field];
+    if (v != null && String(v).trim() !== '') set[String(v).trim()] = true;
+  });
+  return Object.keys(set).sort();
+}
+
+function updateContactsSummaryStats() {
+  var totalEl = document.getElementById('contacts-total');
+  if (!totalEl) return;
+  var filtered = getFilteredContacts();
+  var today = new Date().toDateString();
+  totalEl.textContent = allContacts.length;
+  var fc = document.getElementById('contacts-filtered-count');
+  if (fc) fc.textContent = filtered.length;
+  var td = document.getElementById('contacts-today');
+  if (td) {
+    td.textContent = filtered.filter(function(c) {
+      return c.created_at && new Date(c.created_at).toDateString() === today;
+    }).length;
   }
-  if (contactsUrgencyFilter) {
-    filtered = filtered.filter(function(c) {
-      return c.urgency === contactsUrgencyFilter;
-    });
+  var sk = document.getElementById('contacts-skiptrace');
+  if (sk) sk.textContent = filtered.filter(contactHasSkipTrace).length;
+}
+
+function renderContactsFilterMeta() {
+  var el = document.getElementById('contacts-filter-meta');
+  if (!el) return;
+  var n = getFilteredContacts().length;
+  var m = allContacts.length;
+  el.textContent = n === m ? 'Showing all ' + m + ' loaded record(s).' : 'Filters match ' + n + ' of ' + m + ' loaded record(s).';
+}
+
+function exportContactsCsv() {
+  var rows = getFilteredContacts();
+  if (!rows.length) {
+    alert('No rows to export for the current filters.');
+    return;
   }
-  return filtered;
+  var keys = [
+    'id',
+    'created_at',
+    'first_name',
+    'last_name',
+    'company',
+    'email',
+    'phone',
+    'reason',
+    'case_number',
+    'deadline_date',
+    'urgency',
+    'county',
+    'state',
+    'email_sent',
+    'has_skip_trace'
+  ];
+  var lines = [keys.join(',')];
+  rows.forEach(function(c) {
+    lines.push(
+      keys
+        .map(function(k) {
+          if (k === 'has_skip_trace') return csvCell(contactHasSkipTrace(c) ? 'yes' : 'no');
+          return csvCell(c[k]);
+        })
+        .join(',')
+    );
+  });
+  downloadCsv('prestige-contacts-' + new Date().toISOString().slice(0, 10) + '.csv', lines);
+}
+
+function refreshContactsDataView() {
+  updateContactsSummaryStats();
+  renderContactsFilterMeta();
+  renderContactsTable();
+}
+
+function setContactsPreset(preset) {
+  contactsDatePreset = preset;
+  if (preset !== 'custom') {
+    contactsDateFrom = '';
+    contactsDateTo = '';
+  }
+  contactsPage = 1;
+  updateContactsSummaryStats();
+  renderContactsFilterMeta();
+  renderContactsToolbar();
+  renderContactsTable();
+}
+
+function onContactCustomDateChange() {
+  var f = document.getElementById('con-date-from');
+  var t = document.getElementById('con-date-to');
+  contactsDateFrom = f && f.value ? f.value : '';
+  contactsDateTo = t && t.value ? t.value : '';
+  contactsDatePreset = 'custom';
+  contactsPage = 1;
+  updateContactsSummaryStats();
+  renderContactsFilterMeta();
+  renderContactsToolbar();
+  renderContactsTable();
+}
+
+var __conSearchTimer = null;
+function scheduleContactSearch(raw) {
+  clearTimeout(__conSearchTimer);
+  __conSearchTimer = setTimeout(function() {
+    contactsSearch = raw;
+    contactsPage = 1;
+    refreshContactsDataView();
+  }, 280);
+}
+
+function setContactsUrgencyFilter(v) {
+  contactsUrgencyFilter = v;
+  contactsPage = 1;
+  refreshContactsDataView();
+}
+
+function setContactsReasonFilter(v) {
+  contactsReasonFilter = v;
+  contactsPage = 1;
+  refreshContactsDataView();
+}
+
+function setContactsStateFilter(v) {
+  contactsStateFilter = v;
+  contactsPage = 1;
+  refreshContactsDataView();
+}
+
+function setContactsEmailSentFilter(v) {
+  contactsEmailSentFilter = v;
+  contactsPage = 1;
+  refreshContactsDataView();
+}
+
+function setContactsSkipTraceFilter(v) {
+  contactsSkipTraceFilter = v;
+  contactsPage = 1;
+  refreshContactsDataView();
+}
+
+function setContactsPageSize(v) {
+  var n = parseInt(v, 10);
+  if (!isNaN(n) && n > 0) contactsPageSize = n;
+  contactsPage = 1;
+  refreshContactsDataView();
+}
+
+function resetContactsFilters() {
+  contactsDatePreset = 'all';
+  contactsDateFrom = '';
+  contactsDateTo = '';
+  contactsSearch = '';
+  contactsUrgencyFilter = '';
+  contactsReasonFilter = '';
+  contactsStateFilter = '';
+  contactsEmailSentFilter = '';
+  contactsSkipTraceFilter = '';
+  contactsPageSize = 10;
+  contactsPage = 1;
+  renderContactsToolbar();
+  refreshContactsDataView();
+}
+
+function renderContactsToolbar() {
+  var el = document.getElementById('contacts-toolbar');
+  if (!el) return;
+  var reasons = getUniqueContactField('reason');
+  var states = getUniqueContactField('state');
+  var urgencies = ['Standard', 'Elevated', 'High', 'Critical'];
+  var reaOpts =
+    '<option value="">All reasons</option>' +
+    reasons
+      .map(function(s) {
+        return (
+          '<option value="' +
+          escapeAttr(s) +
+          '"' +
+          (contactsReasonFilter === s ? ' selected' : '') +
+          '>' +
+          escapeHtml(s) +
+          '</option>'
+        );
+      })
+      .join('');
+  var stOpts =
+    '<option value="">All states</option>' +
+    states
+      .map(function(s) {
+        return (
+          '<option value="' +
+          escapeAttr(s) +
+          '"' +
+          (contactsStateFilter === s ? ' selected' : '') +
+          '>' +
+          escapeHtml(s) +
+          '</option>'
+        );
+      })
+      .join('');
+  var urgOpts =
+    '<option value="">All urgencies</option>' +
+    urgencies
+      .map(function(u) {
+        return (
+          '<option value="' +
+          escapeAttr(u) +
+          '"' +
+          (contactsUrgencyFilter === u ? ' selected' : '') +
+          '>' +
+          u +
+          '</option>'
+        );
+      })
+      .join('');
+  var emailOpts = [
+    { v: '', l: 'Email status (all)' },
+    { v: 'sent', l: 'Sent' },
+    { v: 'failed', l: 'Failed' },
+    { v: 'pending', l: 'Pending' }
+  ]
+    .map(function(o) {
+      return '<option value="' + o.v + '"' + (contactsEmailSentFilter === o.v ? ' selected' : '') + '>' + o.l + '</option>';
+    })
+    .join('');
+  var skipOpts = [
+    { v: '', l: 'Skip trace (all)' },
+    { v: 'yes', l: 'With skip trace' },
+    { v: 'no', l: 'Without skip trace' }
+  ]
+    .map(function(o) {
+      return '<option value="' + o.v + '"' + (contactsSkipTraceFilter === o.v ? ' selected' : '') + '>' + o.l + '</option>';
+    })
+    .join('');
+  el.innerHTML =
+    '<div class="dashboard-toolbar-inner">' +
+    '<div class="dashboard-toolbar-row">' +
+    '<span class="dashboard-filter-label">Date range</span>' +
+    '<button type="button" class="' +
+    presetBtnClass('all', contactsDatePreset) +
+    '" onclick="setContactsPreset(\'all\')">All time</button>' +
+    '<button type="button" class="' +
+    presetBtnClass('last_week', contactsDatePreset) +
+    '" onclick="setContactsPreset(\'last_week\')">Last week</button>' +
+    '<button type="button" class="' +
+    presetBtnClass('last_month', contactsDatePreset) +
+    '" onclick="setContactsPreset(\'last_month\')">Last month</button>' +
+    '<button type="button" class="' +
+    presetBtnClass('this_month', contactsDatePreset) +
+    '" onclick="setContactsPreset(\'this_month\')">This month</button>' +
+    '<button type="button" class="' +
+    presetBtnClass('this_year', contactsDatePreset) +
+    '" onclick="setContactsPreset(\'this_year\')">This year</button>' +
+    '<button type="button" class="' +
+    presetBtnClass('last_year', contactsDatePreset) +
+    '" onclick="setContactsPreset(\'last_year\')">Last year</button>' +
+    '<span class="dashboard-filter-label dashboard-filter-label-gap">Custom</span>' +
+    '<input type="date" id="con-date-from" class="dashboard-date-input" value="' +
+    escapeAttr(contactsDateFrom) +
+    '" onchange="onContactCustomDateChange()" aria-label="From date">' +
+    '<span class="dashboard-date-sep">—</span>' +
+    '<input type="date" id="con-date-to" class="dashboard-date-input" value="' +
+    escapeAttr(contactsDateTo) +
+    '" onchange="onContactCustomDateChange()" aria-label="To date">' +
+    '</div>' +
+    '<div class="dashboard-toolbar-row">' +
+    '<span class="dashboard-filter-label">Search</span>' +
+    '<input type="search" id="con-search" class="dashboard-search-input" placeholder="Name, company, email, reason…" value="' +
+    escapeAttr(contactsSearch) +
+    '" oninput="scheduleContactSearch(this.value)" aria-label="Search contacts">' +
+    '<span class="dashboard-filter-label">Filters</span>' +
+    '<select class="dashboard-select" onchange="setContactsUrgencyFilter(this.value)" aria-label="Urgency">' +
+    urgOpts +
+    '</select>' +
+    '<select class="dashboard-select" onchange="setContactsReasonFilter(this.value)" aria-label="Reason">' +
+    reaOpts +
+    '</select>' +
+    '<select class="dashboard-select" onchange="setContactsStateFilter(this.value)" aria-label="State">' +
+    stOpts +
+    '</select>' +
+    '<select class="dashboard-select" onchange="setContactsEmailSentFilter(this.value)" aria-label="Email sent">' +
+    emailOpts +
+    '</select>' +
+    '<select class="dashboard-select" onchange="setContactsSkipTraceFilter(this.value)" aria-label="Skip trace">' +
+    skipOpts +
+    '</select>' +
+    '<span class="dashboard-filter-label dashboard-filter-label-gap">Rows / page</span>' +
+    '<select class="dashboard-select dashboard-select-narrow" onchange="setContactsPageSize(this.value)" aria-label="Page size">' +
+    ['10', '25', '50', '100']
+      .map(function(ps) {
+        return '<option value="' + ps + '"' + (String(contactsPageSize) === ps ? ' selected' : '') + '>' + ps + '</option>';
+      })
+      .join('') +
+    '</select>' +
+    '</div>' +
+    '<div class="dashboard-toolbar-actions">' +
+    '<button type="button" class="btn-toolbar-export" onclick="exportContactsCsv()">Export CSV</button>' +
+    '<button type="button" class="btn-toolbar-reset" onclick="resetContactsFilters()">Reset filters</button>' +
+    '</div>' +
+    '</div>';
 }
 
 function fixEncoding(str) {

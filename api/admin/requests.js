@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 
   try {
     const sql = neon(DATABASE_URL);
-    const result = await sql`SELECT * FROM service_requests ORDER BY created_at DESC LIMIT 100`;
+    const result = await sql`SELECT * FROM service_requests ORDER BY created_at DESC LIMIT 2000`;
     return res.status(200).json({ success: true, data: result });
   } catch (err) {
     logger.error(LOG_CATEGORIES.API, 'Admin requests error', err);

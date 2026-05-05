@@ -54,7 +54,7 @@ function openSkipTraceModal() {
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Full Name <span style="color:#999">*</span></label><input type="text" id="st-fullname" placeholder="Jane Smith" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Company / Firm</label><input type="text" id="st-company" placeholder="Acme Collections LLC" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Email <span style="color:#999">*</span></label><input type="email" id="st-email" placeholder="jane@firm.com" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
-            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Phone <span style="color:#999">*</span></label><input type="tel" id="st-phone" placeholder="609-240-5665" pattern="\d{3}-\d{3}-\d{4}" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Phone <span style="color:#999">*</span></label><input type="tel" id="st-phone" placeholder="555-010-0199" maxlength="12" inputmode="tel" autocomplete="tel-national" pattern="\\d{3}-\\d{3}-\\d{4}" title="10-digit US phone" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Role</label>
               <select id="st-role" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;background:#fff;">
                 <option value="">Select...</option>
@@ -117,7 +117,7 @@ function openSkipTraceModal() {
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Middle Name</label><input type="text" id="st-middle" placeholder="Optional" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Maiden Name / Aliases</label><input type="text" id="st-aliases" placeholder="Former names, nicknames" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Date of Birth <span style="color:#999">*</span></label><input type="date" id="st-dob" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
-            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Last Known Phone</label><input type="tel" id="st-phone2" placeholder="609-240-5665" pattern="\d{3}-\d{3}-\d{4}" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
+            <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Last Known Phone</label><input type="tel" id="st-phone2" placeholder="555-010-0199" maxlength="12" inputmode="tel" autocomplete="tel-national" pattern="\\d{3}-\\d{3}-\\d{4}" title="10-digit US phone" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field full-width"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Last Known Address <span style="color:#999">*</span></label><input type="text" id="st-address" placeholder="Street, city, state, zip" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Last Known Email</label><input type="email" id="st-email2" placeholder="subject@email.com" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
             <div class="field"><label style="font-size:12px;font-weight:500;letter-spacing:.04em;">Social Media Handles</label><input type="text" id="st-social" placeholder="@username / platform" style="font-family:var(--serif);font-size:15px;padding:11px 16px;border:1px solid #d5d2cc;border-radius:100px;outline:none;width:100%;box-sizing:border-box;"></div>
@@ -218,6 +218,7 @@ function openSkipTraceModal() {
   skipTraceModalFilled = false;
   modalUploadedFiles = [];
   renderModalFileList();
+  if (window.initPhoneAutoFormat) window.initPhoneAutoFormat();
 }
 
 // Service type selection in modal
@@ -282,40 +283,61 @@ function removeModalFile(i) {
 }
 
 function saveSkipTraceForm() {
-  var fullname = document.getElementById('st-fullname') ? document.getElementById('st-fullname').value.trim() : '';
-  var email = document.getElementById('st-email') ? document.getElementById('st-email').value.trim() : '';
-  var phone = document.getElementById('st-phone') ? document.getElementById('st-phone').value.trim() : '';
-  var jurisdiction = document.getElementById('st-jurisdiction') ? document.getElementById('st-jurisdiction').value.trim() : '';
-  var first = document.getElementById('st-first') ? document.getElementById('st-first').value.trim() : '';
-  var last = document.getElementById('st-last') ? document.getElementById('st-last').value.trim() : '';
-  var dob = document.getElementById('st-dob') ? document.getElementById('st-dob').value.trim() : '';
-  var address = document.getElementById('st-address') ? document.getElementById('st-address').value.trim() : '';
-  var purpose = document.getElementById('st-purpose') ? document.getElementById('st-purpose').value.trim() : '';
-  var deadline = document.getElementById('st-deadline') ? document.getElementById('st-deadline').value.trim() : '';
+  var missing = [];
+  function need(id, label) {
+    var el = document.getElementById(id);
+    var v = el ? String(el.value || '').trim() : '';
+    if (!v) missing.push(label);
+  }
+  need('st-fullname', 'Full name');
+  need('st-email', 'Email');
+  need('st-phone', 'Phone');
+  need('st-jurisdiction', 'State of jurisdiction');
+  need('st-first', 'Subject first name');
+  need('st-last', 'Subject last name');
+  need('st-dob', 'Date of birth');
+  need('st-address', 'Last known address');
+  need('st-purpose', 'Permissible purpose');
+  need('st-deadline', 'Needed-by date');
 
-  // Check required checkboxes
+  var stPhone = document.getElementById('st-phone');
+  if (stPhone) {
+    var d = (stPhone.value || '').replace(/\D/g, '');
+    if (d.length > 0 && d.length < 10) missing.push('Phone (enter all 10 digits)');
+  }
+
   var fcra1 = document.getElementById('st-fcra1') ? document.getElementById('st-fcra1').checked : false;
   var fcra2 = document.getElementById('st-fcra2') ? document.getElementById('st-fcra2').checked : false;
   var fcra3 = document.getElementById('st-fcra3') ? document.getElementById('st-fcra3').checked : false;
   var fcra4 = document.getElementById('st-fcra4') ? document.getElementById('st-fcra4').checked : false;
   var fcra5 = document.getElementById('st-fcra5') ? document.getElementById('st-fcra5').checked : false;
-
-  if (!fullname || !email || !phone || !jurisdiction || !first || !last || !dob || !address || !purpose || !deadline) {
-    alert('Please fill in all required fields.');
-    return;
-  }
   if (!fcra1 || !fcra2 || !fcra3 || !fcra4 || !fcra5) {
-    alert('Please check all five compliance certification checkboxes.');
+    missing.push('All five compliance certification checkboxes');
+  }
+
+  var selectedSvc = document.querySelector('#skip-trace-modal-body input[name="st-service"]:checked');
+  if (!selectedSvc) {
+    missing.push('Skip trace service type (choose one card)');
+  }
+
+  if (missing.length) {
+    showMissingFieldsAlert('Please fill out the skip trace intake form:', missing);
     return;
   }
 
-  // Get selected service type
-  var selectedSvc = document.querySelector('#skip-trace-modal-body input[name="st-service"]:checked');
+  var fullname = document.getElementById('st-fullname').value.trim();
+  var email = document.getElementById('st-email').value.trim();
+  var phone = document.getElementById('st-phone').value.trim();
+  var jurisdiction = document.getElementById('st-jurisdiction').value.trim();
+  var first = document.getElementById('st-first').value.trim();
+  var last = document.getElementById('st-last').value.trim();
+  var dob = document.getElementById('st-dob').value.trim();
+  var address = document.getElementById('st-address').value.trim();
+  var purpose = document.getElementById('st-purpose').value.trim();
+  var deadline = document.getElementById('st-deadline').value.trim();
+
   var serviceTypeMap = { standard: 'Standard Skip Trace', deep: 'Deep Skip Trace', court: 'Court-Ready / Affidavit-Grade', process: 'Process Server Locate' };
   var serviceTypeVal = selectedSvc ? (serviceTypeMap[selectedSvc.value] || '') : '';
-
-  console.log('[DEBUG saveSkipTraceForm] All required fields validated');
-  console.log('[DEBUG saveSkipTraceForm] fullname:', fullname, 'first:', first, 'last:', last, 'serviceType:', serviceTypeVal);
 
   skipTraceFormData = {
     fullname: fullname,
@@ -399,6 +421,138 @@ function initFutureDeadlineDateInputs(root) {
   });
 }
 
+/** US ZIP: digits only, max 5 (for live input / paste). */
+function sanitizeUsZip5(value) {
+  return String(value || '').replace(/\D/g, '').slice(0, 5);
+}
+
+function isUsZip5(value) {
+  return /^\d{5}$/.test(String(value || '').trim());
+}
+
+function attachUsZipInput(el) {
+  if (!el || el.getAttribute('data-us-zip-bound') === '1') return;
+  el.setAttribute('data-us-zip-bound', '1');
+  el.setAttribute('inputmode', 'numeric');
+  el.setAttribute('maxlength', '5');
+  if (el.id !== 'home-def-zip') {
+    el.setAttribute('pattern', '\\d{5}');
+    el.setAttribute('title', 'Enter exactly 5 digits (US ZIP)');
+  } else {
+    el.setAttribute('title', '5-digit US ZIP, or leave blank');
+  }
+  if (!el.getAttribute('autocomplete')) el.setAttribute('autocomplete', 'postal-code');
+  function sync() {
+    var v = sanitizeUsZip5(el.value);
+    if (el.value !== v) el.value = v;
+  }
+  el.addEventListener('input', sync);
+  el.addEventListener('blur', sync);
+}
+
+/** Client ZIP, process-serve ZIP row, and additional-defendant modal ZIP. */
+function initUsZipInputs(root) {
+  var base = root || document;
+  base.querySelectorAll('input[name="zip"],input[name="serve_zip"],#home-def-zip').forEach(attachUsZipInput);
+}
+
+/** Human-readable label for validation messages (uses label text, data-field-label, id, or name). */
+function getFieldDisplayLabel(el) {
+  if (!el) return 'Field';
+  var custom = el.getAttribute('data-field-label');
+  if (custom) return custom.trim();
+  var id = el.id || '';
+  var byId = {
+    'reason-input': 'Reason for contact',
+    'city-input': 'City',
+    'state-input': 'State',
+    'req-city-input': 'City',
+    'req-state-input': 'State',
+    'home-svc-city-input': 'Service city',
+    'home-svc-state-input': 'Service state',
+    'home-file-input': 'File upload',
+    'file-input': 'File upload',
+    'home-deadlineDate': 'Deadline date',
+    'st-fullname': 'Full name',
+    'st-email': 'Email',
+    'st-phone': 'Phone',
+    'st-jurisdiction': 'State of jurisdiction',
+    'st-first': 'Subject first name',
+    'st-last': 'Subject last name',
+    'st-dob': 'Date of birth',
+    'st-address': 'Last known address',
+    'st-purpose': 'Permissible purpose',
+    'st-deadline': 'Needed-by date',
+    'st-phone2': 'Last known phone',
+    'def-first-name': 'First name',
+    'def-middle-name': 'Middle name',
+    'def-last-name': 'Last name',
+    'def-address': 'Service address',
+    'def-city': 'City',
+    'def-state-input': 'State',
+    'def-dob': 'Date of birth',
+    'def-phone': 'Phone number',
+    'home-def-first-name': 'First name',
+    'home-def-middle-name': 'Middle name',
+    'home-def-last-name': 'Last name',
+    'home-def-address': 'Service address',
+    'home-def-city': 'City',
+    'home-def-state-input': 'State',
+    'home-def-zip': 'ZIP code',
+    'home-def-dob': 'Date of birth',
+    'home-def-phone': 'Phone number'
+  };
+  if (byId[id]) return byId[id];
+  if ((el.name || '') === 'zip') return 'ZIP code';
+  if ((el.name || '') === 'serve_zip') return 'Service ZIP code';
+  if ((el.name || '') === 'addressLine1') return 'Service address (line 1)';
+  if ((el.name || '') === 'serve_addressLine1') return 'Process serve address (line 1)';
+  if ((el.name || '') === 'defendantName') return 'Defendant / recipient full name';
+  var aria = el.getAttribute('aria-label');
+  if (aria) return aria.trim();
+  var wrap = el.closest('.form-group');
+  if (wrap) {
+    var lab = wrap.querySelector('label');
+    if (lab) {
+      var t = (lab.innerText || lab.textContent || '')
+        .replace(/\s*\([^)]*\)\s*/g, ' ')
+        .replace(/\s*\*\s*/g, '')
+        .replace(/\(required\)/gi, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      if (t) return t.split('\n')[0].trim();
+    }
+  }
+  if (el.name) return el.name.replace(/_/g, ' ').replace(/\b\w/g, function (ch) { return ch.toUpperCase(); });
+  if (el.placeholder) return el.placeholder;
+  return 'Field';
+}
+
+function showMissingFieldsAlert(introLine, missingLabels) {
+  var list = [...new Set((missingLabels || []).filter(Boolean))];
+  if (!list.length) {
+    alert(introLine || 'Some required information is missing.');
+    return;
+  }
+  var body = list.map(function (name) { return '• ' + name + ' is missing.'; }).join('\n');
+  alert((introLine ? introLine + '\n\n' : '') + body);
+}
+
+function isProcessExtraVisible() {
+  var ex = document.getElementById('home-process-extra');
+  if (!ex) return false;
+  return ex.style.display === 'block' || window.getComputedStyle(ex).display === 'block';
+}
+
+function defendantNameInputInForm(form) {
+  var ex = form && form.querySelector('#home-process-extra');
+  if (ex && isProcessExtraVisible()) {
+    var inner = ex.querySelector('[name="defendantName"]');
+    if (inner) return inner;
+  }
+  return form ? form.querySelector('[name="defendantName"]') : null;
+}
+
 function toggleHomeMultiDefTextarea(containerId) {
   var cid = containerId || 'home-form-container';
   if (!document.querySelector('#' + cid)) cid = 'request-form';
@@ -479,35 +633,50 @@ function initHomeFileUploadPreview() {
 }
 
 function validateHomeProcessServeFields(form) {
-  var ok = true;
+  var missing = [];
   function mark(el, bad) {
     if (!el) return;
     el.style.border = bad ? '2px solid #e74c3c' : '';
-    if (bad) ok = false;
   }
   var a1 = form.querySelector('[name="serve_addressLine1"]');
   mark(a1, !(a1 && a1.value.trim()));
+  if (!(a1 && a1.value.trim())) missing.push('Service address (line 1)');
+
   var cv = document.getElementById('home-svc-city-value');
-  mark(document.getElementById('home-svc-city-input'), !(cv && cv.value.trim()));
+  var ci = document.getElementById('home-svc-city-input');
+  mark(ci, !(cv && cv.value.trim()));
+  if (!(cv && cv.value.trim())) missing.push('Service city');
+
   var sv = document.getElementById('home-svc-state-value');
-  mark(document.getElementById('home-svc-state-input'), !(sv && sv.value.trim()));
+  var si = document.getElementById('home-svc-state-input');
+  mark(si, !(sv && sv.value.trim()));
+  if (!(sv && sv.value.trim())) missing.push('Service state');
+
   var zp = form.querySelector('[name="serve_zip"]');
-  mark(zp, !(zp && zp.value.trim()));
-  var defn = form.querySelector('[name="defendantName"]');
+  mark(zp, !(zp && isUsZip5(zp.value)));
+  if (!(zp && isUsZip5(zp.value))) missing.push('Service ZIP code (5 digits)');
+
+  var defn = defendantNameInputInForm(form);
   mark(defn, !(defn && defn.value.trim()));
+  if (!(defn && defn.value.trim())) missing.push('Defendant / recipient full name');
+
   var fi = document.getElementById('home-file-input');
-  mark(fi, !(fi && fi.files && fi.files.length));
+  if (fi) {
+    mark(fi, !(fi.files && fi.files.length));
+    if (!(fi.files && fi.files.length)) missing.push('File upload');
+  }
+
   var dd = document.getElementById('home-deadlineDate');
   if (dd && dd.value && dd.min && dd.value < dd.min) {
     mark(dd, true);
-    alert('Please choose a deadline date in the future.');
+    missing.push('Deadline date (must be a future date)');
   }
-  console.log('[DEBUG validateHomeProcessServeFields] ok:', ok, 'a1:', a1 ? a1.value : 'null', 'city:', cv ? cv.value : 'null', 'state:', sv ? sv.value : 'null', 'zip:', zp ? zp.value : 'null', 'def:', defn ? defn.value : 'null', 'files:', fi ? fi.files.length : 'null');
-  if (!ok) {
-    alert('Please fill in all required fields: Service Address, City, State, ZIP, Defendant Name, and upload at least one file.');
+
+  if (missing.length) {
+    showMissingFieldsAlert('Please complete the following process serving details:', missing);
     return false;
   }
-  return ok;
+  return true;
 }
 
 function submitHomeProcessServe(form, successId) {
@@ -596,7 +765,7 @@ function submitHomeProcessServe(form, successId) {
       var el = document.getElementById(successId);
       if (el) el.classList.add('show');
       var stripeLinks = {
-        'Standard Service — $97.99 (5–7 business days)': 'https://buy.stripe.com/8x24gz7C11J9dHj3Ix6sw04',
+        'Standard Service — $97.99 (5–7 business days)': 'https://buy.stripe.com/fZuaEX3lL0F58mZbaZ6sw05',
         'Rush Service — $119.99 (3 business days)': 'https://buy.stripe.com/6oU6oH2hHevV1YB4MB6sw09',
         'Priority Serve — $149.99 (2 business days)': 'https://buy.stripe.com/bJeaEX09z3RhgTvcf36sw02',
         'Emergency Serve — $249.99 (Same-day, approval required)': 'https://buy.stripe.com/00w4gz1dD1J9fPr0wl6sw03'
@@ -644,7 +813,7 @@ function buildContactForm(containerId, formId) {
             <input type="hidden" id="home-svc-state-value" value="CA">
             <div class="state-dropdown" id="home-svc-state-dropdown"></div>
           </div>
-          <input type="text" name="serve_zip" data-home-required placeholder="ZIP">
+          <input type="text" name="serve_zip" data-home-required placeholder="12345" maxlength="5" inputmode="numeric" pattern="\\d{5}" title="5-digit US ZIP" autocomplete="postal-code">
         </div>
       </div>
       <div class="form-group"><label>Defendant / Recipient Full Name <span class="req">(required)</span></label><input type="text" name="defendantName" data-home-required></div>
@@ -683,7 +852,7 @@ function buildContactForm(containerId, formId) {
     </div>
     <div class="form-group"><label>Firm / Company Name <span class="req">(required)</span></label><input type="text" name="company" required></div>
     <div class="form-group"><label>Email <span class="req">(required)</span></label><input type="email" name="email" required></div>
-    <div class="form-group"><label>Phone <span class="req">(required)</span></label><input type="tel" name="phone" placeholder="609-240-5665" pattern="\d{3}-\d{3}-\d{4}" required></div>
+    <div class="form-group"><label>Phone <span class="req">(required)</span></label><input type="tel" name="phone" placeholder="555-010-0199" maxlength="12" inputmode="tel" autocomplete="tel-national" pattern="\\d{3}-\\d{3}-\\d{4}" title="10-digit US phone" required></div>
     <div class="form-group">
       <label>Reason for Contact <span class="req">(required)</span></label>
       <div class="reason-select-wrapper">
@@ -733,103 +902,129 @@ function buildContactForm(containerId, formId) {
   if (window.initPhoneAutoFormat) {
     window.initPhoneAutoFormat();
   }
+  initUsZipInputs(c);
 }
 
 function handleFormSubmit(event, id, formType) {
   event.preventDefault();
   const form = event.target;
+  var missing = [];
+
   const requiredFields = form.querySelectorAll('[required]');
-  let allFilled = true;
   requiredFields.forEach(function(field) {
-    if (!field.value.trim()) {
-      allFilled = false;
-      field.style.border = '2px solid #e74c3c';
+    var empty = field.type === 'checkbox' ? !field.checked : !String(field.value || '').trim();
+    if (empty) {
+      missing.push(getFieldDisplayLabel(field));
+      field.style.border = field.type === 'checkbox' ? '' : '2px solid #e74c3c';
+      if (field.type === 'checkbox') field.style.outline = '2px solid #e74c3c';
     } else {
       field.style.border = '';
+      if (field.type === 'checkbox') field.style.outline = '';
     }
   });
-  const consent = form.querySelector('input[type="checkbox"][required]');
+
+  const consent = form.querySelector('input[name="consent"]') || form.querySelector('input[type="checkbox"][required]');
   if (consent && !consent.checked) {
-    allFilled = false;
+    missing.push('Consent confirmation');
     consent.style.outline = '2px solid #e74c3c';
   } else if (consent) {
     consent.style.outline = '';
   }
-  if (allFilled) {
-    if (formType === 'contact') {
-      const serviceTypeVal = form.querySelector('[name="serviceType"]')?.value || '';
-      console.log('[DEBUG] serviceTypeVal:', serviceTypeVal);
-      console.log('[DEBUG] skipTraceModalFilled:', skipTraceModalFilled);
-      console.log('[DEBUG] skipTraceFormData:', skipTraceFormData);
-      const isHomeProcess =
-        (Boolean(form.closest('#home-form-container')) || Boolean(form.closest('#contact-form-container'))) &&
-        HOME_PROCESS_SERVE_TYPES.indexOf(serviceTypeVal) !== -1;
-      console.log('[DEBUG] isHomeProcess:', isHomeProcess, '| closest:', Boolean(form.closest('#home-form-container')), '| indexOf:', HOME_PROCESS_SERVE_TYPES.indexOf(serviceTypeVal));
-      if (isHomeProcess) {
-        if (!validateHomeProcessServeFields(form)) return;
-        console.log('[DEBUG] Calling submitHomeProcessServe');
-        submitHomeProcessServe(form, id);
-        return;
-      }
-      /* Skip trace service types require intake form to be filled first */
-      const isSkipTrace = isSkipTraceService(serviceTypeVal);
-      console.log('[DEBUG] isSkipTrace:', isSkipTrace);
-      if (isSkipTrace && !skipTraceModalFilled) {
-        alert('Please complete the Skip Trace Intake form before submitting. Select a skip trace service to open the form.');
-        openSkipTraceModal();
-        return;
-      }
-      const formData = {
-        firstName: form.querySelector('[name="firstName"]')?.value || '',
-        lastName: form.querySelector('[name="lastName"]')?.value || '',
-        company: form.querySelector('[name="company"]')?.value || '',
-        email: form.querySelector('[name="email"]')?.value || '',
-        phone: form.querySelector('[name="phone"]')?.value || '',
-        reason: document.getElementById('reason-value')?.value || '',
-        city: document.getElementById('city-value')?.value || '',
-        state: document.getElementById('state-value')?.value || '',
-        caseDetails: form.querySelector('[name="caseDetails"]')?.value || '',
-        urgency: form.querySelector('[name="urgency"]')?.value || (skipTraceFormData && skipTraceFormData.rush ? (skipTraceFormData.rush === 'yes' ? 'High' : 'Standard') : ''),
-        serviceType: form.querySelector('[name="serviceType"]')?.value || '',
-        consent: form.querySelector('[name="consent"]')?.checked || false,
-        skipTraceData: skipTraceFormData
-      };
-      console.log('[DEBUG] formData being sent:', JSON.stringify(formData, null, 2));
-      fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
-      .then(function(res) {
-        console.log('[DEBUG] API response status:', res.status);
-        return res.json();
-      })
-      .then(function(data) {
-        console.log('[DEBUG] API response data:', data);
-        if (data.success) {
-          showToast && showToast('Request submitted successfully!', 'ok');
-        }
-      })
-      .catch(err => console.error('Form submission error:', err));
+
+  var reasonVal = document.getElementById('reason-value');
+  var reasonIn = document.getElementById('reason-input');
+  if (reasonIn && form.contains(reasonIn) && reasonIn.required && !(reasonVal && reasonVal.value.trim())) {
+    missing.push('Reason for contact');
+    reasonIn.style.border = '2px solid #e74c3c';
+  } else if (reasonIn && form.contains(reasonIn)) {
+    reasonIn.style.border = '';
+  }
+
+  var cityValEl = document.getElementById('city-value');
+  var cityInEl = document.getElementById('city-input');
+  if (cityInEl && form.contains(cityInEl) && cityInEl.required && !(cityValEl && cityValEl.value.trim())) {
+    if (missing.indexOf('City') === -1) missing.push('City');
+    cityInEl.style.border = '2px solid #e74c3c';
+  } else if (cityInEl && form.contains(cityInEl)) {
+    cityInEl.style.border = '';
+  }
+
+  var stateValEl = document.getElementById('state-value');
+  var stateInEl = document.getElementById('state-input');
+  if (stateInEl && form.contains(stateInEl) && stateInEl.required && !(stateValEl && stateValEl.value.trim())) {
+    if (missing.indexOf('State') === -1) missing.push('State');
+    stateInEl.style.border = '2px solid #e74c3c';
+  } else if (stateInEl && form.contains(stateInEl)) {
+    stateInEl.style.border = '';
+  }
+
+  var phoneEl = form.querySelector('input[name="phone"][type="tel"]');
+  if (phoneEl) {
+    phoneEl.style.border = '';
+    var pd = (phoneEl.value || '').replace(/\D/g, '');
+    if (pd.length > 0 && pd.length < 10) {
+      missing.push('Phone number (enter all 10 digits)');
+      phoneEl.style.border = '2px solid #e74c3c';
     }
+  }
+
+  if (missing.length) {
+    showMissingFieldsAlert('Please complete your submission:', missing);
+    return;
+  }
+
+  if (formType === 'contact') {
+    const serviceTypeVal = form.querySelector('[name="serviceType"]')?.value || '';
+    const isHomeProcess =
+      (Boolean(form.closest('#home-form-container')) || Boolean(form.closest('#contact-form-container'))) &&
+      HOME_PROCESS_SERVE_TYPES.indexOf(serviceTypeVal) !== -1;
+    if (isHomeProcess) {
+      if (!validateHomeProcessServeFields(form)) return;
+      submitHomeProcessServe(form, id);
+      return;
+    }
+    const isSkipTrace = isSkipTraceService(serviceTypeVal);
+    if (isSkipTrace && !skipTraceModalFilled) {
+      alert('Please complete the Skip Trace Intake form before submitting. Select a skip trace service to open the form.');
+      openSkipTraceModal();
+      return;
+    }
+    const formData = {
+      firstName: form.querySelector('[name="firstName"]')?.value || '',
+      lastName: form.querySelector('[name="lastName"]')?.value || '',
+      company: form.querySelector('[name="company"]')?.value || '',
+      email: form.querySelector('[name="email"]')?.value || '',
+      phone: form.querySelector('[name="phone"]')?.value || '',
+      reason: document.getElementById('reason-value')?.value || '',
+      city: document.getElementById('city-value')?.value || '',
+      state: document.getElementById('state-value')?.value || '',
+      caseDetails: form.querySelector('[name="caseDetails"]')?.value || '',
+      urgency: form.querySelector('[name="urgency"]')?.value || (skipTraceFormData && skipTraceFormData.rush ? (skipTraceFormData.rush === 'yes' ? 'High' : 'Standard') : ''),
+      serviceType: form.querySelector('[name="serviceType"]')?.value || '',
+      consent: form.querySelector('[name="consent"]')?.checked || false,
+      skipTraceData: skipTraceFormData
+    };
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    })
+    .then(function(res) {
+      return res.json();
+    })
+    .then(function(data) {
+      if (data.success) {
+        showToast && showToast('Request submitted successfully!', 'ok');
+      }
+    })
+    .catch(err => console.error('Form submission error:', err));
+  }
+  if (formType === 'contact') {
     const el = document.getElementById(id);
     if (el) el.classList.add('show');
-    // Stripe redirect for contact form
-    const stripeLinks = {
-      'Standard Service — $97.99 (5–7 business days)': 'https://buy.stripe.com/8x24gz7C11J9dHj3Ix6sw04',
-      'Rush Service — $119.99 (3 business days)': 'https://buy.stripe.com/6oU6oH2hHevV1YB4MB6sw09',
-      'Priority Serve — $149.99 (2 business days)': 'https://buy.stripe.com/bJeaEX09z3RhgTvcf36sw02',
-      'Emergency Serve — $249.99 (Same-day, approval required)': 'https://buy.stripe.com/00w4gz1dD1J9fPr0wl6sw03',
-      'Standard Skip Trace — $75': 'https://buy.stripe.com/00w00j3lL9bBfPr5QF6sw08',
-      'Enhanced Trace — $150': 'https://buy.stripe.com/8x24gz7C11J9dHj3Ix6sw04',
-      'Rush Trace (same/next-day) — $225': 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
-      'Business / Agent Verification — $225': 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
-      'Court-Ready Skip Trace Report — $250': 'https://buy.stripe.com/cNieVd1dD87xcDfenb6sw0a'
-    };
-    const serviceTypeVal = form.querySelector('[name="serviceType"]')?.value || '';
-    // TEMP DISABLED FOR DEBUG: if (stripeLinks[serviceTypeVal]) { setTimeout(() => { window.location.href = stripeLinks[serviceTypeVal]; }, 1500); }
+    const serviceTypeValReset = form.querySelector('[name="serviceType"]')?.value || '';
     form.reset();
-    if (isSkipTraceService(serviceTypeVal)) {
+    if (isSkipTraceService(serviceTypeValReset)) {
       skipTraceFormData = null;
       skipTraceModalFilled = false;
     }
@@ -839,45 +1034,105 @@ function handleFormSubmit(event, id, formType) {
 function handleRequestSubmit(event) {
   event.preventDefault();
   const form = event.target;
-  let allFilled = true;
-  let firstEmptyField = null;
+  var missing = [];
+  var firstEmptyField = null;
 
-  // Check standard required fields
   const requiredFields = form.querySelectorAll('[required]');
   requiredFields.forEach(function(field) {
-    if (!field.value.trim()) {
-      allFilled = false;
-      field.style.border = '2px solid #e74c3c';
-      if (!firstEmptyField) firstEmptyField = field;
+    var empty = field.type === 'checkbox' ? !field.checked : !String(field.value || '').trim();
+    if (empty) {
+      missing.push(getFieldDisplayLabel(field));
+      field.style.border = field.type === 'checkbox' ? '' : '2px solid #e74c3c';
+      if (!firstEmptyField && field.type !== 'checkbox') firstEmptyField = field;
     } else {
       field.style.border = '';
     }
   });
 
-  // Check city dropdown (hidden input value)
+  var addr1 = form.querySelector('[name="addressLine1"]');
+  if (addr1 && !addr1.value.trim()) {
+    missing.push('Service address (line 1)');
+    addr1.style.border = '2px solid #e74c3c';
+    if (!firstEmptyField) firstEmptyField = addr1;
+  } else if (addr1) {
+    addr1.style.border = '';
+  }
+
   const cityValue = document.getElementById('req-city-value')?.value;
+  const cityInput = document.getElementById('req-city-input');
   if (!cityValue) {
-    allFilled = false;
-    document.getElementById('req-city-input').style.border = '2px solid #e74c3c';
-    if (!firstEmptyField) firstEmptyField = document.getElementById('req-city-input');
-  } else {
-    document.getElementById('req-city-input').style.border = '';
+    missing.push('City');
+    if (cityInput) {
+      cityInput.style.border = '2px solid #e74c3c';
+      if (!firstEmptyField) firstEmptyField = cityInput;
+    }
+  } else if (cityInput) {
+    cityInput.style.border = '';
   }
 
-  // Check state dropdown (hidden input value)
   const stateValue = document.getElementById('req-state-value')?.value;
+  const stateInput = document.getElementById('req-state-input');
   if (!stateValue) {
-    allFilled = false;
-    document.getElementById('req-state-input').style.border = '2px solid #e74c3c';
-    if (!firstEmptyField) firstEmptyField = document.getElementById('req-state-input');
-  } else {
-    document.getElementById('req-state-input').style.border = '';
+    missing.push('State');
+    if (stateInput) {
+      stateInput.style.border = '2px solid #e74c3c';
+      if (!firstEmptyField) firstEmptyField = stateInput;
+    }
+  } else if (stateInput) {
+    stateInput.style.border = '';
   }
 
-  if (!allFilled) {
-    alert('Please fill in all required fields.');
-    if (firstEmptyField) firstEmptyField.focus();
+  var zipInput = form.querySelector('input[name="zip"]');
+  if (zipInput) {
+    zipInput.value = sanitizeUsZip5(zipInput.value);
+    if (!isUsZip5(zipInput.value)) {
+      missing.push('ZIP code (5 digits)');
+      zipInput.style.border = '2px solid #e74c3c';
+      if (!firstEmptyField) firstEmptyField = zipInput;
+    } else {
+      zipInput.style.border = '';
+    }
+  }
+
+  var reqExtraEl = document.getElementById('home-process-extra');
+  var serveZipEl = form.querySelector('input[name="serve_zip"]');
+  var extraShown = reqExtraEl && (reqExtraEl.style.display === 'block' || window.getComputedStyle(reqExtraEl).display === 'block');
+  if (serveZipEl && extraShown) {
+    serveZipEl.value = sanitizeUsZip5(serveZipEl.value);
+    if (!isUsZip5(serveZipEl.value)) {
+      missing.push('Service ZIP code (5 digits)');
+      serveZipEl.style.border = '2px solid #e74c3c';
+      if (!firstEmptyField) firstEmptyField = serveZipEl;
+    } else {
+      serveZipEl.style.border = '';
+    }
+  }
+
+  var reqPhone = form.querySelector('input[name="phone"][type="tel"]');
+  if (reqPhone) {
+    var pd = (reqPhone.value || '').replace(/\D/g, '');
+    if (pd.length > 0 && pd.length < 10) {
+      missing.push('Phone number (enter all 10 digits)');
+      reqPhone.style.border = '2px solid #e74c3c';
+      if (!firstEmptyField) firstEmptyField = reqPhone;
+    }
+  }
+
+  var serviceTypeVal = form.querySelector('[name="serviceType"]')?.value || '';
+  if (isSkipTraceService(serviceTypeVal) && !skipTraceModalFilled) {
+    alert('Skip trace intake form: please open and complete the intake form before submitting.');
+    openSkipTraceModal();
     return;
+  }
+
+  if (missing.length) {
+    showMissingFieldsAlert('Please complete your request:', missing);
+    if (firstEmptyField && firstEmptyField.focus) firstEmptyField.focus();
+    return;
+  }
+
+  if (extraShown) {
+    if (!validateHomeProcessServeFields(form)) return;
   }
 
   // Use FormData for multipart submission with files
@@ -903,11 +1158,11 @@ function handleRequestSubmit(event) {
     if (data.success) {
       const serviceType = form.querySelector('[name="serviceType"]')?.value || '';
       const stripeLinks = {
-        'Standard Service — $97.99 (5–7 business days)': 'https://buy.stripe.com/8x24gz7C11J9dHj3Ix6sw04',
+        'Standard Service — $97.99 (5–7 business days)': 'https://buy.stripe.com/fZuaEX3lL0F58mZbaZ6sw05',
         'Rush Service — $119.99 (3 business days)': 'https://buy.stripe.com/6oU6oH2hHevV1YB4MB6sw09',
         'Priority Serve — $149.99 (2 business days)': 'https://buy.stripe.com/bJeaEX09z3RhgTvcf36sw02',
         'Emergency Serve — $249.99 (Same-day, approval required)': 'https://buy.stripe.com/00w4gz1dD1J9fPr0wl6sw03',
-        'Standard Skip Trace — $75': 'https://buy.stripe.com/00w00j3lL9bBfPr5QF6sw08',
+        'Standard Skip Trace — $75': 'https://buy.stripe.com/9B6aEX8G573tav7a6V6sw0c',
         'Enhanced Trace — $150': 'https://buy.stripe.com/8x24gz7C11J9dHj3Ix6sw04',
         'Rush Trace (same/next-day) — $225': 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
         'Business / Agent Verification — $225': 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
@@ -1280,13 +1535,25 @@ function clearDefendantForm() {
 }
 
 function saveDefendant() {
+  var missing = [];
   const firstName = document.getElementById('def-first-name').value.trim();
   const lastName = document.getElementById('def-last-name').value.trim();
   const address = document.getElementById('def-address').value.trim();
   const city = document.getElementById('def-city-value').value.trim();
 
-  if(!firstName || !lastName || !address || !city) {
-    alert("Please fill in all required fields (First Name, Last Name, Address, City).");
+  if (!firstName) missing.push('First name');
+  if (!lastName) missing.push('Last name');
+  if (!address) missing.push('Service address');
+  if (!city) missing.push('City');
+
+  var phEl = document.getElementById('def-phone');
+  if (phEl) {
+    var pd = (phEl.value || '').replace(/\D/g, '');
+    if (pd.length > 0 && pd.length < 10) missing.push('Phone number (enter all 10 digits)');
+  }
+
+  if (missing.length) {
+    showMissingFieldsAlert('Please fill out the defendant information before saving.', missing);
     return;
   }
 
@@ -1524,7 +1791,7 @@ function openHomeDefendantModal(editIndex) {
     document.getElementById('home-def-city-value').value = def.city || '';
     document.getElementById('home-def-state-input').value = def.state || '';
     document.getElementById('home-def-state-value').value = def.state || '';
-    document.getElementById('home-def-zip').value = def.zip || '';
+    document.getElementById('home-def-zip').value = sanitizeUsZip5(def.zip || '');
     document.getElementById('home-def-dob').value = def.dob || '';
     document.getElementById('home-def-phone').value = formatPhoneValue(def.phone || '');
     document.getElementById('home-def-aliases').value = def.aliases || '';
@@ -1564,13 +1831,35 @@ function clearHomeDefendantForm() {
 }
 
 function saveHomeDefendant() {
+  var missing = [];
   var firstName = document.getElementById('home-def-first-name').value.trim();
   var lastName = document.getElementById('home-def-last-name').value.trim();
   var address = document.getElementById('home-def-address').value.trim();
   var cityVal = document.getElementById('home-def-city-value').value.trim() || document.getElementById('home-def-city').value.trim();
 
-  if (!firstName || !lastName || !address || !cityVal) {
-    alert("Please fill in all required fields (First Name, Last Name, Address, City).");
+  if (!firstName) missing.push('First name');
+  if (!lastName) missing.push('Last name');
+  if (!address) missing.push('Service address');
+  if (!cityVal) missing.push('City');
+
+  var zipEl = document.getElementById('home-def-zip');
+  var zipVal = zipEl ? sanitizeUsZip5(zipEl.value) : '';
+  if (zipEl) zipEl.value = zipVal;
+  if (zipVal && !isUsZip5(zipVal)) {
+    missing.push('ZIP code (5 digits or leave blank)');
+    if (zipEl) zipEl.style.border = '2px solid #e74c3c';
+  } else if (zipEl) {
+    zipEl.style.border = '';
+  }
+
+  var hp = document.getElementById('home-def-phone');
+  if (hp) {
+    var hd = (hp.value || '').replace(/\D/g, '');
+    if (hd.length > 0 && hd.length < 10) missing.push('Phone number (enter all 10 digits)');
+  }
+
+  if (missing.length) {
+    showMissingFieldsAlert('Please fill out the defendant information before saving.', missing);
     return;
   }
 
@@ -1583,7 +1872,7 @@ function saveHomeDefendant() {
     address: address,
     city: cityVal,
     state: document.getElementById('home-def-state-value').value.trim(),
-    zip: document.getElementById('home-def-zip').value.trim(),
+    zip: zipVal,
     dob: document.getElementById('home-def-dob').value,
     phone: formatPhoneValue(document.getElementById('home-def-phone').value.trim()),
     aliases: document.getElementById('home-def-aliases').value.trim(),
@@ -1652,6 +1941,7 @@ document.addEventListener('DOMContentLoaded', function() {
   initStateAutocomplete('state-input', 'state-value', 'state-dropdown', 'CA');
   initFileUpload();
   initFutureDeadlineDateInputs();
+  initUsZipInputs();
   initHomeProcessServeSection();
   initHomeSkipTraceSection();
 });

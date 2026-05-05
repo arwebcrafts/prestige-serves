@@ -108,24 +108,26 @@ function formatPhoneValue(raw) {
   return '';
 }
 
+function shouldBindPhoneFormat(input) {
+  if (!input || input.type !== 'tel') return false;
+  if (input.hasAttribute('data-no-phone-format')) return false;
+  return true;
+}
+
 // Expose globally for use across scripts
 window.formatPhoneValue = formatPhoneValue;
 window.initPhoneAutoFormat = initPhoneAutoFormat;
 
 function initPhoneAutoFormat() {
   document.querySelectorAll('input[type="tel"]').forEach(function(input) {
-    // Only auto-format inputs with our xxx-xxx-xxxx pattern
-    if (!input.hasAttribute('pattern') || input.getAttribute('pattern') !== '\\d{3}-\\d{3}-\\d{4}') return;
-    // Skip if already has listeners (avoid duplicates)
+    if (!shouldBindPhoneFormat(input)) return;
     if (input.dataset.phoneFormatted) return;
     input.dataset.phoneFormatted = '1';
 
-    // Format on input (real-time typing)
     input.addEventListener('input', function(e) {
       e.target.value = formatPhoneValue(e.target.value);
     });
 
-    // Ensure formatting on blur — handles values set programmatically
     input.addEventListener('blur', function(e) {
       var formatted = formatPhoneValue(e.target.value);
       if (formatted !== e.target.value) {
@@ -142,10 +144,10 @@ function initPhoneAutoFormatObserver() {
     mutations.forEach(function(mutation) {
       mutation.addedNodes.forEach(function(node) {
         if (node.nodeType !== 1) return;
-        if (node.tagName === 'INPUT' && node.type === 'tel' && node.hasAttribute('pattern')) {
+        if (node.tagName === 'INPUT' && node.type === 'tel') {
           applyPhoneFormatToInput(node);
         }
-        var inputs = node.querySelectorAll ? node.querySelectorAll('input[type="tel"][pattern]') : [];
+        var inputs = node.querySelectorAll ? node.querySelectorAll('input[type="tel"]') : [];
         inputs.forEach(function(input) {
           if (!input.dataset.phoneFormatted) applyPhoneFormatToInput(input);
         });
@@ -156,7 +158,7 @@ function initPhoneAutoFormatObserver() {
 }
 
 function applyPhoneFormatToInput(input) {
-  if (!input.hasAttribute('pattern') || input.getAttribute('pattern') !== '\\d{3}-\\d{3}-\\d{4}') return;
+  if (!shouldBindPhoneFormat(input)) return;
   if (input.dataset.phoneFormatted) return;
   input.dataset.phoneFormatted = '1';
   input.addEventListener('input', function(e) {

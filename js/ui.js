@@ -154,7 +154,7 @@ function renderCartDrawer() {
 
 function proceedToCheckout() {
   var links = {
-    'Standard Service': 'https://buy.stripe.com/REPLACE_STANDARD',
+    'Standard Service': 'https://buy.stripe.com/fZuaEX3lL0F58mZbaZ6sw05',
     'Rush Serve':       'https://buy.stripe.com/REPLACE_RUSH',
     'Priority Serve':   'https://buy.stripe.com/REPLACE_PRIORITY',
     'Emergency Serve':  'https://buy.stripe.com/REPLACE_EMERGENCY'

@@ -48,7 +48,7 @@
   display:flex;
   flex-direction:column;
 }
-/* Equal-height cards in a row; PayPal + Card sit on the same baseline across the row */
+/* Equal-height cards in a row; Pay with Card aligns on the same baseline across the row */
 .payment-carousel-wrapper--main .carousel-item .payment-product{
   flex:1;
   display:flex;
@@ -63,7 +63,7 @@
   margin-bottom:12px;
   min-height:0;
 }
-.payment-carousel-wrapper--main .payment-product > button.pay-btn:first-of-type{
+.payment-carousel-wrapper--main .payment-product > a.pay-btn:first-of-type{
   margin-top:auto;
 }
 /* Skip trace tier icons inside payment carousel (skip-tracing.css not loaded on payment.html) */

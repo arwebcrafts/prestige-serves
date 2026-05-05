@@ -938,7 +938,7 @@ const server = http.createServer(async (req, res) => {
     if (url === '/api/admin/requests' && method === 'GET') {
       try {
         const sql = getSql();
-        const result = await sql`SELECT * FROM service_requests ORDER BY created_at DESC LIMIT 100`;
+        const result = await sql`SELECT * FROM service_requests ORDER BY created_at DESC LIMIT 2000`;
         jsonResponse(res, 200, { success: true, data: result });
       } catch (err) {
         logger.error(LOG_CATEGORIES.API, 'Admin requests error', err);
@@ -951,7 +951,7 @@ const server = http.createServer(async (req, res) => {
     if (url === '/api/admin/contacts' && method === 'GET') {
       try {
         const sql = getSql();
-        const result = await sql`SELECT * FROM contact_submissions ORDER BY created_at DESC LIMIT 100`;
+        const result = await sql`SELECT * FROM contact_submissions ORDER BY created_at DESC LIMIT 2000`;
         jsonResponse(res, 200, { success: true, data: result });
       } catch (err) {
         logger.error(LOG_CATEGORIES.API, 'Admin contacts error', err);

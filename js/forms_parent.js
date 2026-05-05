@@ -11,7 +11,7 @@ function buildContactForm(containerId, formId) {
     </div>
     <div class="form-group"><label>Firm / Company Name <span class="req">(required)</span></label><input type="text" name="company" required></div>
     <div class="form-group"><label>Email <span class="req">(required)</span></label><input type="email" name="email" required></div>
-    <div class="form-group"><label>Phone <span class="req">(required)</span></label><input type="tel" name="phone" placeholder="609-240-5665" pattern="\d{3}-\d{3}-\d{4}" required></div>
+    <div class="form-group"><label>Phone <span class="req">(required)</span></label><input type="tel" name="phone" placeholder="555-010-0199" maxlength="12" inputmode="tel" autocomplete="tel-national" pattern="\d{3}-\d{3}-\d{4}" title="10-digit US phone" required></div>
     <div class="form-group">
       <label>Reason for Contact <span class="req">(required)</span></label>
       <div class="reason-select-wrapper">

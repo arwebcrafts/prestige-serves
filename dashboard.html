@@ -11,133 +11,174 @@
 <link rel="stylesheet" href="css/components.css">
 <link rel="stylesheet" href="css/pages/admin.css">
 </head>
-<body>
+<body class="admin-dashboard-body">
 
-<nav class="admin-nav">
+<nav class="admin-nav admin-nav-dashboard">
   <div class="admin-nav-brand">
-    <img src="assets/images/mail.png" alt="Mail" style="width:50px;height:50px;object-fit:contain;">
-    <span>Prestige Serves Admin</span>
-  </div>
-  <button class="btn-outline" onclick="handleLogout()">Logout</button>
-</nav>
-
-<div class="admin-container">
-  <div class="admin-header">
-    <h1>Dashboard</h1>
-    <p>Manage form submissions</p>
-  </div>
-
-  <div class="settings-section">
-    <h3>Email Settings</h3>
-    <div class="settings-row">
-      <label for="owner-email-input">Owner Email (receives form submissions):</label>
-      <input type="email" id="owner-email-input" placeholder="your@email.com" style="padding:8px;width:250px;border:1px solid #ddd;border-radius:4px;">
-      <button type="button" onclick="saveOwnerEmail()" class="btn-primary" style="padding:8px 16px;">Save</button>
-      <span id="email-save-status" style="margin-left:10px;display:none;">Saving...</span>
+    <img src="assets/images/mail.png" alt="" width="44" height="44" style="object-fit:contain;">
+    <div class="admin-nav-titles">
+      <span class="admin-nav-title">Prestige Serves</span>
+      <span class="admin-nav-sub">Admin dashboard</span>
     </div>
   </div>
+  <button type="button" class="btn-outline" onclick="handleLogout()">Log out</button>
+</nav>
 
-  <div class="dashboard-tabs">
-    <button type="button" class="tab-btn active" data-tab="requests" onclick="switchTab('requests')">Book a Service</button>
-    <button type="button" class="tab-btn" data-tab="contacts" onclick="switchTab('contacts')">Contact Submissions</button>
+<div class="admin-container admin-dashboard-wrap">
+  <header class="dashboard-hero">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Review Book a Service and contact submissions, filter by date and status, and export to CSV.</p>
+    </div>
+    <div class="dashboard-hero-actions">
+      <button type="button" class="btn-dashboard-ghost" onclick="loadRequests(); loadContacts();">Refresh data</button>
+    </div>
+  </header>
+
+  <section class="settings-card" aria-labelledby="settings-heading">
+    <h2 id="settings-heading" class="settings-card-title">Email notifications</h2>
+    <p class="settings-card-desc">Address that receives new form submissions.</p>
+    <div class="settings-row settings-row-dashboard">
+      <label for="owner-email-input">Owner email</label>
+      <input type="email" id="owner-email-input" class="dashboard-input" placeholder="owner@example.com" autocomplete="email">
+      <button type="button" onclick="saveOwnerEmail()" class="btn-primary btn-dashboard-primary">Save</button>
+      <span id="email-save-status" class="email-save-status" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <div class="dashboard-tabs" role="tablist">
+    <button type="button" role="tab" aria-selected="true" class="tab-btn active" data-tab="requests" onclick="switchTab('requests')">
+      <span class="tab-btn-label">Book a Service</span>
+      <span class="tab-btn-hint">Service requests</span>
+    </button>
+    <button type="button" role="tab" aria-selected="false" class="tab-btn" data-tab="contacts" onclick="switchTab('contacts')">
+      <span class="tab-btn-label">Contact</span>
+      <span class="tab-btn-hint">General inquiries</span>
+    </button>
   </div>
 
-  <div class="tab-content active" id="tab-requests">
-    <div class="stats-grid">
-      <div class="stat-card">
+  <div class="tab-content active" id="tab-requests" role="tabpanel">
+    <div class="stats-grid stats-grid-dashboard">
+      <div class="stat-card stat-card-accent">
         <h3 id="requests-total">0</h3>
-        <p>Total Requests</p>
+        <p>Total loaded</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="requests-filtered-count">0</h3>
+        <p>Matching filters</p>
       </div>
       <div class="stat-card">
         <h3 id="requests-today">0</h3>
-        <p>Today's Requests</p>
+        <p>Submitted today</p>
       </div>
       <div class="stat-card">
         <h3 id="requests-emergency">0</h3>
-        <p>Emergency Services</p>
+        <p>Emergency tier</p>
       </div>
     </div>
-    <div class="table-container">
-      <div style="margin-bottom:10px;">
-        <button type="button" class="btn-primary" onclick="selectAllRequests()" style="padding:8px 16px;margin-right:5px;">Select All</button>
-        <button type="button" class="btn-primary" onclick="deselectAllRequests()" style="padding:8px 16px;margin-right:5px;">Deselect All</button>
-        <button type="button" class="action-btn delete" onclick="deleteSelectedRequests()" style="padding:8px 16px;">Delete Selected</button>
+
+    <div id="requests-toolbar" class="dashboard-toolbar" aria-label="Request filters and actions"></div>
+    <p class="filter-results-meta" id="requests-filter-meta"></p>
+
+    <div class="table-card">
+      <div class="table-card-header">
+        <h2 class="table-card-title">Service requests</h2>
+        <div class="table-card-actions">
+          <button type="button" class="btn-toolbar" onclick="selectAllRequests()">Select all</button>
+          <button type="button" class="btn-toolbar" onclick="deselectAllRequests()">Clear selection</button>
+          <button type="button" class="btn-toolbar btn-toolbar-danger" onclick="deleteSelectedRequests()">Delete selected</button>
+        </div>
       </div>
-      <div id="requests-date-filter" style="margin-bottom:10px;"></div>
-      <table class="data-table" id="requests-table">
-        <thead>
-          <tr>
-            <th><input type="checkbox" id="select-all-requests" onchange="toggleSelectAllRequests()"></th>
-            <th>ID</th>
-            <th>Date</th>
-            <th>Client</th>
-            <th>Contact</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Service Type</th>
-            <th>Case Number</th>
-            <th>Deadline</th>
-            <th>Status</th>
-            <th>Email Sent</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="requests-body"></tbody>
-      </table>
-      <div class="admin-pagination" id="requests-pagination" aria-label="Book a Service submissions pagination"></div>
+      <div class="table-scroll">
+        <table class="data-table data-table-dashboard" id="requests-table">
+          <thead>
+            <tr>
+              <th class="th-check"><input type="checkbox" id="select-all-requests" onchange="toggleSelectAllRequests()" aria-label="Select all rows"></th>
+              <th>ID</th>
+              <th>Date</th>
+              <th>Client</th>
+              <th>Contact</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Service</th>
+              <th>Case #</th>
+              <th>Deadline</th>
+              <th>Status</th>
+              <th>Email sent</th>
+              <th class="th-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="requests-body"></tbody>
+        </table>
+      </div>
+      <div class="admin-pagination" id="requests-pagination" aria-label="Book a Service pagination"></div>
     </div>
   </div>
 
-  <div class="tab-content" id="tab-contacts">
-    <div class="stats-grid">
-      <div class="stat-card">
+  <div class="tab-content" id="tab-contacts" role="tabpanel">
+    <div class="stats-grid stats-grid-dashboard">
+      <div class="stat-card stat-card-accent">
         <h3 id="contacts-total">0</h3>
-        <p>Total Contacts</p>
+        <p>Total loaded</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="contacts-filtered-count">0</h3>
+        <p>Matching filters</p>
       </div>
       <div class="stat-card">
         <h3 id="contacts-today">0</h3>
-        <p>Today's Contacts</p>
+        <p>Submitted today</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="contacts-skiptrace">0</h3>
+        <p>With skip trace data</p>
       </div>
     </div>
-    <div class="table-container">
-      <div style="margin-bottom:10px;">
-        <button type="button" class="btn-primary" onclick="selectAllContacts()" style="padding:8px 16px;margin-right:5px;">Select All</button>
-        <button type="button" class="btn-primary" onclick="deselectAllContacts()" style="padding:8px 16px;margin-right:5px;">Deselect All</button>
-        <button type="button" class="action-btn delete" onclick="deleteSelectedContacts()" style="padding:8px 16px;">Delete Selected</button>
+
+    <div id="contacts-toolbar" class="dashboard-toolbar" aria-label="Contact filters and actions"></div>
+    <p class="filter-results-meta" id="contacts-filter-meta"></p>
+
+    <div class="table-card">
+      <div class="table-card-header">
+        <h2 class="table-card-title">Contact submissions</h2>
+        <div class="table-card-actions">
+          <button type="button" class="btn-toolbar" onclick="selectAllContacts()">Select all</button>
+          <button type="button" class="btn-toolbar" onclick="deselectAllContacts()">Clear selection</button>
+          <button type="button" class="btn-toolbar btn-toolbar-danger" onclick="deleteSelectedContacts()">Delete selected</button>
+        </div>
       </div>
-      <div id="contacts-date-filter" style="margin-bottom:10px;"></div>
-      <div id="contacts-urgency-filter" style="margin-bottom:10px;"></div>
-      <table class="data-table" id="contacts-table">
-        <thead>
-          <tr>
-            <th><input type="checkbox" id="select-all-contacts" onchange="toggleSelectAllContacts()"></th>
-            <th>ID</th>
-            <th>Date</th>
-            <th>Name</th>
-            <th>Company</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Reason</th>
-            <th>Case Number</th>
-            <th>Deadline</th>
-            <th>Urgency</th>
-            <th>Email Sent</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="contacts-body"></tbody>
-      </table>
+      <div class="table-scroll">
+        <table class="data-table data-table-dashboard" id="contacts-table">
+          <thead>
+            <tr>
+              <th class="th-check"><input type="checkbox" id="select-all-contacts" onchange="toggleSelectAllContacts()" aria-label="Select all rows"></th>
+              <th>ID</th>
+              <th>Date</th>
+              <th>Name</th>
+              <th>Company</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Reason</th>
+              <th>Case #</th>
+              <th>Deadline</th>
+              <th>Urgency</th>
+              <th>Email sent</th>
+              <th class="th-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="contacts-body"></tbody>
+        </table>
+      </div>
       <div class="admin-pagination" id="contacts-pagination" aria-label="Contact submissions pagination"></div>
     </div>
   </div>
 </div>
 
-<!-- Detail Modal -->
 <div id="detail-modal" class="modal-overlay">
-  <div class="modal-content" style="max-width:700px;">
+  <div class="modal-content modal-content-dashboard">
     <div class="modal-header">
       <h3 id="modal-detail-title">Details</h3>
-      <span class="modal-close" onclick="closeDetailModal()">&times;</span>
+      <button type="button" class="modal-close" onclick="closeDetailModal()" aria-label="Close">&times;</button>
     </div>
     <div class="modal-body" id="modal-detail-body"></div>
   </div>

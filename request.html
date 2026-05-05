@@ -104,7 +104,7 @@
     <div class="form-group"><label>Client / Firm Name <span class="req">(required)</span></label><input type="text" name="clientName" required></div>
     <div class="form-group"><label>Contact Name <span class="req">(required)</span></label><input type="text" name="contactName" required></div>
     <div class="form-group"><label>Email Address <span class="req">(required)</span></label><input type="email" name="email" required></div>
-    <div class="form-group"><label>Phone Number <span class="req">(required)</span></label><input type="tel" name="phone" placeholder="609-240-5665" pattern="\d{3}-\d{3}-\d{4}" required></div>
+    <div class="form-group"><label>Phone Number <span class="req">(required)</span></label><input type="tel" name="phone" placeholder="555-010-0199" maxlength="12" inputmode="tel" autocomplete="tel-national" pattern="\d{3}-\d{3}-\d{4}" title="10-digit US phone" required></div>
     <div class="form-group">
       <label>Service Address <span class="req">(required)</span></label>
       <input type="text" name="addressLine1" placeholder="Address Line 1" style="margin-bottom:8px;">
@@ -120,7 +120,7 @@
           <input type="hidden" id="req-state-value" name="state" value="CA">
           <div class="state-dropdown" id="req-state-dropdown"></div>
         </div>
-        <input type="text" name="zip" placeholder="ZIP" required="">
+        <input type="text" name="zip" placeholder="12345" maxlength="5" inputmode="numeric" pattern="\d{5}" title="5-digit US ZIP" autocomplete="postal-code" required="">
       </div>
     </div>
     <div class="form-group"><label>Defendant / Recipient Full Name <span class="req">(required)</span></label><input type="text" name="defendantName" required></div>
@@ -175,7 +175,7 @@
             <input type="hidden" id="home-svc-state-value" value="CA">
             <div class="state-dropdown" id="home-svc-state-dropdown"></div>
           </div>
-          <input type="text" name="serve_zip" data-home-required placeholder="ZIP">
+          <input type="text" name="serve_zip" data-home-required placeholder="12345" maxlength="5" inputmode="numeric" pattern="\d{5}" title="5-digit US ZIP" autocomplete="postal-code">
         </div>
       </div>
       <div class="form-group"><label>Defendant / Recipient Full Name <span class="req">(required)</span></label><input type="text" name="defendantName" data-home-required></div>
@@ -276,7 +276,7 @@
         </div>
         <div class="form-group">
           <label>Phone Number</label>
-          <input type="tel" id="def-phone" placeholder="609-240-5665" pattern="\d{3}-\d{3}-\d{4}">
+          <input type="tel" id="def-phone" placeholder="555-010-0199" maxlength="12" inputmode="tel" autocomplete="tel-national" pattern="\d{3}-\d{3}-\d{4}" title="10-digit US phone">
         </div>
       </div>
       <div class="form-group">
@@ -390,7 +390,7 @@
             <input type="hidden" id="home-def-state-value" value="">
             <div class="state-dropdown" id="home-def-state-dropdown"></div>
           </div>
-          <input type="text" id="home-def-zip" placeholder="ZIP">
+          <input type="text" id="home-def-zip" placeholder="12345" maxlength="5" inputmode="numeric" title="5-digit US ZIP (optional)" autocomplete="postal-code">
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
@@ -400,7 +400,7 @@
         </div>
         <div class="form-group">
           <label>Phone Number</label>
-          <input type="tel" id="home-def-phone" placeholder="609-240-5665" pattern="\d{3}-\d{3}-\d{4}">
+          <input type="tel" id="home-def-phone" placeholder="555-010-0199" maxlength="12" inputmode="tel" autocomplete="tel-national" pattern="\d{3}-\d{3}-\d{4}" title="10-digit US phone">
         </div>
       </div>
       <div class="form-group">
