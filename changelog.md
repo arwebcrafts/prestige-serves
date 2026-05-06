@@ -155,7 +155,7 @@
 - GHL credentials configurable via environment variables (no hardcoded values)
 
 ### Added
-- "Pay with Card" buttons to each pricing item in the `pricing-grid` on `index.html`
+- "Pay & Start Service" buttons to each pricing item in the `pricing-grid` on `index.html`
 - Stripe checkout links for all 4 service tiers (Standard $97.99, Rush $119.99, Priority $149.99, Emergency $249.99)
 - `.pricing-item-actions` container styles in `css/pages/home.css` for button layout
 - Post-submit redirect to Stripe checkout on `request.html` based on selected Service Type (5 skip trace options)
