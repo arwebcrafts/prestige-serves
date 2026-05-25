@@ -1,12 +1,12 @@
 # Prestige Serves LLC — security.txt (RFC 9116)
-# Canonical: https://prestigeserves.com/.well-known/security.txt
+# Canonical: https://www.prestigeserves.com/.well-known/security.txt
 
 Contact: mailto:info@prestigeserves.com
 Contact: tel:+1-609-240-5665
 Expires: 2027-12-31T23:59:59.000Z
 Preferred-Languages: en
-Canonical: https://prestigeserves.com/.well-known/security.txt
-Policy: https://prestigeserves.com/terms.html
+Canonical: https://www.prestigeserves.com/.well-known/security.txt
+Policy: https://www.prestigeserves.com/terms.html
 
 # If you have found a security vulnerability affecting prestigeserves.com,
 # please email info@prestigeserves.com with:

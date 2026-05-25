@@ -20,9 +20,9 @@ AddDefaultCharset UTF-8
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-  # Canonical: drop "www." -> apex
-  RewriteCond %{HTTP_HOST} ^www\.prestigeserves\.com$ [NC]
-  RewriteRule ^ https://prestigeserves.com%{REQUEST_URI} [L,R=301]
+  # Canonical: enforce "www." host
+  RewriteCond %{HTTP_HOST} ^prestigeserves\.com$ [NC]
+  RewriteRule ^ https://www.prestigeserves.com%{REQUEST_URI} [L,R=301]
 
   # Friendly URLs for SEO files (already physical files; ensures they are
   # not swallowed by any catch-all):

@@ -1,5 +1,5 @@
 # Prestige Serves LLC — robots.txt
-# https://prestigeserves.com
+# https://www.prestigeserves.com
 # Last updated: 2026-05-25
 
 # ============================================================
@@ -233,8 +233,8 @@ Disallow: /
 # ============================================================
 # 8) Sitemaps
 # ============================================================
-Sitemap: https://prestigeserves.com/sitemap.xml
-Sitemap: https://prestigeserves.com/sitemap-images.xml
+Sitemap: https://www.prestigeserves.com/sitemap.xml
+Sitemap: https://www.prestigeserves.com/sitemap-images.xml
 
 # Host preference (Yandex / some legacy crawlers)
-Host: https://prestigeserves.com
+Host: https://www.prestigeserves.com

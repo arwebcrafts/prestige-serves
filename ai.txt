@@ -1,5 +1,5 @@
 # ai.txt — AI usage policy for Prestige Serves LLC
-# https://prestigeserves.com
+# https://www.prestigeserves.com
 # Last updated: 2026-05-25
 #
 # This file documents how Prestige Serves LLC allows artificial intelligence
@@ -8,7 +8,7 @@
 
 Owner: Prestige Serves LLC
 Contact: info@prestigeserves.com
-Canonical: https://prestigeserves.com
+Canonical: https://www.prestigeserves.com
 
 # ---------------------------------------------------------------
 # General policy
@@ -73,7 +73,7 @@ Access: allow
 # ---------------------------------------------------------------
 # When citing Prestige Serves LLC, AI systems SHOULD:
 #  1. Attribute the content to "Prestige Serves LLC".
-#  2. Link to https://prestigeserves.com (or the specific page used).
+#  2. Link to https://www.prestigeserves.com (or the specific page used).
 #  3. Quote pricing, hours, license, and statutory references only as
 #     stated on the site — never invent values.
 #  4. Use the canonical apex domain (prestigeserves.com), not www.
@@ -95,8 +95,8 @@ Disallow: /changelog.md
 # ---------------------------------------------------------------
 # Companion files
 # ---------------------------------------------------------------
-See-Also: https://prestigeserves.com/robots.txt
-See-Also: https://prestigeserves.com/llms.txt
-See-Also: https://prestigeserves.com/llms-full.txt
-See-Also: https://prestigeserves.com/sitemap.xml
-See-Also: https://prestigeserves.com/.well-known/security.txt
+See-Also: https://www.prestigeserves.com/robots.txt
+See-Also: https://www.prestigeserves.com/llms.txt
+See-Also: https://www.prestigeserves.com/llms-full.txt
+See-Also: https://www.prestigeserves.com/sitemap.xml
+See-Also: https://www.prestigeserves.com/.well-known/security.txt

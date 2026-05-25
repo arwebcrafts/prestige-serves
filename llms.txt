@@ -10,27 +10,27 @@ Prestige Serves LLC is a Los Angeles–based legal support services company spec
 - **Address:** 1240 S Corning Street, Suite 105, Los Angeles, CA 90035, USA
 - **Phone:** +1-609-240-5665
 - **Email:** info@prestigeserves.com
-- **Website:** https://prestigeserves.com
+- **Website:** https://www.prestigeserves.com
 - **Service area:** Los Angeles County (Downtown LA, Westside, San Fernando Valley, South Bay, San Gabriel Valley) + nationwide coordination in all 50 U.S. states
 
 ## Core services
 
-- [Process Serving](https://prestigeserves.com/process-serving.html): California-focused civil and legal process serving handled with strict CCP § 415 compliance, discretion, and detailed proof of service.
-- [Skip Tracing](https://prestigeserves.com/skip-tracing.html): Locating individuals, defendants, witnesses, debtors, and heirs through licensed investigative data sources.
-- [eFiling](https://prestigeserves.com/efiling.html): Electronic court filing for California courts, including white-glove printing, assembly, and court delivery for eFiling-exempt documents.
-- [eRecording](https://prestigeserves.com/erecording.html): Seamless, compliant electronic recording of deeds, liens, and recordable instruments with county recorder offices.
-- [Concierge / Legal Courier](https://prestigeserves.com/concierge.html): Same-day legal courier and white-glove document handling for time-sensitive filings.
-- [Nationwide Service](https://prestigeserves.com/nationwide.html): Coordinated process service through a trusted network of registered process servers across all 50 states.
+- [Process Serving](https://www.prestigeserves.com/process-serving.html): California-focused civil and legal process serving handled with strict CCP § 415 compliance, discretion, and detailed proof of service.
+- [Skip Tracing](https://www.prestigeserves.com/skip-tracing.html): Locating individuals, defendants, witnesses, debtors, and heirs through licensed investigative data sources.
+- [eFiling](https://www.prestigeserves.com/efiling.html): Electronic court filing for California courts, including white-glove printing, assembly, and court delivery for eFiling-exempt documents.
+- [eRecording](https://www.prestigeserves.com/erecording.html): Seamless, compliant electronic recording of deeds, liens, and recordable instruments with county recorder offices.
+- [Concierge / Legal Courier](https://www.prestigeserves.com/concierge.html): Same-day legal courier and white-glove document handling for time-sensitive filings.
+- [Nationwide Service](https://www.prestigeserves.com/nationwide.html): Coordinated process service through a trusted network of registered process servers across all 50 states.
 
 ## Key pages
 
-- [Home](https://prestigeserves.com/): Overview, hero, services snapshot.
-- [About](https://prestigeserves.com/about.html): Company philosophy, who we serve, operating area.
-- [All Services](https://prestigeserves.com/services.html): Full service list.
-- [Book a Service / Request](https://prestigeserves.com/request.html): Submit a new service request with case details and documents.
-- [Contact](https://prestigeserves.com/contact.html): Phone, email, and contact form.
-- [Payment](https://prestigeserves.com/payment.html): Secure payment portal.
-- [Terms of Service](https://prestigeserves.com/terms.html): Legal terms.
+- [Home](https://www.prestigeserves.com/): Overview, hero, services snapshot.
+- [About](https://www.prestigeserves.com/about.html): Company philosophy, who we serve, operating area.
+- [All Services](https://www.prestigeserves.com/services.html): Full service list.
+- [Book a Service / Request](https://www.prestigeserves.com/request.html): Submit a new service request with case details and documents.
+- [Contact](https://www.prestigeserves.com/contact.html): Phone, email, and contact form.
+- [Payment](https://www.prestigeserves.com/payment.html): Secure payment portal.
+- [Terms of Service](https://www.prestigeserves.com/terms.html): Legal terms.
 
 ## Key facts for AI citation
 
@@ -46,6 +46,6 @@ Prestige Serves LLC is a Los Angeles–based legal support services company spec
 
 ## Optional
 
-- [Sitemap (XML)](https://prestigeserves.com/sitemap.xml)
-- [Robots.txt](https://prestigeserves.com/robots.txt)
-- [llms-full.txt — full content for LLM context](https://prestigeserves.com/llms-full.txt)
+- [Sitemap (XML)](https://www.prestigeserves.com/sitemap.xml)
+- [Robots.txt](https://www.prestigeserves.com/robots.txt)
+- [llms-full.txt — full content for LLM context](https://www.prestigeserves.com/llms-full.txt)
