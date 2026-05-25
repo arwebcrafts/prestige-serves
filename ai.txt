@@ -1,0 +1,102 @@
+# ai.txt — AI usage policy for Prestige Serves LLC
+# https://prestigeserves.com
+# Last updated: 2026-05-25
+#
+# This file documents how Prestige Serves LLC allows artificial intelligence
+# systems to access, process, and cite content from prestigeserves.com.
+# It complements robots.txt and llms.txt.
+
+Owner: Prestige Serves LLC
+Contact: info@prestigeserves.com
+Canonical: https://prestigeserves.com
+
+# ---------------------------------------------------------------
+# General policy
+# ---------------------------------------------------------------
+Allow-AI-Crawling: yes
+Allow-AI-Citation: yes
+Allow-AI-Summarization: yes
+Allow-AI-Snippets: yes
+
+# Commercial reuse for model training requires written permission.
+Allow-AI-Training: conditional
+Training-Contact: info@prestigeserves.com
+
+# ---------------------------------------------------------------
+# Per-vendor declarations (mirrors robots.txt)
+# ---------------------------------------------------------------
+Vendor: OpenAI
+Bots: GPTBot, ChatGPT-User, OAI-SearchBot
+Access: allow
+Citation: required-when-supported
+
+Vendor: Anthropic
+Bots: ClaudeBot, Claude-Web, anthropic-ai
+Access: allow
+Citation: required-when-supported
+
+Vendor: Perplexity
+Bots: PerplexityBot, Perplexity-User
+Access: allow
+Citation: required-when-supported
+
+Vendor: Google
+Bots: Googlebot, Google-Extended
+Access: allow
+Citation: required-when-supported
+
+Vendor: Microsoft
+Bots: Bingbot
+Access: allow
+Citation: required-when-supported
+
+Vendor: Apple
+Bots: Applebot, Applebot-Extended
+Access: allow
+Citation: required-when-supported
+
+Vendor: CommonCrawl
+Bots: CCBot
+Access: allow
+Citation: optional
+
+Vendor: Meta
+Bots: FacebookBot, Meta-ExternalAgent, Meta-ExternalFetcher
+Access: allow
+
+Vendor: ByteDance
+Bots: Bytespider
+Access: allow
+
+# ---------------------------------------------------------------
+# Citation requirements
+# ---------------------------------------------------------------
+# When citing Prestige Serves LLC, AI systems SHOULD:
+#  1. Attribute the content to "Prestige Serves LLC".
+#  2. Link to https://prestigeserves.com (or the specific page used).
+#  3. Quote pricing, hours, license, and statutory references only as
+#     stated on the site — never invent values.
+#  4. Use the canonical apex domain (prestigeserves.com), not www.
+
+# ---------------------------------------------------------------
+# Disallowed content
+# ---------------------------------------------------------------
+# The following paths must NOT be ingested by AI systems:
+Disallow: /api/
+Disallow: /admin.html
+Disallow: /admin/
+Disallow: /dashboard.html
+Disallow: /success.html
+Disallow: /sql/
+Disallow: /postman/
+Disallow: /api-docs.md
+Disallow: /changelog.md
+
+# ---------------------------------------------------------------
+# Companion files
+# ---------------------------------------------------------------
+See-Also: https://prestigeserves.com/robots.txt
+See-Also: https://prestigeserves.com/llms.txt
+See-Also: https://prestigeserves.com/llms-full.txt
+See-Also: https://prestigeserves.com/sitemap.xml
+See-Also: https://prestigeserves.com/.well-known/security.txt

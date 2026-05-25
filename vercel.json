@@ -1,6 +1,99 @@
 {
+  "cleanUrls": false,
+  "trailingSlash": false,
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
+    {
+      "src": "/robots\\.txt",
+      "dest": "/robots.txt",
+      "headers": { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=3600" }
+    },
+    {
+      "src": "/sitemap\\.xml",
+      "dest": "/sitemap.xml",
+      "headers": { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=3600" }
+    },
+    {
+      "src": "/sitemap-images\\.xml",
+      "dest": "/sitemap-images.xml",
+      "headers": { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=3600" }
+    },
+    {
+      "src": "/sitemap-index\\.xml",
+      "dest": "/sitemap-index.xml",
+      "headers": { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=3600" }
+    },
+    {
+      "src": "/llms\\.txt",
+      "dest": "/llms.txt",
+      "headers": { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=3600" }
+    },
+    {
+      "src": "/llms-full\\.txt",
+      "dest": "/llms-full.txt",
+      "headers": { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=3600" }
+    },
+    {
+      "src": "/ai\\.txt",
+      "dest": "/ai.txt",
+      "headers": { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=3600" }
+    },
+    {
+      "src": "/humans\\.txt",
+      "dest": "/humans.txt",
+      "headers": { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=3600" }
+    },
+    {
+      "src": "/security\\.txt",
+      "dest": "/security.txt",
+      "headers": { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=3600" }
+    },
+    {
+      "src": "/\\.well-known/security\\.txt",
+      "dest": "/.well-known/security.txt",
+      "headers": { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=3600" }
+    },
+    {
+      "src": "/\\.well-known/(.*)",
+      "dest": "/.well-known/$1"
+    },
+    {
+      "src": "/site\\.webmanifest",
+      "dest": "/site.webmanifest",
+      "headers": { "Content-Type": "application/manifest+json; charset=utf-8", "Cache-Control": "public, max-age=3600" }
+    },
+    {
+      "src": "/browserconfig\\.xml",
+      "dest": "/browserconfig.xml",
+      "headers": { "Content-Type": "application/xml; charset=utf-8" }
+    },
+    {
+      "src": "/opensearch\\.xml",
+      "dest": "/opensearch.xml",
+      "headers": { "Content-Type": "application/opensearchdescription+xml; charset=utf-8" }
+    },
+    {
+      "src": "/(.*)\\.(png|jpg|jpeg|gif|webp|avif|svg|ico|woff|woff2|ttf|otf)$",
+      "dest": "/$1.$2",
+      "headers": { "Cache-Control": "public, max-age=2592000, immutable" }
+    },
     { "src": "/(.*)", "dest": "/$1" }
+  ],
+  "redirects": [
+    { "source": "/www.prestigeserves.com/(.*)", "destination": "https://prestigeserves.com/$1", "permanent": true },
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/home", "destination": "/", "permanent": true }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(self)" },
+        { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains; preload" }
+      ]
+    }
   ]
 }

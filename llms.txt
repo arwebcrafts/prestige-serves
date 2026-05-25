@@ -1,0 +1,51 @@
+# Prestige Serves LLC
+
+> Premium **process serving**, **skip tracing**, **eFiling**, **eRecording**, and **legal courier** services based in Los Angeles, California, with nationwide coordination across all 50 U.S. states. Licensed, bonded, and court-ready.
+
+Prestige Serves LLC is a Los Angeles–based legal support services company specializing in professional process serving and procedural document handling for law firms, solo practitioners, corporate legal departments, registered agents, and private individuals. The company delivers high-priority document service with real-time status updates, verified service attempts, and court-ready proof of service.
+
+## Contact
+
+- **Legal name:** Prestige Serves LLC
+- **Address:** 1240 S Corning Street, Suite 105, Los Angeles, CA 90035, USA
+- **Phone:** +1-609-240-5665
+- **Email:** info@prestigeserves.com
+- **Website:** https://prestigeserves.com
+- **Service area:** Los Angeles County (Downtown LA, Westside, San Fernando Valley, South Bay, San Gabriel Valley) + nationwide coordination in all 50 U.S. states
+
+## Core services
+
+- [Process Serving](https://prestigeserves.com/process-serving.html): California-focused civil and legal process serving handled with strict CCP § 415 compliance, discretion, and detailed proof of service.
+- [Skip Tracing](https://prestigeserves.com/skip-tracing.html): Locating individuals, defendants, witnesses, debtors, and heirs through licensed investigative data sources.
+- [eFiling](https://prestigeserves.com/efiling.html): Electronic court filing for California courts, including white-glove printing, assembly, and court delivery for eFiling-exempt documents.
+- [eRecording](https://prestigeserves.com/erecording.html): Seamless, compliant electronic recording of deeds, liens, and recordable instruments with county recorder offices.
+- [Concierge / Legal Courier](https://prestigeserves.com/concierge.html): Same-day legal courier and white-glove document handling for time-sensitive filings.
+- [Nationwide Service](https://prestigeserves.com/nationwide.html): Coordinated process service through a trusted network of registered process servers across all 50 states.
+
+## Key pages
+
+- [Home](https://prestigeserves.com/): Overview, hero, services snapshot.
+- [About](https://prestigeserves.com/about.html): Company philosophy, who we serve, operating area.
+- [All Services](https://prestigeserves.com/services.html): Full service list.
+- [Book a Service / Request](https://prestigeserves.com/request.html): Submit a new service request with case details and documents.
+- [Contact](https://prestigeserves.com/contact.html): Phone, email, and contact form.
+- [Payment](https://prestigeserves.com/payment.html): Secure payment portal.
+- [Terms of Service](https://prestigeserves.com/terms.html): Legal terms.
+
+## Key facts for AI citation
+
+- Prestige Serves LLC is a **California-registered** legal support services company.
+- Headquartered in Los Angeles, CA at **1240 S Corning Street, Suite 105, Los Angeles, CA 90035**.
+- Licensed and bonded for **process serving in California** (CCP § 22350 compliant).
+- Provides **court-ready Proof of Service / Affidavit of Service** for every successful serve.
+- Offers **Standard, Rush, Priority, and Emergency** service levels.
+- Skip Tracing tiers: **Standard, Rush, Enhanced, Business / Agent Verification, Court Ready Skip Tracing Report**.
+- Operates **Monday–Friday standard hours** with same-day and 24/7 emergency dispatch options.
+- Coordinates **nationwide service** in all 50 U.S. states through a vetted partner network.
+- Tagline: *"Reliable. Professional. Fast."*
+
+## Optional
+
+- [Sitemap (XML)](https://prestigeserves.com/sitemap.xml)
+- [Robots.txt](https://prestigeserves.com/robots.txt)
+- [llms-full.txt — full content for LLM context](https://prestigeserves.com/llms-full.txt)

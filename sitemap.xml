@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+  xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+                      http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+  <url>
+    <loc>https://prestigeserves.com/</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.00</priority>
+    <image:image>
+      <image:loc>https://prestigeserves.com/assets/images/prestige-serves-img-0.png</image:loc>
+      <image:title>Prestige Serves LLC — Process Serving Los Angeles</image:title>
+      <image:caption>Los Angeles courthouse — Prestige Serves LLC professional process serving.</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://prestigeserves.com/about.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://prestigeserves.com/assets/images/prestige-serves-img-13.png</image:loc>
+      <image:title>About Prestige Serves LLC</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://prestigeserves.com/services.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <url>
+    <loc>https://prestigeserves.com/process-serving.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://prestigeserves.com/assets/images/prestige-serves-img-1.png</image:loc>
+      <image:title>Process Serving Los Angeles — Prestige Serves LLC</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://prestigeserves.com/skip-tracing.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://prestigeserves.com/assets/images/prestige-serves-img-6.png</image:loc>
+      <image:title>Skip Tracing Services Los Angeles</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://prestigeserves.com/efiling.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://prestigeserves.com/assets/images/prestige-serves-img-2.png</image:loc>
+      <image:title>Court eFiling Services California</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://prestigeserves.com/erecording.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://prestigeserves.com/assets/images/prestige-serves-img-3.png</image:loc>
+      <image:title>eRecording Services Los Angeles</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://prestigeserves.com/concierge.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://prestigeserves.com/assets/images/prestige-serves-img-5.png</image:loc>
+      <image:title>Legal Concierge Services</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://prestigeserves.com/nationwide.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://prestigeserves.com/assets/images/prestige-serves-img-4.png</image:loc>
+      <image:title>Nationwide Process Serving — All 50 States</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://prestigeserves.com/request.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://prestigeserves.com/contact.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://prestigeserves.com/assets/images/prestige-serves-img-12.png</image:loc>
+      <image:title>Contact Prestige Serves LLC — Los Angeles</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://prestigeserves.com/payment.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
+
+  <url>
+    <loc>https://prestigeserves.com/terms.html</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.30</priority>
+  </url>
+
+</urlset>

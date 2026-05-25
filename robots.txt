@@ -1,0 +1,240 @@
+# Prestige Serves LLC — robots.txt
+# https://prestigeserves.com
+# Last updated: 2026-05-25
+
+# ============================================================
+# 1) Default policy — allow everything to all standard crawlers
+# ============================================================
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin.html
+Disallow: /admin/
+Disallow: /dashboard.html
+Disallow: /success.html
+Disallow: /node_modules/
+Disallow: /sql/
+Disallow: /postman/
+Disallow: /*.json$
+Disallow: /*.md$
+Disallow: /*.zip$
+Disallow: /test-update.js
+Disallow: /test_api.py
+Disallow: /api-docs.md
+Disallow: /changelog.md
+Disallow: /changelog-api.md
+Disallow: /*?session_id=
+Disallow: /*?token=
+Crawl-delay: 5
+
+# ============================================================
+# 2) Google
+# ============================================================
+User-agent: Googlebot
+Allow: /
+Allow: /css/
+Allow: /js/
+Allow: /assets/
+Disallow: /api/
+Disallow: /admin.html
+Disallow: /admin/
+Disallow: /dashboard.html
+Disallow: /success.html
+
+User-agent: Googlebot-Image
+Allow: /assets/images/
+Allow: /
+
+User-agent: Googlebot-News
+Allow: /
+
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: Mediapartners-Google
+Allow: /
+
+# Google's AI / Generative training bot — allow for AI Overviews / SGE
+User-agent: Google-Extended
+Allow: /
+
+# ============================================================
+# 3) Bing / Microsoft
+# ============================================================
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /admin.html
+Disallow: /admin/
+Disallow: /dashboard.html
+
+User-agent: BingPreview
+Allow: /
+
+User-agent: msnbot
+Allow: /
+
+# ============================================================
+# 4) Other major search engines
+# ============================================================
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+# ============================================================
+# 5) AI / LLM crawlers — ALLOWED so Prestige Serves
+#    can be cited in ChatGPT, Claude, Perplexity, Gemini, etc.
+#    (Change to "Disallow: /" if you want to opt out.)
+# ============================================================
+
+# OpenAI
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+# Anthropic (Claude)
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# Common Crawl (used by many LLM training datasets)
+User-agent: CCBot
+Allow: /
+
+# Apple Intelligence
+User-agent: Applebot-Extended
+Allow: /
+
+# Meta / Facebook AI
+User-agent: FacebookBot
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Meta-ExternalFetcher
+Allow: /
+
+# ByteDance
+User-agent: Bytespider
+Allow: /
+
+# Cohere
+User-agent: cohere-ai
+Allow: /
+
+# You.com
+User-agent: YouBot
+Allow: /
+
+# DuckAssist
+User-agent: DuckAssistBot
+Allow: /
+
+# Diffbot
+User-agent: Diffbot
+Allow: /
+
+# Amazon
+User-agent: Amazonbot
+Allow: /
+
+# ============================================================
+# 6) Social preview crawlers (for nice link previews)
+# ============================================================
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+User-agent: Discordbot
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
+User-agent: Slackbot-LinkExpanding
+Allow: /
+
+User-agent: Pinterestbot
+Allow: /
+
+User-agent: redditbot
+Allow: /
+
+# ============================================================
+# 7) Bad / scraper bots — blocked
+# ============================================================
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: SeznamBot
+Disallow: /
+
+User-agent: serpstatbot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+# ============================================================
+# 8) Sitemaps
+# ============================================================
+Sitemap: https://prestigeserves.com/sitemap.xml
+Sitemap: https://prestigeserves.com/sitemap-images.xml
+
+# Host preference (Yandex / some legacy crawlers)
+Host: https://prestigeserves.com

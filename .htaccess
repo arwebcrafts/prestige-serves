@@ -1,0 +1,149 @@
+# ============================================================
+# Prestige Serves LLC — Apache / Hostinger .htaccess
+# Last updated: 2026-05-25
+# ============================================================
+
+# Default index
+DirectoryIndex index.html
+
+# UTF-8 by default
+AddDefaultCharset UTF-8
+
+# ------------------------------------------------------------
+# 1) Rewrite engine — HTTPS + apex domain canonical
+# ------------------------------------------------------------
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Force HTTPS
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # Canonical: drop "www." -> apex
+  RewriteCond %{HTTP_HOST} ^www\.prestigeserves\.com$ [NC]
+  RewriteRule ^ https://prestigeserves.com%{REQUEST_URI} [L,R=301]
+
+  # Friendly URLs for SEO files (already physical files; ensures they are
+  # not swallowed by any catch-all):
+  RewriteRule ^robots\.txt$ robots.txt [L]
+  RewriteRule ^sitemap\.xml$ sitemap.xml [L]
+  RewriteRule ^sitemap-images\.xml$ sitemap-images.xml [L]
+  RewriteRule ^sitemap-index\.xml$ sitemap-index.xml [L]
+  RewriteRule ^llms\.txt$ llms.txt [L]
+  RewriteRule ^llms-full\.txt$ llms-full.txt [L]
+  RewriteRule ^ai\.txt$ ai.txt [L]
+  RewriteRule ^humans\.txt$ humans.txt [L]
+  RewriteRule ^security\.txt$ security.txt [L]
+  RewriteRule ^\.well-known/security\.txt$ .well-known/security.txt [L]
+  RewriteRule ^site\.webmanifest$ site.webmanifest [L]
+  RewriteRule ^browserconfig\.xml$ browserconfig.xml [L]
+  RewriteRule ^opensearch\.xml$ opensearch.xml [L]
+
+  # /index.html -> /  (301)
+  RewriteCond %{THE_REQUEST} \s/+index\.html[\s?] [NC]
+  RewriteRule ^ /? [L,R=301]
+</IfModule>
+
+# ------------------------------------------------------------
+# 2) MIME types (in case Hostinger does not set them)
+# ------------------------------------------------------------
+<IfModule mod_mime.c>
+  AddType text/plain                       .txt
+  AddType application/xml                  .xml
+  AddType application/manifest+json        .webmanifest
+  AddType application/opensearchdescription+xml .osdx
+  AddType image/svg+xml                    .svg
+  AddType image/webp                       .webp
+  AddType image/avif                       .avif
+  AddType font/woff                        .woff
+  AddType font/woff2                       .woff2
+
+  AddCharset UTF-8 .html .css .js .json .xml .txt .webmanifest .svg
+</IfModule>
+
+# ------------------------------------------------------------
+# 3) Compression
+# ------------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/xml application/xml+rss application/javascript application/json application/manifest+json image/svg+xml application/opensearchdescription+xml
+</IfModule>
+
+# ------------------------------------------------------------
+# 4) Browser & CDN caching
+# ------------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault                                "access plus 1 hour"
+
+  # SEO files — short cache so updates propagate quickly
+  ExpiresByType text/plain                      "access plus 1 hour"
+  ExpiresByType application/xml                 "access plus 1 hour"
+  ExpiresByType application/manifest+json       "access plus 1 day"
+  ExpiresByType application/opensearchdescription+xml "access plus 1 day"
+
+  # HTML
+  ExpiresByType text/html                       "access plus 5 minutes"
+
+  # CSS / JS
+  ExpiresByType text/css                        "access plus 7 days"
+  ExpiresByType application/javascript          "access plus 7 days"
+  ExpiresByType text/javascript                 "access plus 7 days"
+
+  # Images / fonts — long cache
+  ExpiresByType image/png                       "access plus 30 days"
+  ExpiresByType image/jpeg                      "access plus 30 days"
+  ExpiresByType image/gif                       "access plus 30 days"
+  ExpiresByType image/webp                      "access plus 30 days"
+  ExpiresByType image/avif                      "access plus 30 days"
+  ExpiresByType image/svg+xml                   "access plus 30 days"
+  ExpiresByType image/x-icon                    "access plus 30 days"
+  ExpiresByType font/woff                       "access plus 30 days"
+  ExpiresByType font/woff2                      "access plus 30 days"
+  ExpiresByType font/ttf                        "access plus 30 days"
+  ExpiresByType font/otf                        "access plus 30 days"
+</IfModule>
+
+# ------------------------------------------------------------
+# 5) Security headers
+# ------------------------------------------------------------
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(self)"
+
+  # Encourage long-lived caching only for fingerprintable static assets
+  <FilesMatch "\.(png|jpe?g|gif|webp|avif|svg|ico|woff2?|ttf|otf)$">
+    Header set Cache-Control "public, max-age=2592000, immutable"
+  </FilesMatch>
+
+  # SEO / discovery files: short cache
+  <FilesMatch "^(robots\.txt|sitemap.*\.xml|llms.*\.txt|ai\.txt|humans\.txt|security\.txt|browserconfig\.xml|opensearch\.xml|site\.webmanifest)$">
+    Header set Cache-Control "public, max-age=3600"
+    Header set X-Robots-Tag "all"
+  </FilesMatch>
+</IfModule>
+
+# ------------------------------------------------------------
+# 6) Block sensitive files
+# ------------------------------------------------------------
+<FilesMatch "^(\.env|\.env\.local|package\.json|package-lock\.json|server\.js|\.gitignore|\.git|README\.md|api-docs\.md|changelog.*\.md|test_api\.py|test-update\.js|package\.zip)$">
+  Require all denied
+</FilesMatch>
+
+# Deny direct access to api/, sql/, postman/, node_modules/
+RedirectMatch 404 ^/(api/|sql/|postman/|node_modules/|\.git/).*$
+
+# Allow .well-known
+<IfModule mod_authz_core.c>
+  <Directory ".well-known">
+    Require all granted
+  </Directory>
+</IfModule>
+
+# ------------------------------------------------------------
+# 7) Custom 404 (use root index 404 page if you create one later)
+# ------------------------------------------------------------
+ErrorDocument 404 /404.html

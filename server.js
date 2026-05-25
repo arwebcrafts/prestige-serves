@@ -7,6 +7,30 @@ const { put } = require('@vercel/blob');
 const { processContactFormToPST, processServiceRequestToPST } = require('./api/pst-integration');
 const nodemailer = require('nodemailer');
 const { logger, perf, emailLogger, pstLogger, blobLogger, LOG_CATEGORIES } = require('./api/logger');
+const StripeLib = require('stripe');
+
+// Stripe client — only active when STRIPE_SECRET_KEY is set in .env.local
+const stripeClient = process.env.STRIPE_SECRET_KEY
+  ? new StripeLib(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-04-10' })
+  : null;
+
+// Server-side price allowlist — set STRIPE_PRICE_* env vars to your actual price_... IDs
+// from the Stripe Dashboard (Products → select product → copy "Price ID").
+// The frontend never sees these IDs; the server maps service keys → price IDs.
+const PRICE_CATALOG = {
+  standard_service:       { priceId: process.env.STRIPE_PRICE_STANDARD_SERVICE   || 'price_REPLACE_standard_service',    label: 'Standard Service',                 amount: 9799  },
+  rush_serve:             { priceId: process.env.STRIPE_PRICE_RUSH_SERVE          || 'price_REPLACE_rush_serve',           label: 'Rush Serve',                       amount: 11999 },
+  priority_serve:         { priceId: process.env.STRIPE_PRICE_PRIORITY_SERVE      || 'price_REPLACE_priority_serve',       label: 'Priority Serve',                   amount: 14999 },
+  emergency_serve:        { priceId: process.env.STRIPE_PRICE_EMERGENCY_SERVE     || 'price_REPLACE_emergency_serve',      label: 'Emergency Serve',                  amount: 24999 },
+  skip_trace_standard:    { priceId: process.env.STRIPE_PRICE_SKIP_TRACE_STANDARD || 'price_REPLACE_skip_trace_standard',  label: 'Standard Skip Tracing',            amount: 7500  },
+  skip_trace_rush:        { priceId: process.env.STRIPE_PRICE_SKIP_TRACE_RUSH     || 'price_REPLACE_skip_trace_rush',      label: 'Rush Skip Tracing',                amount: 22500 },
+  skip_trace_court_ready: { priceId: process.env.STRIPE_PRICE_SKIP_TRACE_COURT    || 'price_REPLACE_skip_trace_court',     label: 'Court Ready Skip Tracing Report',  amount: 25000 },
+  skip_trace_enhanced:    { priceId: process.env.STRIPE_PRICE_SKIP_TRACE_ENHANCED || 'price_REPLACE_skip_trace_enhanced',  label: 'Enhanced Trace',                   amount: 15000 },
+  skip_trace_business:    { priceId: process.env.STRIPE_PRICE_SKIP_TRACE_BUSINESS || 'price_REPLACE_skip_trace_business',  label: 'Business / Agent Verification',    amount: 22500 },
+  addon_defendant:        { priceId: process.env.STRIPE_PRICE_ADDON_DEFENDANT     || 'price_REPLACE_addon_defendant',      label: 'Additional Defendant – Same Case', amount: 2500  },
+};
+
+const SITE_URL = (process.env.SITE_URL || 'http://localhost:3002').replace(/\/$/, '');
 
 const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_P8aH3JElyXBw@ep-gentle-frog-a4yzwn3w-pooler.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require';
 const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN || 'vercel_blob_rw_1qFTdRzk36aoQZsG_uiiyBg0DZ8Sl5zySi6DmqaMnIz9eqV';
@@ -520,6 +544,16 @@ function getSql() {
   return neon(DATABASE_URL);
 }
 
+// Buffer raw bytes — required for Stripe webhook signature verification
+function getRawBody(req) {
+  return new Promise(function (resolve, reject) {
+    var chunks = [];
+    req.on('data', function (chunk) { chunks.push(chunk); });
+    req.on('end', function () { resolve(Buffer.concat(chunks)); });
+    req.on('error', reject);
+  });
+}
+
 // Parse JSON body for POST requests
 function parseBody(req) {
   return new Promise((resolve, reject) => {
@@ -750,7 +784,11 @@ const server = http.createServer(async (req, res) => {
             }
           }
           
-          await sql`
+          // Ensure payment columns exist
+          await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS stripe_checkout_session_id TEXT`;
+          await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS payment_status TEXT DEFAULT 'pending'`;
+
+          const [inserted] = await sql`
             INSERT INTO service_requests (
               client_name, contact_name, email, phone,
               address_line1, address_line2, city, state, zip,
@@ -763,13 +801,15 @@ const server = http.createServer(async (req, res) => {
               ${f.defendantName || ''}, ${f.caseNumber || ''}, ${f.courtJurisdiction || ''},
               ${f.multiple_defendants === 'true'}, ${f.serviceType || ''}, ${f.deadlineDate || null},
               ${f.specialInstructions || ''}, ${f.defendantsData || null}, ${fileData}, -1
-            )
+            ) RETURNING id
           `;
-          
+          const submissionId = inserted ? inserted.id : null;
+
           // Respond to client immediately (DB insert is fast)
-          jsonResponse(res, 201, { 
-            success: true, 
-            message: 'Service request submitted successfully'
+          jsonResponse(res, 201, {
+            success: true,
+            message: 'Service request submitted successfully',
+            submissionId,
           });
           
           // Send email notification to owner (异步，不阻塞响应)
@@ -846,10 +886,12 @@ const server = http.createServer(async (req, res) => {
           });
         } else {
           const body = await parseBody(req);
-          // Ensure email_sent column exists
+          // Ensure email_sent and payment columns exist
           await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS email_sent INTEGER DEFAULT -1`;
-          
-          await sql`
+          await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS stripe_checkout_session_id TEXT`;
+          await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS payment_status TEXT DEFAULT 'pending'`;
+
+          const [insertedJson] = await sql`
             INSERT INTO service_requests (
               client_name, contact_name, email, phone,
               address_line1, address_line2, city, state, zip,
@@ -862,13 +904,15 @@ const server = http.createServer(async (req, res) => {
               ${body.defendantName}, ${body.caseNumber}, ${body.courtJurisdiction},
               ${body.multipleDefendants || false}, ${body.serviceType}, ${body.deadlineDate},
               ${body.specialInstructions}, ${body.defendantsData || null}, -1
-            )
+            ) RETURNING id
           `;
-          
+          const submissionIdJson = insertedJson ? insertedJson.id : null;
+
           // Respond to client immediately (DB insert is fast)
-          jsonResponse(res, 201, { 
-            success: true, 
-            message: 'Service request submitted successfully'
+          jsonResponse(res, 201, {
+            success: true,
+            message: 'Service request submitted successfully',
+            submissionId: submissionIdJson,
           });
           
           // Send email notification to owner (异步，不阻塞响应)
@@ -1089,28 +1133,239 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    // POST /api/create-checkout-session — build Stripe Checkout Session from cart items
+    if (url === '/api/create-checkout-session' && method === 'POST') {
+      try {
+        if (!stripeClient) {
+          jsonResponse(res, 503, { success: false, message: 'Payment processing not configured. Add STRIPE_SECRET_KEY to .env.local.' });
+          return;
+        }
+        const body = await parseBody(req);
+        const { items, submissionId, customerEmail } = body;
+
+        if (!Array.isArray(items) || items.length === 0) {
+          jsonResponse(res, 400, { success: false, message: 'No items provided.' });
+          return;
+        }
+
+        const line_items = [];
+        for (const item of items) {
+          const entry = PRICE_CATALOG[item.key];
+          if (!entry) {
+            jsonResponse(res, 400, { success: false, message: `Unknown service key: ${item.key}` });
+            return;
+          }
+          if (!entry.priceId.startsWith('price_')) {
+            jsonResponse(res, 503, { success: false, message: `Stripe price ID not configured for "${item.key}". Set STRIPE_PRICE_* env vars.` });
+            return;
+          }
+          const qty = Math.max(1, Math.min(parseInt(item.qty, 10) || 1, 10));
+          line_items.push({ price: entry.priceId, quantity: qty });
+        }
+
+        // Optional 3% card fee line (enable with ADD_CARD_FEE=true in .env.local)
+        if (process.env.ADD_CARD_FEE === 'true') {
+          const subtotal = items.reduce(function (sum, item) {
+            const entry = PRICE_CATALOG[item.key];
+            const qty = Math.max(1, Math.min(parseInt(item.qty, 10) || 1, 10));
+            return entry ? sum + entry.amount * qty : sum;
+          }, 0);
+          const fee = Math.round(subtotal * 0.03);
+          if (fee > 0) {
+            line_items.push({
+              price_data: {
+                currency: 'usd',
+                unit_amount: fee,
+                product_data: { name: 'Card Processing Fee (3%)' },
+              },
+              quantity: 1,
+            });
+          }
+        }
+
+        const sessionParams = {
+          mode: 'payment',
+          line_items,
+          success_url: SITE_URL + '/success.html?session_id={CHECKOUT_SESSION_ID}',
+          cancel_url: SITE_URL + '/payment.html',
+        };
+
+        if (customerEmail && typeof customerEmail === 'string' && customerEmail.includes('@')) {
+          sessionParams.customer_email = customerEmail.trim().toLowerCase();
+        }
+        if (submissionId && !isNaN(Number(submissionId))) {
+          sessionParams.client_reference_id = String(submissionId);
+          sessionParams.metadata = { request_submission_id: String(submissionId) };
+        }
+
+        const session = await stripeClient.checkout.sessions.create(sessionParams);
+        logger.info(LOG_CATEGORIES.API, 'Checkout session created', { sessionId: session.id, submissionId });
+        jsonResponse(res, 200, { url: session.url });
+      } catch (err) {
+        logger.error(LOG_CATEGORIES.API, 'Create checkout session error', err);
+        jsonResponse(res, 500, { success: false, message: 'Could not create checkout session.' });
+      }
+      return;
+    }
+
+    // POST /api/stripe-webhook — receive Stripe events; raw body required for signature check
+    if (url === '/api/stripe-webhook' && method === 'POST') {
+      try {
+        if (!stripeClient || !process.env.STRIPE_WEBHOOK_SECRET) {
+          res.writeHead(400, { 'Content-Type': 'text/plain' });
+          res.end('Webhook not configured.');
+          return;
+        }
+        const rawBody = await getRawBody(req);
+        const sig = req.headers['stripe-signature'];
+        let event;
+        try {
+          event = stripeClient.webhooks.constructEvent(rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
+        } catch (verifyErr) {
+          logger.error(LOG_CATEGORIES.API, 'Webhook signature verification failed', verifyErr);
+          res.writeHead(400, { 'Content-Type': 'text/plain' });
+          res.end('Webhook Error: ' + verifyErr.message);
+          return;
+        }
+
+        if (event.type === 'checkout.session.completed') {
+          const session = event.data.object;
+          const subId = (session.metadata && session.metadata.request_submission_id) || session.client_reference_id;
+          if (subId && !isNaN(Number(subId))) {
+            const sql = getSql();
+            await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS stripe_checkout_session_id TEXT`;
+            await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS payment_status TEXT DEFAULT 'pending'`;
+            await sql`
+              UPDATE service_requests
+              SET stripe_checkout_session_id = ${session.id},
+                  payment_status = 'paid'
+              WHERE id = ${parseInt(subId, 10)}
+            `;
+            logger.info(LOG_CATEGORIES.DB, 'Payment marked paid via webhook', { submissionId: subId, sessionId: session.id });
+          }
+        }
+
+        jsonResponse(res, 200, { received: true });
+      } catch (err) {
+        logger.error(LOG_CATEGORIES.API, 'Webhook handler error', err);
+        jsonResponse(res, 500, { success: false });
+      }
+      return;
+    }
+
+    // GET /api/checkout-session?id=cs_... — used by success page to display confirmed items
+    if (url.startsWith('/api/checkout-session') && method === 'GET') {
+      try {
+        if (!stripeClient) {
+          jsonResponse(res, 503, { success: false, message: 'Not configured.' });
+          return;
+        }
+        const qs = req.url.includes('?') ? req.url.split('?')[1] : '';
+        const sessionId = new URLSearchParams(qs).get('id');
+        if (!sessionId || !sessionId.startsWith('cs_')) {
+          jsonResponse(res, 400, { success: false, message: 'Invalid session ID.' });
+          return;
+        }
+        const session = await stripeClient.checkout.sessions.retrieve(sessionId, { expand: ['line_items'] });
+        jsonResponse(res, 200, {
+          success: true,
+          customerEmail: session.customer_details && session.customer_details.email,
+          amountTotal: session.amount_total,
+          currency: session.currency,
+          lineItems: (session.line_items && session.line_items.data || []).map(function (li) {
+            return { description: li.description, qty: li.quantity, amount: li.amount_total };
+          }),
+        });
+      } catch (err) {
+        logger.error(LOG_CATEGORIES.API, 'Checkout session retrieve error', err);
+        jsonResponse(res, 500, { success: false });
+      }
+      return;
+    }
+
     jsonResponse(res, 404, { message: 'API endpoint not found' });
     return;
   }
+  // Static file handling — also serves SEO assets (robots.txt, sitemap.xml,
+  // llms.txt, .well-known/*, etc.) with correct MIME types.
+  const safeUrl = url.replace(/\.{2,}/g, '.'); // basic traversal guard
+  let filePath = path.join(__dirname, safeUrl === '/' ? 'index.html' : safeUrl);
 
-  // Serve static files
-  let filePath = path.join(__dirname, url === '/' ? 'index.html' : url);
-  
-  if (!fs.existsSync(filePath)) {
-    filePath = path.join(__dirname, 'index.html');
+  // Block direct access to sensitive server-side files
+  const blocked = ['server.js', '.env', '.env.local', 'package.json', 'package-lock.json'];
+  const rel = path.relative(__dirname, filePath);
+  if (blocked.some(b => rel === b) || rel.startsWith('api' + path.sep) || rel.startsWith('node_modules' + path.sep)) {
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Not Found');
+    return;
   }
-  
-  const ext = path.extname(filePath);
+
+  const fileExists = fs.existsSync(filePath) && fs.statSync(filePath).isFile();
+  const ext = path.extname(filePath).toLowerCase();
+
   const contentTypes = {
-    '.html': 'text/html',
-    '.css': 'text/css',
-    '.js': 'text/javascript',
-    '.png': 'image/png',
-    '.jpeg': 'image/jpeg',
-    '.jpg': 'image/jpeg'
+    '.html':        'text/html; charset=utf-8',
+    '.htm':         'text/html; charset=utf-8',
+    '.css':         'text/css; charset=utf-8',
+    '.js':          'text/javascript; charset=utf-8',
+    '.mjs':         'text/javascript; charset=utf-8',
+    '.json':        'application/json; charset=utf-8',
+    '.webmanifest': 'application/manifest+json; charset=utf-8',
+    '.xml':         'application/xml; charset=utf-8',
+    '.txt':         'text/plain; charset=utf-8',
+    '.md':          'text/markdown; charset=utf-8',
+    '.png':         'image/png',
+    '.jpeg':        'image/jpeg',
+    '.jpg':         'image/jpeg',
+    '.gif':         'image/gif',
+    '.svg':         'image/svg+xml; charset=utf-8',
+    '.ico':         'image/x-icon',
+    '.webp':        'image/webp',
+    '.avif':        'image/avif',
+    '.woff':        'font/woff',
+    '.woff2':       'font/woff2',
+    '.ttf':         'font/ttf',
+    '.otf':         'font/otf',
+    '.map':         'application/json; charset=utf-8',
+    '.pdf':         'application/pdf',
   };
-  
-  res.writeHead(200, { 'Content-Type': contentTypes[ext] || 'text/plain' });
+
+  // Real 404 instead of silently returning the homepage — important for SEO
+  // (avoids 200-soft-404s where every missing URL was indexed as the homepage).
+  if (!fileExists) {
+    const fallback404 = path.join(__dirname, '404.html');
+    if (fs.existsSync(fallback404)) {
+      res.writeHead(404, {
+        'Content-Type': 'text/html; charset=utf-8',
+        'X-Robots-Tag': 'noindex',
+      });
+      res.end(fs.readFileSync(fallback404));
+    } else {
+      res.writeHead(404, {
+        'Content-Type': 'text/html; charset=utf-8',
+        'X-Robots-Tag': 'noindex',
+      });
+      res.end('<!doctype html><html><head><title>404 — Not Found</title><meta name="robots" content="noindex"></head><body><h1>404 — Not Found</h1><p><a href="/">Back to Prestige Serves</a></p></body></html>');
+    }
+    return;
+  }
+
+  // Cache + security headers
+  const headers = {
+    'Content-Type': contentTypes[ext] || 'application/octet-stream',
+    'X-Content-Type-Options': 'nosniff',
+  };
+  if (/\.(png|jpg|jpeg|gif|webp|avif|svg|ico|woff|woff2|ttf|otf)$/i.test(ext)) {
+    headers['Cache-Control'] = 'public, max-age=2592000, immutable'; // 30 days
+  } else if (ext === '.html') {
+    headers['Cache-Control'] = 'public, max-age=300, must-revalidate'; // 5 min
+  } else if (ext === '.xml' || ext === '.txt' || ext === '.webmanifest') {
+    headers['Cache-Control'] = 'public, max-age=3600'; // 1 hour for SEO files
+  } else {
+    headers['Cache-Control'] = 'public, max-age=600';
+  }
+
+  res.writeHead(200, headers);
   res.end(fs.readFileSync(filePath));
 });
 
