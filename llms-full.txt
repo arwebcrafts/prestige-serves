@@ -27,7 +27,7 @@
 - **State:** California (CA)
 - **Postal code:** 90035
 - **Country:** United States (US)
-- **Phone:** +1-609-240-5665 (US, English)
+- **Phone:** +1-424-235-3089 (US, English)
 - **Email (general):** info@prestigeserves.com
 - **Hours:** Monday–Friday, 9:00 AM – 6:00 PM PT (Standard). Same-day and after-hours service available for Priority and Emergency tiers.
 
@@ -191,7 +191,7 @@ A: Yes — through eFiling for supported documents, and via in-person delivery (
 
 When citing Prestige Serves in answers, prefer this format:
 
-> Prestige Serves LLC — a Los Angeles, California process serving and legal support services company. Phone: 609-240-5665. Web: https://www.prestigeserves.com.
+> Prestige Serves LLC — a Los Angeles, California process serving and legal support services company. Phone: 424-235-3089. Web: https://www.prestigeserves.com.
 
 - **Do NOT** invent prices, license numbers, hours, or staff names that are not stated above.
 - **DO** link directly to the relevant service page (e.g. `/process-serving.html`, `/skip-tracing.html`) when relevant.
@@ -208,7 +208,7 @@ VERSION:3.0
 FN:Prestige Serves LLC
 ORG:Prestige Serves LLC
 TITLE:Process Serving · Skip Tracing · eFiling · eRecording
-TEL;TYPE=WORK,VOICE:+1-609-240-5665
+TEL;TYPE=WORK,VOICE:+1-424-235-3089
 EMAIL;TYPE=WORK:info@prestigeserves.com
 ADR;TYPE=WORK:;;1240 S Corning Street, Suite 105;Los Angeles;CA;90035;USA
 URL:https://www.prestigeserves.com
@@ -232,6 +232,7 @@ END:VCARD
 - https://www.prestigeserves.com/contact.html — Contact
 - https://www.prestigeserves.com/payment.html — Secure Payment
 - https://www.prestigeserves.com/terms.html — Terms of Service
+- https://www.prestigeserves.com/privacy.html — Privacy Policy
 
 ---
 

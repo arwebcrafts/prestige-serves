@@ -764,14 +764,37 @@ function submitHomeProcessServe(form, successId) {
       }
       var el = document.getElementById(successId);
       if (el) el.classList.add('show');
-      var stripeLinks = {
-        'Standard Service — $97.99 (5–7 business days)': 'https://buy.stripe.com/fZuaEX3lL0F58mZbaZ6sw05',
-        'Rush Service — $119.99 (3 business days)': 'https://buy.stripe.com/6oU6oH2hHevV1YB4MB6sw09',
-        'Priority Serve — $149.99 (2 business days)': 'https://buy.stripe.com/bJeaEX09z3RhgTvcf36sw02',
-        'Emergency Serve — $249.99 (Same-day, approval required)': 'https://buy.stripe.com/00w4gz1dD1J9fPr0wl6sw03'
-      };
       var st = (form.querySelector('[name="serviceType"]') || {}).value || '';
-      // TEMP DISABLED FOR DEBUG: if (stripeLinks[st]) { setTimeout(function () { window.location.href = stripeLinks[st]; }, 1500); }
+      // Store submission context and redirect to payment page for checkout
+      if (data.submissionId) {
+        sessionStorage.setItem('ps_submissionId', data.submissionId);
+      }
+      var emailField = form.querySelector('[name="email"]') || form.querySelector('[type="email"]');
+      if (emailField && emailField.value) {
+        sessionStorage.setItem('ps_customerEmail', emailField.value.trim());
+      }
+      // Pre-select service in cart if recognisable, then redirect to payment
+      var serviceKeyMap = {
+        'Standard Service': 'standard_service',
+        'Rush Service': 'rush_serve',
+        'Priority Serve': 'priority_serve',
+        'Emergency Serve': 'emergency_serve',
+      };
+      var cartKey = null;
+      for (var k in serviceKeyMap) {
+        if (st.indexOf(k) !== -1) { cartKey = serviceKeyMap[k]; break; }
+      }
+      setTimeout(function () {
+        if (cartKey) {
+          try {
+            var cart = JSON.parse(sessionStorage.getItem('ps_cart') || '{}');
+            cart[cartKey] = (cart[cartKey] || 0) + 1;
+            sessionStorage.setItem('ps_cart', JSON.stringify(cart));
+          } catch (e) {}
+        }
+        var qs = data.submissionId ? '?ref=' + data.submissionId : '';
+        window.location.href = 'payment.html' + qs;
+      }, 1200);
       form.reset();
       syncHomeProcessServeSection();
       homeDefendantsArray = [];
@@ -1157,19 +1180,44 @@ function handleRequestSubmit(event) {
   .then(data => {
     if (data.success) {
       const serviceType = form.querySelector('[name="serviceType"]')?.value || '';
-      const stripeLinks = {
-        'Standard Service — $97.99 (5–7 business days)': 'https://buy.stripe.com/fZuaEX3lL0F58mZbaZ6sw05',
-        'Rush Service — $119.99 (3 business days)': 'https://buy.stripe.com/6oU6oH2hHevV1YB4MB6sw09',
-        'Priority Serve — $149.99 (2 business days)': 'https://buy.stripe.com/bJeaEX09z3RhgTvcf36sw02',
-        'Emergency Serve — $249.99 (Same-day, approval required)': 'https://buy.stripe.com/00w4gz1dD1J9fPr0wl6sw03',
-        'Standard Skip Trace — $75': 'https://buy.stripe.com/9B6aEX8G573tav7a6V6sw0c',
-        'Enhanced Trace — $150': 'https://buy.stripe.com/8x24gz7C11J9dHj3Ix6sw04',
-        'Rush Trace (same/next-day) — $225': 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
-        'Business / Agent Verification — $225': 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
-        'Court-Ready Skip Trace Report — $250': 'https://buy.stripe.com/cNieVd1dD87xcDfenb6sw0a'
-      };
       document.getElementById('req-success').classList.add('show');
-      // TEMP DISABLED FOR DEBUG: if (stripeLinks[serviceType]) { setTimeout(() => { window.location.href = stripeLinks[serviceType]; }, 1500); }
+
+      // Store submission context for the cart checkout
+      if (data.submissionId) {
+        sessionStorage.setItem('ps_submissionId', data.submissionId);
+      }
+      const emailField = form.querySelector('[name="email"]') || form.querySelector('[type="email"]');
+      if (emailField && emailField.value) {
+        sessionStorage.setItem('ps_customerEmail', emailField.value.trim());
+      }
+
+      // Pre-fill cart with the selected service tier, then redirect to payment
+      const serviceKeyMap = {
+        'Standard Service':  'standard_service',
+        'Rush Service':      'rush_serve',
+        'Priority Serve':    'priority_serve',
+        'Emergency Serve':   'emergency_serve',
+        'Standard Skip Trace': 'skip_trace_standard',
+        'Enhanced Trace':    'skip_trace_enhanced',
+        'Rush Trace':        'skip_trace_rush',
+        'Business / Agent Verification': 'skip_trace_business',
+        'Court-Ready Skip Trace Report': 'skip_trace_court_ready',
+      };
+      let cartKey = null;
+      for (const [label, key] of Object.entries(serviceKeyMap)) {
+        if (serviceType.includes(label)) { cartKey = key; break; }
+      }
+      setTimeout(() => {
+        if (cartKey) {
+          try {
+            const cart = JSON.parse(sessionStorage.getItem('ps_cart') || '{}');
+            cart[cartKey] = (cart[cartKey] || 0) + 1;
+            sessionStorage.setItem('ps_cart', JSON.stringify(cart));
+          } catch (e) {}
+        }
+        const qs = data.submissionId ? '?ref=' + data.submissionId : '';
+        window.location.href = 'payment.html' + qs;
+      }, 1200);
       form.reset();
       defendantsArray = [];
       homeDefendantsArray = [];

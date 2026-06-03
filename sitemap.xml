@@ -115,7 +115,7 @@
     <changefreq>monthly</changefreq>
     <priority>0.80</priority>
     <image:image>
-      <image:loc>https://www.prestigeserves.com/assets/images/prestige-serves-img-12.png</image:loc>
+      <image:loc>https://www.prestigeserves.com/assets/images/prestige-serves-contact-banner.png</image:loc>
       <image:title>Contact Prestige Serves LLC — Los Angeles</image:title>
     </image:image>
   </url>
@@ -129,7 +129,21 @@
 
   <url>
     <loc>https://www.prestigeserves.com/terms.html</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.30</priority>
+  </url>
+
+  <url>
+    <loc>https://www.prestigeserves.com/privacy.html</loc>
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.30</priority>
+  </url>
+
+  <url>
+    <loc>https://www.prestigeserves.com/disclaimer.html</loc>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.30</priority>
   </url>

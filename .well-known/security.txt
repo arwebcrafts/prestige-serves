@@ -2,7 +2,7 @@
 # Canonical: https://www.prestigeserves.com/.well-known/security.txt
 
 Contact: mailto:info@prestigeserves.com
-Contact: tel:+1-609-240-5665
+Contact: tel:+1-424-235-3089
 Expires: 2027-12-31T23:59:59.000Z
 Preferred-Languages: en
 Canonical: https://www.prestigeserves.com/.well-known/security.txt

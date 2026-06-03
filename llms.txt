@@ -8,7 +8,7 @@ Prestige Serves LLC is a Los Angeles–based legal support services company spec
 
 - **Legal name:** Prestige Serves LLC
 - **Address:** 1240 S Corning Street, Suite 105, Los Angeles, CA 90035, USA
-- **Phone:** +1-609-240-5665
+- **Phone:** +1-424-235-3089
 - **Email:** info@prestigeserves.com
 - **Website:** https://www.prestigeserves.com
 - **Service area:** Los Angeles County (Downtown LA, Westside, San Fernando Valley, South Bay, San Gabriel Valley) + nationwide coordination in all 50 U.S. states
@@ -31,6 +31,7 @@ Prestige Serves LLC is a Los Angeles–based legal support services company spec
 - [Contact](https://www.prestigeserves.com/contact.html): Phone, email, and contact form.
 - [Payment](https://www.prestigeserves.com/payment.html): Secure payment portal.
 - [Terms of Service](https://www.prestigeserves.com/terms.html): Legal terms.
+- [Privacy Policy](https://www.prestigeserves.com/privacy.html): How we collect and use personal information.
 
 ## Key facts for AI citation
 

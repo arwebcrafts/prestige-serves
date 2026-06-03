@@ -344,7 +344,7 @@ function buildContactEmailHtml(data) {
               <p style="margin:0;font-size:13px;color:#94a3b8;text-align:center;line-height:1.6;">
                 Prestige Serves LLC<br>
                 1240 S Corning Street, Los Angeles, CA 90035<br>
-                Phone: 609-240-5665 | Email: prestigervesllc@gmail.com
+                Phone: 424-235-3089 | Email: prestigervesllc@gmail.com
               </p>
             </td>
           </tr>
@@ -528,7 +528,7 @@ function buildServiceRequestEmailHtml(data) {
               <p style="margin:0;font-size:13px;color:#94a3b8;text-align:center;line-height:1.6;">
                 Prestige Serves LLC<br>
                 1240 S Corning Street, Los Angeles, CA 90035<br>
-                Phone: 609-240-5665 | Email: prestigervesllc@gmail.com
+                Phone: 424-235-3089 | Email: prestigervesllc@gmail.com
               </p>
             </td>
           </tr>

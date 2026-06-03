@@ -83,7 +83,7 @@ To add PayPal payments, paste your PayPal hosted button code into the `<div id="
 Los Angeles, CA 90035
 
 Email: info@prestigeserves.com 
-Phone: 609-240-5665
+Phone: 424-235-3089
 
 ## Tech Stack
 

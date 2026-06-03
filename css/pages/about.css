@@ -71,7 +71,8 @@ a.about-brand-link:hover{opacity:0.85;}
   .two-col-item{
     padding:40px 20px;
   }
-  [style*="padding:0 72px 80px"]{
+  [style*="padding:0 72px 80px"],
+  .about-nationwide-cta{
     padding:0 20px 40px !important;
     border-top:none !important;
   }

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Confirmed — Prestige Serves LLC</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/global.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+  .success-wrap{max-width:560px;margin:0 auto;padding:96px 28px 80px;text-align:center;}
+  .success-icon{width:64px;height:64px;background:var(--accent-blue);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 32px;}
+  .success-icon svg{width:30px;height:30px;color:#fff;}
+  .success-title{font-size:clamp(28px,4vw,44px);font-weight:300;margin-bottom:14px;letter-spacing:-0.01em;}
+  .success-sub{font-size:15px;color:var(--text-muted);line-height:1.75;margin-bottom:36px;}
+  .success-order{border:1px solid var(--border);border-radius:4px;padding:24px 28px;text-align:left;margin-bottom:32px;}
+  .success-order h4{font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent-blue);margin-bottom:16px;}
+  .success-line{display:flex;justify-content:space-between;font-size:14px;padding:8px 0;border-bottom:1px solid var(--border);gap:12px;}
+  .success-line:last-child{border-bottom:none;}
+  .success-total{display:flex;justify-content:space-between;font-size:15px;font-weight:500;padding:12px 0 0;margin-top:4px;}
+  .success-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .success-note{font-size:12.5px;color:var(--text-muted);margin-top:28px;line-height:1.7;}
+  .loading-pulse{color:var(--text-muted);font-size:14px;font-style:italic;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="index.html">
+    <img src="assets/images/mail.png" alt="Mail">
+    Prestige Serves
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="payment.html">Payment</a></li>
+    <li><a href="request.html">Book a Service</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="success-wrap">
+  <div class="success-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M20 6L9 17l-5-5"/>
+    </svg>
+  </div>
+
+  <h1 class="success-title">Payment Confirmed</h1>
+  <p class="success-sub">
+    Thank you — your payment has been received.<br>
+    We will review your request, confirm intake details, and reach out to schedule assignment.
+  </p>
+
+  <div class="success-order" id="order-summary" style="display:none">
+    <h4>Order Summary</h4>
+    <div id="order-lines"></div>
+    <div class="success-total">
+      <span>Total Paid</span>
+      <strong id="order-total"></strong>
+    </div>
+  </div>
+  <p id="order-loading" class="loading-pulse">Retrieving your order…</p>
+
+  <div class="success-actions">
+    <a href="index.html" class="btn-outline" style="font-size:13px;padding:11px 28px;">Return to Home</a>
+    <a href="request.html" class="btn-navy" style="font-size:13px;padding:11px 28px;">Submit Another Request</a>
+  </div>
+
+  <p class="success-note">
+    A confirmation email will be sent to you by Stripe. If you have any questions, contact us at
+    <a href="mailto:info@prestigeserves.com" style="color:var(--accent-blue);">info@prestigeserves.com</a>
+    or call <a href="tel:4242353089" style="color:var(--accent-blue);">424.235.3089</a>.
+  </p>
+</div>
+
+<footer>
+  <div><div class="footer-brand-name">Prestige Serves</div><div class="footer-tagline">Reliable. Professional. Fast.</div></div>
+  <div class="footer-col"><h4>Location</h4><p>1240 S Corning St., Suite 105</p><p>Los Angeles, CA 90035</p></div>
+  <div class="footer-col"><h4>Contact</h4><a href="mailto:info@prestigeserves.com">info@prestigeserves.com</a><a href="tel:4242353089">424.235.3089</a></div>
+    <div class="page-legal-links">
+    <a href="terms.html">Terms of Service</a>
+    <span class="page-legal-sep" aria-hidden="true">·</span>
+    <a href="privacy.html">Privacy Policy</a>
+    <span class="page-legal-sep" aria-hidden="true">·</span>
+    <a href="disclaimer.html">Legal Disclaimer</a>
+  </div>
+
+</footer>
+
+<script>
+(function () {
+  // Clear cart and session refs now that payment is complete
+  sessionStorage.removeItem('ps_cart');
+  sessionStorage.removeItem('ps_submissionId');
+  sessionStorage.removeItem('ps_customerEmail');
+
+  var params = new URLSearchParams(window.location.search);
+  var sessionId = params.get('session_id');
+  var loadingEl = document.getElementById('order-loading');
+  var summaryEl = document.getElementById('order-summary');
+
+  if (!sessionId || !sessionId.startsWith('cs_')) {
+    if (loadingEl) loadingEl.style.display = 'none';
+    return;
+  }
+
+  fetch('/api/checkout-session?id=' + encodeURIComponent(sessionId))
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (loadingEl) loadingEl.style.display = 'none';
+      if (!data.success || !data.lineItems) return;
+
+      var linesEl = document.getElementById('order-lines');
+      var totalEl = document.getElementById('order-total');
+      var html = '';
+      data.lineItems.forEach(function (li) {
+        html += '<div class="success-line">'
+          + '<span>' + escHtml(li.description || 'Service') + (li.qty > 1 ? ' &times; ' + li.qty : '') + '</span>'
+          + '<span>$' + (li.amount / 100).toFixed(2) + '</span>'
+          + '</div>';
+      });
+      linesEl.innerHTML = html;
+      if (totalEl) totalEl.textContent = '$' + (data.amountTotal / 100).toFixed(2);
+      if (summaryEl) summaryEl.style.display = '';
+    })
+    .catch(function () {
+      if (loadingEl) loadingEl.style.display = 'none';
+    });
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+})();
+</script>
+<script src="js/main.js" defer></script>
+</body>
+</html>

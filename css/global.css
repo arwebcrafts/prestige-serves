@@ -35,6 +35,7 @@ h1,h2,h3,h4,h5,h6{font-family:var(--serif);font-weight:300;}
 /* NAV */
 nav{position:sticky;top:0;z-index:1000;background:var(--bg-white);display:flex;align-items:center;justify-content:space-between;padding:0 52px;height:74px;box-shadow:0 1px 8px rgba(0,0,0,0.04);font-family:var(--serif);font-weight:400;}
 .nav-brand{display:flex;align-items:center;gap:4px;text-decoration:none;color:var(--text-dark);font-family:var(--serif);font-size:21px;font-weight:400;letter-spacing:0.01em;cursor:pointer;}
+.nav-brand:hover,.nav-brand:visited{color:var(--text-dark);}
 .nav-brand img{flex-shrink:0;width:56px!important;height:56px!important;object-fit:contain;}
 .nav-brand svg{width:26px;height:26px;opacity:0.65;}
 .nav-links{display:flex;align-items:center;gap:34px;list-style:none;}
@@ -59,12 +60,16 @@ nav{position:sticky;top:0;z-index:1000;background:var(--bg-white);display:flex;a
 .btn-outline:hover{background:var(--text-dark);color:#fff;}
 
 /* FOOTER */
-footer{background:var(--bg-warm);padding:56px 72px;display:grid;grid-template-columns:1fr auto auto;gap:48px;align-items:start;border-top:1px solid var(--border);}
+footer{background:var(--bg-warm);padding:56px 72px 0;display:grid;grid-template-columns:1fr auto auto;gap:48px;align-items:start;border-top:1px solid var(--border);}
 .footer-brand-name{font-size:34px;font-weight:300;letter-spacing:-0.01em;margin-bottom:8px;}
 .footer-tagline{font-size:13px;color:var(--text-muted);font-style:italic;}
 .footer-col h4{font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px;color:var(--text-dark);}
 .footer-col p,.footer-col a{font-size:14px;color:var(--text-muted);line-height:1.95;text-decoration:none;display:block;}
 .footer-col a:hover{color:var(--text-dark);}
+.page-legal-links{grid-column:1/-1;text-align:center;padding:10px 0;margin:0;border-top:1px solid var(--border);line-height:1.2;}
+.page-legal-links a{font-family:var(--serif);font-size:14px;color:var(--text-muted);text-decoration:none;letter-spacing:0.02em;}
+.page-legal-links a:hover{color:var(--text-dark);}
+.page-legal-sep{color:var(--border);margin:0 14px;font-size:14px;}
 
 /* RESPONSIVE — TABLET */
 @media(max-width:960px){
@@ -160,7 +165,7 @@ footer{background:var(--bg-warm);padding:56px 72px;display:grid;grid-template-co
   .dropdown-menu a:hover{
     background:#ddd;
   }
-  footer{grid-template-columns:1fr;padding:40px 28px;}
+  footer{grid-template-columns:1fr;padding:40px 28px 0;}
 }
 
 /* RESPONSIVE — MOBILE */
@@ -280,7 +285,7 @@ footer{background:var(--bg-warm);padding:56px 72px;display:grid;grid-template-co
 @media(max-width:768px){
   footer{
     grid-template-columns:1fr;
-    padding:32px 20px;
+    padding:32px 20px 0;
     gap:32px;
     text-align:center;
   }
@@ -292,6 +297,10 @@ footer{background:var(--bg-warm);padding:56px 72px;display:grid;grid-template-co
   }
   .footer-col h4{
     margin-bottom:10px;
+  }
+  .page-legal-links{
+    padding:10px 0;
+    margin:0;
   }
 
   /* Additional mobile adjustments */

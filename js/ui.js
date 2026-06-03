@@ -164,10 +164,10 @@ function proceedToCheckout() {
     if (url && url.indexOf('REPLACE') === -1) {
       window.open(url, '_blank');
     } else {
-      alert('Checkout link not yet configured.\nPlease contact: info@prestigeserves.com \nor call 609-240-5665 to complete your order.');
+      alert('Checkout link not yet configured.\nPlease contact: info@prestigeserves.com \nor call 424-235-3089 to complete your order.');
     }
   } else {
-    alert('Please contact us at info@prestigeserves.com  or call 609-240-5665 to complete your order.');
+    alert('Please contact us at info@prestigeserves.com  or call 424-235-3089 to complete your order.');
   }
 }
 

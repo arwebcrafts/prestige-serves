@@ -11,6 +11,7 @@
     "@vercel/blob": "^0.22.0",
     "dotenv": "^17.4.2",
     "formidable": "^3.5.4",
-    "nodemailer": "^8.0.7"
+    "nodemailer": "^8.0.7",
+    "stripe": "^22.1.1"
   }
 }
