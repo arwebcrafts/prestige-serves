@@ -93,9 +93,9 @@
 @media(max-width:768px){
   .ps-hero{height:320px !important;min-height:320px !important;max-height:320px;position:relative;justify-content:flex-start;align-items:stretch;}
   .ps-hero-content{position:relative;padding:12px 20px 20px !important;text-align:left;width:100%;max-width:100%;margin:0;min-height:320px;flex:1;}
-  .ps-hero img.ps-bg{object-position:center;height:100%;}
-  .ps-bg-desktop{display:none !important;}
-  .ps-bg-mobile{display:block !important;}
+  .ps-hero img.ps-bg{object-position:center center;height:100%;width:100%;object-fit:cover;}
+  .ps-bg-desktop{display:block !important;}
+  .ps-bg-mobile{display:none !important;}
   .ps-hero-title{font-size:clamp(24px,6vw,36px);}
   #page-contact .ps-hero-content{justify-content:space-between;gap:0;}
   #page-contact .ps-hero-content h1.ps-hero-title{font-size:clamp(24px,6vw,36px);}
