@@ -1,23 +1,21 @@
 /* contact.css — Contact page specific styles */
 
-.ps-hero{position:relative;min-height:620px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;}
-.ps-hero img.ps-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;}
+.ps-hero{position:relative;min-height:620px;height:620px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;}
+.ps-hero img.ps-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;max-width:none;}
 .ps-bg-mobile{display:none;}
 .ps-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top, rgba(10,15,35,0.72) 0%, rgba(10,15,35,0.35) 55%, rgba(10,15,35,0.08) 100%);}
 .ps-hero-overlay-light{position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0.08) 100%);}
 .ps-hero-content{position:relative;z-index:2;padding:28px 72px 56px;color:#fff;text-align:left;width:100%;max-width:none;margin:0;flex:1;min-height:620px;box-sizing:border-box;}
 #page-contact .ps-hero-content{display:flex;flex-direction:column;justify-content:space-between;gap:0;}
-#page-contact .ps-hero-content h1.ps-hero-title{margin:0;}
-#page-contact .ps-hero-content h1 .ps-hero-title-line{line-height:80.4px;vertical-align:middle;}
-#page-contact .ps-hero-content h3.ps-hero-title{margin:0;font-weight:300;font-size:40px;line-height:80.4px;}
-#page-contact .ps-hero-content h3 .ps-hero-title-line{line-height:80.4px;font-size:40px;vertical-align:middle;}
-#page-contact .ps-hero-star{color:#0D3351;font-size:0.72em;vertical-align:baseline;}
+#page-contact .ps-hero-content h1.ps-hero-title{margin:0;font-size:clamp(32px,4vw,58px);}
+#page-contact .ps-hero-content h1 .ps-hero-title-line{line-height:1.15;vertical-align:middle;}
+#page-contact .ps-hero-content h3.ps-hero-title{margin:0;font-weight:300;font-size:32px;line-height:1.35;}
+#page-contact .ps-hero-content h3 .ps-hero-title-line{line-height:1.35;font-size:32px;vertical-align:middle;}
+#page-contact .ps-hero-star{color:#ffffff;font-size:0.72em;vertical-align:baseline;}
 
-/* Sharper hero photo: higher-res asset + crisper compositing (contact only) */
-#page-contact .ps-hero img.ps-bg{
-  transform:translateZ(0);
-  backface-visibility:hidden;
-  -webkit-backface-visibility:hidden;
+#page-contact .ps-hero img.ps-bg-desktop{
+  object-fit:cover;
+  object-position:center center;
 }
 #page-contact .ps-hero-overlay-light{
   pointer-events:none;
@@ -98,11 +96,12 @@
   .ps-hero img.ps-bg{object-position:center;height:100%;}
   .ps-bg-desktop{display:none !important;}
   .ps-bg-mobile{display:block !important;}
-  .ps-hero-title{font-size:clamp(28px,7vw,48px);}
+  .ps-hero-title{font-size:clamp(24px,6vw,36px);}
   #page-contact .ps-hero-content{justify-content:space-between;gap:0;}
-  #page-contact .ps-hero-content h1 .ps-hero-title-line{line-height:1.2;}
-  #page-contact .ps-hero-content h3.ps-hero-title{font-size:28px;line-height:1.4;}
-  #page-contact .ps-hero-content h3 .ps-hero-title-line{line-height:1.4;font-size:28px;}
+  #page-contact .ps-hero-content h1.ps-hero-title{font-size:clamp(24px,6vw,36px);}
+  #page-contact .ps-hero-content h1 .ps-hero-title-line{line-height:1.15;}
+  #page-contact .ps-hero-content h3.ps-hero-title{font-size:22px;line-height:1.35;}
+  #page-contact .ps-hero-content h3 .ps-hero-title-line{line-height:1.35;font-size:22px;}
   .contact-dark-section{display:flex !important;flex-direction:column;padding:40px 20px;gap:40px;}
   .contact-dark-section > div{width:100%;max-width:100%;box-sizing:border-box;}
   .contact-dark-heading,

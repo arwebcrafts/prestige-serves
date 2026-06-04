@@ -1,3 +1,6 @@
 .vercel
 node_modules/
 .env.local
+
+# Local-only — never commit or push
+service-of-process-status.html
