@@ -67,10 +67,12 @@ footer{background:var(--bg-warm);padding:56px 72px 0;display:grid;grid-template-
 .footer-col h4{font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px;color:var(--text-dark);}
 .footer-col p,.footer-col a{font-size:14px;color:var(--text-muted);line-height:1.95;text-decoration:none;display:block;}
 .footer-col a:hover{color:var(--text-dark);}
-.page-legal-links{grid-column:1/-1;text-align:center;padding:10px 0;margin:0;border-top:1px solid var(--border);line-height:1.2;}
+.page-legal-links{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px 24px;padding:14px 0 24px;margin:0;border-top:1px solid var(--border);line-height:1.2;}
+.footer-legal-nav{display:flex;align-items:center;flex-wrap:wrap;gap:0;}
 .page-legal-links a{font-family:var(--serif);font-size:14px;color:var(--text-muted);text-decoration:none;letter-spacing:0.02em;}
 .page-legal-links a:hover{color:var(--text-dark);}
 .page-legal-sep{color:var(--border);margin:0 14px;font-size:14px;}
+.footer-copyright{margin:0;font-size:14px;color:var(--text-muted);line-height:1.4;padding:0;white-space:nowrap;}
 
 /* RESPONSIVE — TABLET */
 @media(max-width:960px){
@@ -305,8 +307,18 @@ footer{background:var(--bg-warm);padding:56px 72px 0;display:grid;grid-template-
     margin-bottom:10px;
   }
   .page-legal-links{
-    padding:10px 0;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:14px 0 24px;
     margin:0;
+  }
+  .footer-legal-nav{
+    justify-content:center;
+  }
+  .footer-copyright{
+    white-space:normal;
   }
 
   /* Additional mobile adjustments */
