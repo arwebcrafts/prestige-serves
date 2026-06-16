@@ -951,7 +951,7 @@ function defendantNameInputInForm(form) {
 function setProcessExtraFieldsDisabled(disabled) {
   var wrap = document.getElementById('home-process-extra');
   if (!wrap) return;
-  wrap.querySelectorAll('input, select, textarea').forEach(function (el) {
+  wrap.querySelectorAll('input:not([type="hidden"]), select, textarea').forEach(function (el) {
     el.disabled = !!disabled;
   });
 }
@@ -989,6 +989,7 @@ function syncHomeProcessServeSection(containerId) {
     var dd = document.getElementById('home-deadlineDate');
     if (dd) dd.value = '';
   } else {
+    ensureDefaultServiceState();
     initFutureDeadlineDateInputs(wrap);
   }
 }
@@ -1495,7 +1496,8 @@ function handleRequestSubmit(event) {
   }
 
   const cityInput = document.getElementById('req-city-input');
-  const cityValue = (cityInput?.value || '').trim();
+  const cityHidden = document.getElementById('req-city-value');
+  const cityValue = ((cityHidden && cityHidden.value.trim()) || (cityInput && cityInput.value.trim()) || '');
   if (!cityValue) {
     missing.push('City');
     if (cityInput) {
@@ -1726,13 +1728,16 @@ function initStateAutocomplete(inputId, hiddenInputId, dropdownId, defaultState)
     renderDropdown(this.value);
   });
 
-  dropdown.addEventListener('click', function(e) {
-    if (e.target.classList.contains('state-option')) {
-      const state = states.find(s => s.value === e.target.dataset.value);
-      input.value = state.label + ' (' + state.postal + ')';
-      hiddenInput.value = state.value;
-      dropdown.style.display = 'none';
-    }
+  dropdown.addEventListener('mousedown', function(e) {
+    var opt = e.target.closest('.state-option');
+    if (!opt) return;
+    e.preventDefault();
+    const state = states.find(s => s.value === opt.dataset.value);
+    if (!state) return;
+    input.value = state.label + ' (' + state.postal + ')';
+    hiddenInput.value = state.value;
+    dropdown.style.display = 'none';
+    input.dispatchEvent(new Event('change', { bubbles: true }));
   });
 
   document.addEventListener('click', function(e) {
@@ -1852,6 +1857,60 @@ const citiesByState = {
 
 function getCitiesForState(stateCode) {
   return citiesByState[stateCode] || [];
+}
+
+var CITY_DEFAULT_STATE_BY_INPUT = {
+  'home-svc-state-input': 'CA',
+  'req-state-input': 'CA',
+  'def-state-input': 'CA',
+  'state-input': 'CA'
+};
+
+function escapeHtmlText(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/"/g, '&quot;');
+}
+
+function resolveStateCode(stateInputId) {
+  if (!stateInputId) return '';
+  var stateInput = document.getElementById(stateInputId);
+  var stateHiddenInput = document.getElementById(stateInputId.replace('-input', '-value'));
+  var stateCode = (stateHiddenInput && stateHiddenInput.value.trim()) || '';
+  if (!stateCode && stateInput) {
+    var stateMatch = stateInput.value.match(/\(([A-Z]{2})\)/);
+    if (stateMatch) stateCode = stateMatch[1];
+  }
+  if (!stateCode && stateInput) {
+    var raw = stateInput.value.trim();
+    var byPostal = states.find(function (s) {
+      return s.postal.toLowerCase() === raw.toLowerCase();
+    });
+    if (byPostal) stateCode = byPostal.value;
+    else {
+      var byLabel = states.find(function (s) {
+        return s.label.toLowerCase() === raw.toLowerCase();
+      });
+      if (byLabel) stateCode = byLabel.value;
+    }
+  }
+  if (!stateCode && CITY_DEFAULT_STATE_BY_INPUT[stateInputId]) {
+    stateCode = CITY_DEFAULT_STATE_BY_INPUT[stateInputId];
+    if (stateHiddenInput) stateHiddenInput.value = stateCode;
+  }
+  return stateCode;
+}
+
+function ensureDefaultServiceState() {
+  var stVal = document.getElementById('home-svc-state-value');
+  var stIn = document.getElementById('home-svc-state-input');
+  if (!stVal || !stIn) return;
+  if (stVal.value.trim()) return;
+  var ca = states.find(function (s) { return s.value === 'CA'; });
+  if (!ca) return;
+  stVal.value = 'CA';
+  if (!stIn.value.trim()) stIn.value = ca.label + ' (' + ca.postal + ')';
 }
 
 function initCountyDropdown() {
@@ -2066,44 +2125,38 @@ function initCityAutocomplete(inputId, hiddenInputId, dropdownId, stateInputId) 
   const input = document.getElementById(inputId);
   const hiddenInput = document.getElementById(hiddenInputId);
   const dropdown = document.getElementById(dropdownId);
-  if (!input || !dropdown) {
-    console.log('initCityAutocomplete early return: input=', input, 'dropdown=', dropdown);
-    return;
+  if (!input || !dropdown) return;
+  if (input.getAttribute('data-city-ac-init') === '1') return;
+  input.setAttribute('data-city-ac-init', '1');
+
+  function getCurrentStateCities() {
+    var stateCode = resolveStateCode(stateInputId);
+    return stateCode ? getCitiesForState(stateCode) : [];
   }
-  console.log('initCityAutocomplete initialized for', inputId, 'stateInputId=', stateInputId);
+
+  function selectCityValue(value) {
+    var next = String(value || '').trim();
+    input.value = next;
+    hiddenInput.value = next;
+    dropdown.style.display = 'none';
+  }
 
   function renderDropdown(filter, cities) {
     const filterLower = filter.toLowerCase().trim();
-    const filtered = (cities || []).filter(c =>
-      c.toLowerCase().includes(filterLower)
-    );
-    dropdown.innerHTML = filtered.slice(0, 50).map(c =>
-      '<div class="city-option' + (c === hiddenInput.value ? ' selected' : '') + '">' + c + '</div>'
-    ).join('');
-    dropdown.style.display = filtered.length ? 'block' : 'none';
-    console.log('renderDropdown called: filter=', filter, 'cities count=', (cities || []).length, 'display=', dropdown.style.display);
-  }
-
-  function getCurrentStateCities() {
-    const stateInput = stateInputId ? document.getElementById(stateInputId) : null;
-    const stateHiddenInput = stateInputId ? document.getElementById(stateInputId.replace('-input', '-value')) : null;
-    let stateCode = stateHiddenInput ? stateHiddenInput.value : '';
-    if (!stateCode && stateInput) {
-      const stateMatch = stateInput.value.match(/\(([A-Z]{2})\)/);
-      if (stateMatch) stateCode = stateMatch[1];
+    const filtered = (cities || [])
+      .filter(function (c) { return c.toLowerCase().includes(filterLower); })
+      .sort(function (a, b) { return a.localeCompare(b); });
+    var html = filtered.slice(0, 80).map(function (c) {
+      return '<div class="city-option' + (c === hiddenInput.value ? ' selected' : '') + '" data-value="' + escapeHtmlText(c) + '">' + escapeHtmlText(c) + '</div>';
+    }).join('');
+    if (filterLower && !filtered.some(function (c) { return c.toLowerCase() === filterLower; })) {
+      html += '<div class="city-option city-option-custom" data-value="' + escapeHtmlText(filter.trim()) + '">Use &quot;' + escapeHtmlText(filter.trim()) + '&quot;</div>';
     }
-    if (!stateCode) {
-      const stateMatch = stateInput ? stateInput.value.match(/\(([A-Z]{2})\)/) : null;
-      if (stateMatch) stateCode = stateMatch[1];
+    if (!html && !filterLower) {
+      html = '<div class="city-option city-option-hint">Select a state first</div>';
     }
-    // If no state code (international address), return all cities as fallback
-    if (!stateCode) {
-      var allCities = [];
-      Object.values(citiesByState).forEach(function(arr) { allCities = allCities.concat(arr); });
-      return allCities;
-    }
-    console.log('getCurrentStateCities: stateCode=', stateCode, 'stateInput=', stateInput ? stateInput.value : 'null');
-    return getCitiesForState(stateCode);
+    dropdown.innerHTML = html;
+    dropdown.style.display = html ? 'block' : 'none';
   }
 
   input.addEventListener('input', function() {
@@ -2116,16 +2169,14 @@ function initCityAutocomplete(inputId, hiddenInputId, dropdownId, stateInputId) 
   });
 
   input.addEventListener('focus', function() {
-    console.log('city input focus event');
     renderDropdown(this.value, getCurrentStateCities());
   });
 
-  dropdown.addEventListener('click', function(e) {
-    if (e.target.classList.contains('city-option')) {
-      input.value = e.target.textContent;
-      hiddenInput.value = e.target.textContent;
-      dropdown.style.display = 'none';
-    }
+  dropdown.addEventListener('mousedown', function(e) {
+    var opt = e.target.closest('.city-option');
+    if (!opt || opt.classList.contains('city-option-hint')) return;
+    e.preventDefault();
+    selectCityValue(opt.getAttribute('data-value') || opt.textContent);
   });
 
   document.addEventListener('click', function(e) {
@@ -2138,9 +2189,10 @@ function initCityAutocomplete(inputId, hiddenInputId, dropdownId, stateInputId) 
     const stateInput = document.getElementById(stateInputId);
     if (stateInput) {
       stateInput.addEventListener('input', function() {
-        input.value = '';
-        hiddenInput.value = '';
-        renderDropdown('', getCurrentStateCities());
+        renderDropdown(input.value, getCurrentStateCities());
+      });
+      stateInput.addEventListener('change', function() {
+        renderDropdown(input.value, getCurrentStateCities());
       });
     }
   }

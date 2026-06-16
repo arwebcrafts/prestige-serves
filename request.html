@@ -179,8 +179,12 @@
       <label>Service Address <span class="req">(required)</span></label>
       <input type="text" name="addressLine1" placeholder="Address Line 1" style="margin-bottom:8px;">
       <input type="text" name="addressLine2" placeholder="Address Line 2" style="margin-bottom:8px;">
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-        <input type="text" id="req-city-input" name="city" placeholder="City" autocomplete="address-level2">
+      <div class="city-state-zip-row" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        <div class="city-select-wrapper">
+          <input type="text" id="req-city-input" name="city" placeholder="City" autocomplete="off">
+          <input type="hidden" id="req-city-value" value="">
+          <div class="city-dropdown" id="req-city-dropdown"></div>
+        </div>
         <div class="state-select-wrapper">
           <input type="text" id="req-state-input" placeholder="State" autocomplete="off">
           <input type="hidden" id="req-state-value" name="state" value="CA">
@@ -231,7 +235,7 @@
         <label>Service Address <span class="req">(required)</span></label>
         <input type="text" name="serve_addressLine1" data-home-required placeholder="Address Line 1" style="margin-bottom:8px;">
         <input type="text" name="serve_addressLine2" placeholder="Address Line 2" style="margin-bottom:8px;">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        <div class="city-state-zip-row" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
           <div class="city-select-wrapper">
             <input type="text" id="home-svc-city-input" placeholder="City" autocomplete="off">
             <input type="hidden" id="home-svc-city-value" value="">

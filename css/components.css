@@ -129,7 +129,7 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
 .form-group select:focus{border-color:var(--accent-blue);}
 .state-select-wrapper{position:relative;}
 .state-select-wrapper input{width:100%;box-sizing:border-box;cursor:pointer;}
-.state-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:10px;max-height:200px;overflow-y:auto;z-index:100;margin-top:4px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.state-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:10px;max-height:240px;overflow-y:auto;z-index:250;margin-top:4px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
 .state-option{padding:10px 16px;font-size:14px;cursor:pointer;color:var(--text-dark);}
 .state-option:hover,.state-option.selected{background:var(--bg-warm);}
 .state-option.selected{color:var(--accent-blue);font-weight:500;}
@@ -145,12 +145,15 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
 .county-option{padding:10px 16px;font-size:14px;cursor:pointer;color:var(--text-dark);}
 .county-option:hover,.county-option.selected{background:var(--bg-warm);}
 .county-option.selected{color:var(--accent-blue);font-weight:500;}
+.city-state-zip-row{overflow:visible;position:relative;}
 .city-select-wrapper{position:relative;}
 .city-select-wrapper input{width:100%;box-sizing:border-box;cursor:pointer;}
-.city-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:10px;max-height:200px;overflow-y:auto;z-index:100;margin-top:4px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.city-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:10px;max-height:240px;overflow-y:auto;z-index:250;margin-top:4px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
 .city-option{padding:10px 16px;font-size:14px;cursor:pointer;color:var(--text-dark);}
 .city-option:hover,.city-option.selected{background:var(--bg-warm);}
 .city-option.selected{color:var(--accent-blue);font-weight:500;}
+.city-option-custom{font-style:italic;color:var(--accent-blue);}
+.city-option-hint{color:var(--text-muted);cursor:default;font-style:italic;}
 .country-select-wrapper{position:relative;}
 .country-select-wrapper input{width:100%;box-sizing:border-box;cursor:pointer;}
 .country-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:10px;max-height:200px;overflow-y:auto;z-index:100;margin-top:4px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
