@@ -10,11 +10,8 @@
 <link rel="stylesheet" href="css/global.css">
 <link rel="stylesheet" href="css/components.css">
 <link rel="stylesheet" href="css/pages/admin.css">
-<link rel="icon" href="favicon.ico" sizes="any">
-<link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="assets/images/mail.png">
+<link rel="apple-touch-icon" href="assets/images/mail.png">
 </head>
 <body class="admin-dashboard-body">
 
@@ -108,7 +105,7 @@
               <th>Service</th>
               <th>Case #</th>
               <th>Deadline</th>
-              <th>Status</th>
+              <th>Priority</th>
               <th>Email sent</th>
               <th class="th-actions">Actions</th>
             </tr>
@@ -181,9 +178,12 @@
 
 <div id="detail-modal" class="modal-overlay">
   <div class="modal-content modal-content-dashboard">
-    <div class="modal-header">
+    <div class="modal-header modal-header-dashboard">
       <h3 id="modal-detail-title">Details</h3>
-      <button type="button" class="modal-close" onclick="closeDetailModal()" aria-label="Close">&times;</button>
+      <div class="modal-header-actions">
+        <button type="button" id="va-copy-btn" class="va-copy-btn" onclick="copyDetailToClipboard()" style="display:none;">Copy for VA</button>
+        <button type="button" class="modal-close" onclick="closeDetailModal()" aria-label="Close">&times;</button>
+      </div>
     </div>
     <div class="modal-body" id="modal-detail-body"></div>
   </div>

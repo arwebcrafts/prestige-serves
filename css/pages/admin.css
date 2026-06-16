@@ -527,6 +527,173 @@
   border-left: 3px solid #1a2332;
 }
 
+/* VA-friendly detail layout */
+.modal-header-dashboard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.va-copy-btn {
+  background: #1a3a5c;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.va-copy-btn:hover { background: #2d3a7c; }
+.va-request-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8eef8 100%);
+  border: 1px solid #c5d4e8;
+  border-radius: 8px;
+}
+.va-service-badge {
+  display: inline-block;
+  background: #1a3a5c;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 100px;
+  letter-spacing: 0.02em;
+}
+.va-service-badge.skip { background: #7c3aed; }
+.va-service-badge.process { background: #0d9488; }
+.va-meta-chip {
+  font-size: 12px;
+  color: #64748b;
+}
+.va-detail-section {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e8ecf0;
+}
+.va-detail-section:last-child { border-bottom: none; }
+.va-section-title {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  color: #1a3a5c !important;
+  margin-bottom: 12px !important;
+  text-transform: uppercase !important;
+}
+.va-field-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.va-field-table td {
+  padding: 8px 10px;
+  vertical-align: top;
+  border-bottom: 1px solid #f1f5f9;
+}
+.va-field-table tr:last-child td { border-bottom: none; }
+.va-field-label {
+  width: 38%;
+  max-width: 200px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.va-field-value {
+  color: #1e293b;
+  font-weight: 500;
+  word-break: break-word;
+}
+.va-field-table--compact .va-field-label { width: 34%; font-size: 11px; }
+.va-defendants-wrap { display: flex; flex-direction: column; gap: 14px; }
+.va-defendant-card {
+  border: 1px solid #dbe4ef;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fafbfd;
+}
+.va-defendant-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #eef2f8;
+  border-bottom: 1px solid #dbe4ef;
+  font-size: 14px;
+}
+.va-defendant-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  background: #1a3a5c;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.va-badge-primary,
+.va-badge-additional {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.va-badge-primary { background: #dcfce7; color: #166534; }
+.va-badge-additional { background: #e0e7ff; color: #3730a3; }
+.va-defendant-card .va-field-table { padding: 4px 8px 8px; }
+.va-instructions-block {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #334155;
+  white-space: pre-wrap;
+}
+.va-instructions-subtitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 12px 0 6px;
+}
+.va-instructions-subtitle:first-child { margin-top: 0; }
+.va-files-list { list-style: none; margin: 0; padding: 0; }
+.va-files-list li { margin-bottom: 8px; }
+.va-files-list a { color: #1a3a5c; font-weight: 500; word-break: break-all; }
+.va-fcra-badge {
+  display: inline-block;
+  background: #e8f7ee;
+  color: #16a34a;
+  border: 1px solid #b4d8b8;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 /* Mobile — Admin Dashboard */
 @media(max-width: 768px) {
   /* Nav */

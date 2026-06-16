@@ -14,22 +14,10 @@
   "id": "/?source=pwa",
   "icons": [
     {
-      "src": "/assets/images/icon-192.png",
-      "sizes": "192x192",
+      "src": "/assets/images/mail.png",
+      "sizes": "611x408",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "/assets/images/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/assets/images/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ],
   "shortcuts": [

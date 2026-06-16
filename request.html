@@ -223,6 +223,7 @@
         <option value="Business / Agent Verification — $225">Business / Agent Verification — $225</option>
         <option value="Court-Ready Skip Trace Report — $250">Court-Ready Skip Trace Report — $250</option>
       </select>
+      <div id="skip-trace-summary-container" style="display:none; flex-direction:column; gap:10px; margin-top:12px;"></div>
     </div>
     <div id="home-process-extra" class="home-process-extra" style="display:none;">
       <p class="form-hint" style="margin:12px 0 16px;font-style:italic;">Complete process serving details below.</p>
@@ -231,7 +232,11 @@
         <input type="text" name="serve_addressLine1" data-home-required placeholder="Address Line 1" style="margin-bottom:8px;">
         <input type="text" name="serve_addressLine2" placeholder="Address Line 2" style="margin-bottom:8px;">
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-          <input type="text" id="home-svc-city-input" placeholder="City" autocomplete="address-level2">
+          <div class="city-select-wrapper">
+            <input type="text" id="home-svc-city-input" placeholder="City" autocomplete="off">
+            <input type="hidden" id="home-svc-city-value" value="">
+            <div class="city-dropdown" id="home-svc-city-dropdown"></div>
+          </div>
           <div class="state-select-wrapper">
             <input type="text" id="home-svc-state-input" placeholder="State" autocomplete="off">
             <input type="hidden" id="home-svc-state-value" value="CA">
@@ -240,9 +245,9 @@
           <input type="text" name="serve_zip" data-home-required placeholder="12345" maxlength="5" inputmode="numeric" pattern="\d{5}" title="5-digit US ZIP" autocomplete="postal-code">
         </div>
       </div>
-      <div class="form-group"><label>Defendant / Recipient Full Name <span class="req">(required)</span></label><input type="text" name="defendantName" data-home-required></div>
-      <div class="form-group"><label>Case Number</label><input type="text" name="caseNumber"></div>
-      <div class="form-group"><label>Court / Jurisdiction</label><input type="text" name="courtJurisdiction"></div>
+      <div class="form-group"><label>Defendant / Recipient Full Name <span class="req">(required)</span></label><input type="text" name="serve_defendantName" data-home-required></div>
+      <div class="form-group"><label>Case Number</label><input type="text" name="serve_caseNumber"></div>
+      <div class="form-group"><label>Court / Jurisdiction</label><input type="text" name="serve_courtJurisdiction"></div>
       <div class="form-group">
         <label>Are there multiple defendants to be served?</label>
         <div class="form-hint" style="margin-bottom:10px;">Selecting "Yes" allows you to add up to 10 additional defendants.</div>
@@ -265,6 +270,7 @@
     <div class="form-group"><label>Special Instructions</label><textarea name="specialInstructions" rows="3"></textarea></div>
     <button type="submit" class="btn-navy" style="width:100%;">Submit Request</button>
     <div class="form-success" id="req-success">Thank you! Your request has been received. We'll review it and be in touch shortly.</div>
+    <div class="toast" id="toast" aria-live="polite"></div>
     </form>
   </div>
   <footer>
@@ -342,7 +348,11 @@
         <label>Service Address <span class="req">*</span></label>
         <input type="text" id="def-address" placeholder="Full address including postcode / zip" style="margin-bottom:8px;" required>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <input type="text" id="def-city" placeholder="City" autocomplete="address-level2">
+          <div class="city-select-wrapper">
+            <input type="text" id="def-city" placeholder="City" autocomplete="address-level2">
+            <input type="hidden" id="def-city-value" value="">
+            <div class="city-dropdown" id="def-city-dropdown"></div>
+          </div>
           <div class="country-select-wrapper">
             <input type="text" id="def-country-input" placeholder="Country" autocomplete="off">
             <input type="hidden" id="def-country-value" value="United States">
@@ -391,26 +401,6 @@
 <script src="js/main.js" defer></script>
 <script src="js/forms.js" defer></script>
 <script src="js/ui.js" defer></script>
-<script>
-  window.addEventListener('load', function() {
-    var reqSvcType = document.querySelector('#request-form select[name="serviceType"]');
-    var reqExtra = document.getElementById('home-process-extra');
-    if (reqSvcType && reqExtra) {
-      reqSvcType.addEventListener('change', function() {
-        var val = reqSvcType.value.toLowerCase();
-        var isProcessServe = val.includes('standard service') || val.includes('rush service') || val.includes('priority serve') || val.includes('emergency serve');
-        reqExtra.style.display = isProcessServe ? 'block' : 'none';
-      });
-    }
-    if (reqSvcType && typeof isSkipTraceService !== 'undefined' && typeof openSkipTraceModal !== 'undefined') {
-      reqSvcType.addEventListener('change', function() {
-        if (isSkipTraceService(reqSvcType.value)) {
-          openSkipTraceModal();
-        }
-      });
-    }
-  });
-</script>
 
 <!-- Skip Trace Modal -->
 <div id="skip-trace-modal" class="modal-overlay" style="display:none;">
@@ -466,7 +456,11 @@
         <label>Service Address <span class="req">*</span></label>
         <input type="text" id="home-def-address" placeholder="Full address including postcode / zip" style="margin-bottom:8px;" required>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-          <input type="text" id="home-def-city" placeholder="City" autocomplete="address-level2">
+          <div class="city-select-wrapper">
+            <input type="text" id="home-def-city" placeholder="City" autocomplete="address-level2">
+            <input type="hidden" id="home-def-city-value" value="">
+            <div class="city-dropdown" id="home-def-city-dropdown"></div>
+          </div>
           <div class="state-select-wrapper">
             <input type="text" id="home-def-state-input" placeholder="State" autocomplete="off">
             <input type="hidden" id="home-def-state-value" value="">

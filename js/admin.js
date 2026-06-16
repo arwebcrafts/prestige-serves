@@ -1,5 +1,117 @@
 // Admin Dashboard JavaScript
 
+/** Date-only values (deadline, DOB) — YYYY-MM-DD, no timezone shift */
+function parseCalendarDate(dateStr) {
+  if (!dateStr) return null;
+  var s = String(dateStr).trim().slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
+  var p = s.split('-');
+  return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+}
+
+/** UTC instants from the database (created_at, etc.) → shown in viewer's local timezone */
+function parseInstantUtc(dateStr) {
+  if (!dateStr) return null;
+  var s = String(dateStr).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
+
+  if (/[zZ]$/.test(s) || /[+-]\d{2}(:?\d{2})?$/.test(s)) {
+    var direct = new Date(s);
+    return isNaN(direct.getTime()) ? null : direct;
+  }
+
+  var normalized = s.replace(' ', 'T');
+  if (!/T\d{2}:\d{2}/.test(normalized)) return null;
+  normalized = normalized.replace(/(\.\d{3})\d*/, '$1');
+  if (!/[zZ]$|[+-]/.test(normalized)) normalized += 'Z';
+  var d = new Date(normalized);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function isDateOnlyValue(dateStr) {
+  if (!dateStr) return false;
+  var s = String(dateStr).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return true;
+  if (/^\d{4}-\d{2}-\d{2}T00:00:00/.test(s)) return true;
+  return false;
+}
+
+/** Submitted date/time in the dashboard viewer's local timezone (USA, etc.) */
+function formatSubmissionTime(dateStr) {
+  var d = parseInstantUtc(dateStr);
+  if (!d) {
+    var cal = parseCalendarDate(dateStr);
+    if (!cal) return '';
+    return cal.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+  return d.toLocaleString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZoneName: 'short'
+  });
+}
+
+/** Deadline / DOB — calendar date only (no misleading midnight time) */
+function formatCalendarDate(dateStr) {
+  var d = parseCalendarDate(dateStr);
+  if (!d) {
+    var instant = parseInstantUtc(dateStr);
+    if (!instant) return '';
+    return instant.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  if (isDateOnlyValue(dateStr)) return formatCalendarDate(dateStr);
+  return formatSubmissionTime(dateStr);
+}
+
+var SERVICE_PRIORITY_STYLES = {
+  standard: { label: 'Standard Priority', bg: '#e8f7ee', color: '#16a34a', border: '#b4d8b8', dot: '#16a34a' },
+  elevated: { label: 'Elevated Priority', bg: '#e8f0fc', color: '#2563eb', border: '#b4c8e8', dot: '#2563eb' },
+  high: { label: 'High Priority', bg: '#fef3e2', color: '#b7770d', border: '#e8d0a8', dot: '#b7770d' },
+  critical: { label: 'Critical Priority', bg: '#fce8e8', color: '#c0392b', border: '#e8b4b4', dot: '#c0392b' }
+};
+
+function resolveServicePriority(serviceType, skipTraceData) {
+  var s = String(serviceType || '').toLowerCase();
+  if (s.indexOf('emergency') !== -1 || s.indexOf('rush trace') !== -1) return 'critical';
+  if (s.indexOf('priority serve') !== -1 || s.indexOf('court-ready') !== -1) return 'high';
+  if (s.indexOf('rush service') !== -1 || s.indexOf('enhanced trace') !== -1 || s.indexOf('business / agent') !== -1) return 'elevated';
+  if (s.indexOf('standard') !== -1) return 'standard';
+  var st = skipTraceData;
+  if (typeof st === 'string') {
+    try { st = JSON.parse(st); } catch (e) { st = null; }
+  }
+  if (st && st.serviceType) {
+    var m = String(st.serviceType).toLowerCase();
+    if (m.indexOf('process server') !== -1 || m.indexOf('critical') !== -1) return 'critical';
+    if (m.indexOf('court') !== -1 || m.indexOf('affidavit') !== -1) return 'high';
+    if (m.indexOf('deep') !== -1) return 'elevated';
+    if (m.indexOf('standard') !== -1) return 'standard';
+  }
+  return 'standard';
+}
+
+function getServicePriorityBadge(serviceType, skipTraceData) {
+  var key = resolveServicePriority(serviceType, skipTraceData);
+  var p = SERVICE_PRIORITY_STYLES[key] || SERVICE_PRIORITY_STYLES.standard;
+  return '<span class="status-badge" style="display:inline-flex;align-items:center;gap:5px;background:' + p.bg + ';color:' + p.color + ';border:1px solid ' + p.border + ';border-radius:20px;padding:4px 10px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;">' +
+    '<span style="width:5px;height:5px;border-radius:50%;background:' + p.dot + ';flex-shrink:0;"></span>' +
+    escapeHtml(p.label) + '</span>';
+}
+
+function getRequestCaseNumber(r) {
+  var st = parseJsonField(r.skip_trace_data);
+  if (st && st.caseNumber) return st.caseNumber;
+  return r.case_number || '';
+}
+
 var requestsPageSize = 10;
 var allRequests = [];
 var requestsPage = 1;
@@ -542,12 +654,12 @@ function renderRequestsTable() {
         (r.service_type ? r.service_type.replace(/[^ -~]/g, '') : '') +
         '</td>' +
         '<td>' +
-        escapeHtml(r.case_number || '') +
+        escapeHtml(getRequestCaseNumber(r)) +
         '</td>' +
         '<td>' +
-        (r.deadline_date ? formatDate(r.deadline_date) : '') +
+        (r.deadline_date ? formatCalendarDate(r.deadline_date) : '') +
         '</td>' +
-        '<td><span class="status-badge">New</span></td>' +
+        '<td>' + getServicePriorityBadge(r.service_type, r.skip_trace_data) + '</td>' +
         '<td><span class="email-status-badge ' +
         (r.email_sent === 1 ? 'success' : r.email_sent === 0 ? 'failed' : 'pending') +
         '">' +
@@ -715,87 +827,410 @@ async function loadContacts() {
   }
 }
 
+function parseJsonField(raw) {
+  if (raw === null || raw === undefined || raw === '') return null;
+  if (typeof raw === 'object') return raw;
+  try { return JSON.parse(raw); } catch (e) { return null; }
+}
+
+function classifyRequestService(serviceType) {
+  var s = String(serviceType || '').toLowerCase();
+  if (s.indexOf('skip trace') !== -1 || s.indexOf('enhanced trace') !== -1 ||
+      s.indexOf('rush trace') !== -1 || s.indexOf('business / agent') !== -1 ||
+      s.indexOf('court-ready') !== -1) return 'skip_trace';
+  if (s.indexOf('service') !== -1 || s.indexOf('serve') !== -1 ||
+      s.indexOf('emergency') !== -1 || s.indexOf('priority') !== -1) return 'process_serve';
+  return 'general';
+}
+
+function vaVal(value) {
+  if (value === null || value === undefined) return '';
+  return String(value).trim();
+}
+
+function vaFieldRow(label, value) {
+  var v = vaVal(value);
+  if (!v) return '';
+  return '<tr><td class="va-field-label">' + escapeHtml(label) + '</td><td class="va-field-value">' + escapeHtml(v) + '</td></tr>';
+}
+
+function vaSection(title, rowsHtml) {
+  if (!rowsHtml || !String(rowsHtml).replace(/\s/g, '')) return '';
+  return '<div class="detail-section va-detail-section"><h4 class="va-section-title">' + escapeHtml(title) + '</h4><table class="va-field-table"><tbody>' + rowsHtml + '</tbody></table></div>';
+}
+
+function vaCopyLine(label, value) {
+  var v = vaVal(value);
+  if (!v) return '';
+  return label + ': ' + v;
+}
+
+function formatDefendantFullName(def) {
+  if (!def) return '';
+  if (def.firstName || def.lastName) {
+    return [def.firstName, def.middleName, def.lastName].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+  }
+  return vaVal(def.name || def.defendantName);
+}
+
+function buildVaDefendantCard(def, index, isPrimary) {
+  var name = formatDefendantFullName(def) || '—';
+  var rows = '';
+  rows += vaFieldRow('Full legal name', name);
+  rows += vaFieldRow('Gender', def.gender);
+  rows += vaFieldRow('Relationship to case', def.relationship);
+  rows += vaFieldRow('Service address', def.address);
+  rows += vaFieldRow('Address line 2', def.addressLine2);
+  rows += vaFieldRow('City', def.city);
+  rows += vaFieldRow('State', def.state);
+  rows += vaFieldRow('ZIP', def.zip);
+  rows += vaFieldRow('Country', def.country);
+  rows += vaFieldRow('Date of birth', def.dob ? formatDate(def.dob) : '');
+  rows += vaFieldRow('Phone', def.phone);
+  rows += vaFieldRow('Known aliases', def.aliases);
+  rows += vaFieldRow('Employer / workplace', def.employer);
+  rows += vaFieldRow('Physical description', def.physical);
+  rows += vaFieldRow('Notes', def.notes);
+  return '<div class="va-defendant-card">' +
+    '<div class="va-defendant-head">' +
+    '<span class="va-defendant-num">' + index + '</span>' +
+    '<span class="' + (isPrimary ? 'va-badge-primary' : 'va-badge-additional') + '">' + (isPrimary ? 'Primary' : 'Additional') + '</span>' +
+    '<strong>' + escapeHtml(name) + '</strong></div>' +
+    '<table class="va-field-table va-field-table--compact"><tbody>' + rows + '</tbody></table></div>';
+}
+
+function buildVaDefendantCopyBlock(def, index, isPrimary) {
+  var lines = ['DEFENDANT #' + index + (isPrimary ? ' (PRIMARY)' : ' (ADDITIONAL)')];
+  var fields = [
+    ['Full legal name', formatDefendantFullName(def)],
+    ['Gender', def.gender],
+    ['Relationship', def.relationship],
+    ['Service address', def.address],
+    ['City', def.city],
+    ['State', def.state],
+    ['ZIP', def.zip],
+    ['Country', def.country],
+    ['DOB', def.dob ? formatDate(def.dob) : ''],
+    ['Phone', def.phone],
+    ['Aliases', def.aliases],
+    ['Employer', def.employer],
+    ['Physical description', def.physical],
+    ['Notes', def.notes]
+  ];
+  fields.forEach(function (pair) {
+    var line = vaCopyLine(pair[0], pair[1]);
+    if (line) lines.push(line);
+  });
+  return lines.join('\n');
+}
+
+function buildVaDefendantsSection(r, copyLines) {
+  var additional = parseJsonField(r.defendants_data);
+  if (!Array.isArray(additional)) additional = [];
+  var hasPrimary = !!vaVal(r.defendant_name);
+  if (!hasPrimary && !additional.length) return { html: '', copy: '' };
+
+  var primaryDef = {
+    firstName: r.defendant_name,
+    address: r.address_line1,
+    addressLine2: r.address_line2,
+    city: r.city,
+    state: r.state,
+    zip: r.zip
+  };
+
+  var html = '<div class="detail-section va-detail-section"><h4 class="va-section-title">Defendants to Serve (' + (hasPrimary ? 1 : 0) + additional.length + ')</h4><div class="va-defendants-wrap">';
+  var copy = ['DEFENDANTS TO SERVE'];
+
+  if (hasPrimary) {
+    html += buildVaDefendantCard(primaryDef, 1, true);
+    copy.push(buildVaDefendantCopyBlock(primaryDef, 1, true));
+  }
+  additional.forEach(function (def, i) {
+    html += buildVaDefendantCard(def, (hasPrimary ? 2 : 1) + i, false);
+    copy.push(buildVaDefendantCopyBlock(def, (hasPrimary ? 2 : 1) + i, false));
+  });
+  html += '</div></div>';
+  copyLines.push(copy.join('\n\n'));
+  return { html: html, copy: copy.join('\n\n') };
+}
+
+function formatInstructionsHtml(text) {
+  var raw = vaVal(text);
+  if (!raw) return '<p class="va-instructions-block">None</p>';
+  if (raw.indexOf('---') === -1) {
+    return '<div class="va-instructions-block">' + escapeHtml(raw) + '</div>';
+  }
+  var parts = raw.split(/\n*---\s*/);
+  var html = '';
+  parts.forEach(function (part, i) {
+    part = part.trim();
+    if (!part) return;
+    var lines = part.split('\n');
+    var title = lines[0].trim();
+    var body = lines.slice(1).join('\n').trim();
+    if (i === 0 && !body && title.indexOf('Skip Trace') === -1 && title.indexOf('Process serving') === -1) {
+      html += '<div class="va-instructions-block">' + escapeHtml(part) + '</div>';
+      return;
+    }
+    html += '<div class="va-instructions-subtitle">' + escapeHtml(title) + '</div>';
+    html += '<div class="va-instructions-block">' + escapeHtml(body || title) + '</div>';
+  });
+  return html;
+}
+
+function buildSkipTraceAdminSection(rawData, copyLines) {
+  var skipTraceData = parseJsonField(rawData);
+  if (!skipTraceData || !(skipTraceData.firstName || skipTraceData.fullname)) return { html: '', copy: '' };
+
+  if (!skipTraceData.firstName && skipTraceData.fullname) {
+    var nameParts = skipTraceData.fullname.split(' ');
+    skipTraceData.firstName = nameParts[0] || '';
+    skipTraceData.lastName = nameParts.slice(1).join(' ') || '';
+  }
+
+  var subjectName = [skipTraceData.firstName, skipTraceData.middleName, skipTraceData.lastName].filter(Boolean).join(' ');
+
+  var requesterRows = '';
+  requesterRows += vaFieldRow('Requester name', skipTraceData.fullname);
+  requesterRows += vaFieldRow('Company / firm', skipTraceData.company);
+  requesterRows += vaFieldRow('Requester email', skipTraceData.email);
+  requesterRows += vaFieldRow('Requester phone', skipTraceData.phone);
+  requesterRows += vaFieldRow('Role / relationship', skipTraceData.role);
+  requesterRows += vaFieldRow('State of jurisdiction', skipTraceData.jurisdiction);
+  requesterRows += vaFieldRow('Selected service (dropdown)', skipTraceData.dropdownLabel);
+
+  var subjectRows = '';
+  subjectRows += vaFieldRow('Subject full name', subjectName);
+  subjectRows += vaFieldRow('Aliases / maiden name', skipTraceData.aliases);
+  subjectRows += vaFieldRow('Date of birth', skipTraceData.dob ? formatDate(skipTraceData.dob) : '');
+  subjectRows += vaFieldRow('Last known address', skipTraceData.lastAddress);
+  subjectRows += vaFieldRow('Last known phone', skipTraceData.lastPhone);
+  subjectRows += vaFieldRow('Last known email', skipTraceData.lastEmail);
+  subjectRows += vaFieldRow('Social media', skipTraceData.social);
+  subjectRows += vaFieldRow('SSN (last 4)', skipTraceData.ssn ? '****' + skipTraceData.ssn : '');
+  subjectRows += vaFieldRow('Driver\'s license', skipTraceData.dl);
+  subjectRows += vaFieldRow('Vehicle', skipTraceData.vehicle);
+  subjectRows += vaFieldRow('Known employer', skipTraceData.employer);
+
+  var searchRows = '';
+  searchRows += vaFieldRow('Intake service type', skipTraceData.serviceType);
+  searchRows += vaFieldRow('Permissible purpose', skipTraceData.purpose);
+  searchRows += vaFieldRow('Case / file number', skipTraceData.caseNumber);
+  searchRows += vaFieldRow('Court / jurisdiction', skipTraceData.court);
+  searchRows += vaFieldRow('Needed-by date', skipTraceData.deadline ? formatDate(skipTraceData.deadline) : '');
+  searchRows += vaFieldRow('Rush request', skipTraceData.rush === 'yes' ? 'Yes — rush fees apply' : 'No');
+  searchRows += vaFieldRow('Prior search attempted', skipTraceData.priorSearch === 'yes' ? 'Yes' : 'No');
+
+  var html = vaSection('Skip Trace — Requester', requesterRows) +
+    vaSection('Skip Trace — Subject (person to locate)', subjectRows) +
+    vaSection('Skip Trace — Case & search details', searchRows);
+
+  if (skipTraceData.notes) {
+    html += '<div class="detail-section va-detail-section"><h4 class="va-section-title">Skip Trace — Notes</h4>' + formatInstructionsHtml(skipTraceData.notes) + '</div>';
+  }
+  html += '<div class="detail-section va-detail-section"><span class="va-fcra-badge">FCRA compliance certified</span></div>';
+
+  if (skipTraceData.uploadedFiles && skipTraceData.uploadedFiles.length) {
+    html += '<div class="detail-section va-detail-section"><h4 class="va-section-title">Skip Trace — Referenced files</h4><ul class="va-files-list">' +
+      skipTraceData.uploadedFiles.map(function (f) { return '<li>📎 ' + escapeHtml(f) + '</li>'; }).join('') +
+      '</ul></div>';
+  }
+
+  var copy = [
+    'SKIP TRACE INTAKE',
+    vaCopyLine('Requester', skipTraceData.fullname),
+    vaCopyLine('Company', skipTraceData.company),
+    vaCopyLine('Email', skipTraceData.email),
+    vaCopyLine('Phone', skipTraceData.phone),
+    vaCopyLine('Subject name', subjectName),
+    vaCopyLine('DOB', skipTraceData.dob ? formatDate(skipTraceData.dob) : ''),
+    vaCopyLine('Last known address', skipTraceData.lastAddress),
+    vaCopyLine('Last known phone', skipTraceData.lastPhone),
+    vaCopyLine('Purpose', skipTraceData.purpose),
+    vaCopyLine('Case number', skipTraceData.caseNumber),
+    vaCopyLine('Court', skipTraceData.court),
+    vaCopyLine('Deadline', skipTraceData.deadline ? formatDate(skipTraceData.deadline) : ''),
+    vaCopyLine('Rush', skipTraceData.rush === 'yes' ? 'Yes' : 'No'),
+    vaCopyLine('Notes', skipTraceData.notes)
+  ].filter(Boolean).join('\n');
+
+  if (copyLines) copyLines.push(copy);
+  return { html: html, copy: copy };
+}
+
+function buildRequestDetailView(r) {
+  var copyLines = [];
+  var serviceType = fixEncoding(r.service_type || '');
+  var category = classifyRequestService(serviceType);
+  var badgeClass = category === 'skip_trace' ? 'skip' : (category === 'process_serve' ? 'process' : '');
+
+  copyLines.push('SERVICE REQUEST #' + (r.id || ''));
+  copyLines.push('========================');
+  copyLines.push(vaCopyLine('Service type', serviceType));
+  copyLines.push(vaCopyLine('Submitted', formatDate(r.created_at)));
+  copyLines.push('');
+
+  var banner = '<div class="va-request-banner">' +
+    '<span class="va-service-badge ' + badgeClass + '">' + escapeHtml(serviceType || 'Service Request') + '</span>' +
+    '<span class="va-meta-chip">Submitted ' + formatDateColor(r.created_at) + '</span>' +
+    '<span class="va-meta-chip">Email: <span class="email-status-badge ' + (r.email_sent === 1 ? 'success' : r.email_sent === 0 ? 'failed' : 'pending') + '">' + (r.email_sent === 1 ? 'Sent' : r.email_sent === 0 ? 'Failed' : 'Pending') + '</span></span>' +
+    (r.multiple_defendants ? '<span class="va-meta-chip">Multiple defendants: Yes</span>' : '') +
+    '</div>';
+
+  var clientRows = '';
+  clientRows += vaFieldRow('Client / firm name', r.client_name);
+  clientRows += vaFieldRow('Contact name', r.contact_name);
+  clientRows += vaFieldRow('Email', r.email);
+  clientRows += vaFieldRow('Phone', r.phone);
+  copyLines.push('CLIENT / FIRM');
+  copyLines.push(vaCopyLine('Client / firm', r.client_name));
+  copyLines.push(vaCopyLine('Contact', r.contact_name));
+  copyLines.push(vaCopyLine('Email', r.email));
+  copyLines.push(vaCopyLine('Phone', r.phone));
+  copyLines.push('');
+
+  var orderRows = '';
+  orderRows += vaFieldRow('Service type', serviceType);
+  orderRows += vaFieldRow('Deadline', r.deadline_date ? formatDate(r.deadline_date) : 'Not specified');
+  orderRows += vaFieldRow('Case number', r.case_number);
+  orderRows += vaFieldRow('Court / jurisdiction', r.court_jurisdiction);
+  copyLines.push('ORDER DETAILS');
+  copyLines.push(vaCopyLine('Service type', serviceType));
+  copyLines.push(vaCopyLine('Deadline', r.deadline_date ? formatDate(r.deadline_date) : ''));
+  copyLines.push(vaCopyLine('Case number', r.case_number));
+  copyLines.push(vaCopyLine('Court', r.court_jurisdiction));
+  copyLines.push('');
+
+  var skipTrace = buildSkipTraceAdminSection(r.skip_trace_data, copyLines);
+  var defendants = buildVaDefendantsSection(r, copyLines);
+
+  var addressRows = '';
+  addressRows += vaFieldRow('Address line 1', r.address_line1);
+  addressRows += vaFieldRow('Address line 2', r.address_line2);
+  addressRows += vaFieldRow('City', r.city);
+  addressRows += vaFieldRow('State', r.state);
+  addressRows += vaFieldRow('ZIP', r.zip);
+
+  var html = banner + vaSection('Client / firm', clientRows) + vaSection('Order details', orderRows);
+
+  if (category === 'skip_trace') {
+    html += skipTrace.html;
+    if (!skipTrace.html && defendants.html) html += defendants.html;
+  } else {
+    html += vaSection('Service address', addressRows);
+    copyLines.push('SERVICE ADDRESS');
+    copyLines.push(vaCopyLine('Address', r.address_line1));
+    copyLines.push(vaCopyLine('Line 2', r.address_line2));
+    copyLines.push(vaCopyLine('City', r.city));
+    copyLines.push(vaCopyLine('State', r.state));
+    copyLines.push(vaCopyLine('ZIP', r.zip));
+    copyLines.push('');
+    html += defendants.html;
+    if (skipTrace.html) html += skipTrace.html;
+  }
+
+  if (category === 'skip_trace' && defendants.html) {
+    html += defendants.html;
+  }
+
+  if (vaVal(r.special_instructions)) {
+    html += '<div class="detail-section va-detail-section"><h4 class="va-section-title">Special instructions</h4>' + formatInstructionsHtml(r.special_instructions) + '</div>';
+    copyLines.push('SPECIAL INSTRUCTIONS');
+    copyLines.push(vaVal(r.special_instructions));
+    copyLines.push('');
+  }
+
+  var files = parseJsonField(r.uploaded_files);
+  if (files && files.length) {
+    html += '<div class="detail-section va-detail-section"><h4 class="va-section-title">Uploaded documents</h4><ul class="va-files-list">' +
+      files.map(function (f) {
+        return '<li><a href="' + escapeHtml(f.url) + '" target="_blank" rel="noopener">' + escapeHtml(f.name) + '</a></li>';
+      }).join('') + '</ul></div>';
+    copyLines.push('UPLOADED FILES');
+    files.forEach(function (f) { copyLines.push('- ' + f.name + ': ' + f.url); });
+  }
+
+  return { html: html, copyText: copyLines.filter(Boolean).join('\n') };
+}
+
+function buildContactDetailView(c) {
+  var copyLines = ['CONTACT INQUIRY #' + (c.id || ''), '==================', ''];
+  var name = vaVal((c.first_name || '') + ' ' + (c.last_name || ''));
+  var contactRows = '';
+  contactRows += vaFieldRow('Full name', name);
+  contactRows += vaFieldRow('Company', c.company);
+  contactRows += vaFieldRow('Email', c.email);
+  contactRows += vaFieldRow('Phone', c.phone);
+  copyLines.push('CONTACT');
+  copyLines.push(vaCopyLine('Name', name));
+  copyLines.push(vaCopyLine('Company', c.company));
+  copyLines.push(vaCopyLine('Email', c.email));
+  copyLines.push(vaCopyLine('Phone', c.phone));
+  copyLines.push('');
+
+  var caseRows = '';
+  caseRows += vaFieldRow('Reason for contact', c.reason);
+  caseRows += vaFieldRow('City / county', c.county);
+  caseRows += vaFieldRow('State', c.state);
+  caseRows += vaFieldRow('Urgency', c.urgency);
+  copyLines.push('CASE INFO');
+  copyLines.push(vaCopyLine('Reason', c.reason));
+  copyLines.push(vaCopyLine('Location', c.county));
+  copyLines.push(vaCopyLine('State', c.state));
+  copyLines.push(vaCopyLine('Urgency', c.urgency));
+  copyLines.push('');
+
+  var skipTrace = buildSkipTraceAdminSection(c.skip_trace_data, copyLines);
+  var html = vaSection('Contact information', contactRows) + vaSection('Inquiry details', caseRows);
+
+  if (vaVal(c.case_details)) {
+    html += '<div class="detail-section va-detail-section"><h4 class="va-section-title">Case details (client notes)</h4>' + formatInstructionsHtml(c.case_details) + '</div>';
+    copyLines.push('CASE DETAILS');
+    copyLines.push(vaVal(c.case_details));
+    copyLines.push('');
+  }
+
+  html += skipTrace.html;
+  html += '<div class="detail-section va-detail-section"><h4 class="va-section-title">Submission</h4><table class="va-field-table"><tbody>' +
+    vaFieldRow('Submitted', formatDateColor(c.created_at)) +
+    '<tr><td class="va-field-label">Email sent</td><td class="va-field-value"><span class="email-status-badge ' + (c.email_sent === 1 ? 'success' : c.email_sent === 0 ? 'failed' : 'pending') + '">' + (c.email_sent === 1 ? 'Sent' : c.email_sent === 0 ? 'Failed' : 'Pending') + '</span></td></tr>' +
+    '</tbody></table></div>';
+
+  return { html: html, copyText: copyLines.filter(Boolean).join('\n') };
+}
+
+function showDetailModal(title, bodyHtml, copyText) {
+  document.getElementById('modal-detail-title').textContent = title;
+  document.getElementById('modal-detail-body').innerHTML = bodyHtml;
+  window._vaCopyText = copyText || '';
+  var copyBtn = document.getElementById('va-copy-btn');
+  if (copyBtn) copyBtn.style.display = copyText ? 'inline-block' : 'none';
+  document.getElementById('detail-modal').style.display = 'flex';
+}
+
+function copyDetailToClipboard() {
+  var text = window._vaCopyText || '';
+  if (!text) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function () {
+      alert('Copied to clipboard — ready to paste into your platform.');
+    }).catch(function () {
+      prompt('Copy this text:', text);
+    });
+  } else {
+    prompt('Copy this text:', text);
+  }
+}
+
 async function viewRequest(id) {
   try {
     const response = await fetch(`/api/admin/request/${id}`);
     const data = await response.json();
     const r = data.data;
-    
-    document.getElementById('modal-detail-title').textContent = `Request #${id}`;
-    document.getElementById('modal-detail-body').innerHTML = `
-      <div class="detail-section">
-        <h4>Client Information</h4>
-        <div class="highlight">
-          <p><strong>Client Name:</strong> ${escapeHtml(r.client_name || '')}</p>
-          <p><strong>Contact Name:</strong> ${escapeHtml(r.contact_name || '')}</p>
-          <p><strong>Email:</strong> ${escapeHtml(r.email || '')}</p>
-          <p><strong>Phone:</strong> ${escapeHtml(r.phone || '')}</p>
-        </div>
-      </div>
-      <div class="detail-section">
-        <h4>Service Address</h4>
-        <div class="highlight">
-          <p>${escapeHtml(r.address_line1 || '')}</p>
-          <p>${escapeHtml(r.address_line2 || '')}</p>
-          <p>${escapeHtml(r.city || '')}, ${escapeHtml(r.state || '')} ${escapeHtml(r.zip || '')}</p>
-        </div>
-      </div>
-      <div class="detail-section">
-        <h4>Case Details</h4>
-        <p><strong>Defendant:</strong> ${escapeHtml(r.defendant_name || '')}</p>
-        <p><strong>Case Number:</strong> ${escapeHtml(r.case_number || '')}</p>
-        <p><strong>Court:</strong> ${escapeHtml(r.court_jurisdiction || '')}</p>
-        <p><strong>Service Type:</strong> ${r.service_type ? r.service_type.replace(/[^ -~]/g, '') : ''}</p>
-        <p><strong>Deadline:</strong> ${r.deadline_date ? formatDate(r.deadline_date) : 'Not specified'}</p>
-        <p><strong>Multiple Defendants:</strong> ${r.multiple_defendants ? 'Yes' : 'No'}</p>
-      </div>
-      ${r.defendants_data ? `
-      <div class="detail-section">
-        <h4>Additional Defendants</h4>
-        <div class="highlight">
-          ${(function() {
-            var defs = typeof r.defendants_data === 'string' ? JSON.parse(r.defendants_data) : r.defendants_data;
-            return defs.map(function(d, i) {
-              return '<div style="border:1px solid #e2e8f0;border-radius:6px;padding:12px 16px;margin-bottom:12px;background:#f8fafc;">' +
-                '<p style="margin:0 0 8px 0;font-size:14px;font-weight:700;color:#1a3a5c;"><strong>Defendant #' + (i + 2) + ':</strong> ' + escapeHtml((d.firstName || '') + ' ' + (d.middleName || '') + ' ' + (d.lastName || '')) + '</p>' +
-                (d.gender ? '<p style="margin:0 0 4px 0;font-size:13px;"><strong>Gender:</strong> ' + escapeHtml(d.gender) + '</p>' : '') +
-                (d.relationship ? '<p style="margin:0 0 4px 0;font-size:13px;"><strong>Relationship:</strong> ' + escapeHtml(d.relationship) + '</p>' : '') +
-                '<p style="margin:0 0 4px 0;font-size:13px;"><strong>Address:</strong> ' + escapeHtml(d.address || '') + '</p>' +
-                '<p style="margin:0 0 4px 0;font-size:13px;"><strong>City:</strong> ' + escapeHtml(d.city || '') + ' <strong>State:</strong> ' + escapeHtml(d.state || '') + ' <strong>ZIP:</strong> ' + escapeHtml(d.zip || '') + '</p>' +
-                (d.dob ? '<p style="margin:0 0 4px 0;font-size:13px;"><strong>DOB:</strong> ' + escapeHtml(d.dob) + '</p>' : '') +
-                (d.phone ? '<p style="margin:0 0 4px 0;font-size:13px;"><strong>Phone:</strong> ' + escapeHtml(d.phone) + '</p>' : '') +
-                (d.aliases ? '<p style="margin:0 0 4px 0;font-size:13px;"><strong>Known Aliases:</strong> ' + escapeHtml(d.aliases) + '</p>' : '') +
-                (d.employer ? '<p style="margin:0 0 4px 0;font-size:13px;"><strong>Employer:</strong> ' + escapeHtml(d.employer) + '</p>' : '') +
-                (d.physical ? '<p style="margin:0 0 4px 0;font-size:13px;"><strong>Physical Description:</strong> ' + escapeHtml(d.physical) + '</p>' : '') +
-                (d.notes ? '<p style="margin:0 0 4px 0;font-size:13px;"><strong>Notes:</strong> ' + escapeHtml(d.notes) + '</p>' : '') +
-                '</div>';
-            }).join('');
-          })()}
-        </div>
-      </div>
-      ` : ''}
-      <div class="detail-section">
-        <h4>Special Instructions</h4>
-        <p>${escapeHtml(r.special_instructions || 'None')}</p>
-      </div>
-      <div class="detail-section">
-        <h4>Submission Info</h4>
-        <p><strong>Submitted:</strong> ${formatDateColor(r.created_at)}</p>
-        <p><strong>Email Sent:</strong> <span class="email-status-badge ${r.email_sent === 1 ? 'success' : r.email_sent === 0 ? 'failed' : 'pending'}">${r.email_sent === 1 ? 'Sent' : r.email_sent === 0 ? 'Failed' : 'Pending'}</span></p>
-      </div>
-      ${r.uploaded_files ? `
-      <div class="detail-section">
-        <h4>Uploaded Files</h4>
-        <div class="highlight">
-          ${(typeof r.uploaded_files === 'string' ? JSON.parse(r.uploaded_files) : r.uploaded_files).map((f, i) => `
-            <p><a href="${f.url}" target="_blank" style="color:#1a2332;word-break:break-all;">${escapeHtml(f.name)}</a></p>
-          `).join('')}
-        </div>
-      </div>
-      ` : ''}
-    `;
-    
-    document.getElementById('detail-modal').style.display = 'flex';
+    r.id = r.id || id;
+    var view = buildRequestDetailView(r);
+    showDetailModal('Request #' + id, view.html, view.copyText);
   } catch (err) {
     console.error('Error loading request:', err);
   }
@@ -806,145 +1241,14 @@ async function viewContact(id) {
     const response = await fetch(`/api/admin/contact/${id}`);
     const data = await response.json();
     const c = data.data;
-
-    console.log('[DEBUG viewContact] Full contact object:', JSON.stringify(c, null, 2));
-    console.log('[DEBUG viewContact] c.skip_trace_data:', c.skip_trace_data);
-    console.log('[DEBUG viewContact] type:', typeof c.skip_trace_data);
-    console.log('[DEBUG viewContact] c.skip_trace_data keys:', c.skip_trace_data ? Object.keys(c.skip_trace_data) : 'N/A');
-
-    // Parse skip trace data if present
-    var skipTraceData = null;
-    if (c.skip_trace_data) {
-      try {
-        // Handle case where Neon returns JSONB as string or already parsed object
-        if (typeof c.skip_trace_data === 'string') {
-          skipTraceData = JSON.parse(c.skip_trace_data);
-        } else if (typeof c.skip_trace_data === 'object' && c.skip_trace_data !== null) {
-          skipTraceData = c.skip_trace_data;
-        } else {
-          // Try parsing anyway in case it's a different format
-          skipTraceData = JSON.parse(JSON.stringify(c.skip_trace_data));
-        }
-        console.log('[DEBUG viewContact] parsed skipTraceData:', skipTraceData);
-      } catch(e) {
-        skipTraceData = c.skip_trace_data;
-        console.log('[DEBUG viewContact] parse error, using raw:', skipTraceData);
-      }
-    }
-
-    var skipTraceSection = '';
-    console.log('[DEBUG viewContact] skipTraceData exists:', !!skipTraceData, 'skipTraceData.firstName:', skipTraceData?.firstName, 'skipTraceData.fullname:', skipTraceData?.fullname);
-    
-    // Also check for fullname as fallback (some forms send fullname instead of firstName/lastName)
-    const hasSkipTraceData = skipTraceData && (skipTraceData.firstName || skipTraceData.fullname);
-    
-    if (hasSkipTraceData) {
-      console.log('[DEBUG viewContact] Skip trace section WILL render');
-      
-      // Handle fullname fallback
-      if (!skipTraceData.firstName && skipTraceData.fullname) {
-        const nameParts = skipTraceData.fullname.split(' ');
-        skipTraceData.firstName = nameParts[0] || '';
-        skipTraceData.lastName = nameParts.slice(1).join(' ') || '';
-      }
-      
-      skipTraceSection = `
-        <div class="detail-section" style="border-left:3px solid #2d3a7c;padding-left:16px;margin-top:16px;">
-          <h4 style="color:#2d3a7c;">Skip Trace Intake Data</h4>
-          <div class="highlight">
-            <p><strong>Subject Name:</strong> ${escapeHtml((skipTraceData.firstName || '') + ' ' + (skipTraceData.lastName || ''))}</p>
-            ${skipTraceData.middleName ? '<p><strong>Middle Name:</strong> ' + escapeHtml(skipTraceData.middleName) + '</p>' : ''}
-            ${skipTraceData.aliases ? '<p><strong>Aliases/Maiden Name:</strong> ' + escapeHtml(skipTraceData.aliases) + '</p>' : ''}
-            <p><strong>Date of Birth:</strong> ${skipTraceData.dob ? formatDate(skipTraceData.dob) : ''}</p>
-            <p><strong>Last Known Phone:</strong> ${escapeHtml(skipTraceData.lastPhone || '')}</p>
-            <p><strong>Last Known Address:</strong> ${escapeHtml(skipTraceData.lastAddress || '')}</p>
-            <p><strong>Last Known Email:</strong> ${escapeHtml(skipTraceData.lastEmail || '')}</p>
-            <p><strong>Social Media:</strong> ${escapeHtml(skipTraceData.social || '')}</p>
-            ${skipTraceData.ssn ? '<p><strong>SSN (Last 4):</strong> ****' + escapeHtml(skipTraceData.ssn) + '</p>' : ''}
-            ${skipTraceData.dl ? '<p><strong>Driver\'s License:</strong> ' + escapeHtml(skipTraceData.dl) + '</p>' : ''}
-            ${skipTraceData.vehicle ? '<p><strong>Vehicle:</strong> ' + escapeHtml(skipTraceData.vehicle) + '</p>' : ''}
-            ${skipTraceData.employer ? '<p><strong>Known Employer:</strong> ' + escapeHtml(skipTraceData.employer) + '</p>' : ''}
-          </div>
-        </div>
-        <div class="detail-section" style="border-left:3px solid #2d3a7c;padding-left:16px;">
-          <h4 style="color:#2d3a7c;">Search Details</h4>
-          ${skipTraceData.serviceType ? '<p><strong>Service Type:</strong> ' + escapeHtml(skipTraceData.serviceType) + '</p>' : ''}
-          <p><strong>Purpose:</strong> ${escapeHtml(skipTraceData.purpose || '')}</p>
-          <p><strong>Case / File Number:</strong> ${escapeHtml(skipTraceData.caseNumber || '')}</p>
-          <p><strong>Court / Jurisdiction:</strong> ${escapeHtml(skipTraceData.court || '')}</p>
-          <p><strong>Deadline:</strong> ${skipTraceData.deadline ? formatDate(skipTraceData.deadline) : ''}</p>
-          <p><strong>Rush Request:</strong> ${skipTraceData.rush === 'yes' ? '<span style="color:#c0392b;font-weight:600;">Yes — rush fees apply</span>' : 'No'}</p>
-          <p><strong>Prior Search Attempted:</strong> ${skipTraceData.priorSearch === 'yes' ? 'Yes' : 'No'}</p>
-          <p><strong>Role / Relationship:</strong> ${escapeHtml(skipTraceData.role || '')}</p>
-          <p><strong>State of Jurisdiction:</strong> ${escapeHtml(skipTraceData.jurisdiction || '')}</p>
-        </div>
-        ${skipTraceData.notes ? `
-        <div class="detail-section" style="border-left:3px solid #2d3a7c;padding-left:16px;">
-          <h4 style="color:#2d3a7c;">Additional Notes</h4>
-          <p>${escapeHtml(skipTraceData.notes)}</p>
-        </div>
-        ` : ''}
-        <div class="detail-section" style="border-left:3px solid #2d3a7c;padding-left:16px;">
-          <p><span style="display:inline-block;background:#e8f7ee;color:#16a34a;border:1px solid #b4d8b8;border-radius:4px;padding:4px 10px;font-size:12px;font-weight:500;">FCRA Certified</span></p>
-        </div>
-        ${skipTraceData.uploadedFiles && skipTraceData.uploadedFiles.length ? `
-        <div class="detail-section" style="border-left:3px solid #2d3a7c;padding-left:16px;">
-          <h4 style="color:#2d3a7c;">Uploaded Files</h4>
-          <div class="highlight">
-            ${skipTraceData.uploadedFiles.map(function(f) { return '<p>📎 ' + escapeHtml(f) + '</p>'; }).join('')}
-          </div>
-        </div>
-        ` : ''}
-        ${skipTraceData.defendants && skipTraceData.defendants.length ? `
-        <div class="detail-section" style="border-left:3px solid #2d3a7c;padding-left:16px;margin-top:16px;">
-          <h4 style="color:#2d3a7c;">Additional Defendants</h4>
-          <div class="highlight">
-            ${skipTraceData.defendants.map(function(def, i) {
-              return '<p><strong>Defendant #' + (i + 2) + ':</strong> ' + escapeHtml((def.firstName || '') + ' ' + (def.middleName || '') + ' ' + (def.lastName || '')) + '</p><p style="margin-left:16px;font-size:13px;">Address: ' + escapeHtml(def.address || '') + ', ' + escapeHtml(def.city || '') + ', ' + escapeHtml(def.state || '') + '</p>';
-            }).join('')}
-          </div>
-        </div>
-        ` : ''}
-      `;
-    }
-
-    document.getElementById('modal-detail-title').textContent = `Contact #${id}`;
-    document.getElementById('modal-detail-body').innerHTML = `
-      <div class="detail-section">
-        <h4>Contact Information</h4>
-        <div class="highlight">
-          <p><strong>Name:</strong> ${escapeHtml((c.first_name || '') + ' ' + (c.last_name || ''))}</p>
-          <p><strong>Company:</strong> ${escapeHtml(c.company || '')}</p>
-          <p><strong>Email:</strong> ${escapeHtml(c.email || '')}</p>
-          <p><strong>Phone:</strong> ${escapeHtml(c.phone || '')}</p>
-        </div>
-      </div>
-      <div class="detail-section">
-        <h4>Case Information</h4>
-        <p><strong>Reason:</strong> ${escapeHtml(c.reason || '')}</p>
-        <p><strong>County/City:</strong> ${escapeHtml(c.county || '')}</p>
-        <p><strong>State:</strong> ${escapeHtml(c.state || '')}</p>
-        <p><strong>Urgency:</strong> ${getUrgencyBadge(c.urgency)}</p>
-      </div>
-      <div class="detail-section">
-        <h4>Case Details</h4>
-        <div class="highlight">
-          <p>${escapeHtml(c.case_details || '')}</p>
-        </div>
-      </div>
-      ${skipTraceSection}
-      <div class="detail-section">
-        <h4>Submission Info</h4>
-        <p><strong>Submitted:</strong> ${formatDateColor(c.created_at)}</p>
-        <p><strong>Email Sent:</strong> <span class="email-status-badge ${c.email_sent === 1 ? 'success' : c.email_sent === 0 ? 'failed' : 'pending'}">${c.email_sent === 1 ? 'Sent' : c.email_sent === 0 ? 'Failed' : 'Pending'}</span></p>
-      </div>
-    `;
-
-    document.getElementById('detail-modal').style.display = 'flex';
+    c.id = c.id || id;
+    var view = buildContactDetailView(c);
+    showDetailModal('Contact #' + id, view.html, view.copyText);
   } catch (err) {
     console.error('Error loading contact:', err);
   }
 }
+
 
 async function deleteContactRow(id) {
   if (!confirm('Delete contact #' + id + '? This cannot be undone.')) return;
@@ -1162,39 +1466,26 @@ function closeDetailModal() {
   document.getElementById('detail-modal').style.display = 'none';
 }
 
-function formatDate(dateStr) {
-  if (!dateStr) return '';
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
-
 function getDateColor(dateStr) {
   if (!dateStr) return '';
   const now = new Date();
   now.setHours(0, 0, 0, 0);
-  const d = new Date(dateStr);
-  d.setHours(0, 0, 0, 0);
-  const diffDays = Math.round((now - d) / (1000 * 60 * 60 * 24));
-  if (diffDays === 0) return '#16a34a';       // green - today
-  if (diffDays === 1) return '#2563eb';       // blue - yesterday
-  if (diffDays === 2) return '#c0392b';      // red - 2 days ago
-  return '#666';                             // gray - older
+  const d = parseInstantUtc(dateStr) || parseCalendarDate(dateStr);
+  if (!d) return '#666';
+  const local = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const diffDays = Math.round((now - local) / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return '#16a34a';
+  if (diffDays === 1) return '#2563eb';
+  if (diffDays === 2) return '#c0392b';
+  return '#666';
 }
 
 function formatDateColor(dateStr) {
   if (!dateStr) return '<span style="color:#999;">—</span>';
   const color = getDateColor(dateStr);
-  const formatted = new Date(dateStr).toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric',
-    hour: '2-digit', minute: '2-digit'
-  });
-  return '<span style="color:' + color + ';font-weight:500;">' + formatted + '</span>';
+  const formatted = formatSubmissionTime(dateStr);
+  if (!formatted) return '<span style="color:#999;">—</span>';
+  return '<span style="color:' + color + ';font-weight:500;" title="Shown in your local time">' + formatted + '</span>';
 }
 
 function contactHasSkipTrace(c) {

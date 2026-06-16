@@ -308,6 +308,29 @@
   .skip-trace-footer-btns button { width: 100%; text-align: center; }
 }
 
+#request-form .toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: #f0f8f0;
+  color: #2d622d;
+  border: 1px solid #b8d8b8;
+  border-radius: 100px;
+  padding: 12px 24px;
+  font-size: 14px;
+  z-index: 10001;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  max-width: calc(100% - 32px);
+  text-align: center;
+}
+#request-form .toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 /* Defendant Modal — responsive */
 #defendant-modal .modal-overlay {
   padding: 0;

@@ -89,6 +89,26 @@ async function sendSMTPEmail({ to, subject, html, text }) {
   }
 }
 
+function buildSkipTraceEmailSectionHtml(skipTraceData) {
+  if (!skipTraceData || !(skipTraceData.firstName || skipTraceData.fullname)) return '';
+  const st = skipTraceData;
+  return `
+                      <tr>
+                        <td style="padding:25px;background-color:#fef3f2;">
+                          <p style="margin:0 0 15px 0;font-size:14px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:1px;">Skip Trace Intake Data</p>
+                          <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                            ${st.serviceType ? `<tr><td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Service Type</td><td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;font-weight:600;">${st.serviceType}</td></tr>` : ''}
+                            ${st.fullname ? `<tr><td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Requester</td><td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.fullname}</td></tr>` : ''}
+                            ${st.firstName || st.fullname ? `<tr><td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Subject Name</td><td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.firstName || ''} ${st.lastName || ''}</td></tr>` : ''}
+                            ${st.lastAddress ? `<tr><td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Last Known Address</td><td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.lastAddress}</td></tr>` : ''}
+                            ${st.purpose ? `<tr><td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Purpose</td><td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.purpose}</td></tr>` : ''}
+                            ${st.deadline ? `<tr><td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Deadline</td><td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.deadline}</td></tr>` : ''}
+                            ${st.notes ? `<tr><td style="padding:8px 0;font-size:12px;color:#94a3b8;text-transform:uppercase;">Notes</td><td style="padding:8px 0;font-size:14px;color:#333333;text-align:right;">${st.notes}</td></tr>` : ''}
+                          </table>
+                        </td>
+                      </tr>`;
+}
+
 // Beautiful Email Templates
 function buildContactEmailHtml(data) {
   const { firstName, lastName, company, email, phone, reason, city, state, caseDetails, serviceType, urgency, skipTraceData } = data;
@@ -96,135 +116,7 @@ function buildContactEmailHtml(data) {
   // Build Skip Trace section if present
   let skipTraceSection = '';
   if (skipTraceData && (skipTraceData.firstName || skipTraceData.fullname)) {
-    const st = skipTraceData;
-    skipTraceSection = `
-                      <tr>
-                        <td style="padding:25px;background-color:#fef3f2;">
-                          <p style="margin:0 0 15px 0;font-size:14px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:1px;">Skip Trace Intake Data</p>
-                          <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-                            ${st.serviceType ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Service Type</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;font-weight:600;">${st.serviceType}</td>
-                            </tr>` : ''}
-                            ${st.firstName || st.fullname ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Subject Name</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.firstName || ''} ${st.lastName || ''} ${st.fullname || ''}</td>
-                            </tr>` : ''}
-                            ${st.middleName ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Middle Name</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.middleName}</td>
-                            </tr>` : ''}
-                            ${st.aliases ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Aliases / Maiden Name</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.aliases}</td>
-                            </tr>` : ''}
-                            ${st.dob ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Date of Birth</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.dob}</td>
-                            </tr>` : ''}
-                            ${st.lastPhone ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Last Known Phone</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.lastPhone}</td>
-                            </tr>` : ''}
-                            ${st.lastAddress ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Last Known Address</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.lastAddress}</td>
-                            </tr>` : ''}
-                            ${st.lastEmail ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Last Known Email</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.lastEmail}</td>
-                            </tr>` : ''}
-                            ${st.social ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Social Media</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.social}</td>
-                            </tr>` : ''}
-                            ${st.ssn ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">SSN (Last 4)</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">****${st.ssn}</td>
-                            </tr>` : ''}
-                            ${st.dl ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Driver's License</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.dl}</td>
-                            </tr>` : ''}
-                            ${st.vehicle ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Vehicle</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.vehicle}</td>
-                            </tr>` : ''}
-                            ${st.employer ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Known Employer</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.employer}</td>
-                            </tr>` : ''}
-                            ${st.purpose ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Purpose</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.purpose}</td>
-                            </tr>` : ''}
-                            ${st.caseNumber ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Case / File Number</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.caseNumber}</td>
-                            </tr>` : ''}
-                            ${st.court ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Court / Jurisdiction</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.court}</td>
-                            </tr>` : ''}
-                            ${st.deadline ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Deadline</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.deadline}</td>
-                            </tr>` : ''}
-                            ${st.rush ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Rush Request</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#dc2626;text-align:right;font-weight:600;">${st.rush === 'yes' ? 'Yes — rush fees apply' : 'No'}</td>
-                            </tr>` : ''}
-                            ${st.priorSearch ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Prior Search Attempted</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.priorSearch === 'yes' ? 'Yes' : 'No'}</td>
-                            </tr>` : ''}
-                            ${st.role ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Role / Relationship</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.role}</td>
-                            </tr>` : ''}
-                            ${st.jurisdiction ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">State of Jurisdiction</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.jurisdiction}</td>
-                            </tr>` : ''}
-                            ${st.notes ? `
-                            <tr>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:12px;color:#94a3b8;text-transform:uppercase;">Additional Notes</td>
-                              <td style="padding:8px 0;border-bottom:1px solid #fecaca;font-size:14px;color:#333333;text-align:right;">${st.notes}</td>
-                            </tr>` : ''}
-                            ${st.uploadedFiles && st.uploadedFiles.length ? `
-                            <tr>
-                              <td style="padding:8px 0;font-size:12px;color:#94a3b8;text-transform:uppercase;">Uploaded Files</td>
-                              <td style="padding:8px 0;font-size:14px;color:#333333;text-align:right;">${st.uploadedFiles.join(', ')}</td>
-                            </tr>` : ''}
-                            ${st.fcraCertified ? `
-                            <tr>
-                              <td style="padding:8px 0;font-size:12px;color:#94a3b8;text-transform:uppercase;">FCRA Certified</td>
-                              <td style="padding:8px 0;font-size:14px;color:#16a34a;text-align:right;font-weight:600;">✓ Yes</td>
-                            </tr>` : ''}
-                          </table>
-                        </td>
-                      </tr>`;
+    skipTraceSection = buildSkipTraceEmailSectionHtml(skipTraceData);
   }
   
   return `
@@ -357,16 +249,18 @@ function buildContactEmailHtml(data) {
 }
 
 function buildServiceRequestEmailHtml(data) {
-  const { clientName, contactName, email, phone, addressLine1, addressLine2, city, state, zip, defendantName, caseNumber, courtJurisdiction, serviceType, deadlineDate, specialInstructions, defendantsData } = data;
+  const { clientName, contactName, email, phone, addressLine1, addressLine2, city, state, zip, defendantName, caseNumber, courtJurisdiction, serviceType, deadlineDate, specialInstructions, defendantsData, skipTraceData } = data;
   
   let defendantsHtml = '';
   if (defendantsData && defendantsData.length > 0) {
     const defRows = defendantsData.map((def, i) => `
       <tr>
-        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:14px;color:#555555;">${i + 2}</td>
-        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:14px;color:#333333;">${def.firstName} ${def.lastName || ''}</td>
-        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:14px;color:#555555;">${def.address || 'N/A'}</td>
-        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:14px;color:#555555;">${def.city || 'N/A'}</td>
+        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:13px;color:#555555;vertical-align:top;">${i + 2}</td>
+        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:13px;color:#333333;vertical-align:top;">${[def.firstName, def.middleName, def.lastName].filter(Boolean).join(' ')}</td>
+        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:13px;color:#555555;vertical-align:top;">${def.address || '—'}${def.addressLine2 ? '<br>' + def.addressLine2 : ''}</td>
+        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:13px;color:#555555;vertical-align:top;">${[def.city, def.state, def.zip].filter(Boolean).join(', ') || '—'}</td>
+        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:13px;color:#555555;vertical-align:top;">${def.phone || '—'}${def.dob ? '<br>DOB: ' + def.dob : ''}</td>
+        <td style="padding:10px 15px;border:1px solid #e2e8f0;font-size:13px;color:#555555;vertical-align:top;">${def.notes || def.employer || '—'}</td>
       </tr>
     `).join('');
     
@@ -376,10 +270,12 @@ function buildServiceRequestEmailHtml(data) {
           <span style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Additional Defendants</span>
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:10px;background-color:#f8fafc;border-radius:6px;overflow:hidden;">
             <tr style="background-color:#1a3a5c;">
-              <td style="padding:10px 15px;font-size:12px;color:#ffffff;font-weight:600;">#</td>
-              <td style="padding:10px 15px;font-size:12px;color:#ffffff;font-weight:600;">Name</td>
-              <td style="padding:10px 15px;font-size:12px;color:#ffffff;font-weight:600;">Address</td>
-              <td style="padding:10px 15px;font-size:12px;color:#ffffff;font-weight:600;">City</td>
+              <td style="padding:10px 15px;font-size:11px;color:#ffffff;font-weight:600;">#</td>
+              <td style="padding:10px 15px;font-size:11px;color:#ffffff;font-weight:600;">Full Name</td>
+              <td style="padding:10px 15px;font-size:11px;color:#ffffff;font-weight:600;">Address</td>
+              <td style="padding:10px 15px;font-size:11px;color:#ffffff;font-weight:600;">City / State / ZIP</td>
+              <td style="padding:10px 15px;font-size:11px;color:#ffffff;font-weight:600;">Phone / DOB</td>
+              <td style="padding:10px 15px;font-size:11px;color:#ffffff;font-weight:600;">Notes / Employer</td>
             </tr>
             ${defRows}
           </table>
@@ -387,6 +283,8 @@ function buildServiceRequestEmailHtml(data) {
       </tr>
     `;
   }
+
+  const skipTraceHtml = buildSkipTraceEmailSectionHtml(skipTraceData);
   
   return `
 <!DOCTYPE html>
@@ -515,6 +413,7 @@ function buildServiceRequestEmailHtml(data) {
                         </td>
                       </tr>
                       ` : ''}
+                      ${skipTraceHtml}
                       ${defendantsHtml}
                     </table>
                   </td>
@@ -787,6 +686,7 @@ const server = http.createServer(async (req, res) => {
           // Ensure payment columns exist
           await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS stripe_checkout_session_id TEXT`;
           await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS payment_status TEXT DEFAULT 'pending'`;
+          await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS skip_trace_data JSONB`;
 
           const [inserted] = await sql`
             INSERT INTO service_requests (
@@ -794,13 +694,13 @@ const server = http.createServer(async (req, res) => {
               address_line1, address_line2, city, state, zip,
               defendant_name, case_number, court_jurisdiction,
               multiple_defendants, service_type, deadline_date,
-              special_instructions, defendants_data, uploaded_files, email_sent
+              special_instructions, defendants_data, uploaded_files, skip_trace_data, email_sent
             ) VALUES (
               ${f.clientName || ''}, ${f.contactName || ''}, ${f.email || ''}, ${f.phone || ''},
               ${f.addressLine1 || ''}, ${f.addressLine2 || ''}, ${f.city || ''}, ${f.state || ''}, ${f.zip || ''},
               ${f.defendantName || ''}, ${f.caseNumber || ''}, ${f.courtJurisdiction || ''},
               ${f.multiple_defendants === 'true'}, ${f.serviceType || ''}, ${f.deadlineDate || null},
-              ${f.specialInstructions || ''}, ${f.defendantsData || null}, ${fileData}, -1
+              ${f.specialInstructions || ''}, ${f.defendantsData || null}, ${fileData}, ${f.skipTraceData || null}, -1
             ) RETURNING id
           `;
           const submissionId = inserted ? inserted.id : null;
@@ -820,6 +720,12 @@ const server = http.createServer(async (req, res) => {
                 defendantsData = typeof f.defendantsData === 'string' ? JSON.parse(f.defendantsData) : f.defendantsData;
               } catch (e) { defendantsData = null; }
             }
+            let skipTraceData = null;
+            if (f.skipTraceData) {
+              try {
+                skipTraceData = typeof f.skipTraceData === 'string' ? JSON.parse(f.skipTraceData) : f.skipTraceData;
+              } catch (e) { skipTraceData = null; }
+            }
             const emailHtml = buildServiceRequestEmailHtml({
               clientName: f.clientName,
               contactName: f.contactName,
@@ -836,7 +742,8 @@ const server = http.createServer(async (req, res) => {
               serviceType: f.serviceType,
               deadlineDate: f.deadlineDate,
               specialInstructions: f.specialInstructions,
-              defendantsData: defendantsData
+              defendantsData: defendantsData,
+              skipTraceData: skipTraceData
             });
             sendSMTPEmail({
               to: TO_EMAIL,
@@ -890,6 +797,7 @@ const server = http.createServer(async (req, res) => {
           await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS email_sent INTEGER DEFAULT -1`;
           await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS stripe_checkout_session_id TEXT`;
           await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS payment_status TEXT DEFAULT 'pending'`;
+          await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS skip_trace_data JSONB`;
 
           const [insertedJson] = await sql`
             INSERT INTO service_requests (
@@ -897,13 +805,13 @@ const server = http.createServer(async (req, res) => {
               address_line1, address_line2, city, state, zip,
               defendant_name, case_number, court_jurisdiction,
               multiple_defendants, service_type, deadline_date,
-              special_instructions, defendants_data, email_sent
+              special_instructions, defendants_data, skip_trace_data, email_sent
             ) VALUES (
               ${body.clientName}, ${body.contactName}, ${body.email}, ${body.phone},
               ${body.addressLine1}, ${body.addressLine2}, ${body.city}, ${body.state}, ${body.zip},
               ${body.defendantName}, ${body.caseNumber}, ${body.courtJurisdiction},
               ${body.multipleDefendants || false}, ${body.serviceType}, ${body.deadlineDate},
-              ${body.specialInstructions}, ${body.defendantsData || null}, -1
+              ${body.specialInstructions}, ${body.defendantsData || null}, ${body.skipTraceData ? JSON.stringify(body.skipTraceData) : null}, -1
             ) RETURNING id
           `;
           const submissionIdJson = insertedJson ? insertedJson.id : null;
@@ -923,6 +831,12 @@ const server = http.createServer(async (req, res) => {
                 defendantsData = typeof body.defendantsData === 'string' ? JSON.parse(body.defendantsData) : body.defendantsData;
               } catch (e) { defendantsData = null; }
             }
+            let skipTraceDataJson = null;
+            if (body.skipTraceData) {
+              try {
+                skipTraceDataJson = typeof body.skipTraceData === 'string' ? JSON.parse(body.skipTraceData) : body.skipTraceData;
+              } catch (e) { skipTraceDataJson = null; }
+            }
             const emailHtml = buildServiceRequestEmailHtml({
               clientName: body.clientName,
               contactName: body.contactName,
@@ -939,7 +853,8 @@ const server = http.createServer(async (req, res) => {
               serviceType: body.serviceType,
               deadlineDate: body.deadlineDate,
               specialInstructions: body.specialInstructions,
-              defendantsData: defendantsData
+              defendantsData: defendantsData,
+              skipTraceData: skipTraceDataJson
             });
             sendSMTPEmail({
               to: TO_EMAIL,

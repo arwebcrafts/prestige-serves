@@ -22,14 +22,267 @@ var homeDefendantsArray = [];
 const HOME_MAX_DEFENDANTS = 10;
 var skipTraceFormData = null;
 var skipTraceModalFilled = false;
+var activeServiceTypeSelection = '';
+
+/** Map dropdown skip-trace options to modal service cards */
+var DROPDOWN_TO_SKIP_MODAL = {
+  'Standard Skip Trace — $75': 'standard',
+  'Enhanced Trace — $150': 'deep',
+  'Rush Trace (same/next-day) — $225': 'process',
+  'Business / Agent Verification — $225': 'deep',
+  'Court-Ready Skip Trace Report — $250': 'court'
+};
+
+/** Stripe Payment Links — one per service tier (from payment.html) */
+var SERVICE_STRIPE_LINKS = {
+  standard_service: 'https://buy.stripe.com/fZuaEX3lL0F58mZbaZ6sw05',
+  rush_serve: 'https://buy.stripe.com/6oU6oH2hHevV1YB4MB6sw09',
+  priority_serve: 'https://buy.stripe.com/bJeaEX09z3RhgTvcf36sw02',
+  emergency_serve: 'https://buy.stripe.com/00w4gz1dD1J9fPr0wl6sw03',
+  skip_trace_standard: 'https://buy.stripe.com/9B6aEX8G573tav7a6V6sw0c',
+  skip_trace_rush: 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
+  skip_trace_court_ready: 'https://buy.stripe.com/cNieVd1dD87xcDfenb6sw0a',
+  skip_trace_enhanced: 'https://buy.stripe.com/8x24gz7C11J9dHj3Ix6sw04',
+  skip_trace_business: 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06'
+};
+
+var SERVICE_TYPE_TO_CART_KEY = {
+  'Standard Service': 'standard_service',
+  'Rush Service': 'rush_serve',
+  'Priority Serve': 'priority_serve',
+  'Emergency Serve': 'emergency_serve',
+  'Standard Skip Trace': 'skip_trace_standard',
+  'Enhanced Trace': 'skip_trace_enhanced',
+  'Rush Trace': 'skip_trace_rush',
+  'Business / Agent Verification': 'skip_trace_business',
+  'Court-Ready Skip Trace Report': 'skip_trace_court_ready'
+};
+
+function resolveServiceCartKey(serviceType) {
+  if (!serviceType) return null;
+  for (var label in SERVICE_TYPE_TO_CART_KEY) {
+    if (serviceType.indexOf(label) !== -1) return SERVICE_TYPE_TO_CART_KEY[label];
+  }
+  return null;
+}
+
+function getStripePaymentUrl(serviceType) {
+  var key = resolveServiceCartKey(serviceType);
+  return key ? (SERVICE_STRIPE_LINKS[key] || null) : null;
+}
+
+function redirectAfterServiceSubmit(serviceType, submissionId) {
+  var stripeUrl = getStripePaymentUrl(serviceType);
+  if (stripeUrl) {
+    window.location.href = stripeUrl;
+    return;
+  }
+  var qs = submissionId ? '?ref=' + submissionId : '';
+  window.location.href = 'payment.html' + qs;
+}
+
+function appendProcessServeFieldsToFormData(form, formData) {
+  var serveA1 = form.querySelector('[name="serve_addressLine1"]');
+  var serveA2 = form.querySelector('[name="serve_addressLine2"]');
+  if (serveA1 && serveA1.value.trim()) formData.set('addressLine1', serveA1.value.trim());
+  if (serveA2) formData.set('addressLine2', serveA2.value.trim());
+
+  var svcCityVal = document.getElementById('home-svc-city-value');
+  var svcCityIn = document.getElementById('home-svc-city-input');
+  var svcCity = (svcCityVal && svcCityVal.value.trim()) || (svcCityIn && svcCityIn.value.trim()) || '';
+  if (svcCity) formData.set('city', svcCity);
+
+  var svcStateVal = document.getElementById('home-svc-state-value');
+  var svcStateIn = document.getElementById('home-svc-state-input');
+  var svcState = (svcStateVal && svcStateVal.value.trim()) || (svcStateIn && svcStateIn.value.trim()) || '';
+  if (svcState) formData.set('state', svcState);
+
+  var serveZip = form.querySelector('[name="serve_zip"]');
+  if (serveZip && serveZip.value.trim()) formData.set('zip', sanitizeUsZip5(serveZip.value));
+
+  var extraDef = form.querySelector('#home-process-extra [name="serve_defendantName"]');
+  if (extraDef && extraDef.value.trim()) formData.set('defendantName', extraDef.value.trim());
+
+  var extraCase = form.querySelector('#home-process-extra [name="serve_caseNumber"]');
+  if (extraCase && extraCase.value.trim()) formData.set('caseNumber', extraCase.value.trim());
+  var extraCourt = form.querySelector('#home-process-extra [name="serve_courtJurisdiction"]');
+  if (extraCourt && extraCourt.value.trim()) formData.set('courtJurisdiction', extraCourt.value.trim());
+
+  var dd = document.getElementById('home-deadlineDate');
+  if (dd && dd.value) formData.set('deadlineDate', dd.value);
+
+  var homeSpecial = form.querySelector('[name="home_specialInstructions"]');
+  var topSpecial = form.querySelector('[name="specialInstructions"]');
+  var merged = topSpecial ? topSpecial.value.trim() : '';
+  if (homeSpecial && homeSpecial.value.trim()) {
+    merged += (merged ? '\n\n' : '') + 'Process serving notes:\n' + homeSpecial.value.trim();
+  }
+  if (merged) formData.set('specialInstructions', merged);
+
+  var homeMultiYes = form.querySelector('input[name="home_multiple_defendants"][value="yes"]');
+  if (homeMultiYes) {
+    formData.set('multiple_defendants', homeMultiYes.checked ? 'true' : 'false');
+  }
+}
+
+function prefillRequestFormFromSkipTrace(form) {
+  if (!skipTraceModalFilled || !skipTraceFormData) return;
+  var st = skipTraceFormData;
+  var subjectName = ((st.firstName || '') + ' ' + (st.lastName || '')).trim();
+  var defEl = form.querySelector('[name="defendantName"]');
+  if (defEl && !defEl.value.trim() && subjectName) defEl.value = subjectName;
+  var addrEl = form.querySelector('[name="addressLine1"]');
+  if (addrEl && !addrEl.value.trim() && st.lastAddress) addrEl.value = st.lastAddress;
+  var caseEl = form.querySelector('[name="caseNumber"]');
+  if (caseEl && !caseEl.value.trim() && st.caseNumber) caseEl.value = st.caseNumber;
+  var courtEl = form.querySelector('[name="courtJurisdiction"]');
+  if (courtEl && !courtEl.value.trim() && st.court) courtEl.value = st.court;
+}
+
+function appendSkipTraceFieldsToFormData(form, formData) {
+  if (!skipTraceModalFilled || !skipTraceFormData) return;
+  var st = skipTraceFormData;
+  formData.set('skipTraceData', JSON.stringify(st));
+
+  var subjectName = ((st.firstName || '') + ' ' + (st.lastName || '')).trim();
+  if (subjectName) formData.set('defendantName', subjectName);
+  if (st.lastAddress) formData.set('addressLine1', st.lastAddress);
+  if (st.caseNumber) formData.set('caseNumber', st.caseNumber);
+  if (st.court) formData.set('courtJurisdiction', st.court);
+  if (st.deadline) formData.set('deadlineDate', st.deadline);
+
+  var notes = [];
+  if (st.purpose) notes.push('Purpose: ' + st.purpose);
+  if (st.jurisdiction) notes.push('State of jurisdiction: ' + st.jurisdiction);
+  if (st.dob) notes.push('Subject DOB: ' + st.dob);
+  if (st.notes) notes.push(st.notes);
+  if (notes.length) {
+    var existing = formData.get('specialInstructions') || '';
+    var block = '--- Skip Trace Intake ---\n' + notes.join('\n');
+    formData.set('specialInstructions', existing ? (existing + '\n\n' + block) : block);
+  }
+}
 
 /** Detect if service type is skip trace */
 function isSkipTraceService(val) {
   return SKIP_TRACE_SERVICE_TYPES.indexOf(val) !== -1;
 }
 
+function getIntakeSummaryContainer() {
+  return document.getElementById('skip-trace-summary-container')
+    || document.getElementById('service-intake-summary-container');
+}
+
+function getActiveServiceTypeSelect() {
+  return document.querySelector('#request-form select[name="serviceType"]')
+    || document.querySelector('#home-form-container select[name="serviceType"]')
+    || document.querySelector('#contact-form-container select[name="serviceType"]')
+    || document.querySelector('select[name="serviceType"]');
+}
+
+function escapeFormHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function renderSkipTraceSummary() {
+  var container = getIntakeSummaryContainer();
+  if (!container) return;
+  container.innerHTML = '';
+  if (!skipTraceModalFilled || !skipTraceFormData) {
+    container.style.display = 'none';
+    return;
+  }
+  var st = skipTraceFormData;
+  var subjectName = [st.firstName, st.middleName, st.lastName].filter(Boolean).join(' ').trim();
+  var card = document.createElement('div');
+  card.className = 'defendant-card skip-trace-summary-card';
+  card.innerHTML =
+    '<div class="defendant-info">' +
+      '<h5>Skip Trace Intake: ' + escapeFormHtml(st.dropdownLabel || st.serviceType || 'Completed') + '</h5>' +
+      '<p><strong>Subject:</strong> ' + escapeFormHtml(subjectName) + (st.lastAddress ? ' · ' + escapeFormHtml(st.lastAddress) : '') + '</p>' +
+      '<p><strong>Requester:</strong> ' + escapeFormHtml(st.fullname || '') + (st.email ? ' · ' + escapeFormHtml(st.email) : '') + '</p>' +
+      '<p><strong>Purpose:</strong> ' + escapeFormHtml(st.purpose || '') + (st.deadline ? ' · <strong>Deadline:</strong> ' + escapeFormHtml(st.deadline) : '') + '</p>' +
+    '</div>' +
+    '<button type="button" class="edit-def-btn" onclick="openSkipTraceModal(true)">Edit</button>';
+  container.appendChild(card);
+  container.style.display = 'flex';
+}
+
+function populateSkipTraceModal(data) {
+  if (!data) return;
+  function setVal(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.value = val || '';
+  }
+  setVal('st-fullname', data.fullname);
+  setVal('st-company', data.company);
+  setVal('st-email', data.email);
+  setVal('st-phone', data.phone);
+  setVal('st-role', data.role);
+  setVal('st-jurisdiction', data.jurisdiction);
+  setVal('st-first', data.firstName);
+  setVal('st-last', data.lastName);
+  setVal('st-middle', data.middleName);
+  setVal('st-aliases', data.aliases);
+  setVal('st-dob', data.dob);
+  setVal('st-phone2', data.lastPhone);
+  setVal('st-address', data.lastAddress);
+  setVal('st-email2', data.lastEmail);
+  setVal('st-social', data.social);
+  setVal('st-purpose', data.purpose);
+  setVal('st-case', data.caseNumber);
+  setVal('st-court', data.court);
+  setVal('st-deadline', data.deadline);
+  setVal('st-rush', data.rush || 'no');
+  setVal('st-prior', data.priorSearch || 'no');
+  setVal('st-notes', data.notes);
+
+  var revMap = {
+    'Standard Skip Trace': 'standard',
+    'Deep Skip Trace': 'deep',
+    'Court-Ready / Affidavit-Grade': 'court',
+    'Process Server Locate': 'process'
+  };
+  var svcKey = revMap[data.serviceType] || '';
+  if (svcKey) {
+    var radio = document.querySelector('#skip-trace-modal-body input[name="st-service"][value="' + svcKey + '"]');
+    if (radio) {
+      radio.checked = true;
+      var card = radio.closest('.svc-card');
+      if (card) selectModalService(card, svcKey);
+    }
+  }
+
+  setVal('st-ssn', data.ssn);
+  setVal('st-dl', data.dl);
+  setVal('st-vehicle', data.vehicle);
+  setVal('st-employer', data.employer);
+
+  ['st-fcra1', 'st-fcra2', 'st-fcra3', 'st-fcra4', 'st-fcra5'].forEach(function(id) {
+    var cb = document.getElementById(id);
+    if (cb) cb.checked = !!data.fcraCertified;
+  });
+
+  if (data.uploadedFiles && data.uploadedFiles.length) {
+    renderSavedModalFileNames(data.uploadedFiles);
+  }
+}
+
+function renderSavedModalFileNames(fileNames) {
+  var list = document.getElementById('modalFileList');
+  if (!list) return;
+  list.innerHTML = fileNames.map(function(name) {
+    return '<div style="display:flex;align-items:center;justify-content:space-between;background:#f5f4f1;border:1px solid #d5d2cc;border-radius:4px;padding:8px 14px;font-size:12.5px;color:#2e2e2e;font-family:var(--serif);"><span>' +
+      escapeFormHtml(name) + ' <span style="color:#999">(saved — re-upload to replace)</span></span></div>';
+  }).join('');
+}
+
 /** Show skip trace intake modal */
-function openSkipTraceModal() {
+function openSkipTraceModal(isEdit) {
   var modal = document.getElementById('skip-trace-modal');
   var body = document.getElementById('skip-trace-modal-body');
   if (!modal || !body) return;
@@ -204,6 +457,8 @@ function openSkipTraceModal() {
           </div>
         </div>
 
+        <div id="st-modal-errors" role="alert" style="display:none;margin-bottom:14px;padding:12px 16px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;color:#991b1b;font-size:13px;line-height:1.5;"></div>
+
         <div style="display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid #d5d2cc;" class="skip-trace-footer">
           <p style="font-size:12px;color:#888;font-style:italic;max-width:380px;line-height:1.6;margin:0;">By submitting this form you acknowledge all compliance certifications above. Skip trace form must be completed before submitting.</p>
           <div style="display:flex;gap:10px;" class="skip-trace-footer-btns">
@@ -215,10 +470,64 @@ function openSkipTraceModal() {
     </div>
   `;
   modal.style.display = 'flex';
-  skipTraceModalFilled = false;
   modalUploadedFiles = [];
-  renderModalFileList();
+  if (skipTraceFormData && (isEdit || skipTraceModalFilled)) {
+    populateSkipTraceModal(skipTraceFormData);
+  } else if (!isEdit) {
+    skipTraceModalFilled = false;
+    skipTraceFormData = null;
+    renderSkipTraceSummary();
+  }
+  if (!skipTraceFormData || !skipTraceFormData.uploadedFiles || !skipTraceFormData.uploadedFiles.length) {
+    renderModalFileList();
+  }
   if (window.initPhoneAutoFormat) window.initPhoneAutoFormat();
+  initFutureDeadlineDateInputs(document.getElementById('skip-trace-modal-body'));
+  if (!isEdit && !skipTraceFormData) {
+    prefillSkipTraceFromMainForm();
+    var selVal = activeServiceTypeSelection || (getActiveServiceTypeSelect() && getActiveServiceTypeSelect().value) || '';
+    preselectSkipTraceTierFromDropdown(selVal);
+  }
+}
+
+function prefillSkipTraceFromMainForm() {
+  var form = document.getElementById('request-form')
+    || document.querySelector('#home-form-container form')
+    || document.querySelector('#contact-form-container form');
+  if (!form) return;
+  function fill(id, name) {
+    var el = document.getElementById(id);
+    var src = form.querySelector('[name="' + name + '"]');
+    if (el && src && !el.value.trim()) el.value = src.value.trim();
+  }
+  fill('st-fullname', 'contactName');
+  if (!document.getElementById('st-fullname').value.trim()) {
+    var fn = form.querySelector('[name="firstName"]');
+    var ln = form.querySelector('[name="lastName"]');
+    if (fn || ln) {
+      document.getElementById('st-fullname').value = ((fn ? fn.value : '') + ' ' + (ln ? ln.value : '')).trim();
+    }
+  }
+  fill('st-company', 'clientName');
+  if (!document.getElementById('st-company').value.trim()) fill('st-company', 'company');
+  fill('st-email', 'email');
+  fill('st-phone', 'phone');
+  var stateEl = document.getElementById('req-state-value') || document.getElementById('state-value');
+  var jur = document.getElementById('st-jurisdiction');
+  if (jur && stateEl && !jur.value.trim()) jur.value = stateEl.value.trim();
+}
+
+function preselectSkipTraceTierFromDropdown(dropdownVal) {
+  var tier = DROPDOWN_TO_SKIP_MODAL[dropdownVal];
+  if (!tier) return;
+  setTimeout(function() {
+    var radio = document.querySelector('#skip-trace-modal-body input[name="st-service"][value="' + tier + '"]');
+    if (radio) {
+      radio.checked = true;
+      var card = radio.closest('.svc-card');
+      if (card) selectModalService(card, tier);
+    }
+  }, 0);
 }
 
 // Service type selection in modal
@@ -233,6 +542,8 @@ function selectModalService(el, type) {
   document.querySelectorAll('#skip-trace-modal-body .svc-card').forEach(function(c) { c.style.borderColor = '#d5d2cc'; c.style.background = '#fff'; });
   el.style.borderColor = '#2d3a7c';
   el.style.background = '#f0f3f8';
+  var radio = el.querySelector('input[name="st-service"]') || document.querySelector('#skip-trace-modal-body input[name="st-service"][value="' + type + '"]');
+  if (radio) radio.checked = true;
   var d = modalUrgData[type];
   var panel = document.getElementById('modalUrgPanel');
   if (!panel) return;
@@ -282,13 +593,73 @@ function removeModalFile(i) {
   renderModalFileList();
 }
 
+function clearSkipTraceValidationErrors() {
+  var body = document.getElementById('skip-trace-modal-body');
+  if (!body) return;
+  body.querySelectorAll('input, select, textarea').forEach(function (el) {
+    el.style.borderColor = '';
+    el.style.outline = '';
+  });
+  ['st-fcra1', 'st-fcra2', 'st-fcra3', 'st-fcra4', 'st-fcra5'].forEach(function (id) {
+    var cb = document.getElementById(id);
+    var wrap = cb && cb.closest('label');
+    if (wrap) {
+      wrap.style.background = '';
+      wrap.style.outline = '';
+    }
+  });
+  var err = document.getElementById('st-modal-errors');
+  if (err) {
+    err.style.display = 'none';
+    err.innerHTML = '';
+  }
+}
+
+function showSkipTraceModalErrors(missing) {
+  var err = document.getElementById('st-modal-errors');
+  if (err && missing.length) {
+    err.style.display = 'block';
+    err.innerHTML = '<strong>Please complete the following before saving:</strong><ul style="margin:8px 0 0 18px;padding:0;">' +
+      missing.map(function (m) { return '<li>' + escapeFormHtml(m) + '</li>'; }).join('') + '</ul>';
+    err.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  showMissingFieldsAlert('Please fill out the skip trace intake form:', missing);
+}
+
+function resolveSkipTraceServiceSelection() {
+  var selectedSvc = document.querySelector('#skip-trace-modal-body input[name="st-service"]:checked');
+  if (selectedSvc) return selectedSvc;
+  var dropdownSel = getActiveServiceTypeSelect();
+  var dv = (dropdownSel && dropdownSel.value) || activeServiceTypeSelection || '';
+  var tier = DROPDOWN_TO_SKIP_MODAL[dv];
+  if (!tier) return null;
+  var radio = document.querySelector('#skip-trace-modal-body input[name="st-service"][value="' + tier + '"]');
+  if (radio) {
+    radio.checked = true;
+    var card = radio.closest('.svc-card');
+    if (card) selectModalService(card, tier);
+    return radio;
+  }
+  return null;
+}
+
 function saveSkipTraceForm() {
+  clearSkipTraceValidationErrors();
   var missing = [];
+  var firstBadEl = null;
+
   function need(id, label) {
     var el = document.getElementById(id);
     var v = el ? String(el.value || '').trim() : '';
-    if (!v) missing.push(label);
+    if (!v) {
+      missing.push(label);
+      if (el) {
+        el.style.border = '2px solid #e74c3c';
+        if (!firstBadEl) firstBadEl = el;
+      }
+    }
   }
+
   need('st-fullname', 'Full name');
   need('st-email', 'Email');
   need('st-phone', 'Phone');
@@ -297,31 +668,48 @@ function saveSkipTraceForm() {
   need('st-last', 'Subject last name');
   need('st-dob', 'Date of birth');
   need('st-address', 'Last known address');
-  need('st-purpose', 'Permissible purpose');
+  need('st-purpose', 'Purpose of search (select from dropdown)');
   need('st-deadline', 'Needed-by date');
 
   var stPhone = document.getElementById('st-phone');
   if (stPhone) {
     var d = (stPhone.value || '').replace(/\D/g, '');
-    if (d.length > 0 && d.length < 10) missing.push('Phone (enter all 10 digits)');
+    if (d.length > 0 && d.length < 10) {
+      missing.push('Phone (enter all 10 digits)');
+      stPhone.style.border = '2px solid #e74c3c';
+      if (!firstBadEl) firstBadEl = stPhone;
+    }
   }
 
-  var fcra1 = document.getElementById('st-fcra1') ? document.getElementById('st-fcra1').checked : false;
-  var fcra2 = document.getElementById('st-fcra2') ? document.getElementById('st-fcra2').checked : false;
-  var fcra3 = document.getElementById('st-fcra3') ? document.getElementById('st-fcra3').checked : false;
-  var fcra4 = document.getElementById('st-fcra4') ? document.getElementById('st-fcra4').checked : false;
-  var fcra5 = document.getElementById('st-fcra5') ? document.getElementById('st-fcra5').checked : false;
-  if (!fcra1 || !fcra2 || !fcra3 || !fcra4 || !fcra5) {
-    missing.push('All five compliance certification checkboxes');
-  }
+  var complianceChecks = [
+    { id: 'st-fcra1', label: 'FCRA permissible purpose certification' },
+    { id: 'st-fcra2', label: 'DPPA compliance acknowledgment' },
+    { id: 'st-fcra3', label: 'Lawful use certification' },
+    { id: 'st-fcra4', label: 'Terms of service agreement' },
+    { id: 'st-fcra5', label: 'Refund / no-results policy acknowledgment' }
+  ];
+  complianceChecks.forEach(function (item) {
+    var cb = document.getElementById(item.id);
+    if (!cb || cb.checked) return;
+    missing.push(item.label);
+    var wrap = cb.closest('label');
+    if (wrap) {
+      wrap.style.background = '#fef2f2';
+      wrap.style.outline = '2px solid #e74c3c';
+      if (!firstBadEl) firstBadEl = wrap;
+    }
+  });
 
-  var selectedSvc = document.querySelector('#skip-trace-modal-body input[name="st-service"]:checked');
+  var selectedSvc = resolveSkipTraceServiceSelection();
   if (!selectedSvc) {
-    missing.push('Skip trace service type (choose one card)');
+    missing.push('Skip trace service type (choose one card in section 02)');
   }
 
   if (missing.length) {
-    showMissingFieldsAlert('Please fill out the skip trace intake form:', missing);
+    showSkipTraceModalErrors(missing);
+    if (firstBadEl && firstBadEl.scrollIntoView) {
+      firstBadEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
     return;
   }
 
@@ -338,8 +726,10 @@ function saveSkipTraceForm() {
 
   var serviceTypeMap = { standard: 'Standard Skip Trace', deep: 'Deep Skip Trace', court: 'Court-Ready / Affidavit-Grade', process: 'Process Server Locate' };
   var serviceTypeVal = selectedSvc ? (serviceTypeMap[selectedSvc.value] || '') : '';
+  var dropdownSel = getActiveServiceTypeSelect();
 
   skipTraceFormData = {
+    dropdownLabel: dropdownSel ? dropdownSel.value : activeServiceTypeSelection,
     fullname: fullname,
     company: document.getElementById('st-company') ? document.getElementById('st-company').value.trim() : '',
     email: email,
@@ -368,32 +758,37 @@ function saveSkipTraceForm() {
     priorSearch: document.getElementById('st-prior') ? document.getElementById('st-prior').value : 'no',
     notes: document.getElementById('st-notes') ? document.getElementById('st-notes').value.trim() : '',
     fcraCertified: true,
-    uploadedFiles: modalUploadedFiles.length ? modalUploadedFiles.map(function(f) { return f.name; }) : []
+    uploadedFiles: modalUploadedFiles.length
+      ? modalUploadedFiles.map(function(f) { return f.name; })
+      : ((skipTraceFormData && skipTraceFormData.uploadedFiles) || [])
   };
   skipTraceModalFilled = true;
   closeSkipTraceModal();
+  renderSkipTraceSummary();
   var toast = document.getElementById('toast');
   if (toast) {
-    toast.textContent = 'Skip trace details saved. You may now submit the form.';
+    toast.textContent = 'Skip trace details saved. Review the summary below or click Edit to change.';
     toast.className = 'toast show ok';
-    setTimeout(function() { toast.classList.remove('show'); }, 3500);
+    setTimeout(function() { toast.classList.remove('show'); }, 4000);
+  } else {
+    alert('Skip trace details saved. You can review them below the Service Type field, then submit your request.');
   }
 }
 
 function initHomeSkipTraceSection(containerId) {
   var cid = containerId || 'home-form-container';
-  // request.html uses #request-form instead of #home-form-container
   if (!document.querySelector('#' + cid)) cid = 'request-form';
   var sel = document.querySelector('#' + cid + ' select[name="serviceType"]');
   if (!sel) return;
   sel.addEventListener('change', function() {
+    activeServiceTypeSelection = sel.value;
+    syncHomeProcessServeSection(cid);
     if (isSkipTraceService(sel.value)) {
       openSkipTraceModal();
-    } else {
-      if (skipTraceModalFilled) {
-        skipTraceFormData = null;
-        skipTraceModalFilled = false;
-      }
+    } else if (skipTraceModalFilled) {
+      skipTraceFormData = null;
+      skipTraceModalFilled = false;
+      renderSkipTraceSummary();
     }
   });
 }
@@ -547,10 +942,18 @@ function isProcessExtraVisible() {
 function defendantNameInputInForm(form) {
   var ex = form && form.querySelector('#home-process-extra');
   if (ex && isProcessExtraVisible()) {
-    var inner = ex.querySelector('[name="defendantName"]');
+    var inner = ex.querySelector('[name="serve_defendantName"]');
     if (inner) return inner;
   }
   return form ? form.querySelector('[name="defendantName"]') : null;
+}
+
+function setProcessExtraFieldsDisabled(disabled) {
+  var wrap = document.getElementById('home-process-extra');
+  if (!wrap) return;
+  wrap.querySelectorAll('input, select, textarea').forEach(function (el) {
+    el.disabled = !!disabled;
+  });
 }
 
 function toggleHomeMultiDefTextarea(containerId) {
@@ -577,6 +980,7 @@ function syncHomeProcessServeSection(containerId) {
   if (!wrap || !sel) return;
   var show = HOME_PROCESS_SERVE_TYPES.indexOf(sel.value) !== -1;
   wrap.style.display = show ? 'block' : 'none';
+  setProcessExtraFieldsDisabled(!show);
   wrap.querySelectorAll('[data-home-required]').forEach(function (el) {
     if (show) el.setAttribute('required', 'required');
     else el.removeAttribute('required');
@@ -591,13 +995,18 @@ function syncHomeProcessServeSection(containerId) {
 
 function initHomeProcessServeSection(containerId) {
   var cid = containerId || 'home-form-container';
-  // request.html uses #request-form instead of #home-form-container
   if (!document.querySelector('#' + cid)) cid = 'request-form';
   var sel = document.querySelector('#' + cid + ' select[name="serviceType"]');
   if (!sel) return;
-  var wrap = document.getElementById('home-process-extra');
 
-  sel.addEventListener('change', function() { syncHomeProcessServeSection(cid); });
+  sel.addEventListener('change', function() {
+    syncHomeProcessServeSection(cid);
+    if (HOME_PROCESS_SERVE_TYPES.indexOf(sel.value) !== -1 && skipTraceModalFilled) {
+      skipTraceFormData = null;
+      skipTraceModalFilled = false;
+      renderSkipTraceSummary();
+    }
+  });
   syncHomeProcessServeSection(cid);
   var hc = document.getElementById(cid);
   if (hc) initFutureDeadlineDateInputs(hc);
@@ -644,8 +1053,9 @@ function validateHomeProcessServeFields(form) {
 
   var cv = document.getElementById('home-svc-city-value');
   var ci = document.getElementById('home-svc-city-input');
-  mark(ci, !(cv && cv.value.trim()));
-  if (!(cv && cv.value.trim())) missing.push('Service city');
+  var cityOk = (cv && cv.value.trim()) || (ci && ci.value.trim());
+  mark(ci, !cityOk);
+  if (!cityOk) missing.push('Service city');
 
   var sv = document.getElementById('home-svc-state-value');
   var si = document.getElementById('home-svc-state-input');
@@ -680,9 +1090,7 @@ function validateHomeProcessServeFields(form) {
 }
 
 function submitHomeProcessServe(form, successId) {
-  console.log('[DEBUG submitHomeProcessServe] STARTING - form:', form.id || 'unknown');
   var fd = new FormData();
-  console.log('[DEBUG submitHomeProcessServe] home-svc-city-value:', document.getElementById('home-svc-city-value')?.value, 'home-svc-state-value:', document.getElementById('home-svc-state-value')?.value);
   var fnEl = form.querySelector('[name="firstName"]');
   var lnEl = form.querySelector('[name="lastName"]');
   var coEl = form.querySelector('[name="company"]');
@@ -716,18 +1124,19 @@ function submitHomeProcessServe(form, successId) {
     return el ? el.value.trim() : '';
   })());
   fd.append('defendantName', (function () {
-    var el = form.querySelector('[name="defendantName"]');
+    var el = form.querySelector('[name="serve_defendantName"]');
     return el ? el.value.trim() : '';
   })());
   fd.append('caseNumber', (function () {
-    var el = form.querySelector('[name="caseNumber"]');
+    var el = form.querySelector('[name="serve_caseNumber"]');
     return el ? el.value.trim() : '';
   })());
   fd.append('courtJurisdiction', (function () {
-    var el = form.querySelector('[name="courtJurisdiction"]');
+    var el = form.querySelector('[name="serve_courtJurisdiction"]');
     return el ? el.value.trim() : '';
   })());
-  var multiYes = document.querySelector('#home-form-container input[name="home_multiple_defendants"][value="yes"]');
+  var multiYes = document.querySelector('#home-form-container input[name="home_multiple_defendants"][value="yes"]')
+    || document.querySelector('#contact-form-container input[name="home_multiple_defendants"][value="yes"]');
   fd.append('multiple_defendants', multiYes && multiYes.checked ? 'true' : 'false');
   fd.append('defendantsData', JSON.stringify(homeDefendantsArray));
   fd.append('serviceType', (function () {
@@ -773,27 +1182,8 @@ function submitHomeProcessServe(form, successId) {
       if (emailField && emailField.value) {
         sessionStorage.setItem('ps_customerEmail', emailField.value.trim());
       }
-      // Pre-select service in cart if recognisable, then redirect to payment
-      var serviceKeyMap = {
-        'Standard Service': 'standard_service',
-        'Rush Service': 'rush_serve',
-        'Priority Serve': 'priority_serve',
-        'Emergency Serve': 'emergency_serve',
-      };
-      var cartKey = null;
-      for (var k in serviceKeyMap) {
-        if (st.indexOf(k) !== -1) { cartKey = serviceKeyMap[k]; break; }
-      }
       setTimeout(function () {
-        if (cartKey) {
-          try {
-            var cart = JSON.parse(sessionStorage.getItem('ps_cart') || '{}');
-            cart[cartKey] = (cart[cartKey] || 0) + 1;
-            sessionStorage.setItem('ps_cart', JSON.stringify(cart));
-          } catch (e) {}
-        }
-        var qs = data.submissionId ? '?ref=' + data.submissionId : '';
-        window.location.href = 'payment.html' + qs;
+        redirectAfterServiceSubmit(st, data.submissionId);
       }, 1200);
       form.reset();
       syncHomeProcessServeSection();
@@ -839,9 +1229,9 @@ function buildContactForm(containerId, formId) {
           <input type="text" name="serve_zip" data-home-required placeholder="12345" maxlength="5" inputmode="numeric" pattern="\\d{5}" title="5-digit US ZIP" autocomplete="postal-code">
         </div>
       </div>
-      <div class="form-group"><label>Defendant / Recipient Full Name <span class="req">(required)</span></label><input type="text" name="defendantName" data-home-required></div>
-      <div class="form-group"><label>Case Number</label><input type="text" name="caseNumber"></div>
-      <div class="form-group"><label>Court / Jurisdiction</label><input type="text" name="courtJurisdiction"></div>
+      <div class="form-group"><label>Defendant / Recipient Full Name <span class="req">(required)</span></label><input type="text" name="serve_defendantName" data-home-required></div>
+      <div class="form-group"><label>Case Number</label><input type="text" name="serve_caseNumber"></div>
+      <div class="form-group"><label>Court / Jurisdiction</label><input type="text" name="serve_courtJurisdiction"></div>
       <div class="form-group">
         <label>Are there multiple defendants to be served?</label>
         <div class="form-hint" style="margin-bottom:10px;">Selecting &quot;Yes&quot; opens the defendant entry form. You can add up to 10 defendants.</div>
@@ -910,6 +1300,7 @@ function buildContactForm(containerId, formId) {
     <div class="form-group">
       <label>Service Type <span class="req">(required)</span></label>
       <select name="serviceType" required><option value="">Select an option</option><option>Standard Service — $97.99 (5–7 business days)</option><option>Rush Service — $119.99 (3 business days)</option><option>Priority Serve — $149.99 (2 business days)</option><option>Emergency Serve — $249.99 (Same-day, approval required)</option><option>Standard Skip Trace — $75</option><option>Enhanced Trace — $150</option><option>Rush Trace (same/next-day) — $225</option><option>Business / Agent Verification — $225</option><option>Court-Ready Skip Trace Report — $250</option></select>
+      <div id="skip-trace-summary-container" style="display:none; flex-direction:column; gap:10px; margin-top:12px;"></div>
     </div>
     ${processExtra}
     <div class="form-checkbox">
@@ -1037,7 +1428,15 @@ function handleFormSubmit(event, id, formType) {
     })
     .then(function(data) {
       if (data.success) {
-        showToast && showToast('Request submitted successfully!', 'ok');
+        var serviceType = form.querySelector('[name="serviceType"]')?.value || '';
+        if (isSkipTraceService(serviceType)) {
+          if (data.submissionId) sessionStorage.setItem('ps_submissionId', data.submissionId);
+          var emailField = form.querySelector('[name="email"]');
+          if (emailField && emailField.value) sessionStorage.setItem('ps_customerEmail', emailField.value.trim());
+          setTimeout(function () { redirectAfterServiceSubmit(serviceType, data.submissionId); }, 1200);
+        } else {
+          showToast && showToast('Request submitted successfully!', 'ok');
+        }
       }
     })
     .catch(err => console.error('Form submission error:', err));
@@ -1050,6 +1449,7 @@ function handleFormSubmit(event, id, formType) {
     if (isSkipTraceService(serviceTypeValReset)) {
       skipTraceFormData = null;
       skipTraceModalFilled = false;
+      renderSkipTraceSummary();
     }
   }
 }
@@ -1059,6 +1459,19 @@ function handleRequestSubmit(event) {
   const form = event.target;
   var missing = [];
   var firstEmptyField = null;
+
+  var serviceTypeVal = form.querySelector('[name="serviceType"]')?.value || '';
+  var isSkipTrace = isSkipTraceService(serviceTypeVal);
+
+  if (isSkipTrace && !skipTraceModalFilled) {
+    alert('Skip trace intake form: please open and complete the intake form before submitting.');
+    openSkipTraceModal();
+    return;
+  }
+
+  if (isSkipTrace && skipTraceModalFilled && skipTraceFormData) {
+    prefillRequestFormFromSkipTrace(form);
+  }
 
   const requiredFields = form.querySelectorAll('[required]');
   requiredFields.forEach(function(field) {
@@ -1073,7 +1486,7 @@ function handleRequestSubmit(event) {
   });
 
   var addr1 = form.querySelector('[name="addressLine1"]');
-  if (addr1 && !addr1.value.trim()) {
+  if (!isSkipTrace && addr1 && !addr1.value.trim()) {
     missing.push('Service address (line 1)');
     addr1.style.border = '2px solid #e74c3c';
     if (!firstEmptyField) firstEmptyField = addr1;
@@ -1145,13 +1558,6 @@ function handleRequestSubmit(event) {
     }
   }
 
-  var serviceTypeVal = form.querySelector('[name="serviceType"]')?.value || '';
-  if (isSkipTraceService(serviceTypeVal) && !skipTraceModalFilled) {
-    alert('Skip trace intake form: please open and complete the intake form before submitting.');
-    openSkipTraceModal();
-    return;
-  }
-
   if (missing.length) {
     showMissingFieldsAlert('Please complete your request:', missing);
     if (firstEmptyField && firstEmptyField.focus) firstEmptyField.focus();
@@ -1162,18 +1568,24 @@ function handleRequestSubmit(event) {
     if (!validateHomeProcessServeFields(form)) return;
   }
 
-  // Use FormData for multipart submission with files
   const formData = new FormData(form);
   formData.set('city', cityValue || '');
   formData.set('state', stateValue || '');
-  // Check both the original multiple_defendants toggle and the home_process_extra toggle
   const isMultiDef = form.querySelector('input[name="home_multiple_defendants"][value="yes"]')?.checked || form.querySelector('input[name="multiple_defendants"][value="yes"]')?.checked;
   formData.set('multiple_defendants', isMultiDef ? 'true' : 'false');
-  
-  // Merge defendants from both arrays (homeDefendantsArray from #home-process-extra, defendantsArray from original modal)
+
   var allDefendants = [...defendantsArray, ...homeDefendantsArray];
   if (allDefendants.length > 0) {
     formData.set('defendantsData', JSON.stringify(allDefendants));
+  }
+  if (skipTraceModalFilled && skipTraceFormData) {
+    appendSkipTraceFieldsToFormData(form, formData);
+  }
+  if (extraShown) {
+    appendProcessServeFieldsToFormData(form, formData);
+    if (homeDefendantsArray.length > 0) {
+      formData.set('defendantsData', JSON.stringify(homeDefendantsArray));
+    }
   }
 
   fetch('/api/request', {
@@ -1195,32 +1607,8 @@ function handleRequestSubmit(event) {
         sessionStorage.setItem('ps_customerEmail', emailField.value.trim());
       }
 
-      // Pre-fill cart with the selected service tier, then redirect to payment
-      const serviceKeyMap = {
-        'Standard Service':  'standard_service',
-        'Rush Service':      'rush_serve',
-        'Priority Serve':    'priority_serve',
-        'Emergency Serve':   'emergency_serve',
-        'Standard Skip Trace': 'skip_trace_standard',
-        'Enhanced Trace':    'skip_trace_enhanced',
-        'Rush Trace':        'skip_trace_rush',
-        'Business / Agent Verification': 'skip_trace_business',
-        'Court-Ready Skip Trace Report': 'skip_trace_court_ready',
-      };
-      let cartKey = null;
-      for (const [label, key] of Object.entries(serviceKeyMap)) {
-        if (serviceType.includes(label)) { cartKey = key; break; }
-      }
-      setTimeout(() => {
-        if (cartKey) {
-          try {
-            const cart = JSON.parse(sessionStorage.getItem('ps_cart') || '{}');
-            cart[cartKey] = (cart[cartKey] || 0) + 1;
-            sessionStorage.setItem('ps_cart', JSON.stringify(cart));
-          } catch (e) {}
-        }
-        const qs = data.submissionId ? '?ref=' + data.submissionId : '';
-        window.location.href = 'payment.html' + qs;
+      setTimeout(function () {
+        redirectAfterServiceSubmit(serviceType, data.submissionId);
       }, 1200);
       form.reset();
       defendantsArray = [];
@@ -1240,6 +1628,9 @@ function handleRequestSubmit(event) {
       // Also hide #home-process-extra after reset
       var reqExtra = document.getElementById('home-process-extra');
       if (reqExtra) reqExtra.style.display = 'none';
+      skipTraceFormData = null;
+      skipTraceModalFilled = false;
+      renderSkipTraceSummary();
     }
   })
   .catch(err => console.error('Request submission error:', err));
@@ -1553,7 +1944,8 @@ function openDefendantModal(editIndex = -1) {
     document.getElementById('def-relationship').value = def.relationship;
     document.getElementById('def-address').value = def.address;
     document.getElementById('def-city').value = def.city;
-    document.getElementById('def-city-value').value = def.city;
+    var defCityValue = document.getElementById('def-city-value');
+    if (defCityValue) defCityValue.value = def.city;
     document.getElementById('def-country-input').value = def.country;
     document.getElementById('def-country-value').value = def.country;
     document.getElementById('def-state-input').value = def.state;
@@ -1580,10 +1972,12 @@ function closeDefendantModal() {
 function clearDefendantForm() {
   const inputs = document.querySelectorAll('#defendant-modal input, #defendant-modal textarea, #defendant-modal select');
   inputs.forEach(input => {
-    if(input.id !== 'def-country' && input.id !== 'def-edit-index') {
+    if (input.id !== 'def-country-value' && input.id !== 'def-edit-index') {
       input.value = '';
     }
   });
+  const countryInput = document.getElementById('def-country-input');
+  if (countryInput) countryInput.value = 'United States';
 }
 
 function saveDefendant() {
@@ -1591,7 +1985,9 @@ function saveDefendant() {
   const firstName = document.getElementById('def-first-name').value.trim();
   const lastName = document.getElementById('def-last-name').value.trim();
   const address = document.getElementById('def-address').value.trim();
-  const city = document.getElementById('def-city-value').value.trim();
+  const cityEl = document.getElementById('def-city-value');
+  const cityInput = document.getElementById('def-city');
+  const city = ((cityEl && cityEl.value) || (cityInput && cityInput.value) || '').trim();
 
   if (!firstName) missing.push('First name');
   if (!lastName) missing.push('Last name');
@@ -1616,7 +2012,7 @@ function saveDefendant() {
     gender: document.getElementById('def-gender').value,
     relationship: document.getElementById('def-relationship').value,
     address: address,
-    city: document.getElementById('def-city-value').value || city,
+    city: city,
     state: document.getElementById('def-state-value').value,
     country: document.getElementById('def-country-value').value,
     dob: document.getElementById('def-dob').value,
@@ -1957,17 +2353,16 @@ function saveHomeDefendant() {
 
 function renderHomeDefendantsList() {
   var container = document.getElementById('home-defendants-list-container');
-  console.log('[DEBUG renderHomeDefendantsList] container:', container, 'array length:', homeDefendantsArray.length);
   if (!container) return;
   container.innerHTML = '';
   homeDefendantsArray.forEach(function(def, index) {
-    var card = document.createElement('div');
-    card.className = 'defendant-card';
-    var mid = def.middleName ? ' ' + def.middleName + ' ' : ' ';
-    var fullName = def.firstName + mid + def.lastName;
-    card.innerHTML = '<div class="defendant-info"><h5>Defendant #' + (index + 2) + ': ' + fullName + '</h5><p>' + def.address + ', ' + def.city + '</p></div><button type="button" class="edit-def-btn" onclick="openHomeDefendantModal(' + index + ')">Edit</button>';
-    container.appendChild(card);
-  });
+      var card = document.createElement('div');
+      card.className = 'defendant-card';
+      var mid = def.middleName ? ' ' + def.middleName + ' ' : ' ';
+      var fullName = def.firstName + mid + def.lastName;
+      card.innerHTML = '<div class="defendant-info"><h5>Defendant #' + (index + 2) + ': ' + fullName + '</h5><p>' + def.address + ', ' + def.city + '</p></div><button type="button" class="edit-def-btn" onclick="openHomeDefendantModal(' + index + ')">Edit</button>';
+      container.appendChild(card);
+    });
 }
 
 function initHomeDefendantsAutocomplete() {
@@ -1996,4 +2391,8 @@ document.addEventListener('DOMContentLoaded', function() {
   initUsZipInputs();
   initHomeProcessServeSection();
   initHomeSkipTraceSection();
+  if (document.getElementById('home-svc-city-input')) {
+    initCityAutocomplete('home-svc-city-input', 'home-svc-city-value', 'home-svc-city-dropdown', 'home-svc-state-input');
+    initStateAutocomplete('home-svc-state-input', 'home-svc-state-value', 'home-svc-state-dropdown', 'CA');
+  }
 });

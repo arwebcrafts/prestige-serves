@@ -154,10 +154,11 @@ function renderCartDrawer() {
 
 function proceedToCheckout() {
   var links = {
-    'Standard Service': 'https://buy.stripe.com/fZuaEX3lL0F58mZbaZ6sw05',
-    'Rush Serve':       'https://buy.stripe.com/REPLACE_RUSH',
-    'Priority Serve':   'https://buy.stripe.com/REPLACE_PRIORITY',
-    'Emergency Serve':  'https://buy.stripe.com/REPLACE_EMERGENCY'
+    'Standard Service': SERVICE_STRIPE_LINKS.standard_service,
+    'Rush Serve': SERVICE_STRIPE_LINKS.rush_serve,
+    'Rush Service': SERVICE_STRIPE_LINKS.rush_serve,
+    'Priority Serve': SERVICE_STRIPE_LINKS.priority_serve,
+    'Emergency Serve': SERVICE_STRIPE_LINKS.emergency_serve
   };
   if (cart.length === 1) {
     var url = links[cart[0].name];
