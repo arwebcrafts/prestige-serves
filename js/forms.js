@@ -1081,8 +1081,8 @@ function handleRequestSubmit(event) {
     addr1.style.border = '';
   }
 
-  const cityValue = document.getElementById('req-city-value')?.value;
   const cityInput = document.getElementById('req-city-input');
+  const cityValue = (cityInput?.value || '').trim();
   if (!cityValue) {
     missing.push('City');
     if (cityInput) {
@@ -1093,8 +1093,12 @@ function handleRequestSubmit(event) {
     cityInput.style.border = '';
   }
 
-  const stateValue = document.getElementById('req-state-value')?.value;
+  const stateHiddenEl = document.getElementById('req-state-value');
   const stateInput = document.getElementById('req-state-input');
+  const stateValue = (stateHiddenEl?.value || '').trim() || (stateInput?.value || '').trim() || 'CA';
+  if (stateHiddenEl && !stateHiddenEl.value.trim()) {
+    stateHiddenEl.value = stateValue;
+  }
   if (!stateValue) {
     missing.push('State');
     if (stateInput) {

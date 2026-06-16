@@ -42,7 +42,7 @@ const HOSTINGER_SMTP_SECURE = process.env.HOSTINGER_SMTP_SECURE === 'true' || tr
 const HOSTINGER_SMTP_USER = process.env.HOSTINGER_SMTP_USER;
 const HOSTINGER_SMTP_PASS = process.env.HOSTINGER_SMTP_PASS;
 const FROM_EMAIL = process.env.FROM_EMAIL || 'crm@arwebcrafts.com';
-const TO_EMAIL = process.env.TO_EMAIL || 'muhammadwaqarsikandar@gmail.com';
+const TO_EMAIL = process.env.TO_EMAIL || 'prestigeservesllc@gmail.com';
 
 let transporter = null;
 
@@ -1155,12 +1155,20 @@ const server = http.createServer(async (req, res) => {
             jsonResponse(res, 400, { success: false, message: `Unknown service key: ${item.key}` });
             return;
           }
-          if (!entry.priceId.startsWith('price_')) {
-            jsonResponse(res, 503, { success: false, message: `Stripe price ID not configured for "${item.key}". Set STRIPE_PRICE_* env vars.` });
-            return;
-          }
           const qty = Math.max(1, Math.min(parseInt(item.qty, 10) || 1, 10));
-          line_items.push({ price: entry.priceId, quantity: qty });
+          // Use pre-configured Stripe price ID when available; otherwise use inline price_data
+          if (entry.priceId && !entry.priceId.startsWith('price_REPLACE')) {
+            line_items.push({ price: entry.priceId, quantity: qty });
+          } else {
+            line_items.push({
+              price_data: {
+                currency: 'usd',
+                unit_amount: entry.amount,
+                product_data: { name: entry.label },
+              },
+              quantity: qty,
+            });
+          }
         }
 
         // Optional 3% card fee line (enable with ADD_CARD_FEE=true in .env.local)

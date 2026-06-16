@@ -58,8 +58,8 @@
       "logo": {
         "@type": "ImageObject",
         "url": "https://www.prestigeserves.com/assets/images/mail.png",
-        "width": 512,
-        "height": 512
+        "width": 611,
+        "height": 408
       },
       "image": "https://www.prestigeserves.com/assets/images/prestige-serves-img-0.png",
       "description": "Licensed, bonded process server Los Angeles. Rush and same-day process serving, skip tracing, eFiling, eRecording, and legal courier service with court-ready proof of service and nationwide coverage.",
@@ -274,11 +274,8 @@
   ]
 }
 </script>
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/assets/images/mail.png">
+<link rel="apple-touch-icon" href="/assets/images/mail.png">
 </head>
 <body>
 
@@ -580,11 +577,7 @@
         <label>Service Address <span class="req">*</span></label>
         <input type="text" id="home-def-address" placeholder="Full address including postcode / zip" style="margin-bottom:8px;" required>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-          <div class="city-select-wrapper">
-            <input type="text" id="home-def-city" placeholder="City" autocomplete="off">
-            <input type="hidden" id="home-def-city-value" value="">
-            <div class="city-dropdown" id="home-def-city-dropdown"></div>
-          </div>
+          <input type="text" id="home-def-city" placeholder="City" autocomplete="address-level2">
           <div class="state-select-wrapper">
             <input type="text" id="home-def-state-input" placeholder="State" autocomplete="off">
             <input type="hidden" id="home-def-state-value" value="">
