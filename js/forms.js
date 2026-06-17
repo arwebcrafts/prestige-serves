@@ -1590,12 +1590,28 @@ function handleRequestSubmit(event) {
     }
   }
 
+  var submitBtn = form.querySelector('button[type="submit"]');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+  }
+
   fetch('/api/request', {
     method: 'POST',
     body: formData
   })
-  .then(res => res.json())
-  .then(data => {
+  .then(function(res) {
+    return res.json().then(function(data) {
+      return { ok: res.ok, data: data };
+    });
+  })
+  .then(function(result) {
+    var data = result.data;
+    if (!result.ok || !data.success) {
+      var errMsg = (data && data.message) ? data.message : 'Could not submit your request. Please try again or call 424.235.3089.';
+      alert(errMsg);
+      return;
+    }
     if (data.success) {
       const serviceType = form.querySelector('[name="serviceType"]')?.value || '';
       document.getElementById('req-success').classList.add('show');
@@ -1624,8 +1640,9 @@ function handleRequestSubmit(event) {
       document.querySelector('input[name="home_multiple_defendants"][value="no"]').checked = true;
       var origNo = document.querySelector('input[name="multiple_defendants"][value="no"]');
       if (origNo) origNo.checked = true;
-      document.getElementById('file-list').innerHTML = '';
-      const uploadText = document.getElementById('file-upload-text');
+      var fileListEl = document.getElementById('file-list');
+      if (fileListEl) fileListEl.innerHTML = '';
+      var uploadText = document.getElementById('file-upload-text');
       if (uploadText) uploadText.textContent = '+ Add a File';
       // Also hide #home-process-extra after reset
       var reqExtra = document.getElementById('home-process-extra');
@@ -1635,7 +1652,16 @@ function handleRequestSubmit(event) {
       renderSkipTraceSummary();
     }
   })
-  .catch(err => console.error('Request submission error:', err));
+  .catch(function(err) {
+    console.error('Request submission error:', err);
+    alert('Network error — your request could not be sent. Please check your connection and try again.');
+  })
+  .finally(function() {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Request';
+    }
+  });
 }
 
 // State autocomplete

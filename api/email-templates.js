@@ -287,7 +287,7 @@ export function buildContactEmailHtml(data) {
 }
 
 export function buildServiceRequestEmailHtml(data) {
-  const { clientName, contactName, email, phone, addressLine1, addressLine2, city, state, zip, defendantName, caseNumber, courtJurisdiction, serviceType, deadlineDate, specialInstructions, defendantsData } = data;
+  const { clientName, contactName, email, phone, addressLine1, addressLine2, city, state, zip, defendantName, caseNumber, courtJurisdiction, serviceType, deadlineDate, specialInstructions, defendantsData, uploadedFiles } = data;
   
   let defendantsHtml = '';
   if (defendantsData && defendantsData.length > 0) {

@@ -59,6 +59,17 @@
   </url>
 
   <url>
+    <loc>https://www.prestigeserves.com/stakeout-service.html</loc>
+    <lastmod>2026-06-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://www.prestigeserves.com/assets/images/stakeout-banner.png</image:loc>
+      <image:title>Stakeout & Surveillance Service Los Angeles</image:title>
+    </image:image>
+  </url>
+
+  <url>
     <loc>https://www.prestigeserves.com/efiling.html</loc>
     <lastmod>2026-05-25</lastmod>
     <changefreq>monthly</changefreq>

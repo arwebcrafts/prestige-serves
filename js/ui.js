@@ -296,6 +296,16 @@ document.addEventListener('DOMContentLoaded', function() {
     ]);
   }
 
+  // Stakeout Service FAQ
+  if (document.getElementById('so-faq')) {
+    buildFAQ('so-faq', [
+      {q:"Do you need to be a licensed private investigator to do this?",a:"No. As a registered process server, watching a known address to complete personal service falls within our core service-of-process work, not investigative work. California law (CCP §1033.5(a)(4)(B)) specifically recognizes stakeout fees as a recoverable process-serving cost, separate from investigation expenses."},
+      {q:"What happens if the subject never shows up?",a:"You're billed for the time booked, and we'll give you a full log of what was observed. From there we can recommend next steps — a longer window, a second location, or moving toward service by publication if the deadline is close."},
+      {q:"Can this be combined with Skip Tracing?",a:"Yes — if the address itself is uncertain, we recommend starting with Skip Tracing to confirm a current location before booking surveillance time."},
+      {q:"How quickly can a stakeout be scheduled?",a:"Most stakeouts can be scheduled within 24–48 hours. For deadline-critical cases, call us directly and we'll do what we can to move faster."}
+    ]);
+  }
+
   // Initialize testimonial carousel safely once
   initTestimonialCarousel();
 });

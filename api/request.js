@@ -120,21 +120,34 @@ export default async function handler(req, res) {
 
     const uploadedFilesJson = uploadedFiles.length > 0 ? JSON.stringify(uploadedFiles) : null;
 
-    await sql`
+  let skipTraceData = null;
+    try {
+      const rawSkip = fields.skipTraceData;
+      const skipStr = Array.isArray(rawSkip) ? rawSkip[0] : rawSkip;
+      skipTraceData = skipStr ? JSON.parse(skipStr) : null;
+    } catch (e) {
+      skipTraceData = null;
+    }
+
+    await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS skip_trace_data JSONB`.catch(() => {});
+
+    const [inserted] = await sql`
       INSERT INTO service_requests (
         client_name, contact_name, email, phone,
         address_line1, address_line2, city, state, zip,
         defendant_name, case_number, court_jurisdiction,
         multiple_defendants, service_type, deadline_date,
-        special_instructions, defendants_data, uploaded_files, email_sent
+        special_instructions, defendants_data, uploaded_files, skip_trace_data, email_sent
       ) VALUES (
         ${clientName || ''}, ${contactName || ''}, ${email || ''}, ${phone || ''},
         ${addressLine1 || ''}, ${addressLine2 || ''}, ${city || ''}, ${state || ''}, ${zip || ''},
         ${defendantName || ''}, ${caseNumber || ''}, ${courtJurisdiction || ''},
         ${multipleDefendants || false}, ${serviceType || ''}, ${deadlineDate},
-        ${specialInstructions || ''}, ${defendantsData}, ${uploadedFilesJson}, -1
+        ${specialInstructions || ''}, ${defendantsData}, ${uploadedFilesJson}, ${skipTraceData ? JSON.stringify(skipTraceData) : null}, -1
       )
+      RETURNING id
     `;
+    const submissionId = inserted ? inserted.id : null;
 
     const htmlContent = buildServiceRequestEmailHtml({
       clientName, contactName, email, phone, addressLine1, addressLine2, city, state, zip,
@@ -151,7 +164,7 @@ export default async function handler(req, res) {
     const emailSentStatus = emailResult.success ? 1 : 0;
     await sql`UPDATE service_requests SET email_sent = ${emailSentStatus} WHERE id = (SELECT id FROM service_requests WHERE email = ${email || ''} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1)`;
 
-    return res.status(201).json({ success: true, message: 'Service request submitted successfully', emailSent: emailResult.success });
+    return res.status(201).json({ success: true, message: 'Service request submitted successfully', emailSent: emailResult.success, submissionId });
   } catch (err) {
     logger.error(LOG_CATEGORIES.FORM, 'Request submission error', err);
     return res.status(500).json({ success: false, message: 'Server error: ' + err.message });
