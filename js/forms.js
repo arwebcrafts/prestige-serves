@@ -125,18 +125,90 @@ function appendProcessServeFieldsToFormData(form, formData) {
   }
 }
 
+function parseSkipTraceAddress(lastAddress, jurisdiction) {
+  var result = {
+    line1: String(lastAddress || '').trim(),
+    city: '',
+    state: '',
+    zip: ''
+  };
+  var jur = String(jurisdiction || '').trim();
+  if (jur.length === 2) {
+    result.state = jur.toUpperCase();
+  } else if (jur) {
+    result.city = jur;
+  }
+
+  if (!result.line1) return result;
+
+  var zipMatch = result.line1.match(/\b(\d{5})(?:-\d{4})?\b/);
+  if (zipMatch) result.zip = zipMatch[1];
+
+  var csz = result.line1.match(/,\s*([^,]+?),\s*([A-Za-z]{2})\s+(\d{5})(?:-\d{4})?\s*$/);
+  if (csz) {
+    result.city = csz[1].trim();
+    result.state = csz[2].toUpperCase();
+    result.zip = csz[3];
+    result.line1 = result.line1.substring(0, result.line1.indexOf(',')).trim() || result.line1;
+  }
+  return result;
+}
+
+function syncSkipTraceMainFormRequirements(serviceTypeVal) {
+  var form = document.getElementById('request-form');
+  if (!form) return;
+  var isST = isSkipTraceService(serviceTypeVal);
+  var zip = form.querySelector('input[name="zip"]');
+  var addrGroup = form.querySelector('[name="addressLine1"]');
+  var addrLabel = addrGroup && addrGroup.closest('.form-group') ? addrGroup.closest('.form-group').querySelector('label') : null;
+  if (zip) {
+    if (isST) zip.removeAttribute('required');
+    else zip.setAttribute('required', 'required');
+  }
+  if (addrLabel) {
+    if (isST) {
+      addrLabel.innerHTML = 'Service Address <span style="font-weight:normal;color:#666;">(optional — subject address collected in skip trace intake)</span>';
+    } else {
+      addrLabel.innerHTML = 'Service Address <span class="req">(required)</span>';
+    }
+  }
+}
+
 function prefillRequestFormFromSkipTrace(form) {
   if (!skipTraceModalFilled || !skipTraceFormData) return;
   var st = skipTraceFormData;
-  var subjectName = ((st.firstName || '') + ' ' + (st.lastName || '')).trim();
-  var defEl = form.querySelector('[name="defendantName"]');
-  if (defEl && !defEl.value.trim() && subjectName) defEl.value = subjectName;
-  var addrEl = form.querySelector('[name="addressLine1"]');
-  if (addrEl && !addrEl.value.trim() && st.lastAddress) addrEl.value = st.lastAddress;
-  var caseEl = form.querySelector('[name="caseNumber"]');
-  if (caseEl && !caseEl.value.trim() && st.caseNumber) caseEl.value = st.caseNumber;
-  var courtEl = form.querySelector('[name="courtJurisdiction"]');
-  if (courtEl && !courtEl.value.trim() && st.court) courtEl.value = st.court;
+  var subjectName = [st.firstName, st.middleName, st.lastName].filter(Boolean).join(' ').trim();
+  var parsed = parseSkipTraceAddress(st.lastAddress, st.jurisdiction);
+
+  function fillIfEmpty(name, val) {
+    if (val == null || val === '') return;
+    var el = form.querySelector('[name="' + name + '"]');
+    if (el && !String(el.value || '').trim()) el.value = val;
+  }
+
+  fillIfEmpty('clientName', st.company || st.fullname);
+  fillIfEmpty('contactName', st.fullname);
+  fillIfEmpty('email', st.email);
+  fillIfEmpty('phone', st.phone);
+  fillIfEmpty('defendantName', subjectName);
+  fillIfEmpty('addressLine1', parsed.line1 || st.lastAddress);
+  fillIfEmpty('caseNumber', st.caseNumber);
+  fillIfEmpty('courtJurisdiction', st.court);
+  fillIfEmpty('zip', parsed.zip);
+
+  var cityInput = document.getElementById('req-city-input');
+  var cityHidden = document.getElementById('req-city-value');
+  var cityVal = parsed.city || '';
+  if (cityVal) {
+    if (cityInput && !cityInput.value.trim()) cityInput.value = cityVal;
+    if (cityHidden && !cityHidden.value.trim()) cityHidden.value = cityVal;
+  }
+
+  var stateHidden = document.getElementById('req-state-value');
+  var stateInput = document.getElementById('req-state-input');
+  var stateVal = parsed.state || (st.jurisdiction && st.jurisdiction.length === 2 ? st.jurisdiction.toUpperCase() : '') || 'CA';
+  if (stateHidden) stateHidden.value = stateVal;
+  if (stateInput && !stateInput.value.trim()) stateInput.value = stateVal;
 }
 
 function appendSkipTraceFieldsToFormData(form, formData) {
@@ -144,12 +216,22 @@ function appendSkipTraceFieldsToFormData(form, formData) {
   var st = skipTraceFormData;
   formData.set('skipTraceData', JSON.stringify(st));
 
-  var subjectName = ((st.firstName || '') + ' ' + (st.lastName || '')).trim();
+  var subjectName = [st.firstName, st.middleName, st.lastName].filter(Boolean).join(' ').trim();
+  var parsed = parseSkipTraceAddress(st.lastAddress, st.jurisdiction);
   if (subjectName) formData.set('defendantName', subjectName);
-  if (st.lastAddress) formData.set('addressLine1', st.lastAddress);
+  if (parsed.line1 || st.lastAddress) formData.set('addressLine1', parsed.line1 || st.lastAddress);
+  if (parsed.city) formData.set('city', parsed.city);
+  if (parsed.state) formData.set('state', parsed.state);
+  if (parsed.zip) formData.set('zip', parsed.zip);
   if (st.caseNumber) formData.set('caseNumber', st.caseNumber);
   if (st.court) formData.set('courtJurisdiction', st.court);
   if (st.deadline) formData.set('deadlineDate', st.deadline);
+
+  if (modalUploadedFiles && modalUploadedFiles.length) {
+    modalUploadedFiles.forEach(function (file) {
+      formData.append('files', file, file.name);
+    });
+  }
 
   var notes = [];
   if (st.purpose) notes.push('Purpose: ' + st.purpose);
@@ -623,7 +705,6 @@ function showSkipTraceModalErrors(missing) {
       missing.map(function (m) { return '<li>' + escapeFormHtml(m) + '</li>'; }).join('') + '</ul>';
     err.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
-  showMissingFieldsAlert('Please fill out the skip trace intake form:', missing);
 }
 
 function resolveSkipTraceServiceSelection() {
@@ -765,6 +846,11 @@ function saveSkipTraceForm() {
   skipTraceModalFilled = true;
   closeSkipTraceModal();
   renderSkipTraceSummary();
+  var reqForm = document.getElementById('request-form');
+  if (reqForm) {
+    prefillRequestFormFromSkipTrace(reqForm);
+    syncSkipTraceMainFormRequirements(getActiveServiceTypeSelect() ? getActiveServiceTypeSelect().value : '');
+  }
   var toast = document.getElementById('toast');
   if (toast) {
     toast.textContent = 'Skip trace details saved. Review the summary below or click Edit to change.';
@@ -782,6 +868,7 @@ function initHomeSkipTraceSection(containerId) {
   if (!sel) return;
   sel.addEventListener('change', function() {
     activeServiceTypeSelection = sel.value;
+    syncSkipTraceMainFormRequirements(sel.value);
     syncHomeProcessServeSection(cid);
     if (isSkipTraceService(sel.value)) {
       openSkipTraceModal();
@@ -1498,11 +1585,15 @@ function handleRequestSubmit(event) {
   const cityInput = document.getElementById('req-city-input');
   const cityHidden = document.getElementById('req-city-value');
   const cityValue = ((cityHidden && cityHidden.value.trim()) || (cityInput && cityInput.value.trim()) || '');
-  if (!cityValue) {
-    missing.push('City');
-    if (cityInput) {
-      cityInput.style.border = '2px solid #e74c3c';
-      if (!firstEmptyField) firstEmptyField = cityInput;
+  if (!isSkipTrace || !skipTraceModalFilled) {
+    if (!cityValue) {
+      missing.push('City');
+      if (cityInput) {
+        cityInput.style.border = '2px solid #e74c3c';
+        if (!firstEmptyField) firstEmptyField = cityInput;
+      }
+    } else if (cityInput) {
+      cityInput.style.border = '';
     }
   } else if (cityInput) {
     cityInput.style.border = '';
@@ -1510,15 +1601,19 @@ function handleRequestSubmit(event) {
 
   const stateHiddenEl = document.getElementById('req-state-value');
   const stateInput = document.getElementById('req-state-input');
-  const stateValue = (stateHiddenEl?.value || '').trim() || (stateInput?.value || '').trim() || 'CA';
+  let stateValue = (stateHiddenEl?.value || '').trim() || (stateInput?.value || '').trim() || 'CA';
   if (stateHiddenEl && !stateHiddenEl.value.trim()) {
     stateHiddenEl.value = stateValue;
   }
-  if (!stateValue) {
-    missing.push('State');
-    if (stateInput) {
-      stateInput.style.border = '2px solid #e74c3c';
-      if (!firstEmptyField) firstEmptyField = stateInput;
+  if (!isSkipTrace || !skipTraceModalFilled) {
+    if (!stateValue) {
+      missing.push('State');
+      if (stateInput) {
+        stateInput.style.border = '2px solid #e74c3c';
+        if (!firstEmptyField) firstEmptyField = stateInput;
+      }
+    } else if (stateInput) {
+      stateInput.style.border = '';
     }
   } else if (stateInput) {
     stateInput.style.border = '';
@@ -1527,13 +1622,27 @@ function handleRequestSubmit(event) {
   var zipInput = form.querySelector('input[name="zip"]');
   if (zipInput) {
     zipInput.value = sanitizeUsZip5(zipInput.value);
-    if (!isUsZip5(zipInput.value)) {
-      missing.push('ZIP code (5 digits)');
-      zipInput.style.border = '2px solid #e74c3c';
-      if (!firstEmptyField) firstEmptyField = zipInput;
+    if (!isSkipTrace || !skipTraceModalFilled) {
+      if (!isUsZip5(zipInput.value)) {
+        missing.push('ZIP code (5 digits)');
+        zipInput.style.border = '2px solid #e74c3c';
+        if (!firstEmptyField) firstEmptyField = zipInput;
+      } else {
+        zipInput.style.border = '';
+      }
     } else {
       zipInput.style.border = '';
     }
+  }
+
+  var resolvedCity = cityValue;
+  if (isSkipTrace && skipTraceModalFilled && skipTraceFormData && !resolvedCity) {
+    resolvedCity = parseSkipTraceAddress(skipTraceFormData.lastAddress, skipTraceFormData.jurisdiction).city
+      || skipTraceFormData.jurisdiction || '';
+  }
+  if (isSkipTrace && skipTraceModalFilled && skipTraceFormData && zipInput && !isUsZip5(zipInput.value)) {
+    var parsedZip = parseSkipTraceAddress(skipTraceFormData.lastAddress, skipTraceFormData.jurisdiction).zip;
+    if (parsedZip) zipInput.value = parsedZip;
   }
 
   var reqExtraEl = document.getElementById('home-process-extra');
@@ -1571,7 +1680,7 @@ function handleRequestSubmit(event) {
   }
 
   const formData = new FormData(form);
-  formData.set('city', cityValue || '');
+  formData.set('city', resolvedCity || cityValue || '');
   formData.set('state', stateValue || '');
   const isMultiDef = form.querySelector('input[name="home_multiple_defendants"][value="yes"]')?.checked || form.querySelector('input[name="multiple_defendants"][value="yes"]')?.checked;
   formData.set('multiple_defendants', isMultiDef ? 'true' : 'false');
@@ -2456,6 +2565,8 @@ document.addEventListener('DOMContentLoaded', function() {
       r.addEventListener('change', toggleDefendantUI);
     });
     toggleDefendantUI();
+    var stSel = reqForm.querySelector('select[name="serviceType"]');
+    if (stSel) syncSkipTraceMainFormRequirements(stSel.value);
   }
 
   initCityAutocomplete('req-city-input', 'req-city-value', 'req-city-dropdown', 'req-state-input');
