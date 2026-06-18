@@ -5,6 +5,7 @@ import fs from 'fs';
 import { sendSMTPEmail } from './smtp-email.js';
 import { buildServiceRequestEmailHtml } from './email-templates.js';
 import { logger, perf, blobLogger, LOG_CATEGORIES } from './logger.js';
+import { processServiceRequestToPST } from './pst-integration.js';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
@@ -163,6 +164,55 @@ export default async function handler(req, res) {
 
     const emailSentStatus = emailResult.success ? 1 : 0;
     await sql`UPDATE service_requests SET email_sent = ${emailSentStatus} WHERE id = (SELECT id FROM service_requests WHERE email = ${email || ''} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1)`;
+
+    // Sync to PST in background — does not block the client response
+    const pstPayload = {
+      clientName,
+      contactName,
+      email,
+      phone,
+      addressLine1,
+      addressLine2,
+      city,
+      state,
+      zip,
+      defendantName,
+      caseNumber,
+      courtJurisdiction,
+      serviceType,
+      deadlineDate,
+      specialInstructions,
+      defendantsData: defendantsData ? JSON.stringify(defendantsData) : null
+    };
+    if (skipTraceData) {
+      const subjectName = [skipTraceData.firstName, skipTraceData.middleName, skipTraceData.lastName].filter(Boolean).join(' ').trim();
+      if (subjectName) pstPayload.defendantName = subjectName;
+      if (skipTraceData.lastAddress) pstPayload.addressLine1 = skipTraceData.lastAddress;
+      if (skipTraceData.deadline) pstPayload.deadlineDate = skipTraceData.deadline;
+      if (skipTraceData.caseNumber) pstPayload.caseNumber = skipTraceData.caseNumber;
+      if (skipTraceData.court) pstPayload.courtJurisdiction = skipTraceData.court;
+      if (skipTraceData.jurisdiction && String(skipTraceData.jurisdiction).length === 2) {
+        pstPayload.state = String(skipTraceData.jurisdiction).toUpperCase();
+      }
+      const stBlock = ['--- Skip Trace Intake ---'];
+      if (skipTraceData.purpose) stBlock.push('Purpose: ' + skipTraceData.purpose);
+      if (skipTraceData.dob) stBlock.push('Subject DOB: ' + skipTraceData.dob);
+      if (skipTraceData.notes) stBlock.push(skipTraceData.notes);
+      if (stBlock.length > 1) {
+        pstPayload.specialInstructions = pstPayload.specialInstructions
+          ? (pstPayload.specialInstructions + '\n\n' + stBlock.join('\n'))
+          : stBlock.join('\n');
+      }
+    }
+    processServiceRequestToPST(pstPayload).then(function (pstResult) {
+      if (pstResult.success) {
+        logger.info(LOG_CATEGORIES.PST_API, 'Service request saved to PST', { jobNumber: pstResult.jobNumber });
+      } else {
+        logger.warn(LOG_CATEGORIES.PST_API, 'Service request not saved to PST', { message: pstResult.message });
+      }
+    }).catch(function (err) {
+      logger.error(LOG_CATEGORIES.PST_API, 'Background PST request error', err);
+    });
 
     return res.status(201).json({ success: true, message: 'Service request submitted successfully', emailSent: emailResult.success, submissionId });
   } catch (err) {

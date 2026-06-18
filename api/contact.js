@@ -2,6 +2,7 @@ import { neon } from '@neondatabase/serverless';
 import { sendSMTPEmail } from './smtp-email.js';
 import { buildContactEmailHtml } from './email-templates.js';
 import { logger, perf, emailLogger, LOG_CATEGORIES } from './logger.js';
+import { processContactFormToPST } from './pst-integration.js';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -49,7 +50,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { firstName, lastName, company, email, phone, reason, county, state, caseDetails, urgency, consent, skipTraceData, defendantsData } = req.body;
+    const { firstName, lastName, company, email, phone, reason, county, state, city, serviceType, caseDetails, urgency, consent, skipTraceData, defendantsData } = req.body;
     
     const sql = neon(DATABASE_URL);
     await sql`CREATE TABLE IF NOT EXISTS settings (key VARCHAR(255) PRIMARY KEY, value TEXT)`.catch(() => {});
@@ -98,6 +99,25 @@ export default async function handler(req, res) {
     logger.info(LOG_CATEGORIES.EMAIL, 'Contact email result', { success: emailResult.success, status: emailSentStatus });
     await sql`UPDATE contact_submissions SET email_sent = ${emailSentStatus} WHERE id = (SELECT id FROM contact_submissions WHERE email = ${email || ''} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1)`;
     logger.info(LOG_CATEGORIES.DB, 'Contact email_sent update completed');
+
+    // Sync to PST in background — does not block the client response
+    processContactFormToPST({
+      firstName,
+      lastName,
+      company,
+      email,
+      phone,
+      city: city || county || '',
+      state: state || ''
+    }).then(function (pstResult) {
+      if (pstResult.success) {
+        logger.info(LOG_CATEGORIES.PST_API, 'Contact saved to PST', { entitySerialNumber: pstResult.entitySerialNumber });
+      } else {
+        logger.warn(LOG_CATEGORIES.PST_API, 'Contact not saved to PST', { message: pstResult.message });
+      }
+    }).catch(function (err) {
+      logger.error(LOG_CATEGORIES.PST_API, 'Background PST contact error', err);
+    });
     
     return res.status(201).json({ success: true, message: 'Contact form submitted successfully', emailSent: emailResult.success });
   } catch (err) {
