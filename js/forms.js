@@ -866,6 +866,9 @@ function initHomeSkipTraceSection(containerId) {
   if (!document.querySelector('#' + cid)) cid = 'request-form';
   var sel = document.querySelector('#' + cid + ' select[name="serviceType"]');
   if (!sel) return;
+  if (sel.dataset.skipTraceBound === '1') return;
+  sel.dataset.skipTraceBound = '1';
+
   sel.addEventListener('change', function() {
     activeServiceTypeSelection = sel.value;
     syncSkipTraceMainFormRequirements(sel.value);
@@ -1086,6 +1089,8 @@ function initHomeProcessServeSection(containerId) {
   if (!document.querySelector('#' + cid)) cid = 'request-form';
   var sel = document.querySelector('#' + cid + ' select[name="serviceType"]');
   if (!sel) return;
+  if (sel.dataset.processServeBound === '1') return;
+  sel.dataset.processServeBound = '1';
 
   sel.addEventListener('change', function() {
     syncHomeProcessServeSection(cid);
@@ -1289,6 +1294,147 @@ function submitHomeProcessServe(form, successId) {
       console.error('Home process serve submit error:', err);
       alert('Submission failed. Please try again.');
     });
+}
+
+function getRequestFormFieldsHtml() {
+  return `
+    <div class="form-group"><label>Client / Firm Name <span class="req">(required)</span></label><input type="text" name="clientName" required></div>
+    <div class="form-group"><label>Contact Name <span class="req">(required)</span></label><input type="text" name="contactName" required></div>
+    <div class="form-group"><label>Email Address <span class="req">(required)</span></label><input type="email" name="email" required></div>
+    <div class="form-group"><label>Phone Number <span class="req">(required)</span></label><input type="tel" name="phone" placeholder="555-010-0199" maxlength="12" inputmode="tel" autocomplete="tel-national" pattern="\\d{3}-\\d{3}-\\d{4}" title="10-digit US phone" required></div>
+    <div class="form-group">
+      <label>Service Address <span class="req">(required)</span></label>
+      <input type="text" name="addressLine1" placeholder="Address Line 1" style="margin-bottom:8px;">
+      <input type="text" name="addressLine2" placeholder="Address Line 2" style="margin-bottom:8px;">
+      <div class="city-state-zip-row" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        <div class="city-select-wrapper">
+          <input type="text" id="req-city-input" name="city" placeholder="City" autocomplete="off">
+          <input type="hidden" id="req-city-value" value="">
+          <div class="city-dropdown" id="req-city-dropdown"></div>
+        </div>
+        <div class="state-select-wrapper">
+          <input type="text" id="req-state-input" placeholder="State" autocomplete="off">
+          <input type="hidden" id="req-state-value" name="state" value="CA">
+          <div class="state-dropdown" id="req-state-dropdown"></div>
+        </div>
+        <input type="text" name="zip" placeholder="12345" maxlength="5" inputmode="numeric" pattern="\\d{5}" title="5-digit US ZIP" autocomplete="postal-code" required>
+      </div>
+    </div>
+    <div class="form-group"><label>Defendant / Recipient Full Name <span class="req">(required)</span></label><input type="text" name="defendantName" required></div>
+    <div class="form-group"><label>Case Number</label><input type="text" name="caseNumber"></div>
+    <div class="form-group"><label>Court / Jurisdiction</label><input type="text" name="courtJurisdiction"></div>
+    <div class="form-group">
+      <label>Are there multiple defendants to be served?</label>
+      <div class="form-hint" style="margin-bottom:10px;">Selecting &quot;Yes&quot; allows you to add up to 10 additional defendants.</div>
+      <div class="radio-toggle-group">
+        <label class="radio-toggle"><input type="radio" name="multiple_defendants" value="yes"><span>Yes</span></label>
+        <label class="radio-toggle"><input type="radio" name="multiple_defendants" value="no" checked><span>No</span></label>
+      </div>
+      <div id="defendants-list-container" style="display:none; flex-direction:column; gap:10px; margin-bottom: 15px;"></div>
+      <button type="button" id="btn-add-defendant" class="btn-navy" style="display:none; width:auto; padding: 10px 20px; background-color: #f4f4f4; color: #333; border: 1px solid #ccc;" onclick="openDefendantModal()">+ Add Defendant</button>
+    </div>
+    <div class="form-group">
+      <label>Service Type <span class="req">(required)</span></label>
+      <div class="form-hint" style="margin-bottom:8px;">Emergency service requires internal approval. Additional fees apply.</div>
+      <select name="serviceType" required>
+        <option value="">Select an option</option>
+        <option value="Standard Service — $97.99 (5–7 business days)">Standard Service — $97.99 (5–7 business days)</option>
+        <option value="Rush Service — $119.99 (3 business days)">Rush Service — $119.99 (3 business days)</option>
+        <option value="Priority Serve — $149.99 (2 business days)">Priority Serve — $149.99 (2 business days)</option>
+        <option value="Emergency Serve — $249.99 (Same-day, approval required)">Emergency Serve — $249.99 (Same-day, approval required)</option>
+        <option value="Standard Skip Trace — $75">Standard Skip Trace — $75</option>
+        <option value="Enhanced Trace — $150">Enhanced Trace — $150</option>
+        <option value="Rush Trace (same/next-day) — $225">Rush Trace (same/next-day) — $225</option>
+        <option value="Business / Agent Verification — $225">Business / Agent Verification — $225</option>
+        <option value="Court-Ready Skip Trace Report — $250">Court-Ready Skip Trace Report — $250</option>
+      </select>
+      <div id="skip-trace-summary-container" style="display:none; flex-direction:column; gap:10px; margin-top:12px;"></div>
+    </div>
+    <div id="home-process-extra" class="home-process-extra" style="display:none;">
+      <p class="form-hint" style="margin:12px 0 16px;font-style:italic;">Complete process serving details below.</p>
+      <div class="form-group">
+        <label>Service Address <span class="req">(required)</span></label>
+        <input type="text" name="serve_addressLine1" data-home-required placeholder="Address Line 1" style="margin-bottom:8px;">
+        <input type="text" name="serve_addressLine2" placeholder="Address Line 2" style="margin-bottom:8px;">
+        <div class="city-state-zip-row" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <div class="city-select-wrapper">
+            <input type="text" id="home-svc-city-input" placeholder="City" autocomplete="off">
+            <input type="hidden" id="home-svc-city-value" value="">
+            <div class="city-dropdown" id="home-svc-city-dropdown"></div>
+          </div>
+          <div class="state-select-wrapper">
+            <input type="text" id="home-svc-state-input" placeholder="State" autocomplete="off">
+            <input type="hidden" id="home-svc-state-value" value="CA">
+            <div class="state-dropdown" id="home-svc-state-dropdown"></div>
+          </div>
+          <input type="text" name="serve_zip" data-home-required placeholder="12345" maxlength="5" inputmode="numeric" pattern="\\d{5}" title="5-digit US ZIP" autocomplete="postal-code">
+        </div>
+      </div>
+      <div class="form-group"><label>Defendant / Recipient Full Name <span class="req">(required)</span></label><input type="text" name="serve_defendantName" data-home-required></div>
+      <div class="form-group"><label>Case Number</label><input type="text" name="serve_caseNumber"></div>
+      <div class="form-group"><label>Court / Jurisdiction</label><input type="text" name="serve_courtJurisdiction"></div>
+      <div class="form-group">
+        <label>Are there multiple defendants to be served?</label>
+        <div class="form-hint" style="margin-bottom:10px;">Selecting &quot;Yes&quot; allows you to add up to 10 additional defendants.</div>
+        <div class="radio-toggle-group">
+          <label class="radio-toggle"><input type="radio" name="home_multiple_defendants" value="yes"><span>Yes</span></label>
+          <label class="radio-toggle"><input type="radio" name="home_multiple_defendants" value="no" checked><span>No</span></label>
+        </div>
+        <div id="home-defendants-list-container" style="display:none; flex-direction:column; gap:10px; margin-bottom: 15px;"></div>
+        <button type="button" id="home-btn-add-defendant" class="btn-navy" style="display:none; width:auto; padding: 10px 20px; background-color: #f4f4f4; color: #333; border: 1px solid #ccc;" onclick="openHomeDefendantModal()">+ Add Defendant</button>
+      </div>
+      <div class="form-group"><label>Deadline Date</label><input type="date" name="home_deadlineDate" id="home-deadlineDate" data-min-tomorrow></div>
+      <div class="form-group"><label>Special Instructions</label><textarea name="home_specialInstructions" rows="3"></textarea></div>
+    </div>
+    <div class="form-group"><label>Special Instructions</label><textarea name="specialInstructions" rows="3"></textarea></div>`;
+}
+
+function buildHomeRequestForm(containerId, formId) {
+  var c = document.getElementById(containerId);
+  if (!c) return;
+  c.innerHTML = `
+    <form id="request-form" onsubmit="handleRequestSubmit(event)" novalidate>
+    ${getRequestFormFieldsHtml()}
+    <div class="form-checkbox">
+      <input type="checkbox" id="${formId}-consent" name="consent" required>
+      <label for="${formId}-consent">I understand that submitting this form does not guarantee service and all requests are subject to review and availability.</label>
+    </div>
+    <button type="submit" class="btn-navy" style="width:100%;">Submit Request</button>
+    <div class="form-success" id="home-success">Thank you! Your request has been received. We'll review it and be in touch shortly.</div>
+    <div class="toast" id="toast" aria-live="polite"></div>
+    </form>
+  `;
+  if (window.initPhoneAutoFormat) window.initPhoneAutoFormat();
+  initRequestFormBindings(c);
+}
+
+function initRequestFormBindings(root) {
+  var scope = root || document;
+  var reqForm = scope.querySelector ? scope.querySelector('#request-form') : document.getElementById('request-form');
+  if (!reqForm) return;
+  if (reqForm.dataset.requestFormBound !== '1') {
+    reqForm.dataset.requestFormBound = '1';
+    reqForm.querySelectorAll('input[name="multiple_defendants"]').forEach(function (r) {
+      r.addEventListener('change', toggleDefendantUI);
+    });
+    toggleDefendantUI();
+    var stSel = reqForm.querySelector('select[name="serviceType"]');
+    if (stSel) syncSkipTraceMainFormRequirements(stSel.value);
+  }
+  if (document.getElementById('req-city-input')) {
+    initCityAutocomplete('req-city-input', 'req-city-value', 'req-city-dropdown', 'req-state-input');
+    initStateAutocomplete('req-state-input', 'req-state-value', 'req-state-dropdown', 'CA');
+  }
+  initFutureDeadlineDateInputs(scope);
+  initUsZipInputs(scope);
+  var homeContainer = document.getElementById('home-form-container');
+  initHomeProcessServeSection(homeContainer ? 'home-form-container' : 'request-form');
+  initHomeSkipTraceSection(homeContainer ? 'home-form-container' : 'request-form');
+  if (document.getElementById('home-svc-city-input')) {
+    initCityAutocomplete('home-svc-city-input', 'home-svc-city-value', 'home-svc-city-dropdown', 'home-svc-state-input');
+    initStateAutocomplete('home-svc-state-input', 'home-svc-state-value', 'home-svc-state-dropdown', 'CA');
+  }
+  initFileUpload();
 }
 
 function buildContactForm(containerId, formId) {
@@ -1723,7 +1869,8 @@ function handleRequestSubmit(event) {
     }
     if (data.success) {
       const serviceType = form.querySelector('[name="serviceType"]')?.value || '';
-      document.getElementById('req-success').classList.add('show');
+      var successEl = form.querySelector('.form-success') || document.getElementById('req-success');
+      if (successEl) successEl.classList.add('show');
 
       // Store submission context for the cart checkout
       if (data.submissionId) {
@@ -1742,11 +1889,16 @@ function handleRequestSubmit(event) {
       homeDefendantsArray = [];
       renderDefendantsList();
       renderHomeDefendantsList();
-      document.getElementById('defendants-list-container').style.display = 'none';
-      document.getElementById('btn-add-defendant').style.display = 'none';
-      document.getElementById('home-defendants-list-container').style.display = 'none';
-      document.getElementById('home-btn-add-defendant').style.display = 'none';
-      document.querySelector('input[name="home_multiple_defendants"][value="no"]').checked = true;
+      var defList = document.getElementById('defendants-list-container');
+      if (defList) defList.style.display = 'none';
+      var addDefBtn = document.getElementById('btn-add-defendant');
+      if (addDefBtn) addDefBtn.style.display = 'none';
+      var homeDefList = document.getElementById('home-defendants-list-container');
+      if (homeDefList) homeDefList.style.display = 'none';
+      var homeAddBtn = document.getElementById('home-btn-add-defendant');
+      if (homeAddBtn) homeAddBtn.style.display = 'none';
+      var homeMultiNo = document.querySelector('input[name="home_multiple_defendants"][value="no"]');
+      if (homeMultiNo) homeMultiNo.checked = true;
       var origNo = document.querySelector('input[name="multiple_defendants"][value="no"]');
       if (origNo) origNo.checked = true;
       var fileListEl = document.getElementById('file-list');
@@ -2559,29 +2711,9 @@ function initHomeDefendantsAutocomplete() {
 
 // Initialize all autocomplete inputs
 document.addEventListener('DOMContentLoaded', function() {
-  var reqForm = document.getElementById('request-form');
-  if (reqForm) {
-    reqForm.querySelectorAll('input[name="multiple_defendants"]').forEach(function (r) {
-      r.addEventListener('change', toggleDefendantUI);
-    });
-    toggleDefendantUI();
-    var stSel = reqForm.querySelector('select[name="serviceType"]');
-    if (stSel) syncSkipTraceMainFormRequirements(stSel.value);
-  }
-
-  initCityAutocomplete('req-city-input', 'req-city-value', 'req-city-dropdown', 'req-state-input');
+  initRequestFormBindings(document);
   initCityAutocomplete('def-city', 'def-city-value', 'def-city-dropdown', 'def-state-input');
   initCountryAutocomplete('def-country-input', 'def-country-value', 'def-country-dropdown');
   initStateAutocomplete('def-state-input', 'def-state-value', 'def-state-dropdown', 'CA');
-  initStateAutocomplete('req-state-input', 'req-state-value', 'req-state-dropdown', 'CA');
   initStateAutocomplete('state-input', 'state-value', 'state-dropdown', 'CA');
-  initFileUpload();
-  initFutureDeadlineDateInputs();
-  initUsZipInputs();
-  initHomeProcessServeSection();
-  initHomeSkipTraceSection();
-  if (document.getElementById('home-svc-city-input')) {
-    initCityAutocomplete('home-svc-city-input', 'home-svc-city-value', 'home-svc-city-dropdown', 'home-svc-state-input');
-    initStateAutocomplete('home-svc-state-input', 'home-svc-state-value', 'home-svc-state-dropdown', 'CA');
-  }
 });

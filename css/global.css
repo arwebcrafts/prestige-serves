@@ -331,3 +331,27 @@ footer{background:var(--bg-warm);padding:56px 72px 0;display:grid;grid-template-
     font-size:14px;
   }
 }
+
+/* Copy protection — public pages only (admin dashboard/login excluded) */
+body:not(.admin-login-body):not(.admin-dashboard-body){
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+}
+body:not(.admin-login-body):not(.admin-dashboard-body) img,
+body:not(.admin-login-body):not(.admin-dashboard-body) svg{
+  -webkit-user-drag:none;
+  user-drag:none;
+}
+body:not(.admin-login-body):not(.admin-dashboard-body) input,
+body:not(.admin-login-body):not(.admin-dashboard-body) textarea,
+body:not(.admin-login-body):not(.admin-dashboard-body) select,
+body:not(.admin-login-body):not(.admin-dashboard-body) [contenteditable="true"]{
+  -webkit-user-select:text;
+  -moz-user-select:text;
+  -ms-user-select:text;
+  user-select:text;
+  -webkit-touch-callout:default;
+}

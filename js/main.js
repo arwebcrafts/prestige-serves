@@ -75,20 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Initialize page-specific content
   if (document.getElementById('home-form-container')) {
-    console.log('home-form-container found, building form...');
-    buildContactForm('home-form-container', 'home');
-    console.log('form built, state-value element:', document.getElementById('state-value'));
-    console.log('state-value content:', document.getElementById('state-value') ? document.getElementById('state-value').value : 'N/A');
-    initStateAutocomplete('state-input', 'state-value', 'state-dropdown', 'CA');
-    initCityAutocomplete('city-input', 'city-value', 'city-dropdown', 'state-input');
-    initStateAutocomplete('home-svc-state-input', 'home-svc-state-value', 'home-svc-state-dropdown', 'CA');
-    initCityAutocomplete('home-svc-city-input', 'home-svc-city-value', 'home-svc-city-dropdown', 'home-svc-state-input');
-    initReasonDropdown();
-    initCountyDropdown();
-    initHomeProcessServeSection();
-    initHomeFileUploadPreview();
-    initHomeSkipTraceSection();
-    console.log('All home form init done');
+    buildHomeRequestForm('home-form-container', 'home');
   }
 
   // Phone auto-format runs on ALL pages — independent of home-form-container
@@ -171,3 +158,47 @@ function applyPhoneFormatToInput(input) {
     }
   });
 }
+
+function isCopyProtectionExcluded() {
+  return document.body.classList.contains('admin-login-body')
+    || document.body.classList.contains('admin-dashboard-body');
+}
+
+function isEditableCopyTarget(target) {
+  return target && target.closest && target.closest('input, textarea, select, [contenteditable="true"]');
+}
+
+function initCopyProtection() {
+  if (isCopyProtectionExcluded()) return;
+
+  document.addEventListener('contextmenu', function(e) {
+    if (isEditableCopyTarget(e.target)) return;
+    e.preventDefault();
+  });
+
+  document.addEventListener('copy', function(e) {
+    if (isEditableCopyTarget(e.target)) return;
+    e.preventDefault();
+  });
+
+  document.addEventListener('cut', function(e) {
+    if (isEditableCopyTarget(e.target)) return;
+    e.preventDefault();
+  });
+
+  document.addEventListener('dragstart', function(e) {
+    if (e.target && (e.target.tagName === 'IMG' || e.target.tagName === 'SVG')) {
+      e.preventDefault();
+    }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (isEditableCopyTarget(e.target)) return;
+    var key = (e.key || '').toLowerCase();
+    if ((e.ctrlKey || e.metaKey) && (key === 'c' || key === 'x' || key === 'a' || key === 'u' || key === 's')) {
+      e.preventDefault();
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initCopyProtection);
