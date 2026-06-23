@@ -379,7 +379,7 @@ class PSTAPIClient {
 function getPSTClient() {
   const apiUsername = process.env.PST_API_USERNAME;
   const apiPassword = process.env.PST_API_PASSWORD;
-  const dbsCode = process.env.PST_DBS_CODE || 'DBD';
+  const dbsCode = process.env.PST_DBS_CODE || 'PRB';
   const useTest = process.env.PST_USE_TEST_API === 'true';
 
   // Console log for debugging - always shows in local console

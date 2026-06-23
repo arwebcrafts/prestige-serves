@@ -572,34 +572,29 @@ const server = http.createServer(async (req, res) => {
           )
         `;
         
-        // Process PST before sending response (needs to complete before jsonResponse)
-        logger.info(LOG_CATEGORIES.PST_API, 'Starting PST contact form processing', {
-          firstName: body.firstName,
-          lastName: body.lastName,
-          email: body.email
-        });
-        
-        // Start PST processing but don't await - will complete before response is sent
-        processContactFormToPST({
-          firstName: body.firstName,
-          lastName: body.lastName,
-          company: body.company,
-          email: body.email,
-          phone: body.phone,
-          city: body.city,
-          state: body.state
-        }).then(pstResult => {
+        let pstResult = { success: false, message: 'PST sync skipped' };
+        try {
+          pstResult = await processContactFormToPST({
+            firstName: body.firstName,
+            lastName: body.lastName,
+            company: body.company,
+            email: body.email,
+            phone: body.phone,
+            city: body.city,
+            state: body.state
+          });
           logger.info(LOG_CATEGORIES.PST_API, 'PST contact form result received', pstResult);
           if (pstResult.success) {
             logger.info(LOG_CATEGORIES.PST_API, 'Contact SAVED TO PST', { entitySerialNumber: pstResult.entitySerialNumber });
           } else {
             logger.warn(LOG_CATEGORIES.PST_API, 'Contact NOT saved to PST', { message: pstResult.message });
           }
-        }).catch(err => {
-          logger.error(LOG_CATEGORIES.PST_API, 'Background PST contact error', err);
-        });
+        } catch (err) {
+          logger.error(LOG_CATEGORIES.PST_API, 'PST contact error', err);
+          pstResult = { success: false, message: err.message };
+        }
         
-        // Send email notification to owner (异步，不阻塞响应)
+        // Send email notification to owner (async, does not block response)
         setImmediate(() => {
           const emailTimer = perf.startTimer('contactEmail');
           const emailHtml = buildContactEmailHtml({
@@ -636,8 +631,12 @@ const server = http.createServer(async (req, res) => {
           });
         });
         
-        // Respond to client immediately (DB insert is fast) - PST processing continues in background
-        jsonResponse(res, 201, { success: true, message: 'Contact form submitted successfully' });
+        jsonResponse(res, 201, {
+          success: true,
+          message: 'Contact form submitted successfully',
+          pstSync: pstResult.success,
+          pstEntitySerialNumber: pstResult.entitySerialNumber || null
+        });
       } catch (err) {
         logger.error(LOG_CATEGORIES.FORM, 'Contact submission error', err);
         timer.end();
@@ -705,14 +704,44 @@ const server = http.createServer(async (req, res) => {
           `;
           const submissionId = inserted ? inserted.id : null;
 
-          // Respond to client immediately (DB insert is fast)
+          let pstResult = { success: false, message: 'PST sync skipped' };
+          try {
+            pstResult = await processServiceRequestToPST({
+              clientName: f.clientName,
+              contactName: f.contactName,
+              email: f.email,
+              phone: f.phone,
+              addressLine1: f.addressLine1,
+              city: f.city,
+              state: f.state,
+              zip: f.zip,
+              defendantName: f.defendantName,
+              caseNumber: f.caseNumber,
+              courtJurisdiction: f.courtJurisdiction,
+              serviceType: f.serviceType,
+              deadlineDate: f.deadlineDate,
+              specialInstructions: f.specialInstructions,
+              defendantsData: f.defendantsData
+            });
+            if (pstResult.success) {
+              logger.info(LOG_CATEGORIES.PST_API, 'Service request saved to PST', { jobNumber: pstResult.jobNumber });
+            } else {
+              logger.warn(LOG_CATEGORIES.PST_API, 'Service request not saved to PST', { message: pstResult.message });
+            }
+          } catch (err) {
+            logger.error(LOG_CATEGORIES.PST_API, 'PST request error', err);
+            pstResult = { success: false, message: err.message };
+          }
+
           jsonResponse(res, 201, {
             success: true,
             message: 'Service request submitted successfully',
             submissionId,
+            pstSync: pstResult.success,
+            pstJobNumber: pstResult.jobNumber || null
           });
           
-          // Send email notification to owner (异步，不阻塞响应)
+          // Send email notification to owner (async, does not block response)
           setImmediate(() => {
             let defendantsData = null;
             if (f.defendantsData) {
@@ -764,33 +793,6 @@ const server = http.createServer(async (req, res) => {
               }
             });
           });
-          
-          // Process PST in background (异步，不阻塞响应)
-          setImmediate(() => {
-            processServiceRequestToPST({
-              clientName: f.clientName,
-              contactName: f.contactName,
-              email: f.email,
-              phone: f.phone,
-              addressLine1: f.addressLine1,
-              city: f.city,
-              state: f.state,
-              zip: f.zip,
-              defendantName: f.defendantName,
-              caseNumber: f.caseNumber,
-              courtJurisdiction: f.courtJurisdiction,
-              serviceType: f.serviceType,
-              deadlineDate: f.deadlineDate,
-              specialInstructions: f.specialInstructions,
-              defendantsData: f.defendantsData
-            }).then(pstResult => {
-              if (pstResult.success) {
-                logger.info(LOG_CATEGORIES.PST_API, 'Service request saved to PST', { jobNumber: pstResult.jobNumber });
-              }
-            }).catch(err => {
-              logger.error(LOG_CATEGORIES.PST_API, 'Background PST request error', err);
-            });
-          });
         } else {
           const body = await parseBody(req);
           // Ensure email_sent and payment columns exist
@@ -816,14 +818,28 @@ const server = http.createServer(async (req, res) => {
           `;
           const submissionIdJson = insertedJson ? insertedJson.id : null;
 
-          // Respond to client immediately (DB insert is fast)
+          let pstResultJson = { success: false, message: 'PST sync skipped' };
+          try {
+            pstResultJson = await processServiceRequestToPST(body);
+            if (pstResultJson.success) {
+              logger.info(LOG_CATEGORIES.PST_API, 'Service request saved to PST', { jobNumber: pstResultJson.jobNumber });
+            } else {
+              logger.warn(LOG_CATEGORIES.PST_API, 'Service request not saved to PST', { message: pstResultJson.message });
+            }
+          } catch (err) {
+            logger.error(LOG_CATEGORIES.PST_API, 'PST request error', err);
+            pstResultJson = { success: false, message: err.message };
+          }
+
           jsonResponse(res, 201, {
             success: true,
             message: 'Service request submitted successfully',
             submissionId: submissionIdJson,
+            pstSync: pstResultJson.success,
+            pstJobNumber: pstResultJson.jobNumber || null
           });
           
-          // Send email notification to owner (异步，不阻塞响应)
+          // Send email notification to owner (async, does not block response)
           setImmediate(() => {
             let defendantsData = null;
             if (body.defendantsData) {
@@ -872,17 +888,6 @@ const server = http.createServer(async (req, res) => {
               } else {
                 logger.error(LOG_CATEGORIES.EMAIL, 'Service request email failed', new Error(emailResult.error));
               }
-            });
-          });
-          
-          // Process PST in background (异步，不阻塞响应)
-          setImmediate(() => {
-            processServiceRequestToPST(body).then(pstResult => {
-              if (pstResult.success) {
-                logger.info(LOG_CATEGORIES.PST_API, 'Service request saved to PST', { jobNumber: pstResult.jobNumber });
-              }
-            }).catch(err => {
-              logger.error(LOG_CATEGORIES.PST_API, 'Background PST request error', err);
             });
           });
         }

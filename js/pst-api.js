@@ -600,7 +600,7 @@ function getPSTClientFromConfig() {
   // These would come from environment variables in production
   const apiUsername = process.env.PST_API_USERNAME || 'your-api-username';
   const apiPassword = process.env.PST_API_PASSWORD || 'your-api-password';
-  const dbsCode = process.env.PST_DBS_CODE || 'DBD';
+  const dbsCode = process.env.PST_DBS_CODE || 'PRB';
   const useTest = process.env.PST_USE_TEST_API === 'true';
 
   return new PSTAPIClient(apiUsername, apiPassword, dbsCode, useTest);

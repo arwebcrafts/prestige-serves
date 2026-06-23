@@ -100,26 +100,34 @@ export default async function handler(req, res) {
     await sql`UPDATE contact_submissions SET email_sent = ${emailSentStatus} WHERE id = (SELECT id FROM contact_submissions WHERE email = ${email || ''} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1)`;
     logger.info(LOG_CATEGORIES.DB, 'Contact email_sent update completed');
 
-    // Sync to PST in background — does not block the client response
-    processContactFormToPST({
-      firstName,
-      lastName,
-      company,
-      email,
-      phone,
-      city: city || county || '',
-      state: state || ''
-    }).then(function (pstResult) {
+    let pstResult = { success: false, message: 'PST sync skipped' };
+    try {
+      pstResult = await processContactFormToPST({
+        firstName,
+        lastName,
+        company,
+        email,
+        phone,
+        city: city || county || '',
+        state: state || ''
+      });
       if (pstResult.success) {
         logger.info(LOG_CATEGORIES.PST_API, 'Contact saved to PST', { entitySerialNumber: pstResult.entitySerialNumber });
       } else {
         logger.warn(LOG_CATEGORIES.PST_API, 'Contact not saved to PST', { message: pstResult.message });
       }
-    }).catch(function (err) {
-      logger.error(LOG_CATEGORIES.PST_API, 'Background PST contact error', err);
+    } catch (err) {
+      logger.error(LOG_CATEGORIES.PST_API, 'PST contact error', err);
+      pstResult = { success: false, message: err.message };
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: 'Contact form submitted successfully',
+      emailSent: emailResult.success,
+      pstSync: pstResult.success,
+      pstEntitySerialNumber: pstResult.entitySerialNumber || null
     });
-    
-    return res.status(201).json({ success: true, message: 'Contact form submitted successfully', emailSent: emailResult.success });
   } catch (err) {
     logger.error(LOG_CATEGORIES.FORM, 'Contact submission error', err);
     return res.status(500).json({ success: false, message: 'Database error' });

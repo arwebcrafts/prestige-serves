@@ -204,17 +204,27 @@ export default async function handler(req, res) {
           : stBlock.join('\n');
       }
     }
-    processServiceRequestToPST(pstPayload).then(function (pstResult) {
+    let pstResult = { success: false, message: 'PST sync skipped' };
+    try {
+      pstResult = await processServiceRequestToPST(pstPayload);
       if (pstResult.success) {
         logger.info(LOG_CATEGORIES.PST_API, 'Service request saved to PST', { jobNumber: pstResult.jobNumber });
       } else {
         logger.warn(LOG_CATEGORIES.PST_API, 'Service request not saved to PST', { message: pstResult.message });
       }
-    }).catch(function (err) {
-      logger.error(LOG_CATEGORIES.PST_API, 'Background PST request error', err);
-    });
+    } catch (err) {
+      logger.error(LOG_CATEGORIES.PST_API, 'PST request error', err);
+      pstResult = { success: false, message: err.message };
+    }
 
-    return res.status(201).json({ success: true, message: 'Service request submitted successfully', emailSent: emailResult.success, submissionId });
+    return res.status(201).json({
+      success: true,
+      message: 'Service request submitted successfully',
+      emailSent: emailResult.success,
+      submissionId,
+      pstSync: pstResult.success,
+      pstJobNumber: pstResult.jobNumber || null
+    });
   } catch (err) {
     logger.error(LOG_CATEGORIES.FORM, 'Request submission error', err);
     return res.status(500).json({ success: false, message: 'Server error: ' + err.message });
