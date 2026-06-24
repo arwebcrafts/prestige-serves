@@ -123,6 +123,91 @@
   object-fit:contain !important;
 }
 
+/* --- Document printing & POS-by-mail rate tables --- */
+.ps-addon-rates{
+  padding:56px 72px;
+  border-top:1px solid var(--border);
+  background:var(--bg-light);
+}
+.ps-addon-rates-title{
+  margin:0 0 40px;
+  font-size:36px;
+  font-weight:300;
+  color:var(--accent-blue);
+  text-align:center;
+}
+.ps-rate-block{margin-bottom:40px;}
+.ps-rate-block:last-child{margin-bottom:0;}
+.ps-rate-block-heading{
+  margin:0 0 16px;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--accent-blue);
+}
+.ps-rate-columns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:28px;
+}
+.ps-rate-tier{
+  margin:0 0 12px;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+}
+.ps-rate-table{
+  width:100%;
+  border-collapse:collapse;
+  background:var(--bg-white);
+  border:1px solid var(--border);
+}
+.ps-rate-table th,
+.ps-rate-table td{
+  padding:14px 18px;
+  font-size:14px;
+  line-height:1.5;
+  vertical-align:top;
+  border-bottom:1px solid var(--border);
+}
+.ps-rate-table thead th{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  background:var(--bg-warm);
+}
+.ps-rate-table tbody tr:last-child td{border-bottom:none;}
+.ps-rate-table td:first-child{width:70%;}
+.ps-rate-price{
+  font-weight:600;
+  color:var(--accent-blue);
+  white-space:nowrap;
+  text-align:right;
+}
+.ps-rate-detail{
+  display:block;
+  margin-top:4px;
+  font-size:12px;
+  font-weight:400;
+  color:var(--text-muted);
+}
+.ps-rate-note{
+  margin:20px 0 0;
+  padding:16px 20px;
+  font-size:13px;
+  font-style:italic;
+  line-height:1.65;
+  color:var(--text-muted);
+  background:var(--bg-white);
+  border:1px solid var(--border);
+  border-left:3px solid var(--gold,#c9a84c);
+}
+
 /* --- Fix Mobile Menu on Transparent Nav --- */
 @media(max-width:960px){
   .ps-hero-content,.ps-hero-nav{padding:20px 28px;}
@@ -184,6 +269,12 @@
     max-height:56px !important;
   }
   .ps-pricing-section .pricing-item-price{font-size:20px;font-weight:600;}
+
+  /* Addon rate tables */
+  .ps-addon-rates{padding:40px 20px !important;}
+  .ps-addon-rates-title{font-size:28px !important;margin-bottom:28px !important;}
+  .ps-rate-columns{grid-template-columns:1fr;gap:24px;}
+  .ps-rate-table th,.ps-rate-table td{padding:12px 14px;font-size:13px;}
 
   /* Document types section - 4 columns become 2x2 grid */
   .ps-docs-section{padding:40px 20px !important;}
