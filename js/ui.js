@@ -183,10 +183,97 @@ let testimonialSlidesCount = 0;
 const slideDelay = 5000; 
 let isCarouselInitialized = false;
 
+function escapeHTML(value) {
+  return String(value || '').replace(/[&<>"']/g, function(char) {
+    return {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[char];
+  });
+}
+
+function renderStars(rating) {
+  var rounded = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
+  var stars = '';
+  for (var i = 0; i < 5; i++) {
+    stars += i < rounded ? '&#9733;' : '&#9734;';
+  }
+  return stars;
+}
+
+async function loadGoogleReviews() {
+  var slidesContainer = document.querySelector('[data-google-reviews]');
+  if (!slidesContainer) return;
+
+  var summary = document.getElementById('google-reviews-summary');
+
+  try {
+    var controller = new AbortController();
+    var timeoutId = setTimeout(function() {
+      controller.abort();
+    }, 4500);
+    var response = await fetch('/api/google-reviews', { signal: controller.signal });
+    clearTimeout(timeoutId);
+    var data = await response.json();
+
+    if (!response.ok || !data.success || !data.reviews || !data.reviews.length) {
+      throw new Error(data.message || 'Google reviews are unavailable');
+    }
+
+    var place = data.place || {};
+    var placeName = place.name || 'Prestige Serves';
+    var placeUrl = place.url || '';
+    var reviews = data.reviews.filter(function(review) {
+      return review && review.text;
+    });
+
+    if (!reviews.length) {
+      throw new Error('Google reviews did not include review text');
+    }
+
+    slidesContainer.innerHTML = reviews.map(function(review, index) {
+      var authorName = escapeHTML(review.authorName || 'Google reviewer');
+      var authorUrl = review.authorUrl ? escapeHTML(review.authorUrl) : '';
+      var author = authorUrl
+        ? '<a href="' + authorUrl + '" target="_blank" rel="noopener noreferrer">' + authorName + '</a>'
+        : authorName;
+      var time = review.relativeTimeDescription
+        ? '<span class="google-review-time">' + escapeHTML(review.relativeTimeDescription) + '</span>'
+        : '';
+
+      return '<div class="testimonial-slide' + (index === 0 ? ' active' : '') + '">' +
+        '<div class="google-review-stars" aria-label="' + escapeHTML(review.rating) + ' out of 5 stars">' + renderStars(review.rating) + '</div>' +
+        '<p class="testimonial-quote">"' + escapeHTML(review.text) + '"</p>' +
+        '<p class="testimonial-attr">— ' + author + time + '</p>' +
+      '</div>';
+    }).join('');
+
+    if (summary) {
+      var reviewCount = place.userRatingsTotal ? ' from ' + place.userRatingsTotal + ' Google reviews' : '';
+      var rating = place.rating ? Number(place.rating).toFixed(1) + '/5' : 'Google rated';
+      var summaryText = rating + reviewCount;
+      summary.innerHTML = placeUrl
+        ? '<a href="' + escapeHTML(placeUrl) + '" target="_blank" rel="noopener noreferrer">' + escapeHTML(summaryText) + ' on Google</a>'
+        : escapeHTML(summaryText + ' on Google');
+      summary.setAttribute('aria-label', placeName + ' Google review summary');
+    }
+  } catch (err) {
+    if (summary) {
+      summary.textContent = 'Recent client feedback. Live Google reviews will appear once the Google API is configured.';
+    }
+    console.warn('Google reviews fallback:', err.message);
+  }
+}
+
 function showTestimonial(idx) {
   if (!testimonialSlides) return;
   testimonialSlides.forEach((s, i) => s.classList.toggle('active', i === idx));
-  testimonialDots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  if (testimonialDots) {
+    testimonialDots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  }
   testimonialIndex = idx;
 }
 
@@ -217,6 +304,7 @@ function manualDot(idx) {
 
 // Single function to manage starting the timer
 function startTestimonialTimer() {
+  if (testimonialSlidesCount <= 1) return;
   clearInterval(testimonialTimer); // Always clear before starting a new one
   testimonialTimer = setInterval(() => {
     changeSlide('next');
@@ -240,7 +328,7 @@ function initTestimonialCarousel() {
   const dotsContainer = carousel.parentElement.querySelector('.testimonial-dots');
   testimonialSlidesCount = testimonialSlides.length;
   
-  if (testimonialSlidesCount <= 1) return;
+  if (!dotsContainer || testimonialSlidesCount <= 1) return;
 
   // Build dots
   dotsContainer.innerHTML = Array.from(testimonialSlides).map((_, i) => 
@@ -266,7 +354,10 @@ function initTestimonialCarousel() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+window.prevTestimonialCarousel = manualPrev;
+window.nextTestimonialCarousel = manualNext;
+
+document.addEventListener('DOMContentLoaded', async function() {
   // Process Serving FAQ
   if (document.getElementById('ps-faq')) {
     buildFAQ('ps-faq', [
@@ -305,6 +396,9 @@ document.addEventListener('DOMContentLoaded', function() {
       {q:"How quickly can a stakeout be scheduled?",a:"Most stakeouts can be scheduled within 24–48 hours. For deadline-critical cases, call us directly and we'll do what we can to move faster."}
     ]);
   }
+
+  // Load real Google reviews before the carousel is initialized.
+  await loadGoogleReviews();
 
   // Initialize testimonial carousel safely once
   initTestimonialCarousel();

@@ -475,6 +475,42 @@ function jsonResponse(res, statusCode, data) {
   res.end(JSON.stringify(data));
 }
 
+const DEFAULT_GOOGLE_PLACE_QUERY = 'Prestige Serves Los Angeles CA';
+
+function cleanGoogleReview(review) {
+  return {
+    authorName: review.author_name || 'Google reviewer',
+    authorUrl: review.author_url || '',
+    profilePhotoUrl: review.profile_photo_url || '',
+    rating: Number(review.rating) || 0,
+    relativeTimeDescription: review.relative_time_description || '',
+    text: review.text || '',
+    time: review.time || 0,
+  };
+}
+
+async function resolveGooglePlaceId(apiKey) {
+  if (process.env.GOOGLE_PLACE_ID) {
+    return process.env.GOOGLE_PLACE_ID;
+  }
+
+  const query = process.env.GOOGLE_PLACE_QUERY || DEFAULT_GOOGLE_PLACE_QUERY;
+  const params = new URLSearchParams({
+    input: query,
+    inputtype: 'textquery',
+    fields: 'place_id',
+    key: apiKey,
+  });
+  const response = await fetch(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?${params.toString()}`);
+  const data = await response.json();
+
+  if (data.status !== 'OK' || !data.candidates || !data.candidates[0]) {
+    throw new Error(data.error_message || `Unable to resolve Google Place ID (${data.status || 'unknown status'})`);
+  }
+
+  return data.candidates[0].place_id;
+}
+
 // Parse multipart form data
 function parseMultipart(req) {
   return new Promise((resolve, reject) => {
@@ -547,6 +583,57 @@ const server = http.createServer(async (req, res) => {
     if (method === 'OPTIONS') {
       res.writeHead(204);
       res.end();
+      return;
+    }
+
+    // Google reviews proxy keeps the Google API key server-side.
+    if (url === '/api/google-reviews' && method === 'GET') {
+      const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+
+      if (!apiKey) {
+        jsonResponse(res, 503, {
+          success: false,
+          message: 'Google reviews are not configured. Add GOOGLE_MAPS_API_KEY to the server environment.',
+        });
+        return;
+      }
+
+      try {
+        const placeId = await resolveGooglePlaceId(apiKey);
+        const params = new URLSearchParams({
+          place_id: placeId,
+          fields: 'name,rating,user_ratings_total,reviews,url',
+          reviews_sort: 'newest',
+          key: apiKey,
+        });
+        const response = await fetch(`https://maps.googleapis.com/maps/api/place/details/json?${params.toString()}`);
+        const data = await response.json();
+
+        if (data.status !== 'OK') {
+          jsonResponse(res, 502, {
+            success: false,
+            message: data.error_message || `Google Places returned ${data.status || 'an error'}`,
+          });
+          return;
+        }
+
+        const result = data.result || {};
+        jsonResponse(res, 200, {
+          success: true,
+          place: {
+            name: result.name || 'Prestige Serves',
+            rating: Number(result.rating) || 0,
+            userRatingsTotal: Number(result.user_ratings_total) || 0,
+            url: result.url || '',
+          },
+          reviews: Array.isArray(result.reviews) ? result.reviews.map(cleanGoogleReview) : [],
+        });
+      } catch (err) {
+        jsonResponse(res, 500, {
+          success: false,
+          message: err.message || 'Unable to load Google reviews',
+        });
+      }
       return;
     }
 
@@ -1297,6 +1384,8 @@ const server = http.createServer(async (req, res) => {
   res.end(fs.readFileSync(filePath));
 });
 
-server.listen(3002, () => {
-  logger.info(LOG_CATEGORIES.SERVER, 'Server started', { port: 3002 });
+const PORT = parseInt(process.env.PORT, 10) || 3002;
+
+server.listen(PORT, () => {
+  logger.info(LOG_CATEGORIES.SERVER, 'Server started', { port: PORT });
 });

@@ -56,8 +56,18 @@ a.svc-icon-card:hover{transform:translateY(-4px);}
 .testimonial-img{position:relative;overflow:hidden;align-self:stretch;margin:0 10px 0 15px;padding:0;}
 .testimonial-img img{width:100%;height:100%;object-fit:cover;display:block;font-size:0;margin:0;padding:0;}
 .testimonial-content{background:var(--bg-dark);color:#fff;padding:80px 92px 80px 72px;display:flex;flex-direction:column;justify-content:center;align-self:stretch;margin:0 15px 0 0;}
+.google-reviews-heading{margin-bottom:28px;}
+.google-reviews-kicker{display:block;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent-gold);margin-bottom:10px;}
+.google-reviews-heading h2{font-size:36px;font-weight:300;line-height:1.15;margin:0 0 12px;color:#fff;}
+.google-reviews-heading p{font-size:14px;line-height:1.6;color:rgba(255,255,255,0.72);margin:0;}
+.google-reviews-heading a{color:inherit;text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.25);}
+.google-reviews-heading a:hover{border-bottom-color:var(--accent-gold);}
+.google-review-stars{color:var(--accent-gold);font-size:18px;letter-spacing:0.08em;margin-bottom:18px;}
 .testimonial-quote{font-size:21px;font-weight:300;line-height:1.7;font-style:italic;color:#ffffff;margin-bottom:32px;}
 .testimonial-attr{font-size:13px;letter-spacing:0.06em;color:var(--accent-gold);}
+.testimonial-attr a{color:inherit;text-decoration:none;}
+.testimonial-attr a:hover{text-decoration:underline;}
+.google-review-time{display:block;color:rgba(255,255,255,0.55);font-size:12px;letter-spacing:0.04em;margin-top:6px;}
 .testimonial-carousel{position:relative;display:flex;align-items:center;gap:16px;}
 .testimonial-slides{overflow:hidden;flex:1;min-height:120px;pointer-events:auto;}
 .testimonial-slide{display:none;}

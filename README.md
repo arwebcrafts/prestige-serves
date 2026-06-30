@@ -72,6 +72,13 @@ To enable Stripe payments, replace the following placeholders in `payment.html`:
 - `STRIPE_BUTTON_ID_HERE` — Your Stripe Buy Button ID
 - `STRIPE_PUBLISHABLE_KEY_HERE` — Your Stripe Publishable Key
 
+### Google Reviews
+
+To show live Google reviews on the homepage, add these environment variables in Vercel:
+- `GOOGLE_MAPS_API_KEY` — Google Cloud key with Places API enabled.
+- `GOOGLE_PLACE_ID` — optional but recommended for the Prestige Serves Google Business Profile.
+- `GOOGLE_PLACE_QUERY` — fallback search query if no Place ID is set.
+
 ### PayPal
 
 To add PayPal payments, paste your PayPal hosted button code into the `<div id="paypal-button-container"></div>` in `payment.html`.

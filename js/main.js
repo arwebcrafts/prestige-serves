@@ -1,5 +1,41 @@
 // Navigation & Routing
 
+// CALSPro member badge — set userId to link to your member profile (from CALSPro directory URL)
+var CALSPRO_BADGE = {
+  userId: '',
+  imageUrl: 'assets/images/calspro-member-badge.png'
+};
+
+function getCalsProBadgeHref() {
+  if (CALSPRO_BADGE.userId) {
+    return 'https://members.calspro.org/index.php?option=com_community&view=profile&userid=' +
+      encodeURIComponent(CALSPRO_BADGE.userId);
+  }
+  return 'https://www.calspro.org/';
+}
+
+function initCalsProBadge() {
+  document.querySelectorAll('footer .footer-brand').forEach(function (brand) {
+    if (brand.querySelector('.footer-calspro-badge')) return;
+    var wrap = document.createElement('div');
+    wrap.className = 'footer-calspro-badge';
+    var link = document.createElement('a');
+    link.title = 'California Association of Legal Support Professionals';
+    link.href = getCalsProBadgeHref();
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    var img = document.createElement('img');
+    img.src = CALSPRO_BADGE.imageUrl;
+    img.alt = 'CALSPro member — California Association of Legal Support Professionals';
+    img.width = 140;
+    img.height = 60;
+    img.loading = 'lazy';
+    link.appendChild(img);
+    wrap.appendChild(link);
+    brand.appendChild(wrap);
+  });
+}
+
 function showPage(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
@@ -81,6 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Phone auto-format runs on ALL pages — independent of home-form-container
   initPhoneAutoFormat();
   initPhoneAutoFormatObserver();
+  initCalsProBadge();
 });
 
 function formatPhoneValue(raw) {

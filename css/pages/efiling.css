@@ -8,6 +8,14 @@
 .ps-hero-title-line{display:block;}
 .ps-hero-title-line:first-child{border-bottom:2px solid rgba(255,255,255,0.7);padding-bottom:12px;margin-bottom:12px;}
 .ps-hero-sub{font-size:16px;font-style:italic;opacity:0.85;}
+.efiling-pricing-section{padding:56px 72px;border-top:1px solid var(--border);background:var(--bg-light);}
+.efiling-pricing-section h2{font-size:28px;font-weight:400;color:var(--accent-blue);margin:0 0 24px;}
+.efiling-rate-table-wrap{overflow-x:auto;border:1px solid var(--border);background:var(--bg-white);}
+.efiling-rate-table{width:100%;border-collapse:collapse;min-width:620px;}
+.efiling-rate-table th,.efiling-rate-table td{padding:16px 20px;border-bottom:1px solid var(--border);text-align:left;font-size:15px;line-height:1.5;}
+.efiling-rate-table th{font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent-blue);background:var(--bg-warm);font-weight:600;}
+.efiling-rate-table tbody tr:last-child td{border-bottom:none;}
+.efiling-rate-table td:last-child{font-weight:600;color:var(--accent-blue);white-space:nowrap;}
 
 @media(max-width:960px){
   .ps-hero-content{padding:40px 28px;}
@@ -51,6 +59,10 @@
   .efiling-courts-section > div[style]{display:grid !important;grid-template-columns:1fr !important;gap:32px !important;padding:0 16px !important;}
   .efiling-courts-section ul{font-size:13px !important;padding:0 0 16px 0 !important;margin:0 0 16px 0 !important;border-bottom:1px solid var(--border);}
   .efiling-courts-section ul:last-child{border-bottom:none !important;padding-bottom:0 !important;}
+  .efiling-pricing-section{padding:40px 20px !important;}
+  .efiling-pricing-section h2{font-size:22px !important;margin-bottom:20px !important;}
+  .efiling-rate-table th,.efiling-rate-table td{padding:12px 14px;font-size:13px;}
+  .efiling-rate-table td:last-child{white-space:normal;}
 
   /* Text sections */
   [style*="padding:56px 72px"]{padding:40px 20px !important;}

@@ -1126,7 +1126,7 @@ function initHomeFileUploadPreview() {
     }
     var html = '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
     files.forEach(function (file) {
-      html += '<span style="background:#e8f0fe;padding:6px 12px;border-radius:4px;font-size:12px;">' + file.name + '</span>';
+      html += '<span style="background:#e8f0fe;padding:6px 12px;border-radius:4px;font-size:12px;">' + escapeFormHtml(file.name) + '</span>';
     });
     html += '</div>';
     fileList.innerHTML = html;
@@ -1384,7 +1384,15 @@ function getRequestFormFieldsHtml() {
         <button type="button" id="home-btn-add-defendant" class="btn-navy" style="display:none; width:auto; padding: 10px 20px; background-color: #f4f4f4; color: #333; border: 1px solid #ccc;" onclick="openHomeDefendantModal()">+ Add Defendant</button>
       </div>
       <div class="form-group"><label>Deadline Date</label><input type="date" name="home_deadlineDate" id="home-deadlineDate" data-min-tomorrow></div>
-      <div class="form-group"><label>Special Instructions</label><textarea name="home_specialInstructions" rows="3"></textarea></div>
+      <div class="form-group">
+        <label>Upload Documents <span class="req">(required)</span></label>
+        <div class="form-hint" style="margin-bottom:8px;">Upload all documents to be served. PDF, Word, and image files are accepted.</div>
+        <div class="file-upload-area" onclick="this.querySelector('input').click()">
+          <input type="file" id="home-file-input" name="files" style="display:none;" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-home-required>
+          <span id="home-file-upload-text">+ Add Files</span>
+        </div>
+        <div id="home-file-list" style="margin-top:8px;font-size:13px;color:#333;"></div>
+      </div>
     </div>
     <div class="form-group"><label>Special Instructions</label><textarea name="specialInstructions" rows="3"></textarea></div>`;
 }
