@@ -81,7 +81,8 @@
   ],
   "redirects": [
     { "source": "/index.html", "destination": "/", "permanent": true },
-    { "source": "/home", "destination": "/", "permanent": true }
+    { "source": "/home", "destination": "/", "permanent": true },
+    { "source": "/mail-service.html", "destination": "/404.html", "permanent": false }
   ],
   "headers": [
     {
