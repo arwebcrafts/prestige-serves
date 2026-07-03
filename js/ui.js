@@ -397,6 +397,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     ]);
   }
 
+  // Subpoena Domestication FAQ
+  if (document.getElementById('sd-faq')) {
+    buildFAQ('sd-faq', [
+      {q:"Do I need to hire a California attorney?",a:"No. California follows the UIDDA, which allows us to complete domestication directly through the Superior Court on your behalf. You avoid local counsel fees entirely, and your subpoena comes back issued, served, and supported by court-ready proof."},
+      {q:"How long does it take?",a:"Most assignments finish in about 2 to 3 business days from the moment you send your documents to the moment proof of service is in your inbox. Rush handling is available for tight deadlines, confirmed in writing before work begins."},
+      {q:"How much does it cost?",a:"One flat rate of $225 covers both domestication and service anywhere in Los Angeles County. Court fees are advanced at cost with no markup, and you receive a written quote before any work begins."},
+      {q:"What do you need from me to get started?",a:"Just your out-of-state subpoena, the case caption, and the name and Los Angeles area address of the party to be served. We handle everything else."},
+      {q:"Can you serve corporate registered agents like CT Corporation or CSC?",a:"Yes. We regularly serve registered agents including CT Corporation, CSC, and Registered Agents Inc. throughout Los Angeles County, as well as individual witnesses and records custodians."},
+      {q:"My case isn't in a UIDDA state. Can you still help?",a:"Usually, yes. Send us your subpoena and case details and we'll confirm the correct path for your matter, in writing, before any fees are incurred."}
+    ]);
+  }
+
   // Load real Google reviews before the carousel is initialized.
   await loadGoogleReviews();
 

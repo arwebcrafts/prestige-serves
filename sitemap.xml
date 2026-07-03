@@ -114,6 +114,24 @@
   </url>
 
   <url>
+    <loc>https://www.prestigeserves.com/mail-service.html</loc>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.prestigeserves.com/subpoena-domestication.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://www.prestigeserves.com/assets/images/prestige-serves-img-14.png</image:loc>
+      <image:title>Subpoena Domestication Los Angeles</image:title>
+    </image:image>
+  </url>
+
+  <url>
     <loc>https://www.prestigeserves.com/request.html</loc>
     <lastmod>2026-05-25</lastmod>
     <changefreq>weekly</changefreq>
