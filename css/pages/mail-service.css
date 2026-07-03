@@ -1,45 +1,100 @@
-/* mail-service.css — Mail Service pricing page */
+/* mail-service.css — Mail Service page */
 
-.ms-page-hero {
+.ms-hero {
   position: relative;
   left: 50%;
   width: 100vw;
   margin-left: -50vw;
-  padding: 88px 72px 56px;
-  background: var(--accent-blue);
-  color: #fff;
+  min-height: min(520px, 70vh);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  background: #0f1419;
 }
 
-.ms-page-hero h1 {
-  font-size: clamp(40px, 4.5vw, 64px);
+.ms-hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: right center;
+}
+
+.ms-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10, 15, 35, 0.92) 0%, rgba(10, 15, 35, 0.55) 50%, rgba(10, 15, 35, 0.25) 100%);
+}
+
+.ms-hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 56px 72px;
+  color: #fff;
+  max-width: 760px;
+}
+
+.ms-hero-kicker {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #c9a84c;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.ms-hero-title {
+  font-size: clamp(34px, 4.2vw, 58px);
   font-weight: 300;
-  letter-spacing: -0.015em;
+  line-height: 1.12;
+  margin-bottom: 14px;
+}
+
+.ms-hero-sub {
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.65;
+  opacity: 0.92;
+  max-width: 680px;
+  margin-bottom: 18px;
+}
+
+.ms-hero-note {
+  font-size: 14px;
+  line-height: 1.65;
+  opacity: 0.88;
+  max-width: 680px;
+  margin-bottom: 22px;
+}
+
+.ms-hero-note strong {
   color: #fff;
-  margin-bottom: 10px;
 }
 
-.ms-page-hero .ms-subtitle {
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.78);
-  margin-bottom: 24px;
+.ms-hero-badges {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+  margin-bottom: 28px;
 }
 
-.ms-gold-rule {
-  width: 72px;
-  height: 3px;
-  background: var(--accent-gold);
-  margin-bottom: 24px;
+.ms-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
 }
 
-.ms-intro-note {
-  max-width: 820px;
-  font-size: 15px;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.ms-intro-note strong {
+.ms-hero-call {
   color: #fff;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.ms-hero-call:hover {
+  text-decoration: underline;
 }
 
 .ms-content {
@@ -50,11 +105,21 @@
   margin-bottom: 56px;
 }
 
-.ms-section:last-child {
-  margin-bottom: 0;
+.ms-section-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 24px;
 }
 
-.ms-section-num {
+.ms-section-icon {
+  flex-shrink: 0;
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+}
+
+.ms-section-kicker {
   font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -67,7 +132,7 @@
   font-size: clamp(24px, 2.5vw, 32px);
   font-weight: 400;
   color: var(--accent-blue);
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   line-height: 1.25;
 }
 
@@ -76,7 +141,6 @@
   font-size: 15px;
   line-height: 1.7;
   color: var(--text-muted);
-  margin-bottom: 24px;
 }
 
 .ms-section-desc strong {
@@ -94,7 +158,7 @@
 
 .ms-rate-table {
   width: 100%;
-  min-width: 720px;
+  min-width: 760px;
   border-collapse: collapse;
 }
 
@@ -137,71 +201,43 @@
   font-weight: 600;
   color: var(--accent-gold);
   white-space: nowrap;
-  min-width: 72px;
 }
 
-.ms-rate-table .ms-when {
+.ms-rate-table .ms-best-for {
   color: var(--text-muted);
   font-size: 13.5px;
 }
 
-.ms-staff-box {
-  background: var(--bg-warm);
-  border: 1px solid var(--border);
-  border-left: 4px solid var(--accent-gold);
-  border-radius: 8px;
-  padding: 28px 32px;
-  max-width: 900px;
-}
-
-.ms-staff-box h2 {
-  font-size: 22px;
-  font-weight: 400;
-  color: var(--accent-blue);
-  margin-bottom: 16px;
-}
-
-.ms-staff-box ul {
-  margin: 0;
-  padding-left: 20px;
-}
-
-.ms-staff-box li {
-  font-size: 14.5px;
-  line-height: 1.75;
-  color: var(--text-body);
-  margin-bottom: 8px;
-}
-
-.ms-cta-wrap {
-  text-align: center;
-  padding: 48px 72px 64px;
-  border-top: 1px solid var(--border);
-}
-
-.ms-cta-wrap p {
-  font-size: 15px;
-  color: var(--text-muted);
-  margin-bottom: 20px;
-}
-
 @media (max-width: 960px) {
-  .ms-page-hero,
-  .ms-content,
-  .ms-cta-wrap {
+  .ms-hero-content,
+  .ms-content {
     padding-left: 28px;
     padding-right: 28px;
   }
 }
 
 @media (max-width: 768px) {
-  .ms-page-hero {
-    padding-top: 48px;
-    padding-bottom: 40px;
+  .ms-hero-content {
+    padding: 40px 20px;
+  }
+
+  .ms-section-head {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ms-section-icon {
+    width: 72px;
+    height: 72px;
   }
 
   .ms-content {
     padding-top: 40px;
     padding-bottom: 48px;
+  }
+
+  .ms-hero-actions {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

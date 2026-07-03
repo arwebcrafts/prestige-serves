@@ -409,6 +409,16 @@ document.addEventListener('DOMContentLoaded', async function() {
     ]);
   }
 
+  // Mail Service FAQ
+  if (document.getElementById('ms-faq')) {
+    buildFAQ('ms-faq', [
+      {q:"Do your mail service prices include postage?",a:"Yes. Every rate includes postage, materials, and the declaration of mailing. There are no postage surcharges. The only exception is document sets over 50 pages, which add $0.50 per additional page."},
+      {q:"When is the CCP § 415.20 mailing required?",a:"California law requires a follow-up mailing whenever documents are served by substituted service — meaning left with a competent adult — or posted at the property. You are charged only when substituted or posted service actually occurs. If personal service succeeds, this fee never applies."},
+      {q:"What is service by mail with Notice & Acknowledgment?",a:"Under CCP § 415.30, documents are mailed to the defendant with Notice & Acknowledgment of Receipt forms and a prepaid return envelope. Service is complete when the defendant signs and returns the acknowledgment. It works best for cooperative parties and requires no field attempts."},
+      {q:"What happens if the defendant never signs the acknowledgment?",a:"With N&A with Fallback, if the defendant never signs, $100 of the $150 fee converts to a credit toward standard personal service. You never pay for service twice."}
+    ]);
+  }
+
   // Load real Google reviews before the carousel is initialized.
   await loadGoogleReviews();
 

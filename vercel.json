@@ -3,7 +3,6 @@
   "trailingSlash": false,
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/mail-service\\.html", "status": 302, "headers": { "Location": "/404.html" } },
     {
       "src": "/robots\\.txt",
       "dest": "/robots.txt",
@@ -82,8 +81,7 @@
   ],
   "redirects": [
     { "source": "/index.html", "destination": "/", "permanent": true },
-    { "source": "/home", "destination": "/", "permanent": true },
-    { "source": "/mail-service.html", "destination": "/404.html", "permanent": false }
+    { "source": "/home", "destination": "/", "permanent": true }
   ],
   "headers": [
     {
