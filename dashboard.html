@@ -57,6 +57,10 @@
       <span class="tab-btn-label">Contact</span>
       <span class="tab-btn-hint">General inquiries</span>
     </button>
+    <button type="button" role="tab" aria-selected="false" class="tab-btn" data-tab="invoices" onclick="switchTab('invoices')">
+      <span class="tab-btn-label">Invoices</span>
+      <span class="tab-btn-hint">Quotes &amp; billing</span>
+    </button>
   </div>
 
   <div class="tab-content active" id="tab-requests" role="tabpanel">
@@ -172,6 +176,38 @@
         </table>
       </div>
       <div class="admin-pagination" id="contacts-pagination" aria-label="Contact submissions pagination"></div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-invoices" role="tabpanel">
+    <div class="settings-card" style="margin-bottom:24px;">
+      <h2 class="settings-card-title">Quote &amp; Invoice Builder</h2>
+      <p class="settings-card-desc">Build custom quotes with serve, stakeout, printing, and optional 3% Stripe fee. Send the pay link to your client.</p>
+      <a href="quote-builder.html" class="btn-primary btn-dashboard-primary" style="display:inline-block;text-decoration:none;margin-top:8px;">Create New Quote</a>
+    </div>
+    <div class="table-card">
+      <div class="table-card-header">
+        <h2 class="table-card-title">Recent invoices</h2>
+        <button type="button" class="btn-toolbar" onclick="loadInvoices()">Refresh</button>
+      </div>
+      <div class="table-scroll">
+        <table class="data-table data-table-dashboard">
+          <thead>
+            <tr>
+              <th>Invoice #</th>
+              <th>Date</th>
+              <th>Client Email</th>
+              <th>Case #</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th class="th-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="invoices-body">
+            <tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px;">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>

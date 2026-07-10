@@ -259,10 +259,12 @@ async function loadGoogleReviews() {
         ? '<a href="' + escapeHTML(placeUrl) + '" target="_blank" rel="noopener noreferrer">' + escapeHTML(summaryText) + ' on Google</a>'
         : escapeHTML(summaryText + ' on Google');
       summary.setAttribute('aria-label', placeName + ' Google review summary');
+      summary.hidden = false;
     }
   } catch (err) {
     if (summary) {
-      summary.textContent = 'Recent client feedback. Live Google reviews will appear once the Google API is configured.';
+      summary.hidden = true;
+      summary.textContent = '';
     }
     console.warn('Google reviews fallback:', err.message);
   }

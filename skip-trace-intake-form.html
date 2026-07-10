@@ -638,6 +638,7 @@ input, textarea, select, button { font-family: var(--serif); }
         <h4>Client Portal</h4>
         <a href="https://prb.sopstatus.com/forms/?code=PRB" target="_blank" rel="noopener noreferrer">Client Login</a>
         <a href="https://prb.sopstatus.com/forms/?code=PRB" target="_blank" rel="noopener noreferrer">Create Account</a>
+        <a href="invoice.html">Pay Invoice</a>
       </div>
     </div>
     <div class="page-legal-links">
@@ -805,25 +806,38 @@ function submitForm() {
 
   console.log('[DEBUG skip-trace-intake-form] skipTraceData:', skipTraceData);
 
-  const formData = {
-    firstName: skipTraceData.firstName,
-    lastName: skipTraceData.lastName,
-    company: skipTraceData.company,
-    email: skipTraceData.email,
-    phone: skipTraceData.phone,
-    reason: 'Skip Tracing',
-    county: '',
-    state: skipTraceData.jurisdiction,
-    caseDetails: `Service Type: ${skipTraceData.serviceType}\nPurpose: ${skipTraceData.purpose}\nCase: ${skipTraceData.caseNumber}\nCourt: ${skipTraceData.court}\nDeadline: ${skipTraceData.deadline}\nNotes: ${skipTraceData.notes}`,
-    urgency: skipTraceData.rush === 'yes' ? 'High' : 'Standard',
-    consent: true,
-    skipTraceData: skipTraceData
-  };
+  skipTraceData.uploadedFiles = uploadedFiles.map(function (f) { return f.name; });
 
-  fetch('/api/contact', {
+  const subjectName = [skipTraceData.firstName, skipTraceData.middleName, skipTraceData.lastName].filter(Boolean).join(' ').trim();
+  const fullName = skipTraceData.fullname || subjectName;
+  const fd = new FormData();
+  fd.append('clientName', skipTraceData.company || fullName);
+  fd.append('contactName', fullName);
+  fd.append('email', skipTraceData.email);
+  fd.append('phone', skipTraceData.phone);
+  fd.append('serviceType', skipTraceData.serviceType);
+  fd.append('defendantName', subjectName);
+  fd.append('addressLine1', skipTraceData.lastAddress || '');
+  fd.append('state', skipTraceData.jurisdiction || '');
+  fd.append('caseNumber', skipTraceData.caseNumber || '');
+  fd.append('courtJurisdiction', skipTraceData.court || '');
+  fd.append('deadlineDate', skipTraceData.deadline || '');
+  fd.append('specialInstructions', [
+    'Service Type: ' + skipTraceData.serviceType,
+    'Purpose: ' + skipTraceData.purpose,
+    'Case: ' + skipTraceData.caseNumber,
+    'Court: ' + skipTraceData.court,
+    'Deadline: ' + skipTraceData.deadline,
+    'Notes: ' + skipTraceData.notes
+  ].filter(Boolean).join('\n'));
+  fd.append('skipTraceData', JSON.stringify(skipTraceData));
+  uploadedFiles.forEach(function (file) {
+    fd.append('files', file, file.name);
+  });
+
+  fetch('/api/request', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData)
+    body: fd
   })
   .then(res => res.json())
   .then(data => {

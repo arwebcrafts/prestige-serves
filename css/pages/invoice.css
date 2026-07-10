@@ -1,0 +1,408 @@
+/* Invoice / quote pages — based on Prestige Serves invoice template */
+
+.inv-page-wrap {
+  font-family: 'Inter', sans-serif;
+  background: #eceae4;
+  min-height: 60vh;
+  padding: 24px 16px 48px;
+}
+
+.inv-page {
+  max-width: 800px;
+  margin: 0 auto;
+  background: #fff;
+  box-shadow: 0 2px 40px rgba(0, 0, 0, 0.10);
+}
+
+.inv-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 32px;
+  border-bottom: 1px solid #e2e0db;
+}
+
+.inv-logo-text {
+  font-family: 'EB Garamond', 'Cormorant Garamond', serif;
+  font-size: 18px;
+  color: #2a3a6e;
+}
+
+.inv-label-top {
+  font-family: 'EB Garamond', 'Cormorant Garamond', serif;
+  font-size: 11px;
+  color: #6b7280;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.inv-hero {
+  padding: 14px 32px 12px;
+  border-bottom: 1px solid #e2e0db;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.inv-eyebrow {
+  font-size: 7.5px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #2a3a6e;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.inv-title {
+  font-family: 'EB Garamond', 'Cormorant Garamond', serif;
+  font-size: 34px;
+  font-weight: 400;
+  color: #111;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.inv-subtitle {
+  font-family: 'EB Garamond', 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.inv-meta-right { text-align: right; }
+
+.inv-status-pill {
+  display: inline-block;
+  padding: 3px 11px;
+  border-radius: 20px;
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.inv-status-unpaid { border-color: #c0392b; color: #c0392b; }
+.inv-status-paid { border-color: #27ae60; color: #27ae60; }
+.inv-status-sent { border-color: #2a3a6e; color: #2a3a6e; }
+
+.inv-upfront {
+  background: #f4f4f2;
+  border-top: 2px solid #2a3a6e;
+  padding: 7px 32px;
+  font-size: 9.5px;
+  color: #3a3a3a;
+  line-height: 1.4;
+}
+
+.inv-case-row {
+  padding: 7px 32px;
+  border-bottom: 1px solid #e2e0db;
+  background: #fafaf8;
+  font-size: 13px;
+}
+
+.inv-bill-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid #e2e0db;
+}
+
+@media (max-width: 640px) {
+  .inv-bill-grid { grid-template-columns: 1fr; }
+}
+
+.inv-bill-col {
+  padding: 9px 22px 9px 32px;
+}
+
+.inv-bill-col.right {
+  padding-left: 22px;
+  padding-right: 32px;
+  border-left: 1px solid #e2e0db;
+  background: #fafaf8;
+}
+
+@media (max-width: 640px) {
+  .inv-bill-col.right { border-left: none; border-top: 1px solid #e2e0db; }
+}
+
+.inv-sec-eye {
+  font-size: 7.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #2a3a6e;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.inv-field {
+  margin-bottom: 3px;
+  font-family: 'EB Garamond', 'Cormorant Garamond', serif;
+  font-size: 12.5px;
+  color: #111;
+  padding: 1px 0;
+  border-bottom: 1px solid #ede9e2;
+}
+
+.inv-field input,
+.inv-field textarea {
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  border-bottom: 1px solid #ede9e2;
+  width: 100%;
+  padding: 1px 0;
+  outline: none;
+  background: transparent;
+}
+
+.inv-field input:focus { border-bottom-color: #2a3a6e; }
+
+.inv-static-val.brand {
+  font-weight: 500;
+  color: #2a3a6e;
+  font-size: 13px;
+}
+
+.inv-items-section { padding: 0 32px 14px; }
+
+.inv-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.inv-tbl thead tr { border-bottom: 1.5px solid #111; }
+
+.inv-tbl thead th {
+  font-size: 7.5px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 500;
+  padding: 0 6px 7px;
+  text-align: left;
+}
+
+.inv-tbl thead th.r { text-align: right; }
+
+.inv-tbl tbody tr { border-bottom: 1px solid #e2e0db; }
+
+.inv-tbl td { padding: 6px; }
+
+.inv-tbl td.r { text-align: right; }
+
+.inv-tbl input,
+.inv-tbl select {
+  border: none;
+  background: transparent;
+  font-family: 'EB Garamond', 'Cormorant Garamond', serif;
+  font-size: 12.5px;
+  width: 100%;
+  outline: none;
+}
+
+.inv-tbl .qty-in { width: 48px; text-align: right; }
+.inv-tbl .prc-in { width: 72px; text-align: right; }
+
+.inv-add-row {
+  margin-top: 8px;
+  width: 100%;
+  padding: 7px;
+  border: 1px dashed #e2e0db;
+  background: transparent;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.inv-add-row:hover { border-color: #2a3a6e; color: #2a3a6e; }
+
+.inv-bottom-grid {
+  border-top: 1px solid #e2e0db;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 640px) {
+  .inv-bottom-grid { grid-template-columns: 1fr; }
+}
+
+.inv-stripe-col {
+  padding: 12px 22px 12px 32px;
+  border-right: 1px solid #e2e0db;
+}
+
+.inv-totals-col {
+  padding: 12px 32px 12px 22px;
+  background: #f4f4f2;
+}
+
+.inv-stripe-block {
+  background: #1e2d5a;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+}
+
+.inv-pay-btn {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  background: #fff;
+  color: #1e2d5a;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+
+.inv-pay-btn:hover { background: #f0f0f0; }
+.inv-pay-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.inv-pay-btn-paid {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  cursor: default;
+}
+
+.inv-stripe-wordmark {
+  font-size: 15px;
+  font-weight: 300;
+  color: #fff;
+}
+
+.inv-t-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid #e2e0db;
+  font-size: 10px;
+}
+
+.inv-t-row .val {
+  font-family: 'EB Garamond', 'Cormorant Garamond', serif;
+  font-size: 13px;
+}
+
+.inv-grand-val {
+  font-family: 'EB Garamond', 'Cormorant Garamond', serif;
+  font-size: 32px;
+  color: #2a3a6e;
+}
+
+.inv-footer-bar {
+  background: #1e2d5a;
+  padding: 12px 32px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 8.5px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.inv-action-bar {
+  display: flex;
+  border-top: 1px solid #e2e0db;
+}
+
+.inv-action-bar button {
+  flex: 1;
+  padding: 13px;
+  border: none;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.inv-btn-save {
+  background: #1e2d5a;
+  color: #fff;
+}
+
+.inv-btn-save:hover { background: #2a3a6e; }
+
+/* Lookup form */
+.inv-lookup-card {
+  max-width: 420px;
+  margin: 48px auto;
+  background: #fff;
+  padding: 32px;
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.08);
+}
+
+.inv-lookup-card h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  color: #2a3a6e;
+  margin-bottom: 8px;
+}
+
+.inv-lookup-card p {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+.inv-lookup-card label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.inv-lookup-card input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e2e0db;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.inv-lookup-card .btn-navy {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.inv-msg {
+  padding: 12px 16px;
+  margin: 16px 32px;
+  font-size: 13px;
+  border-radius: 4px;
+}
+
+.inv-msg-success { background: #e8f7ee; color: #16a34a; }
+.inv-msg-error { background: #fce8e8; color: #c0392b; }
+
+.inv-builder-nav {
+  max-width: 800px;
+  margin: 0 auto 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.inv-builder-nav a {
+  font-size: 13px;
+  color: #2a3a6e;
+}
+
+@media print {
+  .inv-action-bar, .inv-builder-nav, .inv-pay-btn, .inv-add-row, .del-btn, header, footer, .inv-lookup-card { display: none !important; }
+  .inv-page-wrap { background: #fff; padding: 0; }
+  .inv-page { box-shadow: none; }
+}

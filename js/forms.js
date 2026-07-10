@@ -675,6 +675,73 @@ function removeModalFile(i) {
   renderModalFileList();
 }
 
+var homeUploadedFiles = [];
+var legacyUploadedFiles = [];
+
+function addHomeUploadedFiles(fileList) {
+  Array.from(fileList || []).forEach(function (f) {
+    if (!homeUploadedFiles.find(function (x) { return x.name === f.name && x.size === f.size; })) {
+      homeUploadedFiles.push(f);
+    }
+  });
+}
+
+function renderHomeFileList() {
+  var list = document.getElementById('home-file-list');
+  var uploadText = document.getElementById('home-file-upload-text');
+  if (!list) return;
+  if (!homeUploadedFiles.length) {
+    list.innerHTML = '';
+    if (uploadText) uploadText.textContent = '+ Add Files';
+    return;
+  }
+  list.innerHTML = homeUploadedFiles.map(function (f, i) {
+    return '<div style="display:flex;align-items:center;justify-content:space-between;background:#f5f4f1;border:1px solid #d5d2cc;border-radius:4px;padding:8px 14px;font-size:12.5px;color:#2e2e2e;margin-bottom:6px;">' +
+      '<span>' + escapeFormHtml(f.name) + ' <span style="color:#999">(' + (f.size / 1024).toFixed(1) + ' KB)</span></span>' +
+      '<button type="button" onclick="removeHomeFile(' + i + ')" style="background:none;border:none;color:#999;cursor:pointer;font-size:18px;line-height:1;padding:0 4px;" aria-label="Remove file">×</button>' +
+      '</div>';
+  }).join('');
+  if (uploadText) {
+    uploadText.textContent = homeUploadedFiles.length === 1
+      ? '1 file selected'
+      : homeUploadedFiles.length + ' files selected';
+  }
+}
+
+function removeHomeFile(i) {
+  homeUploadedFiles.splice(i, 1);
+  syncHomeFileInput();
+  renderHomeFileList();
+}
+
+function syncHomeFileInput() {
+  var fileInput = document.getElementById('home-file-input');
+  if (!fileInput) return;
+  try {
+    var dt = new DataTransfer();
+    homeUploadedFiles.forEach(function (f) { dt.items.add(f); });
+    fileInput.files = dt.files;
+  } catch (e) {
+    // DataTransfer not supported in very old browsers
+  }
+}
+
+function clearHomeUploadedFiles() {
+  homeUploadedFiles = [];
+  var fileInput = document.getElementById('home-file-input');
+  if (fileInput) fileInput.value = '';
+  syncHomeFileInput();
+  renderHomeFileList();
+}
+
+function appendHomeFilesToFormData(formData) {
+  if (!formData || !homeUploadedFiles.length) return;
+  try { formData.delete('files'); } catch (e) { /* ignore */ }
+  homeUploadedFiles.forEach(function (file) {
+    formData.append('files', file, file.name);
+  });
+}
+
 function clearSkipTraceValidationErrors() {
   var body = document.getElementById('skip-trace-modal-body');
   if (!body) return;
@@ -1115,23 +1182,39 @@ function initHomeProcessServeSection(containerId) {
 function initHomeFileUploadPreview() {
   var fileInput = document.getElementById('home-file-input');
   var fileList = document.getElementById('home-file-list');
-  var uploadText = document.getElementById('home-file-upload-text');
   if (!fileInput || !fileList) return;
+  if (fileInput.dataset.homeUploadBound === '1') return;
+  fileInput.dataset.homeUploadBound = '1';
+
   fileInput.addEventListener('change', function () {
-    var files = Array.from(fileInput.files);
-    if (files.length === 0) {
-      fileList.innerHTML = '';
-      if (uploadText) uploadText.textContent = '+ Add a File';
-      return;
+    if (fileInput.files && fileInput.files.length) {
+      addHomeUploadedFiles(fileInput.files);
     }
-    var html = '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
-    files.forEach(function (file) {
-      html += '<span style="background:#e8f0fe;padding:6px 12px;border-radius:4px;font-size:12px;">' + escapeFormHtml(file.name) + '</span>';
-    });
-    html += '</div>';
-    fileList.innerHTML = html;
-    if (uploadText) uploadText.textContent = files.length === 1 ? '1 file selected' : files.length + ' files selected';
+    fileInput.value = '';
+    syncHomeFileInput();
+    renderHomeFileList();
   });
+
+  var uploadArea = fileInput.closest('.file-upload-area');
+  if (uploadArea && uploadArea.dataset.homeDropBound !== '1') {
+    uploadArea.dataset.homeDropBound = '1';
+    uploadArea.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      uploadArea.style.borderColor = '#2d3a7c';
+    });
+    uploadArea.addEventListener('dragleave', function () {
+      uploadArea.style.borderColor = '';
+    });
+    uploadArea.addEventListener('drop', function (e) {
+      e.preventDefault();
+      uploadArea.style.borderColor = '';
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+        addHomeUploadedFiles(e.dataTransfer.files);
+        syncHomeFileInput();
+        renderHomeFileList();
+      }
+    });
+  }
 }
 
 function validateHomeProcessServeFields(form) {
@@ -1165,8 +1248,8 @@ function validateHomeProcessServeFields(form) {
 
   var fi = document.getElementById('home-file-input');
   if (fi) {
-    mark(fi, !(fi.files && fi.files.length));
-    if (!(fi.files && fi.files.length)) missing.push('File upload');
+    mark(fi, !homeUploadedFiles.length);
+    if (!homeUploadedFiles.length) missing.push('File upload');
   }
 
   var dd = document.getElementById('home-deadlineDate');
@@ -1250,12 +1333,7 @@ function submitHomeProcessServe(form, successId) {
   if (special) merged += '\n\nSpecial instructions:\n' + special;
   fd.append('specialInstructions', merged);
 
-  var fileInput = document.getElementById('home-file-input');
-  if (fileInput && fileInput.files.length) {
-    for (var i = 0; i < fileInput.files.length; i++) {
-      fd.append('files', fileInput.files[i]);
-    }
-  }
+  appendHomeFilesToFormData(fd);
 
   fetch('/api/request', { method: 'POST', body: fd })
     .then(function (res) { return res.json(); })
@@ -1284,10 +1362,7 @@ function submitHomeProcessServe(form, successId) {
       renderHomeDefendantsList();
       var hc = document.getElementById('home-form-container');
       if (hc) initFutureDeadlineDateInputs(hc);
-      var fl = document.getElementById('home-file-list');
-      var ut = document.getElementById('home-file-upload-text');
-      if (fl) fl.innerHTML = '';
-      if (ut) ut.textContent = '+ Add a File';
+      clearHomeUploadedFiles();
       toggleHomeMultiDefTextarea();
     })
     .catch(function (err) {
@@ -1386,7 +1461,7 @@ function getRequestFormFieldsHtml() {
       <div class="form-group"><label>Deadline Date</label><input type="date" name="home_deadlineDate" id="home-deadlineDate" data-min-tomorrow></div>
       <div class="form-group">
         <label>Upload Documents <span class="req">(required)</span></label>
-        <div class="form-hint" style="margin-bottom:8px;">Upload all documents to be served. PDF, Word, and image files are accepted.</div>
+        <div class="form-hint" style="margin-bottom:8px;">Add all documents to be served. You can upload files one at a time or select several at once. PDF, Word, and image files are accepted.</div>
         <div class="file-upload-area" onclick="this.querySelector('input').click()">
           <input type="file" id="home-file-input" name="files" style="display:none;" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-home-required>
           <span id="home-file-upload-text">+ Add Files</span>
@@ -1490,10 +1565,10 @@ function buildContactForm(containerId, formId) {
       </div>
       <div class="form-group">
         <label>File Upload <span class="req">(required)</span></label>
-        <div class="form-hint" style="margin-bottom:8px;">Upload all documents to be served (PDF preferred). Multiple files accepted.</div>
+        <div class="form-hint" style="margin-bottom:8px;">Add all documents to be served. You can upload files one at a time or select several at once. PDF preferred.</div>
         <div class="file-upload-area" onclick="this.querySelector('input').click()">
           <input type="file" id="home-file-input" name="files" style="display:none;" multiple accept=".pdf,.doc,.docx" data-home-required>
-          <span id="home-file-upload-text">+ Add a File</span>
+          <span id="home-file-upload-text">+ Add Files</span>
         </div>
         <div id="home-file-list" style="margin-top:8px;font-size:13px;color:#333;"></div>
       </div>
@@ -1688,6 +1763,7 @@ function handleFormSubmit(event, id, formType) {
     if (el) el.classList.add('show');
     const serviceTypeValReset = form.querySelector('[name="serviceType"]')?.value || '';
     form.reset();
+    clearHomeUploadedFiles();
     if (isSkipTraceService(serviceTypeValReset)) {
       skipTraceFormData = null;
       skipTraceModalFilled = false;
@@ -1851,6 +1927,7 @@ function handleRequestSubmit(event) {
     if (homeDefendantsArray.length > 0) {
       formData.set('defendantsData', JSON.stringify(homeDefendantsArray));
     }
+    appendHomeFilesToFormData(formData);
   }
 
   var submitBtn = form.querySelector('button[type="submit"]');
@@ -1913,6 +1990,8 @@ function handleRequestSubmit(event) {
       if (fileListEl) fileListEl.innerHTML = '';
       var uploadText = document.getElementById('file-upload-text');
       if (uploadText) uploadText.textContent = '+ Add a File';
+      clearHomeUploadedFiles();
+      legacyUploadedFiles = [];
       // Also hide #home-process-extra after reset
       var reqExtra = document.getElementById('home-process-extra');
       if (reqExtra) reqExtra.style.display = 'none';
@@ -2542,28 +2621,53 @@ function initFileUpload() {
   const fileInput = document.getElementById('file-input');
   const fileList = document.getElementById('file-list');
   const uploadText = document.getElementById('file-upload-text');
-  
+
   if (!fileInput || !fileList) return;
-  
-  fileInput.addEventListener('change', function() {
-    const files = Array.from(fileInput.files);
-    if (files.length === 0) {
+  if (fileInput.dataset.legacyUploadBound === '1') return;
+  fileInput.dataset.legacyUploadBound = '1';
+
+  function renderLegacyFileList() {
+    if (!legacyUploadedFiles.length) {
       fileList.innerHTML = '';
       if (uploadText) uploadText.textContent = '+ Add a File';
       return;
     }
-    
-    let html = '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
-    files.forEach((file, index) => {
-      html += `<span style="background:#e8f0fe;padding:6px 12px;border-radius:4px;font-size:12px;display:flex;align-items:center;gap:6px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
-        ${file.name}
-      </span>`;
+    let html = '<div style="display:flex;flex-direction:column;gap:6px;">';
+    legacyUploadedFiles.forEach(function (file, index) {
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;background:#e8f0fe;padding:6px 12px;border-radius:4px;font-size:12px;">' +
+        '<span>' + escapeFormHtml(file.name) + ' <span style="color:#999">(' + (file.size / 1024).toFixed(1) + ' KB)</span></span>' +
+        '<button type="button" onclick="removeLegacyFile(' + index + ')" style="background:none;border:none;color:#999;cursor:pointer;font-size:18px;line-height:1;padding:0 4px;">×</button>' +
+        '</div>';
     });
     html += '</div>';
     fileList.innerHTML = html;
-    
-    if (uploadText) uploadText.textContent = files.length === 1 ? '1 file selected' : files.length + ' files selected';
+    if (uploadText) {
+      uploadText.textContent = legacyUploadedFiles.length === 1
+        ? '1 file selected'
+        : legacyUploadedFiles.length + ' files selected';
+    }
+    try {
+      const dt = new DataTransfer();
+      legacyUploadedFiles.forEach(function (f) { dt.items.add(f); });
+      fileInput.files = dt.files;
+    } catch (e) { /* ignore */ }
+  }
+
+  window.removeLegacyFile = function (i) {
+    legacyUploadedFiles.splice(i, 1);
+    renderLegacyFileList();
+  };
+
+  fileInput.addEventListener('change', function () {
+    if (fileInput.files && fileInput.files.length) {
+      Array.from(fileInput.files).forEach(function (f) {
+        if (!legacyUploadedFiles.find(function (x) { return x.name === f.name && x.size === f.size; })) {
+          legacyUploadedFiles.push(f);
+        }
+      });
+    }
+    fileInput.value = '';
+    renderLegacyFileList();
   });
 }
 

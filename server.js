@@ -8,6 +8,7 @@ const { processContactFormToPST, processServiceRequestToPST } = require('./api/p
 const nodemailer = require('nodemailer');
 const { logger, perf, emailLogger, pstLogger, blobLogger, LOG_CATEGORIES } = require('./api/logger');
 const StripeLib = require('stripe');
+const invoiceUtils = require('./lib/invoice-utils');
 
 // Stripe client — only active when STRIPE_SECRET_KEY is set in .env.local
 const stripeClient = process.env.STRIPE_SECRET_KEY
@@ -577,7 +578,7 @@ const server = http.createServer(async (req, res) => {
   // API routes
   if (url.startsWith('/api/')) {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (method === 'OPTIONS') {
@@ -1245,9 +1246,22 @@ const server = http.createServer(async (req, res) => {
 
         if (event.type === 'checkout.session.completed') {
           const session = event.data.object;
+          const sql = getSql();
+          const invoiceId = session.metadata && session.metadata.invoice_id;
+          if (invoiceId && !isNaN(Number(invoiceId))) {
+            await invoiceUtils.ensureInvoicesTable(sql);
+            await sql`
+              UPDATE invoices
+              SET status = 'paid',
+                  stripe_checkout_session_id = ${session.id},
+                  paid_at = CURRENT_TIMESTAMP,
+                  updated_at = CURRENT_TIMESTAMP
+              WHERE id = ${parseInt(invoiceId, 10)}
+            `;
+            logger.info(LOG_CATEGORIES.DB, 'Invoice marked paid via webhook', { invoiceId, sessionId: session.id });
+          }
           const subId = (session.metadata && session.metadata.request_submission_id) || session.client_reference_id;
-          if (subId && !isNaN(Number(subId))) {
-            const sql = getSql();
+          if (subId && !isNaN(Number(subId)) && !invoiceId) {
             await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS stripe_checkout_session_id TEXT`;
             await sql`ALTER TABLE service_requests ADD COLUMN IF NOT EXISTS payment_status TEXT DEFAULT 'pending'`;
             await sql`
@@ -1295,6 +1309,194 @@ const server = http.createServer(async (req, res) => {
         logger.error(LOG_CATEGORIES.API, 'Checkout session retrieve error', err);
         jsonResponse(res, 500, { success: false });
       }
+      return;
+    }
+
+    // GET /api/admin/invoices — list invoices
+    if (url === '/api/admin/invoices' && method === 'GET') {
+      try {
+        const sql = getSql();
+        await invoiceUtils.ensureInvoicesTable(sql);
+        const result = await sql`SELECT id, invoice_number, status, invoice_date, due_date, case_number, client_email, subtotal_cents, total_cents, stripe_fee_enabled, paid_at, created_at, access_token FROM invoices ORDER BY created_at DESC LIMIT 500`;
+        jsonResponse(res, 200, { success: true, data: result });
+      } catch (err) {
+        logger.error(LOG_CATEGORIES.API, 'Admin invoices list error', err);
+        jsonResponse(res, 500, { success: false, message: err.message });
+      }
+      return;
+    }
+
+    // POST /api/admin/invoices — create invoice
+    if (url === '/api/admin/invoices' && method === 'POST') {
+      try {
+        const body = await parseBody(req);
+        const sql = getSql();
+        await invoiceUtils.ensureInvoicesTable(sql);
+        const payload = invoiceUtils.sanitizeInvoicePayload(body);
+        const invoiceNumber = payload.invoice_number || await invoiceUtils.getNextInvoiceNumber(sql);
+        const accessToken = invoiceUtils.generateAccessToken();
+        const today = new Date().toISOString().split('T')[0];
+        const inserted = await sql`
+          INSERT INTO invoices (
+            invoice_number, status, invoice_date, due_date, case_number,
+            bill_to, service_details, line_items,
+            subtotal_cents, tax_pct, tax_cents, discount_cents,
+            stripe_fee_enabled, stripe_fee_cents, total_cents,
+            notes, client_email, access_token
+          ) VALUES (
+            ${invoiceNumber}, ${payload.status || 'unpaid'},
+            ${payload.invoice_date || today}, ${payload.due_date || today},
+            ${payload.case_number},
+            ${JSON.stringify(payload.bill_to)}, ${JSON.stringify(payload.service_details)},
+            ${JSON.stringify(payload.line_items)},
+            ${payload.subtotal_cents}, ${payload.tax_pct}, ${payload.tax_cents},
+            ${payload.discount_cents}, ${payload.stripe_fee_enabled},
+            ${payload.stripe_fee_cents}, ${payload.total_cents},
+            ${payload.notes}, ${payload.client_email}, ${accessToken}
+          ) RETURNING *
+        `;
+        const inv = inserted[0];
+        const payUrl = SITE_URL + '/invoice.html?number=' + encodeURIComponent(inv.invoice_number) + '&token=' + encodeURIComponent(inv.access_token);
+        jsonResponse(res, 201, { success: true, data: inv, payUrl });
+      } catch (err) {
+        logger.error(LOG_CATEGORIES.API, 'Create invoice error', err);
+        jsonResponse(res, 500, { success: false, message: err.message });
+      }
+      return;
+    }
+
+    // GET/PUT/DELETE /api/admin/invoices/:id
+    if (url.match(/^\/api\/admin\/invoices\/\d+$/) && ['GET', 'PUT', 'DELETE'].includes(method)) {
+      const invId = parseInt(url.split('/').pop(), 10);
+      try {
+        const sql = getSql();
+        await invoiceUtils.ensureInvoicesTable(sql);
+        if (method === 'GET') {
+          const rows = await sql`SELECT * FROM invoices WHERE id = ${invId}`;
+          if (!rows.length) { jsonResponse(res, 404, { success: false, message: 'Not found' }); return; }
+          jsonResponse(res, 200, { success: true, data: rows[0] });
+          return;
+        }
+        if (method === 'DELETE') {
+          await sql`DELETE FROM invoices WHERE id = ${invId}`;
+          jsonResponse(res, 200, { success: true, message: 'Deleted' });
+          return;
+        }
+        if (method === 'PUT') {
+          const body = await parseBody(req);
+          const payload = invoiceUtils.sanitizeInvoicePayload(body);
+          const updated = await sql`
+            UPDATE invoices SET
+              status = ${body.status || 'unpaid'},
+              invoice_date = ${payload.invoice_date},
+              due_date = ${payload.due_date},
+              case_number = ${payload.case_number},
+              bill_to = ${JSON.stringify(payload.bill_to)},
+              service_details = ${JSON.stringify(payload.service_details)},
+              line_items = ${JSON.stringify(payload.line_items)},
+              subtotal_cents = ${payload.subtotal_cents},
+              tax_pct = ${payload.tax_pct},
+              tax_cents = ${payload.tax_cents},
+              discount_cents = ${payload.discount_cents},
+              stripe_fee_enabled = ${payload.stripe_fee_enabled},
+              stripe_fee_cents = ${payload.stripe_fee_cents},
+              total_cents = ${payload.total_cents},
+              notes = ${payload.notes},
+              client_email = ${payload.client_email},
+              updated_at = CURRENT_TIMESTAMP
+            WHERE id = ${invId}
+            RETURNING *
+          `;
+          if (!updated.length) { jsonResponse(res, 404, { success: false, message: 'Not found' }); return; }
+          jsonResponse(res, 200, { success: true, data: updated[0] });
+          return;
+        }
+      } catch (err) {
+        logger.error(LOG_CATEGORIES.API, 'Admin invoice detail error', err);
+        jsonResponse(res, 500, { success: false, message: err.message });
+      }
+      return;
+    }
+
+    // GET /api/invoices/:number?token= — public invoice view
+    if (url.match(/^\/api\/invoices\/INV-[0-9]+$/) && method === 'GET') {
+      const invNumber = decodeURIComponent(url.split('/').pop());
+      const qs = req.url.includes('?') ? req.url.split('?')[1] : '';
+      const token = new URLSearchParams(qs).get('token');
+      if (!token) {
+        jsonResponse(res, 400, { success: false, message: 'Access code required.' });
+        return;
+      }
+      try {
+        const sql = getSql();
+        await invoiceUtils.ensureInvoicesTable(sql);
+        const rows = await sql`
+          SELECT * FROM invoices
+          WHERE invoice_number = ${invNumber} AND access_token = ${token}
+          LIMIT 1
+        `;
+        if (!rows.length) {
+          jsonResponse(res, 404, { success: false, message: 'Invoice not found.' });
+          return;
+        }
+        jsonResponse(res, 200, { success: true, data: invoiceUtils.publicInvoiceView(rows[0]) });
+      } catch (err) {
+        logger.error(LOG_CATEGORIES.API, 'Public invoice error', err);
+        jsonResponse(res, 500, { success: false, message: err.message });
+      }
+      return;
+    }
+
+    // POST /api/invoices/:number/checkout — Stripe checkout for invoice
+    if (url.match(/^\/api\/invoices\/INV-[0-9]+\/checkout$/) && method === 'POST') {
+      if (!stripeClient) {
+        jsonResponse(res, 503, { success: false, message: 'Payment processing not configured.' });
+        return;
+      }
+      const invNumber = decodeURIComponent(url.split('/')[3]);
+      try {
+        const body = await parseBody(req);
+        const token = body.token;
+        if (!token) {
+          jsonResponse(res, 400, { success: false, message: 'Access code required.' });
+          return;
+        }
+        const sql = getSql();
+        await invoiceUtils.ensureInvoicesTable(sql);
+        const rows = await sql`
+          SELECT * FROM invoices
+          WHERE invoice_number = ${invNumber} AND access_token = ${token}
+          LIMIT 1
+        `;
+        if (!rows.length) {
+          jsonResponse(res, 404, { success: false, message: 'Invoice not found.' });
+          return;
+        }
+        const invoice = rows[0];
+        if (invoice.status === 'paid') {
+          jsonResponse(res, 400, { success: false, message: 'Invoice already paid.' });
+          return;
+        }
+        const session = await invoiceUtils.createInvoiceCheckoutSession(stripeClient, invoice, SITE_URL);
+        await sql`
+          UPDATE invoices SET stripe_checkout_session_id = ${session.id}, status = 'sent', updated_at = CURRENT_TIMESTAMP
+          WHERE id = ${invoice.id}
+        `;
+        jsonResponse(res, 200, { success: true, url: session.url });
+      } catch (err) {
+        logger.error(LOG_CATEGORIES.API, 'Invoice checkout error', err);
+        jsonResponse(res, 500, { success: false, message: err.message });
+      }
+      return;
+    }
+
+    // GET /api/invoice-catalog — service types for quote builder
+    if (url === '/api/invoice-catalog' && method === 'GET') {
+      jsonResponse(res, 200, {
+        success: true,
+        types: invoiceUtils.INVOICE_SERVICE_TYPES,
+        prices: invoiceUtils.INVOICE_DEFAULT_PRICES,
+      });
       return;
     }
 

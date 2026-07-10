@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quote Builder — Prestige Serves Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/global.css">
+<link rel="stylesheet" href="css/pages/invoice.css">
+<link rel="stylesheet" href="css/pages/admin.css">
+<link rel="icon" type="image/png" href="assets/images/mail.png">
+</head>
+<body class="admin-dashboard-body">
+
+<div class="inv-builder-nav" style="padding:16px 16px 0;max-width:832px;">
+  <a href="dashboard.html">&larr; Back to Dashboard</a>
+  <span style="font-size:13px;color:#6b7280;">Admin · Quote Builder</span>
+</div>
+
+<div id="save-msg" class="inv-msg" style="display:none;max-width:800px;margin:16px auto 0;"></div>
+<div id="pay-link-box" class="inv-msg inv-msg-success" style="display:none;max-width:800px;margin:16px auto 0;"></div>
+
+<div class="inv-page-wrap">
+  <div class="inv-page" id="invoice-form">
+
+    <div class="inv-topbar">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <svg width="30" height="23" viewBox="0 0 44 34" fill="none" aria-hidden="true">
+          <rect x="1" y="1" width="42" height="32" rx="1" stroke="#2a3a6e" stroke-width="1.6" fill="none"/>
+          <polyline points="1,1 22,19 43,1" stroke="#2a3a6e" stroke-width="1.6" fill="none"/>
+        </svg>
+        <span class="inv-logo-text">Prestige Serves</span>
+      </div>
+      <span class="inv-label-top">Quote / Invoice</span>
+    </div>
+
+    <div class="inv-hero">
+      <div>
+        <div class="inv-eyebrow">Licensed &amp; Bonded Process Server · Los Angeles</div>
+        <div class="inv-title">Invoice.</div>
+        <div class="inv-subtitle">Reliable. Professional. Fast.</div>
+      </div>
+      <div class="inv-meta-right">
+        <div style="margin-bottom:6px;">
+          <span style="font-size:10px;color:#6b7280;">No.</span>
+          <input id="inv-num" placeholder="Auto on save" style="font-family:EB Garamond,serif;font-size:13px;border:none;border-bottom:1px solid #e2e0db;width:110px;text-align:right;background:transparent;">
+          <select id="inv-status" style="font-size:8px;padding:3px 8px;margin-left:6px;">
+            <option value="unpaid">Unpaid</option>
+            <option value="sent">Sent</option>
+            <option value="paid">Paid</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:18px;justify-content:flex-end;">
+          <div>
+            <div class="inv-sec-eye">Invoice Date</div>
+            <input type="date" id="inv-date">
+          </div>
+          <div>
+            <div class="inv-sec-eye">Due Date</div>
+            <input type="date" id="inv-due-date">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="inv-upfront">
+      <strong style="color:#2a3a6e;">Payment Required in Full Before Service Begins.</strong>
+      All services are prepaid in advance.
+    </div>
+
+    <div class="inv-case-row">
+      <span class="inv-sec-eye" style="display:inline;margin-right:10px;">Case / Matter #</span>
+      <input id="inv-case" placeholder="e.g. 2026-CV-00412" style="font-family:EB Garamond,serif;font-size:13px;border:none;border-bottom:1px solid #e2e0db;width:260px;background:transparent;">
+    </div>
+
+    <div class="inv-bill-grid">
+      <div class="inv-bill-col">
+        <div class="inv-sec-eye">Bill To</div>
+        <div class="inv-field"><input id="bill-firm" placeholder="Law Firm / Client Name"></div>
+        <div class="inv-field"><input id="bill-contact" placeholder="Attorney / Contact Name"></div>
+        <div class="inv-field"><input id="bill-street" placeholder="Street Address"></div>
+        <div class="inv-field"><input id="bill-city" placeholder="City, State, ZIP"></div>
+        <div class="inv-field"><input id="bill-phone" placeholder="Phone"></div>
+        <div class="inv-field"><input id="bill-email" placeholder="Email" type="email"></div>
+      </div>
+      <div class="inv-bill-col right">
+        <div class="inv-sec-eye">From</div>
+        <div class="inv-field"><span class="inv-static-val brand">Prestige Serves LLC</span></div>
+        <div class="inv-field">1240 S Corning St., Suite 105</div>
+        <div class="inv-field">Los Angeles, CA 90035</div>
+        <div class="inv-field">(424) 235-3089</div>
+        <div class="inv-field">info@prestigeserves.com</div>
+        <div style="margin:8px 0;border-top:1px dashed #e2e0db;"></div>
+        <div class="inv-sec-eye">Service Details</div>
+        <div class="inv-field"><input id="svc-subject" placeholder="Subject / Defendant Name"></div>
+        <div class="inv-field"><input id="svc-address" placeholder="Service Address"></div>
+        <div class="inv-field"><input id="svc-docs" placeholder="Documents to Serve"></div>
+        <div class="inv-field"><input id="svc-server" placeholder="Assigned Server"></div>
+      </div>
+    </div>
+
+    <div class="inv-items-section">
+      <div class="inv-sec-eye">Services &amp; Line Items</div>
+      <table class="inv-tbl">
+        <thead><tr>
+          <th style="width:34%">Description</th>
+          <th style="width:23%">Service Type</th>
+          <th class="r" style="width:8%">Qty</th>
+          <th class="r" style="width:16%">Unit Price</th>
+          <th class="r" style="width:14%">Amount</th>
+          <th style="width:5%"></th>
+        </tr></thead>
+        <tbody id="inv-tbl-body"></tbody>
+      </table>
+      <button type="button" class="inv-add-row" onclick="addInvoiceRow()">+ Add Line Item</button>
+    </div>
+
+    <div class="inv-bottom-grid">
+      <div class="inv-stripe-col">
+        <div class="inv-sec-eye">Payment via Stripe</div>
+        <div class="inv-stripe-block">
+          <div class="inv-stripe-wordmark">str<b>i</b>pe <span style="font-size:7px;letter-spacing:2px;background:rgba(255,255,255,0.12);padding:2px 6px;">Secure</span></div>
+          <p style="font-size:9px;color:rgba(255,255,255,0.7);margin-top:8px;line-height:1.4;">After saving, copy the client pay link and send it by email. Client clicks Pay Now on their invoice page.</p>
+        </div>
+        <p style="font-size:9px;color:#6b7280;font-style:italic;">A 3% Stripe processing fee may apply if passed to client.</p>
+      </div>
+      <div class="inv-totals-col">
+        <div class="inv-t-row"><span>Subtotal</span><span class="val" id="inv-subtotal">$0.00</span></div>
+        <div class="inv-t-row">
+          <span>Tax / Fees (<input id="inv-tax-pct" type="number" value="0" min="0" max="100" step="0.5" style="width:36px;border:none;background:transparent;border-bottom:1px dashed #ccc;" oninput="recalcInvoiceTable()">%)</span>
+          <span class="val" id="inv-tax-amt">$0.00</span>
+        </div>
+        <div class="inv-t-row">
+          <span>Stripe Fee<br><label style="font-size:9px;cursor:pointer;"><input type="checkbox" id="inv-stripe-on" onchange="recalcInvoiceTable()"> Add 3% to client</label></span>
+          <span class="val" id="inv-stripe-fee-amt">$0.00</span>
+        </div>
+        <div class="inv-t-row">
+          <span>Discount (−$)</span>
+          <span class="val"><input id="inv-disc" type="number" value="0" min="0" step="1" style="width:60px;text-align:right;border:none;background:transparent;" oninput="recalcInvoiceTable()"></span>
+        </div>
+        <div style="margin-top:10px;padding-top:9px;border-top:2px solid #2a3a6e;">
+          <div class="inv-sec-eye">Total Due</div>
+          <div class="inv-grand-val" id="inv-grand">$0.00</div>
+          <div id="inv-stripe-fee-line" style="font-size:8px;color:#5a6a9e;font-style:italic;display:none;">Includes 3% Stripe processing fee.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:10px 32px 12px;border-top:1px solid #e2e0db;">
+      <div class="inv-sec-eye">Notes</div>
+      <textarea id="inv-notes" rows="2" style="width:100%;border:none;border-bottom:1px solid #e2e0db;font-family:EB Garamond,serif;font-size:12px;resize:vertical;min-height:44px;">Payment is required in full before any job is scheduled or assigned. All service attempts are documented and court-ready. Questions? Call (424) 235-3089 or email info@prestigeserves.com.</textarea>
+    </div>
+
+    <div class="inv-footer-bar">
+      <div>
+        <div style="font-family:EB Garamond,serif;font-size:15px;color:#fff;">Prestige Serves LLC</div>
+        <div style="font-style:italic;font-size:9px;">Reliable. Professional. Fast.</div>
+      </div>
+      <div style="text-align:right;line-height:1.85;">1240 S Corning St., Suite 105 · Los Angeles, CA 90035<br>info@prestigeserves.com · (424) 235-3089</div>
+    </div>
+
+    <div class="inv-action-bar">
+      <button type="button" class="inv-btn-save" onclick="saveInvoice()">Save Quote &amp; Get Pay Link</button>
+      <button type="button" style="background:#f0ede7;color:#999;" onclick="newInvoice()">New Invoice</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/invoice-shared.js"></script>
+<script src="js/quote-builder.js"></script>
+</body>
+</html>

@@ -185,6 +185,7 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-content').forEach(function(content) {
     content.classList.toggle('active', content.id === 'tab-' + tab);
   });
+  if (tab === 'invoices') loadInvoices();
 }
 
 function getPresetTimeRange(preset, dateFrom, dateTo) {
@@ -1944,4 +1945,61 @@ function saveOwnerEmail() {
     statusEl.textContent = 'Error saving';
     statusEl.style.color = 'red';
   });
+}
+
+function formatInvoiceMoney(cents) {
+  return '$' + ((parseInt(cents, 10) || 0) / 100).toFixed(2);
+}
+
+function invoiceStatusBadge(status) {
+  var colors = { paid: '#16a34a', sent: '#2563eb', unpaid: '#c0392b' };
+  var c = colors[status] || colors.unpaid;
+  return '<span style="color:' + c + ';font-weight:600;font-size:11px;text-transform:uppercase;">' + escapeHtml(status || 'unpaid') + '</span>';
+}
+
+async function loadInvoices() {
+  var tbody = document.getElementById('invoices-body');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px;">Loading…</td></tr>';
+
+  try {
+    var resp = await fetch('/api/admin/invoices');
+    var data = await resp.json();
+    if (!data.success || !data.data || !data.data.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px;">No invoices yet. <a href="quote-builder.html">Create one</a>.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.data.map(function (inv) {
+      var payUrl = window.location.origin + '/invoice.html?number=' +
+        encodeURIComponent(inv.invoice_number) + '&token=' + encodeURIComponent(inv.access_token || '');
+      return '<tr>' +
+        '<td><strong>' + escapeHtml(inv.invoice_number) + '</strong></td>' +
+        '<td>' + escapeHtml(formatCalendarDate(inv.invoice_date || inv.created_at)) + '</td>' +
+        '<td>' + escapeHtml(inv.client_email || '—') + '</td>' +
+        '<td>' + escapeHtml(inv.case_number || '—') + '</td>' +
+        '<td>' + formatInvoiceMoney(inv.total_cents) + '</td>' +
+        '<td>' + invoiceStatusBadge(inv.status) + '</td>' +
+        '<td class="td-actions">' +
+          '<a href="quote-builder.html?id=' + inv.id + '" class="btn-table">Edit</a> ' +
+          '<button type="button" class="btn-table" data-num="' + escapeHtml(inv.invoice_number) + '" data-tok="' + escapeHtml(inv.access_token || '') + '" onclick="copyInvoiceLinkBtn(this)">Copy Link</button>' +
+        '</td></tr>';
+    }).join('');
+  } catch (err) {
+    tbody.innerHTML = '<tr><td colspan="7" style="color:#c0392b;padding:24px;">Could not load invoices.</td></tr>';
+  }
+}
+
+function copyInvoiceLinkBtn(btn) {
+  var number = btn.getAttribute('data-num');
+  var token = btn.getAttribute('data-tok');
+  var url = window.location.origin + '/invoice.html?number=' + encodeURIComponent(number) + '&token=' + encodeURIComponent(token);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(function () { alert('Pay link copied.'); });
+  } else {
+    prompt('Copy this pay link:', url);
+  }
+}
+
+function copyInvoiceLink(number, token) {
+  copyInvoiceLinkBtn({ getAttribute: function (k) { return k === 'data-num' ? number : token; } });
 }
