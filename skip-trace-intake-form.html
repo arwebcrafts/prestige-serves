@@ -586,7 +586,7 @@ input, textarea, select, button { font-family: var(--serif); }
             <path d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12V4M8 8l4-4 4 4" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <div class="upload-label">Click to upload or drag files here</div>
-          <div class="upload-hint">PDF, DOC, JPG, PNG — prior reports, court orders, subpoenas, ID verification</div>
+          <div class="upload-hint">PDF, DOC, JPG, PNG — up to 25 MB per file. Prior reports, court orders, subpoenas, ID verification.</div>
         </div>
         <div class="file-list" id="fileList"></div>
       </div>
@@ -725,8 +725,11 @@ function selectService(el, type) {
 
 let uploadedFiles = [];
 function handleFiles(files) {
-  Array.from(files).forEach(f => {
-    if (!uploadedFiles.find(x => x.name === f.name)) uploadedFiles.push(f);
+  var toAdd = (typeof filterUploadFilesBySize === 'function')
+    ? filterUploadFilesBySize(files)
+    : Array.from(files || []);
+  toAdd.forEach(function (f) {
+    if (!uploadedFiles.find(function (x) { return x.name === f.name; })) uploadedFiles.push(f);
   });
   renderFiles();
 }

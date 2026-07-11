@@ -6,6 +6,10 @@ import { sendSMTPEmail } from './smtp-email.js';
 import { buildServiceRequestEmailHtml } from './email-templates.js';
 import { logger, perf, blobLogger, LOG_CATEGORIES } from './logger.js';
 import { processServiceRequestToPST } from './pst-integration.js';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const { MAX_UPLOAD_FILE_BYTES, MAX_UPLOAD_FILE_MB, MAX_UPLOAD_TOTAL_BYTES } = require('../lib/upload-limits.js');
 
 const DATABASE_URL = process.env.DATABASE_URL;
 const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
@@ -65,7 +69,11 @@ export default async function handler(req, res) {
     let uploadedFiles = [];
 
     const data = await new Promise((resolve, reject) => {
-      const form = formidable({ multiples: true, maxFileSize: 10 * 1024 * 1024 });
+      const form = formidable({
+        multiples: true,
+        maxFileSize: MAX_UPLOAD_FILE_BYTES,
+        maxTotalFileSize: MAX_UPLOAD_TOTAL_BYTES,
+      });
       form.parse(req, (err, fields, files) => {
         if (err) reject(err);
         else resolve({ fields, files });
@@ -227,6 +235,12 @@ export default async function handler(req, res) {
     });
   } catch (err) {
     logger.error(LOG_CATEGORIES.FORM, 'Request submission error', err);
+    if (err.code === 'LIMIT_FILE_SIZE' || (err.message && err.message.includes('maxFileSize'))) {
+      return res.status(413).json({
+        success: false,
+        message: 'One or more files exceed the ' + MAX_UPLOAD_FILE_MB + ' MB per-file upload limit.',
+      });
+    }
     return res.status(500).json({ success: false, message: 'Server error: ' + err.message });
   }
 }

@@ -9,6 +9,7 @@ const nodemailer = require('nodemailer');
 const { logger, perf, emailLogger, pstLogger, blobLogger, LOG_CATEGORIES } = require('./api/logger');
 const StripeLib = require('stripe');
 const invoiceUtils = require('./lib/invoice-utils');
+const { MAX_UPLOAD_FILE_BYTES, MAX_UPLOAD_FILE_MB } = require('./lib/upload-limits');
 
 // Stripe client — only active when STRIPE_SECRET_KEY is set in .env.local
 const stripeClient = process.env.STRIPE_SECRET_KEY
@@ -28,7 +29,7 @@ const PRICE_CATALOG = {
   skip_trace_court_ready: { priceId: process.env.STRIPE_PRICE_SKIP_TRACE_COURT    || 'price_REPLACE_skip_trace_court',     label: 'Court Ready Skip Tracing Report',  amount: 25000 },
   skip_trace_enhanced:    { priceId: process.env.STRIPE_PRICE_SKIP_TRACE_ENHANCED || 'price_REPLACE_skip_trace_enhanced',  label: 'Enhanced Trace',                   amount: 15000 },
   skip_trace_business:    { priceId: process.env.STRIPE_PRICE_SKIP_TRACE_BUSINESS || 'price_REPLACE_skip_trace_business',  label: 'Business / Agent Verification',    amount: 22500 },
-  addon_defendant:        { priceId: process.env.STRIPE_PRICE_ADDON_DEFENDANT     || 'price_REPLACE_addon_defendant',      label: 'Additional Defendant – Same Case', amount: 2500  },
+  addon_defendant:        { priceId: process.env.STRIPE_PRICE_ADDON_DEFENDANT     || 'price_REPLACE_addon_defendant',      label: 'Additional Defendant – Same Case', amount: 4500  },
 };
 
 const SITE_URL = (process.env.SITE_URL || 'http://localhost:3002').replace(/\/$/, '');
@@ -747,6 +748,17 @@ const server = http.createServer(async (req, res) => {
           // Upload files to Vercel Blob
           let fileData = null;
           if (parsed.files.length > 0) {
+            const oversized = parsed.files.filter(function (file) {
+              return file.buffer && file.buffer.length > MAX_UPLOAD_FILE_BYTES;
+            });
+            if (oversized.length) {
+              jsonResponse(res, 413, {
+                success: false,
+                message: 'One or more files exceed the ' + MAX_UPLOAD_FILE_MB + ' MB per-file upload limit.',
+              });
+              return;
+            }
+
             const uploadedFiles = [];
             for (const file of parsed.files) {
               try {

@@ -85,8 +85,8 @@ const CART_CATALOG = [
   {
     key: 'addon_defendant',
     label: 'Additional Defendant – Same Case',
-    displayPrice: '$25.00',
-    cents: 2500,
+    displayPrice: '$45.00',
+    cents: 4500,
     description: 'For cases with multiple defendants. Add one per additional individual.',
     image: null,
     maxQty: 10,

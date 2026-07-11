@@ -24,6 +24,29 @@ var skipTraceFormData = null;
 var skipTraceModalFilled = false;
 var activeServiceTypeSelection = '';
 
+/** Keep in sync with lib/upload-limits.js (default 25 MB per file) */
+var MAX_UPLOAD_FILE_MB = 25;
+var MAX_UPLOAD_FILE_BYTES = MAX_UPLOAD_FILE_MB * 1024 * 1024;
+
+function filterUploadFilesBySize(fileList) {
+  var accepted = [];
+  var rejected = [];
+  Array.from(fileList || []).forEach(function (f) {
+    if (f.size > MAX_UPLOAD_FILE_BYTES) {
+      rejected.push(f.name);
+    } else {
+      accepted.push(f);
+    }
+  });
+  if (rejected.length) {
+    alert('These files exceed the ' + MAX_UPLOAD_FILE_MB + ' MB limit and were not added:\n\n' + rejected.join('\n'));
+  }
+  return accepted;
+}
+
+window.filterUploadFilesBySize = filterUploadFilesBySize;
+window.MAX_UPLOAD_FILE_MB = MAX_UPLOAD_FILE_MB;
+
 /** Map dropdown skip-trace options to modal service cards */
 var DROPDOWN_TO_SKIP_MODAL = {
   'Standard Skip Trace — $75': 'standard',
@@ -656,7 +679,7 @@ function closeSkipTraceModal() {
 
 var modalUploadedFiles = [];
 function handleModalFiles(files) {
-  Array.from(files).forEach(function(f) {
+  filterUploadFilesBySize(files).forEach(function(f) {
     if (!modalUploadedFiles.find(function(x) { return x.name === f.name; })) {
       modalUploadedFiles.push(f);
     }
@@ -679,7 +702,7 @@ var homeUploadedFiles = [];
 var legacyUploadedFiles = [];
 
 function addHomeUploadedFiles(fileList) {
-  Array.from(fileList || []).forEach(function (f) {
+  filterUploadFilesBySize(fileList).forEach(function (f) {
     if (!homeUploadedFiles.find(function (x) { return x.name === f.name && x.size === f.size; })) {
       homeUploadedFiles.push(f);
     }
@@ -1461,7 +1484,7 @@ function getRequestFormFieldsHtml() {
       <div class="form-group"><label>Deadline Date</label><input type="date" name="home_deadlineDate" id="home-deadlineDate" data-min-tomorrow></div>
       <div class="form-group">
         <label>Upload Documents <span class="req">(required)</span></label>
-        <div class="form-hint" style="margin-bottom:8px;">Add all documents to be served. You can upload files one at a time or select several at once. PDF, Word, and image files are accepted.</div>
+        <div class="form-hint" style="margin-bottom:8px;">Add all documents to be served. You can upload files one at a time or select several at once. PDF, Word, and image files accepted (up to 25 MB each).</div>
         <div class="file-upload-area" onclick="this.querySelector('input').click()">
           <input type="file" id="home-file-input" name="files" style="display:none;" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-home-required>
           <span id="home-file-upload-text">+ Add Files</span>
@@ -1565,7 +1588,7 @@ function buildContactForm(containerId, formId) {
       </div>
       <div class="form-group">
         <label>File Upload <span class="req">(required)</span></label>
-        <div class="form-hint" style="margin-bottom:8px;">Add all documents to be served. You can upload files one at a time or select several at once. PDF preferred.</div>
+        <div class="form-hint" style="margin-bottom:8px;">Add all documents to be served. You can upload files one at a time or select several at once. PDF preferred (up to 25 MB each).</div>
         <div class="file-upload-area" onclick="this.querySelector('input').click()">
           <input type="file" id="home-file-input" name="files" style="display:none;" multiple accept=".pdf,.doc,.docx" data-home-required>
           <span id="home-file-upload-text">+ Add Files</span>
@@ -2660,7 +2683,7 @@ function initFileUpload() {
 
   fileInput.addEventListener('change', function () {
     if (fileInput.files && fileInput.files.length) {
-      Array.from(fileInput.files).forEach(function (f) {
+      filterUploadFilesBySize(fileInput.files).forEach(function (f) {
         if (!legacyUploadedFiles.find(function (x) { return x.name === f.name && x.size === f.size; })) {
           legacyUploadedFiles.push(f);
         }
