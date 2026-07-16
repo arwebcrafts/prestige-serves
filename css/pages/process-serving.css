@@ -108,13 +108,13 @@
   margin-bottom:0;
 }
 .ps-ondemand-grid .pricing-item{
-  grid-template-columns:132px minmax(0, 1fr);
+  grid-template-columns:168px minmax(0, 1fr);
 }
 .ps-ondemand-grid .pricing-real-icon{
-  width:108px !important;
-  height:108px !important;
-  max-width:108px !important;
-  max-height:108px !important;
+  width:140px !important;
+  height:140px !important;
+  max-width:140px !important;
+  max-height:140px !important;
 }
 .ps-pricing-section .pricing-item{
   margin:0;
@@ -314,13 +314,13 @@
   .ps-ondemand-title{font-size:24px;}
   .ps-ondemand-lede{font-size:14px;max-width:100%;}
   .ps-ondemand-grid .pricing-item{
-    grid-template-columns:96px minmax(0, 1fr);
+    grid-template-columns:120px minmax(0, 1fr);
   }
   .ps-ondemand-grid .pricing-real-icon{
-    width:80px !important;
-    height:80px !important;
-    max-width:80px !important;
-    max-height:80px !important;
+    width:104px !important;
+    height:104px !important;
+    max-width:104px !important;
+    max-height:104px !important;
   }
 
   /* Addon rate tables */
