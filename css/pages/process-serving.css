@@ -75,47 +75,6 @@
   max-width:920px;
   margin:0 auto;
 }
-.ps-ondemand{
-  max-width:920px;
-  margin:48px auto 0;
-  padding-top:40px;
-  border-top:1px solid var(--border);
-}
-.ps-ondemand-intro{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:baseline;
-  justify-content:center;
-  gap:6px 18px;
-  margin-bottom:28px;
-  text-align:center;
-}
-.ps-ondemand-title{
-  margin:0;
-  font-size:28px;
-  font-weight:400;
-  color:var(--accent-blue);
-  line-height:1.2;
-}
-.ps-ondemand-lede{
-  margin:0;
-  font-size:14.5px;
-  color:var(--text-muted);
-  line-height:1.5;
-  max-width:40em;
-}
-.ps-ondemand-grid.pricing-grid{
-  margin-bottom:0;
-}
-.ps-ondemand-grid .pricing-item{
-  grid-template-columns:168px minmax(0, 1fr);
-}
-.ps-ondemand-grid .pricing-real-icon{
-  width:140px !important;
-  height:140px !important;
-  max-width:140px !important;
-  max-height:140px !important;
-}
 .ps-pricing-section .pricing-item{
   margin:0;
   display:grid;
@@ -310,18 +269,6 @@
     max-height:56px !important;
   }
   .ps-pricing-section .pricing-item-price{font-size:20px;font-weight:600;}
-  .ps-ondemand{margin-top:36px;padding-top:32px;}
-  .ps-ondemand-title{font-size:24px;}
-  .ps-ondemand-lede{font-size:14px;max-width:100%;}
-  .ps-ondemand-grid .pricing-item{
-    grid-template-columns:120px minmax(0, 1fr);
-  }
-  .ps-ondemand-grid .pricing-real-icon{
-    width:104px !important;
-    height:104px !important;
-    max-width:104px !important;
-    max-height:104px !important;
-  }
 
   /* Addon rate tables */
   .ps-addon-rates{padding:40px 20px !important;}
