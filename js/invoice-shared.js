@@ -220,3 +220,23 @@ function collectInvoicePayload() {
     client_email: val('bill-email'),
   };
 }
+
+function printInvoice() {
+  window.print();
+}
+
+function savePDF() {
+  window.print();
+}
+
+function downloadPDF() {
+  window.print();
+}
+
+function saveInvoicePDF() {
+  window.print();
+}
+
+function exportPDF() {
+  window.print();
+}

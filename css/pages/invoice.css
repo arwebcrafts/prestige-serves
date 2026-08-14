@@ -402,7 +402,39 @@
 }
 
 @media print {
-  .inv-action-bar, .inv-builder-nav, .inv-pay-btn, .inv-add-row, .del-btn, header, footer, .inv-lookup-card { display: none !important; }
-  .inv-page-wrap { background: #fff; padding: 0; }
-  .inv-page { box-shadow: none; }
+  nav, header, footer, .page-legal-links, .footer-cols,
+  .inv-action-bar, .inv-builder-nav, .inv-btn-print, .inv-pay-btn,
+  .inv-add-row, .del-btn, .inv-lookup-card, #save-msg, #pay-link-box, #inv-paid-banner {
+    display: none !important;
+  }
+  body, html {
+    background: #fff !important;
+    color: #000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .inv-page-wrap {
+    background: #fff !important;
+    padding: 0 !important;
+    min-height: auto !important;
+  }
+  .inv-page {
+    box-shadow: none !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border: none !important;
+  }
+  input, select, textarea {
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  input::placeholder, textarea::placeholder {
+    color: transparent !important;
+  }
+  select {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+  }
 }

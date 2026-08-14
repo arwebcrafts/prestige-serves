@@ -1981,6 +1981,7 @@ async function loadInvoices() {
         '<td>' + invoiceStatusBadge(inv.status) + '</td>' +
         '<td class="td-actions">' +
           '<a href="quote-builder.html?id=' + inv.id + '" class="btn-table">Edit</a> ' +
+          '<a href="' + escapeHtml(payUrl) + '" target="_blank" rel="noopener" class="btn-table" style="background:#2a3a6e;color:#fff;text-decoration:none;">View / Pay</a> ' +
           '<button type="button" class="btn-table" data-num="' + escapeHtml(inv.invoice_number) + '" data-tok="' + escapeHtml(inv.access_token || '') + '" onclick="copyInvoiceLinkBtn(this)">Copy Link</button>' +
         '</td></tr>';
     }).join('');

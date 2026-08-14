@@ -45,7 +45,10 @@ function renderInvoice(inv) {
   document.getElementById('inv-display').innerHTML =
     '<div class="inv-topbar">' +
       '<div style="display:flex;align-items:center;gap:8px;"><span class="inv-logo-text">Prestige Serves</span></div>' +
-      '<span class="inv-label-top">Invoice</span>' +
+      '<div style="display:flex;align-items:center;gap:12px;">' +
+        '<button type="button" onclick="printInvoice()" style="background:#2a3a6e;color:#fff;border:none;padding:5px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:2px;" class="inv-btn-print">Print / Save PDF</button>' +
+        '<span class="inv-label-top">Invoice</span>' +
+      '</div>' +
     '</div>' +
     '<div class="inv-hero">' +
       '<div><div class="inv-eyebrow">Licensed &amp; Bonded Process Server · Los Angeles</div>' +
@@ -178,3 +181,23 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 });
+
+function printInvoice() {
+  window.print();
+}
+
+function savePDF() {
+  window.print();
+}
+
+function downloadPDF() {
+  window.print();
+}
+
+function saveInvoicePDF() {
+  window.print();
+}
+
+function exportPDF() {
+  window.print();
+}
