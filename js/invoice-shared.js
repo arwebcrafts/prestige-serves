@@ -218,6 +218,7 @@ function collectInvoicePayload() {
     stripe_fee_enabled: totals.stripe_fee_enabled,
     notes: val('inv-notes'),
     client_email: val('bill-email'),
+    stripe_pay_url: val('inv-stripe-url') || 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n',
   };
 }
 

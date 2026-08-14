@@ -134,6 +134,11 @@ function loadInvoiceFromQuery() {
       document.getElementById('inv-disc').value = (inv.discount_cents || 0) / 100;
       document.getElementById('inv-stripe-on').checked = !!inv.stripe_fee_enabled;
       document.getElementById('inv-notes').value = inv.notes || '';
+      var stripeUrl = inv.stripe_pay_url || 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n';
+      if (document.getElementById('inv-stripe-url')) {
+        document.getElementById('inv-stripe-url').value = stripeUrl;
+      }
+      updateStripeUrlPreview(stripeUrl);
 
       var items = typeof inv.line_items === 'string' ? JSON.parse(inv.line_items) : inv.line_items;
       document.getElementById('inv-tbl-body').innerHTML = '';
@@ -147,6 +152,17 @@ function loadInvoiceFromQuery() {
         encodeURIComponent(inv.invoice_number) + '&token=' + encodeURIComponent(inv.access_token);
       showPayLink(payUrl, inv.invoice_number, inv.access_token);
     });
+}
+
+function updateStripeUrlPreview(url) {
+  var target = (url || 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n').trim();
+  var btn = document.getElementById('inv-stripe-btn-link');
+  var txt = document.getElementById('inv-stripe-text-link');
+  if (btn) btn.href = target;
+  if (txt) {
+    txt.href = target;
+    txt.textContent = target;
+  }
 }
 
 document.addEventListener('DOMContentLoaded', function () {

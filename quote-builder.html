@@ -121,7 +121,18 @@
         <div class="inv-sec-eye">Payment via Stripe</div>
         <div class="inv-stripe-block">
           <div class="inv-stripe-wordmark">str<b>i</b>pe <span style="font-size:7px;letter-spacing:2px;background:rgba(255,255,255,0.12);padding:2px 6px;">Secure</span></div>
-          <p style="font-size:9px;color:rgba(255,255,255,0.7);margin-top:8px;line-height:1.4;">After saving, copy the client pay link and send it by email. Client clicks Pay Now on their invoice page.</p>
+          <div style="margin-top:10px;">
+            <label style="font-size:9px;color:rgba(255,255,255,0.85);display:block;margin-bottom:3px;">Stripe Payment Link URL:</label>
+            <input id="inv-stripe-url" value="https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n" placeholder="https://buy.stripe.com/..." style="width:100%;font-size:11px;padding:6px 8px;background:#fff;border:1px solid #ccc;color:#111;border-radius:3px;box-sizing:border-box;" oninput="updateStripeUrlPreview(this.value)">
+          </div>
+          <div style="margin-top:12px;" class="inv-pdf-pay-block">
+            <a id="inv-stripe-btn-link" href="https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n" target="_blank" rel="noopener" class="inv-pay-btn-anchor">
+              <span>PAY NOW VIA STRIPE</span>
+            </a>
+            <div style="margin-top:8px;font-size:9.5px;color:rgba(255,255,255,0.9);word-break:break-all;" class="inv-pdf-pay-url-box">
+              Clickable Link: <a id="inv-stripe-text-link" href="https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:underline;">https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n</a>
+            </div>
+          </div>
         </div>
         <p style="font-size:9px;color:#6b7280;font-style:italic;">A 3% Stripe processing fee may apply if passed to client.</p>
       </div>

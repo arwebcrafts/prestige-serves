@@ -38,9 +38,14 @@ function renderInvoice(inv) {
       '</tr>';
   }).join('');
 
+  var stripeTargetUrl = (inv.stripe_pay_url || 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n').trim();
+
   var payBlock = isPaid
-    ? '<button type="button" class="inv-pay-btn inv-pay-btn-paid" disabled>Paid in Full</button>'
-    : '<button type="button" class="inv-pay-btn" id="inv-pay-btn" onclick="payInvoice()">Pay Now · ' + formatUsd(inv.total_cents) + '</button>';
+    ? '<div class="inv-paid-badge-pdf" style="padding:10px 14px;background:#27ae60;color:#fff;font-size:12px;font-weight:600;text-align:center;border-radius:4px;margin-top:10px;">PAID IN FULL</div>'
+    : '<a href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener" class="inv-pay-btn-anchor" style="display:block;width:100%;padding:12px 16px;background:#fff;color:#1e2d5a;text-align:center;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;margin-top:10px;border-radius:3px;">PAY NOW VIA STRIPE · ' + formatUsd(inv.total_cents) + '</a>' +
+      '<div class="inv-pdf-pay-url-box" style="margin-top:8px;font-size:9.5px;color:rgba(255,255,255,0.9);word-break:break-all;">' +
+        'Stripe Link: <a href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:underline;">' + escapeHtml(stripeTargetUrl) + '</a>' +
+      '</div>';
 
   document.getElementById('inv-display').innerHTML =
     '<div class="inv-topbar">' +

@@ -1354,7 +1354,7 @@ const server = http.createServer(async (req, res) => {
             bill_to, service_details, line_items,
             subtotal_cents, tax_pct, tax_cents, discount_cents,
             stripe_fee_enabled, stripe_fee_cents, total_cents,
-            notes, client_email, access_token
+            notes, client_email, access_token, stripe_pay_url
           ) VALUES (
             ${invoiceNumber}, ${payload.status || 'unpaid'},
             ${payload.invoice_date || today}, ${payload.due_date || today},
@@ -1364,7 +1364,7 @@ const server = http.createServer(async (req, res) => {
             ${payload.subtotal_cents}, ${payload.tax_pct}, ${payload.tax_cents},
             ${payload.discount_cents}, ${payload.stripe_fee_enabled},
             ${payload.stripe_fee_cents}, ${payload.total_cents},
-            ${payload.notes}, ${payload.client_email}, ${accessToken}
+            ${payload.notes}, ${payload.client_email}, ${accessToken}, ${payload.stripe_pay_url}
           ) RETURNING *
         `;
         const inv = inserted[0];
@@ -1415,6 +1415,7 @@ const server = http.createServer(async (req, res) => {
               total_cents = ${payload.total_cents},
               notes = ${payload.notes},
               client_email = ${payload.client_email},
+              stripe_pay_url = ${payload.stripe_pay_url},
               updated_at = CURRENT_TIMESTAMP
             WHERE id = ${invId}
             RETURNING *

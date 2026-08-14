@@ -46,7 +46,7 @@ export default async function handler(req, res) {
           bill_to, service_details, line_items,
           subtotal_cents, tax_pct, tax_cents, discount_cents,
           stripe_fee_enabled, stripe_fee_cents, total_cents,
-          notes, client_email, access_token
+          notes, client_email, access_token, stripe_pay_url
         ) VALUES (
           ${invoiceNumber},
           ${payload.status || 'unpaid'},
@@ -65,7 +65,8 @@ export default async function handler(req, res) {
           ${payload.total_cents},
           ${payload.notes},
           ${payload.client_email},
-          ${accessToken}
+          ${accessToken},
+          ${payload.stripe_pay_url}
         )
         RETURNING *
       `;
