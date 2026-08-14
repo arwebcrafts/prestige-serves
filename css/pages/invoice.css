@@ -426,59 +426,119 @@
   text-decoration: none;
 }
 
+@page {
+  size: letter portrait;
+  margin: 4mm 6mm;
+}
+
 @media print {
   nav, header, footer, .page-legal-links, .footer-cols,
   .inv-action-bar, .inv-builder-nav, .inv-btn-print,
   .inv-add-row, .del-btn, .inv-lookup-card, #save-msg, #pay-link-box, #inv-paid-banner, #inv-stripe-url {
     display: none !important;
   }
-  body, html {
+
+  html, body {
     background: #fff !important;
     color: #000 !important;
     margin: 0 !important;
     padding: 0 !important;
+    height: auto !important;
   }
+
   .inv-page-wrap {
     background: #fff !important;
     padding: 0 !important;
     min-height: auto !important;
   }
+
   .inv-page {
     box-shadow: none !important;
     max-width: 100% !important;
     margin: 0 !important;
-    border: none !important;
+    border: 1px solid #d2cfc8 !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
-  .inv-stripe-col, .inv-stripe-block, .inv-pdf-pay-block, .inv-pay-btn-anchor, .inv-pdf-pay-url-box {
+
+  .inv-topbar { padding: 4px 18px !important; }
+  .inv-hero { padding: 6px 18px !important; }
+  .inv-title { font-size: 24px !important; margin-bottom: 2px !important; }
+  .inv-eyebrow { font-size: 7px !important; margin-bottom: 3px !important; }
+  .inv-subtitle { font-size: 11px !important; }
+  .inv-upfront { padding: 3px 18px !important; font-size: 8px !important; }
+  .inv-case-row { padding: 3px 18px !important; font-size: 11px !important; }
+  .inv-bill-col { padding: 5px 14px 5px 18px !important; }
+  .inv-bill-col.right { padding-left: 14px !important; padding-right: 18px !important; }
+  .inv-field { margin-bottom: 2px !important; font-size: 11px !important; }
+  .inv-items-section { padding: 2px 18px 6px !important; }
+  .inv-tbl th { font-size: 7px !important; padding: 0 4px 4px !important; }
+  .inv-tbl td { padding: 3px 4px !important; font-size: 11px !important; }
+  .inv-bottom-grid { border-top: 1px solid #e2e0db !important; }
+  .inv-stripe-col { padding: 6px 14px 6px 18px !important; }
+  .inv-totals-col { padding: 6px 18px 6px 14px !important; }
+  .inv-t-row { padding: 3px 0 !important; font-size: 9.5px !important; }
+  .inv-grand-val { font-size: 24px !important; }
+  .inv-pdf-link-banner { padding: 6px 18px !important; font-size: 10px !important; }
+  .inv-notes { padding: 3px 18px !important; font-size: 10px !important; }
+  .inv-footer-bar { padding: 5px 18px !important; font-size: 8px !important; }
+
+  tr, .inv-hero, .inv-bill-grid, .inv-items-section, .inv-bottom-grid, .inv-pdf-link-banner, .inv-footer-bar {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .inv-stripe-col, .inv-stripe-block, .inv-pdf-pay-block, .inv-pay-btn-anchor, .inv-pdf-pay-url-box, .inv-pdf-link-banner {
     display: block !important;
     visibility: visible !important;
   }
+
   .inv-stripe-block {
     background: #1e2d5a !important;
+    padding: 8px 12px !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+
   .inv-pay-btn-anchor {
     background: #ffffff !important;
     color: #1e2d5a !important;
-    border: 1px solid #1e2d5a !important;
+    border: 1.5px solid #1e2d5a !important;
+    padding: 8px 12px !important;
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
     text-decoration: underline !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  .inv-pdf-pay-url-box a {
-    color: #60a5fa !important;
+
+  .inv-pdf-link-banner {
+    background: #f4f6fa !important;
+    border-top: 1px solid #d2cfc8 !important;
+    border-bottom: 1px solid #d2cfc8 !important;
+    color: #1e2d5a !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .inv-pdf-link-banner a, .inv-pdf-pay-url-box a {
+    color: #1d4ed8 !important;
+    font-weight: bold !important;
     text-decoration: underline !important;
   }
+
   input, select, textarea {
     border: none !important;
     outline: none !important;
     background: transparent !important;
     box-shadow: none !important;
   }
+
   input::placeholder, textarea::placeholder {
     color: transparent !important;
   }
+
   select {
     appearance: none !important;
     -webkit-appearance: none !important;

@@ -96,7 +96,13 @@ function renderInvoice(inv) {
         '<div class="inv-grand-val">' + formatUsd(inv.total_cents) + '</div></div>' +
       '</div>' +
     '</div>' +
-    (inv.notes ? '<div style="padding:10px 32px;border-top:1px solid #e2e0db;font-size:12px;font-style:italic;color:#444;">' + escapeHtml(inv.notes) + '</div>' : '') +
+    (!isPaid
+      ? '<div class="inv-pdf-link-banner" style="padding:7px 20px;background:#f4f6fa;border-top:1px solid #e2e0db;border-bottom:1px solid #e2e0db;font-size:10.5px;color:#1e2d5a;text-align:center;">' +
+          '<strong>Click to Pay via Stripe Online:</strong> ' +
+          '<a href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener" style="color:#1d4ed8;font-weight:bold;text-decoration:underline;margin-left:4px;word-break:break-all;">' + escapeHtml(stripeTargetUrl) + '</a>' +
+        '</div>'
+      : '') +
+    (inv.notes ? '<div style="padding:8px 20px;border-bottom:1px solid #e2e0db;font-size:11px;font-style:italic;color:#444;" class="inv-notes">' + escapeHtml(inv.notes) + '</div>' : '') +
     '<div class="inv-footer-bar"><div style="color:#fff;font-family:EB Garamond,serif;">Prestige Serves LLC</div>' +
     '<div>info@prestigeserves.com · (424) 235-3089</div></div>';
 

@@ -158,10 +158,15 @@ function updateStripeUrlPreview(url) {
   var target = (url || 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n').trim();
   var btn = document.getElementById('inv-stripe-btn-link');
   var txt = document.getElementById('inv-stripe-text-link');
+  var bnr = document.getElementById('inv-pdf-banner-link');
   if (btn) btn.href = target;
   if (txt) {
     txt.href = target;
     txt.textContent = target;
+  }
+  if (bnr) {
+    bnr.href = target;
+    bnr.textContent = target;
   }
 }
 
