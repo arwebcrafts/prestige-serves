@@ -16,12 +16,23 @@ function loadInvoiceCatalog(cb) {
     .catch(function () {
       INVOICE_TYPES = [
         'Standard Serve', 'Rush Serve', 'Priority Serve', 'Emergency Serve',
+        'eFiling', 'eFiling - Standard', 'eFiling - Rush', 'eRecording',
+        'Skip Trace', 'Legal Courier', 'Nationwide Service', 'Concierge',
         'Stakeout 2 Hours', 'Extended Stakeout', 'Half Day Stakeout',
-        'Document Printing (per page)', 'Other'
+        'Stakeout Extra Hour', 'Second Location Surcharge',
+        'Document Printing (per page)', 'POS Preparation', 'First-Class Mailing',
+        'White-Glove POS', 'Certified Mail w/ Return Receipt', 'Additional Defendant',
+        'Custom / Write-in Item', 'Custom Service', 'Other'
       ];
       INVOICE_PRICES = {
         'Standard Serve': 97.99, 'Rush Serve': 119.99, 'Priority Serve': 149.99,
-        'Emergency Serve': 249.99, 'Stakeout 2 Hours': 250, 'Other': 0
+        'Emergency Serve': 249.99, 'eFiling': 75, 'eFiling - Standard': 75, 'eFiling - Rush': 125,
+        'eRecording': 75, 'Skip Trace': 125, 'Legal Courier': 85, 'Nationwide Service': 150,
+        'Concierge': 200, 'Stakeout 2 Hours': 250, 'Extended Stakeout': 450,
+        'Half Day Stakeout': 600, 'Stakeout Extra Hour': 115, 'Second Location Surcharge': 75,
+        'Document Printing (per page)': 0.35, 'POS Preparation': 35, 'First-Class Mailing': 20,
+        'White-Glove POS': 85, 'Certified Mail w/ Return Receipt': 39, 'Additional Defendant': 45,
+        'Custom / Write-in Item': 0, 'Custom Service': 0, 'Other': 0
       };
       if (cb) cb();
     });
@@ -31,7 +42,7 @@ function makeTypeSelectHtml(selected) {
   var opts = INVOICE_TYPES.map(function (t) {
     return '<option value="' + escapeInvHtml(t) + '"' + (t === selected ? ' selected' : '') + '>' + escapeInvHtml(t) + '</option>';
   }).join('');
-  return '<select class="type-sel" onchange="onInvTypeChange(this)"><option value="">Select…</option>' + opts + '</select>';
+  return '<select class="type-sel" onchange="onInvTypeChange(this)"><option value="">Select preset…</option>' + opts + '</select>';
 }
 
 function escapeInvHtml(s) {
@@ -89,10 +100,10 @@ function addInvoiceRow(desc, type, qty, price) {
   if (!tb) return;
   var tr = document.createElement('tr');
   tr.innerHTML =
-    '<td><input class="desc-in" placeholder="Describe service…" value="' + escapeInvHtml(desc || '') + '" oninput="recalcInvoiceTable()"></td>' +
+    '<td><input class="desc-in" placeholder="Type custom service / item name…" value="' + escapeInvHtml(desc || '') + '" oninput="recalcInvoiceTable()"></td>' +
     '<td>' + makeTypeSelectHtml(type || '') + '</td>' +
     '<td class="r"><input class="qty-in" type="number" min="0" step="1" value="' + (qty != null ? qty : 1) + '" oninput="recalcInvoiceTable()"></td>' +
-    '<td class="r"><input class="prc-in" type="number" min="0" step="0.01" value="' + (price > 0 ? price.toFixed(2) : '') + '" placeholder="0.00" oninput="recalcInvoiceTable()"></td>' +
+    '<td class="r"><input class="prc-in" type="number" min="0" step="0.01" value="' + (price > 0 ? price.toFixed(2) : (price === 0 ? '0.00' : '')) + '" placeholder="0.00" oninput="recalcInvoiceTable()"></td>' +
     '<td class="r row-amt">' + formatUsdFromDollars(0) + '</td>' +
     '<td style="text-align:center"><button type="button" class="del-btn" onclick="this.closest(\'tr\').remove();recalcInvoiceTable()" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:16px;">×</button></td>';
   tb.appendChild(tr);
@@ -103,10 +114,29 @@ function onInvTypeChange(sel) {
   var row = sel.closest('tr');
   var prc = row.querySelector('.prc-in');
   var desc = row.querySelector('.desc-in');
-  if (sel.value && INVOICE_PRICES[sel.value] !== undefined) {
-    prc.value = INVOICE_PRICES[sel.value].toFixed(2);
-    if (!desc.value) desc.value = sel.value;
+  var val = sel.value;
+
+  var isCustomType = (val === 'Custom / Write-in Item' || val === 'Custom Service' || val === 'Other');
+
+  if (val && INVOICE_PRICES[val] !== undefined) {
+    if (!isCustomType) {
+      prc.value = INVOICE_PRICES[val].toFixed(2);
+      if (!desc.value || INVOICE_TYPES.indexOf(desc.value) !== -1) {
+        desc.value = val;
+      }
+    }
   }
+
+  if (isCustomType) {
+    if (desc.value === 'Custom / Write-in Item' || desc.value === 'Custom Service' || desc.value === 'Other' || INVOICE_TYPES.indexOf(desc.value) !== -1) {
+      desc.value = '';
+    }
+    desc.placeholder = 'Type custom service or item name…';
+    desc.focus();
+  } else {
+    desc.placeholder = 'Describe service or custom item name…';
+  }
+
   recalcInvoiceTable();
 }
 

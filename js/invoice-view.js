@@ -27,9 +27,11 @@ function renderInvoice(inv) {
 
   var rows = items.map(function (li) {
     var amt = (li.amount_cents != null) ? li.amount_cents / 100 : (li.qty || 0) * (li.unit_price || 0);
+    var itemDesc = li.description || li.type || 'Service Item';
+    var itemType = (li.type && li.type !== 'Custom / Write-in Item' && li.type !== 'Custom Service' && li.type !== 'Other' && li.type !== itemDesc) ? li.type : '';
     return '<tr>' +
-      '<td>' + escapeHtml(li.description || li.type || '') + '</td>' +
-      '<td>' + escapeHtml(li.type || '') + '</td>' +
+      '<td>' + escapeHtml(itemDesc) + '</td>' +
+      '<td>' + escapeHtml(itemType) + '</td>' +
       '<td class="r">' + (li.qty || 0) + '</td>' +
       '<td class="r">' + formatUsd(Math.round((li.unit_price || 0) * 100)) + '</td>' +
       '<td class="r">' + formatUsd(Math.round(amt * 100)) + '</td>' +

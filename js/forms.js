@@ -1434,17 +1434,20 @@ function getRequestFormFieldsHtml() {
     <div class="form-group">
       <label>Service Type <span class="req">(required)</span></label>
       <div class="form-hint" style="margin-bottom:8px;">Emergency service requires internal approval. Additional fees apply.</div>
-      <select name="serviceType" required>
+      <select name="serviceType" required="">
         <option value="">Select an option</option>
         <option value="Standard Service — $97.99 (5–7 business days)">Standard Service — $97.99 (5–7 business days)</option>
         <option value="Rush Service — $119.99 (3 business days)">Rush Service — $119.99 (3 business days)</option>
         <option value="Priority Serve — $149.99 (2 business days)">Priority Serve — $149.99 (2 business days)</option>
         <option value="Emergency Serve — $249.99 (Same-day, approval required)">Emergency Serve — $249.99 (Same-day, approval required)</option>
+        <option value="eFiling Service — $75.00">eFiling Service — $75.00</option>
+        <option value="eRecording Service — $75.00">eRecording Service — $75.00</option>
         <option value="Standard Skip Trace — $75">Standard Skip Trace — $75</option>
         <option value="Enhanced Trace — $150">Enhanced Trace — $150</option>
         <option value="Rush Trace (same/next-day) — $225">Rush Trace (same/next-day) — $225</option>
         <option value="Business / Agent Verification — $225">Business / Agent Verification — $225</option>
         <option value="Court-Ready Skip Trace Report — $250">Court-Ready Skip Trace Report — $250</option>
+        <option value="Custom / Other Service">Custom / Other Service</option>
       </select>
       <div id="skip-trace-summary-container" style="display:none; flex-direction:column; gap:10px; margin-top:12px;"></div>
     </div>
@@ -1639,7 +1642,7 @@ function buildContactForm(containerId, formId) {
     </div>
     <div class="form-group">
       <label>Service Type <span class="req">(required)</span></label>
-      <select name="serviceType" required><option value="">Select an option</option><option>Standard Service — $97.99 (5–7 business days)</option><option>Rush Service — $119.99 (3 business days)</option><option>Priority Serve — $149.99 (2 business days)</option><option>Emergency Serve — $249.99 (Same-day, approval required)</option><option>Standard Skip Trace — $75</option><option>Enhanced Trace — $150</option><option>Rush Trace (same/next-day) — $225</option><option>Business / Agent Verification — $225</option><option>Court-Ready Skip Trace Report — $250</option></select>
+      <select name="serviceType" required><option value="">Select an option</option><option>Standard Service — $97.99 (5–7 business days)</option><option>Rush Service — $119.99 (3 business days)</option><option>Priority Serve — $149.99 (2 business days)</option><option>Emergency Serve — $249.99 (Same-day, approval required)</option><option>eFiling Service — $75.00</option><option>eRecording Service — $75.00</option><option>Standard Skip Trace — $75</option><option>Enhanced Trace — $150</option><option>Rush Trace (same/next-day) — $225</option><option>Business / Agent Verification — $225</option><option>Court-Ready Skip Trace Report — $250</option><option>Custom / Other Service</option></select>
       <div id="skip-trace-summary-container" style="display:none; flex-direction:column; gap:10px; margin-top:12px;"></div>
     </div>
     ${processExtra}
