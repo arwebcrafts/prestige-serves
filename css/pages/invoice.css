@@ -454,12 +454,11 @@
 /* ══════════════════════════════════════════════════════════════════
    PRINT / PDF STYLES
    ══════════════════════════════════════════════════════════════════
-   These rules ensure:
-   1. Payment links remain CLICKABLE in the PDF
-   2. Blue link colors are PRESERVED (forced via color, not just
-      background, so they survive even without "Background graphics")
-   3. No extra spacing / clean single-page layout
-   4. Dark Stripe block retains its navy background
+   CRITICAL: Chrome's Print-to-PDF only creates clickable link
+   annotations when <a> tags are SIMPLE INLINE elements.
+   display:block, background, border, padding on <a> tags BREAKS
+   the PDF link annotation → links appear blue/underlined but
+   are NOT clickable. Fix: strip all block styling from <a> in print.
    ══════════════════════════════════════════════════════════════════ */
 
 @page {
@@ -469,12 +468,18 @@
 
 @media print {
 
-  /* ── Hide non-print elements ── */
+  /* ── Hide non-print UI elements ── */
   nav, header, footer, .page-legal-links, .footer-cols,
   .inv-action-bar, .inv-builder-nav, .inv-btn-print,
   .inv-add-row, .del-btn, .inv-lookup-card,
   #save-msg, #pay-link-box, #inv-paid-banner,
-  #inv-stripe-url, .footer-brand, .footer-tagline {
+  .footer-brand, .footer-tagline {
+    display: none !important;
+  }
+
+  /* Hide admin-only Stripe URL input + its label container */
+  .inv-stripe-url-input,
+  #inv-stripe-url {
     display: none !important;
   }
 
@@ -510,7 +515,7 @@
     break-inside: avoid !important;
   }
 
-  /* ── Compact spacing (no extra gaps) ── */
+  /* ── Compact spacing ── */
   .inv-topbar     { padding: 4px 18px !important; }
   .inv-hero       { padding: 6px 18px !important; }
   .inv-title      { font-size: 24px !important; margin-bottom: 2px !important; }
@@ -544,14 +549,13 @@
   .inv-stripe-col,
   .inv-stripe-block,
   .inv-pdf-pay-block,
-  .inv-pay-btn-anchor,
   .inv-pdf-pay-url-box,
   .inv-pdf-link-banner {
     display: block !important;
     visibility: visible !important;
   }
 
-  /* ── Navy Stripe block — FORCE dark background ── */
+  /* ── Navy Stripe block ── */
   .inv-stripe-block {
     background: #1e2d5a !important;
     padding: 6px 10px !important;
@@ -562,32 +566,58 @@
     font-size: 13px !important;
   }
 
-  /* ── PAY NOW button — white with navy border + underline ── */
+  /* ══════════════════════════════════════════════════════════════
+     CRITICAL FIX: Make ALL <a> links SIMPLE INLINE TEXT in print.
+     Chrome's PDF generator only creates clickable annotations
+     for inline <a> tags. Block/button styled <a> tags lose their
+     click target in the PDF even though they render correctly.
+     ══════════════════════════════════════════════════════════════ */
+
+  /* PAY NOW button → simple inline blue underlined link */
   .inv-pay-btn-anchor {
-    background: #fff !important;
-    color: #1e2d5a !important;
-    border: 2px solid #1e2d5a !important;
-    padding: 7px 10px !important;
-    font-size: 10px !important;
+    display: inline !important;
+    width: auto !important;
+    padding: 0 !important;
+    margin: 6px 0 !important;
+    background: none !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    color: #1d4ed8 !important;
+    font-size: 11px !important;
     font-weight: 700 !important;
-    letter-spacing: 1.5px !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
     text-decoration: underline !important;
-    margin-top: 6px !important;
+    text-align: left !important;
+    cursor: pointer !important;
   }
 
-  /* ── URL text inside Stripe block ── */
+  /* The <span> inside the button link */
+  .inv-pay-btn-anchor span {
+    color: #1d4ed8 !important;
+    text-decoration: underline !important;
+  }
+
+  /* URL text inside Stripe block */
   .inv-pdf-pay-url-box {
     margin-top: 4px !important;
-    font-size: 8px !important;
-    color: #ccc !important;
+    font-size: 8.5px !important;
+    color: rgba(255,255,255,0.85) !important;
   }
 
   .inv-pdf-pay-url-box a {
+    display: inline !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: none !important;
+    border: none !important;
     color: #60a5fa !important;
+    font-weight: 600 !important;
     text-decoration: underline !important;
   }
 
-  /* ── PDF link banner (the light-blue bar with full URL) ── */
+  /* PDF link banner */
   .inv-pdf-link-banner {
     background: #f0f3fa !important;
     border-top: 1px solid #d2cfc8 !important;
@@ -597,8 +627,13 @@
     font-size: 9.5px !important;
   }
 
-  /* ── FORCE blue color on all payment links ── */
+  /* Banner link → must be INLINE for PDF clickability */
   .inv-pdf-link-banner a {
+    display: inline !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: none !important;
+    border: none !important;
     color: #1d4ed8 !important;
     font-weight: 700 !important;
     text-decoration: underline !important;
