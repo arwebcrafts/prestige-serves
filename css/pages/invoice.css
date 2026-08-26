@@ -526,6 +526,8 @@
     color: #1d4ed8 !important;
     font-weight: bold !important;
     text-decoration: underline !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   input, select, textarea {

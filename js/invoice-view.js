@@ -20,12 +20,12 @@ function statusLabel(status) {
 }
 
 function renderInvoice(inv) {
-  var bill = inv.bill_to || {};
-  var svc = inv.service_details || {};
-  var items = inv.line_items || [];
+  var bill = (typeof inv.bill_to === 'string') ? JSON.parse(inv.bill_to || '{}') : (inv.bill_to || {});
+  var svc = (typeof inv.service_details === 'string') ? JSON.parse(inv.service_details || '{}') : (inv.service_details || {});
+  var items = (typeof inv.line_items === 'string') ? JSON.parse(inv.line_items || '[]') : (inv.line_items || []);
   var isPaid = inv.status === 'paid';
 
-  var rows = items.map(function (li) {
+  var rows = (items || []).map(function (li) {
     var amt = (li.amount_cents != null) ? li.amount_cents / 100 : (li.qty || 0) * (li.unit_price || 0);
     var itemDesc = li.description || li.type || 'Service Item';
     var itemType = (li.type && li.type !== 'Custom / Write-in Item' && li.type !== 'Custom Service' && li.type !== 'Other' && li.type !== itemDesc) ? li.type : '';
@@ -38,7 +38,8 @@ function renderInvoice(inv) {
       '</tr>';
   }).join('');
 
-  var stripeTargetUrl = (inv.stripe_pay_url || 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n').trim();
+  var webInvoiceUrl = window.location.origin + '/invoice.html?number=' + encodeURIComponent(inv.invoice_number || '') + '&token=' + encodeURIComponent(currentToken || '');
+  var stripeTargetUrl = ensureAbsoluteUrl(inv.stripe_pay_url || webInvoiceUrl || 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n');
 
   var payBlock = isPaid
     ? '<div class="inv-paid-badge-pdf" style="padding:10px 14px;background:#27ae60;color:#fff;font-size:12px;font-weight:600;text-align:center;border-radius:4px;margin-top:10px;">PAID IN FULL</div>'
@@ -194,21 +195,15 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function printInvoice() {
+  var origTitle = document.title;
+  if (currentNumber) {
+    document.title = 'Invoice-' + String(currentNumber).trim().replace(/[^a-zA-Z0-9_-]/g, '') + '-Prestige-Serves';
+  }
   window.print();
+  setTimeout(function () { document.title = origTitle; }, 500);
 }
 
-function savePDF() {
-  window.print();
-}
-
-function downloadPDF() {
-  window.print();
-}
-
-function saveInvoicePDF() {
-  window.print();
-}
-
-function exportPDF() {
-  window.print();
-}
+function savePDF() { printInvoice(); }
+function downloadPDF() { printInvoice(); }
+function saveInvoicePDF() { printInvoice(); }
+function exportPDF() { printInvoice(); }

@@ -40,7 +40,7 @@ export default async function handler(req, res) {
     await invoiceUtils.ensureInvoicesTable(sql);
     const rows = await sql`
       SELECT * FROM invoices
-      WHERE invoice_number = ${String(number).trim()}
+      WHERE LOWER(invoice_number) = LOWER(${String(number).trim()})
         AND access_token = ${String(token).trim()}
       LIMIT 1
     `;

@@ -218,26 +218,37 @@ function collectInvoicePayload() {
     stripe_fee_enabled: totals.stripe_fee_enabled,
     notes: val('inv-notes'),
     client_email: val('bill-email'),
-    stripe_pay_url: val('inv-stripe-url') || 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n',
+    stripe_pay_url: ensureAbsoluteUrl(val('inv-stripe-url')) || 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n',
   };
 }
 
+function ensureAbsoluteUrl(url) {
+  if (!url) return '';
+  url = String(url).trim();
+  if (!url) return '';
+  if (/^https?:\/\//i.test(url)) return url;
+  if (/^(buy\.stripe\.com|checkout\.stripe\.com|stripe\.com)/i.test(url)) {
+    return 'https://' + url;
+  }
+  if (url.startsWith('/')) {
+    return window.location.origin + url;
+  }
+  return window.location.origin + '/' + url;
+}
+
 function printInvoice() {
+  var origTitle = document.title;
+  var invNumEl = document.getElementById('inv-num');
+  var invNum = invNumEl ? invNumEl.value : '';
+  if (invNum) {
+    document.title = 'Invoice-' + String(invNum).trim().replace(/[^a-zA-Z0-9_-]/g, '') + '-Prestige-Serves';
+  }
   window.print();
+  setTimeout(function () { document.title = origTitle; }, 500);
 }
 
-function savePDF() {
-  window.print();
-}
+function savePDF() { printInvoice(); }
+function downloadPDF() { printInvoice(); }
+function saveInvoicePDF() { printInvoice(); }
+function exportPDF() { printInvoice(); }
 
-function downloadPDF() {
-  window.print();
-}
-
-function saveInvoicePDF() {
-  window.print();
-}
-
-function exportPDF() {
-  window.print();
-}

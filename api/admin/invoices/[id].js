@@ -53,6 +53,7 @@ export default async function handler(req, res) {
           total_cents = ${payload.total_cents},
           notes = ${payload.notes},
           client_email = ${payload.client_email},
+          stripe_pay_url = ${payload.stripe_pay_url},
           updated_at = CURRENT_TIMESTAMP
         WHERE id = ${parseInt(id, 10)}
         RETURNING *

@@ -1432,7 +1432,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     // GET /api/invoices/:number?token= — public invoice view
-    if (url.match(/^\/api\/invoices\/INV-[0-9]+$/) && method === 'GET') {
+    if (url.match(/^\/api\/invoices\/[^\/]+$/i) && method === 'GET') {
       const invNumber = decodeURIComponent(url.split('/').pop());
       const qs = req.url.includes('?') ? req.url.split('?')[1] : '';
       const token = new URLSearchParams(qs).get('token');
@@ -1445,7 +1445,7 @@ const server = http.createServer(async (req, res) => {
         await invoiceUtils.ensureInvoicesTable(sql);
         const rows = await sql`
           SELECT * FROM invoices
-          WHERE invoice_number = ${invNumber} AND access_token = ${token}
+          WHERE LOWER(invoice_number) = LOWER(${invNumber}) AND access_token = ${token}
           LIMIT 1
         `;
         if (!rows.length) {
@@ -1461,7 +1461,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     // POST /api/invoices/:number/checkout — Stripe checkout for invoice
-    if (url.match(/^\/api\/invoices\/INV-[0-9]+\/checkout$/) && method === 'POST') {
+    if (url.match(/^\/api\/invoices\/[^\/]+\/checkout$/i) && method === 'POST') {
       if (!stripeClient) {
         jsonResponse(res, 503, { success: false, message: 'Payment processing not configured.' });
         return;
@@ -1478,7 +1478,7 @@ const server = http.createServer(async (req, res) => {
         await invoiceUtils.ensureInvoicesTable(sql);
         const rows = await sql`
           SELECT * FROM invoices
-          WHERE invoice_number = ${invNumber} AND access_token = ${token}
+          WHERE LOWER(invoice_number) = LOWER(${invNumber}) AND access_token = ${token}
           LIMIT 1
         `;
         if (!rows.length) {
