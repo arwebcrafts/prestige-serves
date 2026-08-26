@@ -1,5 +1,9 @@
 /* Invoice / quote pages — based on Prestige Serves invoice template */
 
+/* ══════════════════════════════════════════════════════════════════
+   SCREEN STYLES
+   ══════════════════════════════════════════════════════════════════ */
+
 .inv-page-wrap {
   font-family: 'Inter', sans-serif;
   background: #eceae4;
@@ -85,8 +89,8 @@
 }
 
 .inv-status-unpaid { border-color: #c0392b; color: #c0392b; }
-.inv-status-paid { border-color: #27ae60; color: #27ae60; }
-.inv-status-sent { border-color: #2a3a6e; color: #2a3a6e; }
+.inv-status-paid   { border-color: #27ae60; color: #27ae60; }
+.inv-status-sent   { border-color: #2a3a6e; color: #2a3a6e; }
 
 .inv-upfront {
   background: #f4f4f2;
@@ -384,7 +388,7 @@
 }
 
 .inv-msg-success { background: #e8f7ee; color: #16a34a; }
-.inv-msg-error { background: #fce8e8; color: #c0392b; }
+.inv-msg-error   { background: #fce8e8; color: #c0392b; }
 
 .inv-builder-nav {
   max-width: 800px;
@@ -401,6 +405,7 @@
   color: #2a3a6e;
 }
 
+/* Pay button anchor (inside dark navy block) */
 .inv-pay-btn-anchor {
   display: block;
   width: 100%;
@@ -426,24 +431,67 @@
   text-decoration: none;
 }
 
+/* PDF link banner (below Stripe/Totals grid) */
+.inv-pdf-link-banner {
+  padding: 7px 20px;
+  background: #f4f6fa;
+  border-top: 1px solid #e2e0db;
+  border-bottom: 1px solid #e2e0db;
+  font-size: 10.5px;
+  color: #1e2d5a;
+  text-align: center;
+}
+
+.inv-pdf-link-banner a {
+  color: #1d4ed8;
+  font-weight: bold;
+  text-decoration: underline;
+  margin-left: 4px;
+  word-break: break-all;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   PRINT / PDF STYLES
+   ══════════════════════════════════════════════════════════════════
+   These rules ensure:
+   1. Payment links remain CLICKABLE in the PDF
+   2. Blue link colors are PRESERVED (forced via color, not just
+      background, so they survive even without "Background graphics")
+   3. No extra spacing / clean single-page layout
+   4. Dark Stripe block retains its navy background
+   ══════════════════════════════════════════════════════════════════ */
+
 @page {
   size: letter portrait;
   margin: 4mm 6mm;
 }
 
 @media print {
+
+  /* ── Hide non-print elements ── */
   nav, header, footer, .page-legal-links, .footer-cols,
   .inv-action-bar, .inv-builder-nav, .inv-btn-print,
-  .inv-add-row, .del-btn, .inv-lookup-card, #save-msg, #pay-link-box, #inv-paid-banner, #inv-stripe-url {
+  .inv-add-row, .del-btn, .inv-lookup-card,
+  #save-msg, #pay-link-box, #inv-paid-banner,
+  #inv-stripe-url, .footer-brand, .footer-tagline {
     display: none !important;
   }
 
+  /* ── Base reset ── */
   html, body {
     background: #fff !important;
     color: #000 !important;
     margin: 0 !important;
     padding: 0 !important;
     height: auto !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   .inv-page-wrap {
@@ -456,80 +504,128 @@
     box-shadow: none !important;
     max-width: 100% !important;
     margin: 0 !important;
-    border: 1px solid #d2cfc8 !important;
+    border: none !important;
     page-break-after: avoid !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
 
-  .inv-topbar { padding: 4px 18px !important; }
-  .inv-hero { padding: 6px 18px !important; }
-  .inv-title { font-size: 24px !important; margin-bottom: 2px !important; }
-  .inv-eyebrow { font-size: 7px !important; margin-bottom: 3px !important; }
-  .inv-subtitle { font-size: 11px !important; }
-  .inv-upfront { padding: 3px 18px !important; font-size: 8px !important; }
-  .inv-case-row { padding: 3px 18px !important; font-size: 11px !important; }
-  .inv-bill-col { padding: 5px 14px 5px 18px !important; }
+  /* ── Compact spacing (no extra gaps) ── */
+  .inv-topbar     { padding: 4px 18px !important; }
+  .inv-hero       { padding: 6px 18px !important; }
+  .inv-title      { font-size: 24px !important; margin-bottom: 2px !important; }
+  .inv-eyebrow    { font-size: 7px !important; margin-bottom: 3px !important; }
+  .inv-subtitle   { font-size: 11px !important; }
+  .inv-upfront    { padding: 3px 18px !important; font-size: 8px !important; }
+  .inv-case-row   { padding: 3px 18px !important; font-size: 11px !important; }
+  .inv-bill-col   { padding: 5px 14px 5px 18px !important; }
   .inv-bill-col.right { padding-left: 14px !important; padding-right: 18px !important; }
-  .inv-field { margin-bottom: 2px !important; font-size: 11px !important; }
-  .inv-items-section { padding: 2px 18px 6px !important; }
-  .inv-tbl th { font-size: 7px !important; padding: 0 4px 4px !important; }
-  .inv-tbl td { padding: 3px 4px !important; font-size: 11px !important; }
+  .inv-field       { margin-bottom: 1px !important; font-size: 11px !important; padding: 0 !important; }
+  .inv-items-section { padding: 2px 18px 4px !important; }
+  .inv-tbl th      { font-size: 7px !important; padding: 0 4px 3px !important; }
+  .inv-tbl td      { padding: 2px 4px !important; font-size: 11px !important; }
   .inv-bottom-grid { border-top: 1px solid #e2e0db !important; }
-  .inv-stripe-col { padding: 6px 14px 6px 18px !important; }
-  .inv-totals-col { padding: 6px 18px 6px 14px !important; }
-  .inv-t-row { padding: 3px 0 !important; font-size: 9.5px !important; }
-  .inv-grand-val { font-size: 24px !important; }
-  .inv-pdf-link-banner { padding: 6px 18px !important; font-size: 10px !important; }
-  .inv-notes { padding: 3px 18px !important; font-size: 10px !important; }
-  .inv-footer-bar { padding: 5px 18px !important; font-size: 8px !important; }
+  .inv-stripe-col  { padding: 6px 14px 6px 18px !important; }
+  .inv-totals-col  { padding: 6px 18px 6px 14px !important; }
+  .inv-t-row       { padding: 2px 0 !important; font-size: 9px !important; }
+  .inv-grand-val   { font-size: 22px !important; }
+  .inv-notes       { padding: 3px 18px !important; font-size: 9px !important; }
+  .inv-footer-bar  { padding: 4px 18px !important; font-size: 7.5px !important; }
+  .inv-sec-eye     { margin-bottom: 3px !important; }
 
-  tr, .inv-hero, .inv-bill-grid, .inv-items-section, .inv-bottom-grid, .inv-pdf-link-banner, .inv-footer-bar {
+  /* ── Avoid page breaks inside sections ── */
+  tr, .inv-hero, .inv-bill-grid, .inv-items-section,
+  .inv-bottom-grid, .inv-pdf-link-banner, .inv-footer-bar {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
 
-  .inv-stripe-col, .inv-stripe-block, .inv-pdf-pay-block, .inv-pay-btn-anchor, .inv-pdf-pay-url-box, .inv-pdf-link-banner {
+  /* ── Force visibility of payment elements ── */
+  .inv-stripe-col,
+  .inv-stripe-block,
+  .inv-pdf-pay-block,
+  .inv-pay-btn-anchor,
+  .inv-pdf-pay-url-box,
+  .inv-pdf-link-banner {
     display: block !important;
     visibility: visible !important;
   }
 
+  /* ── Navy Stripe block — FORCE dark background ── */
   .inv-stripe-block {
     background: #1e2d5a !important;
-    padding: 8px 12px !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+    padding: 6px 10px !important;
   }
 
+  .inv-stripe-wordmark {
+    color: #fff !important;
+    font-size: 13px !important;
+  }
+
+  /* ── PAY NOW button — white with navy border + underline ── */
   .inv-pay-btn-anchor {
-    background: #ffffff !important;
+    background: #fff !important;
     color: #1e2d5a !important;
-    border: 1.5px solid #1e2d5a !important;
-    padding: 8px 12px !important;
-    font-size: 10.5px !important;
+    border: 2px solid #1e2d5a !important;
+    padding: 7px 10px !important;
+    font-size: 10px !important;
     font-weight: 700 !important;
+    letter-spacing: 1.5px !important;
     text-decoration: underline !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+    margin-top: 6px !important;
   }
 
+  /* ── URL text inside Stripe block ── */
+  .inv-pdf-pay-url-box {
+    margin-top: 4px !important;
+    font-size: 8px !important;
+    color: #ccc !important;
+  }
+
+  .inv-pdf-pay-url-box a {
+    color: #60a5fa !important;
+    text-decoration: underline !important;
+  }
+
+  /* ── PDF link banner (the light-blue bar with full URL) ── */
   .inv-pdf-link-banner {
-    background: #f4f6fa !important;
+    background: #f0f3fa !important;
     border-top: 1px solid #d2cfc8 !important;
     border-bottom: 1px solid #d2cfc8 !important;
     color: #1e2d5a !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+    padding: 5px 18px !important;
+    font-size: 9.5px !important;
   }
 
-  .inv-pdf-link-banner a, .inv-pdf-pay-url-box a {
+  /* ── FORCE blue color on all payment links ── */
+  .inv-pdf-link-banner a {
     color: #1d4ed8 !important;
-    font-weight: bold !important;
+    font-weight: 700 !important;
     text-decoration: underline !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
   }
 
+  /* ── Footer bar colors ── */
+  .inv-footer-bar {
+    background: #1e2d5a !important;
+    color: rgba(255,255,255,0.6) !important;
+  }
+
+  .inv-footer-bar div {
+    color: rgba(255,255,255,0.6) !important;
+  }
+
+  /* ── Upfront notice background ── */
+  .inv-upfront {
+    background: #f4f4f2 !important;
+    border-top: 2px solid #2a3a6e !important;
+  }
+
+  /* ── Totals column background ── */
+  .inv-totals-col {
+    background: #f4f4f2 !important;
+  }
+
+  /* ── Clean up form inputs in print ── */
   input, select, textarea {
     border: none !important;
     outline: none !important;
