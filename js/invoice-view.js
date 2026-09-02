@@ -277,13 +277,152 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* ── Print / PDF ── */
 
+/**
+ * Generate a real PDF with clickable link annotations using jsPDF + html2canvas.
+ * This solves the Chrome Print-to-PDF limitation where <a> tags lose their
+ * click targets. We render the invoice as a high-res image, then overlay
+ * invisible clickable rectangles for every <a href="..."> in the invoice.
+ */
 function printInvoice() {
-  var origTitle = document.title;
-  if (currentNumber) {
-    document.title = 'Invoice-' + String(currentNumber).trim().replace(/[^a-zA-Z0-9_-]/g, '') + '-Prestige-Serves';
+  // If jsPDF / html2canvas aren't loaded yet, fall back to window.print()
+  if (typeof window.jspdf === 'undefined' || typeof html2canvas === 'undefined') {
+    console.warn('PDF libraries not loaded – falling back to window.print()');
+    window.print();
+    return;
   }
-  window.print();
-  setTimeout(function () { document.title = origTitle; }, 500);
+
+  var invEl = document.getElementById('inv-display');
+  if (!invEl) { window.print(); return; }
+
+  // Show a generating overlay
+  var overlay = document.createElement('div');
+  overlay.id = 'pdf-generating-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:99999;';
+  overlay.innerHTML = '<div style="background:#fff;padding:32px 48px;border-radius:8px;text-align:center;font-family:Inter,sans-serif;">' +
+    '<div style="font-size:18px;font-weight:600;color:#2a3a6e;margin-bottom:8px;">Generating PDF…</div>' +
+    '<div style="font-size:13px;color:#6b7280;">Please wait a moment</div></div>';
+  document.body.appendChild(overlay);
+
+  // Hide the print button before capture
+  var printBtns = invEl.querySelectorAll('.inv-btn-print');
+  printBtns.forEach(function(b) { b.style.display = 'none'; });
+
+  // Use html2canvas to capture the invoice element
+  html2canvas(invEl, {
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: '#ffffff',
+    logging: false,
+  }).then(function(canvas) {
+    var jsPDF = window.jspdf.jsPDF;
+
+    // Calculate PDF dimensions (letter = 215.9mm x 279.4mm)
+    var pageWidthMm = 215.9;
+    var pageHeightMm = 279.4;
+    var marginMm = 6;
+    var contentWidthMm = pageWidthMm - (marginMm * 2);
+
+    var imgWidth = canvas.width;
+    var imgHeight = canvas.height;
+    var ratio = contentWidthMm / imgWidth;
+    var contentHeightMm = imgHeight * ratio;
+
+    // Create PDF (may need multiple pages)
+    var pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'letter',
+    });
+
+    var usablePageHeight = pageHeightMm - (marginMm * 2);
+
+    if (contentHeightMm <= usablePageHeight) {
+      // Fits on one page
+      var imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'PNG', marginMm, marginMm, contentWidthMm, contentHeightMm);
+    } else {
+      // Multi-page: slice the canvas
+      var pageCount = Math.ceil(contentHeightMm / usablePageHeight);
+      for (var p = 0; p < pageCount; p++) {
+        if (p > 0) pdf.addPage();
+
+        // Calculate the slice of the source canvas for this page
+        var srcY = Math.round(p * usablePageHeight / ratio);
+        var srcH = Math.round(usablePageHeight / ratio);
+        if (srcY + srcH > imgHeight) srcH = imgHeight - srcY;
+
+        var sliceCanvas = document.createElement('canvas');
+        sliceCanvas.width = imgWidth;
+        sliceCanvas.height = srcH;
+        var ctx = sliceCanvas.getContext('2d');
+        ctx.drawImage(canvas, 0, srcY, imgWidth, srcH, 0, 0, imgWidth, srcH);
+
+        var sliceData = sliceCanvas.toDataURL('image/png');
+        var sliceHeightMm = srcH * ratio;
+        pdf.addImage(sliceData, 'PNG', marginMm, marginMm, contentWidthMm, sliceHeightMm);
+      }
+    }
+
+    // ── Add clickable link annotations over every <a> in the invoice ──
+    var allLinks = invEl.querySelectorAll('a[href]');
+    var invRect = invEl.getBoundingClientRect();
+    var scaleX = contentWidthMm / invEl.offsetWidth;
+    var scaleY = contentHeightMm / (imgHeight / (canvas.width / invEl.offsetWidth));
+
+    allLinks.forEach(function(link) {
+      var href = link.getAttribute('href');
+      if (!href || href === '#' || href.startsWith('javascript:')) return;
+
+      var linkRect = link.getBoundingClientRect();
+      var x = (linkRect.left - invRect.left) * scaleX + marginMm;
+      var y = (linkRect.top - invRect.top) * scaleY + marginMm;
+      var w = linkRect.width * scaleX;
+      var h = linkRect.height * scaleY;
+
+      // Determine which page this link falls on
+      var linkPage = 0;
+      if (contentHeightMm > usablePageHeight) {
+        linkPage = Math.floor(y / usablePageHeight);
+        y = y - (linkPage * usablePageHeight);
+      }
+
+      if (linkPage < pdf.getNumberOfPages()) {
+        pdf.setPage(linkPage + 1);
+        // Use pdf.link() to add a clickable annotation rectangle
+        pdf.link(x, y, w, h, { url: href });
+      }
+    });
+
+    // Set PDF metadata
+    var invNum = currentNumber || 'Invoice';
+    var filename = 'Invoice-' + String(invNum).trim().replace(/[^a-zA-Z0-9_-]/g, '') + '-Prestige-Serves.pdf';
+    pdf.setProperties({
+      title: filename.replace('.pdf', ''),
+      subject: 'Invoice from Prestige Serves LLC',
+      creator: 'Prestige Serves LLC',
+    });
+
+    // Download
+    pdf.save(filename);
+
+    // Restore print buttons
+    printBtns.forEach(function(b) { b.style.display = ''; });
+
+    // Remove overlay
+    var ov = document.getElementById('pdf-generating-overlay');
+    if (ov) ov.remove();
+
+  }).catch(function(err) {
+    console.error('PDF generation failed:', err);
+    // Restore print buttons
+    printBtns.forEach(function(b) { b.style.display = ''; });
+    // Remove overlay
+    var ov = document.getElementById('pdf-generating-overlay');
+    if (ov) ov.remove();
+    // Fall back to window.print()
+    window.print();
+  });
 }
 
 function savePDF()        { printInvoice(); }

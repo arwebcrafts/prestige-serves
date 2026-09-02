@@ -17,6 +17,12 @@ function getCalsProBadgeHref() {
 function initCalsProBadge() {
   document.querySelectorAll('footer .footer-brand').forEach(function (brand) {
     if (brand.querySelector('.footer-calspro-badge')) return;
+    var container = brand.querySelector('.footer-badges');
+    if (!container) {
+      container = document.createElement('div');
+      container.className = 'footer-badges';
+      brand.appendChild(container);
+    }
     var wrap = document.createElement('div');
     wrap.className = 'footer-calspro-badge';
     var link = document.createElement('a');
@@ -27,12 +33,12 @@ function initCalsProBadge() {
     var img = document.createElement('img');
     img.src = CALSPRO_BADGE.imageUrl;
     img.alt = 'CALSPro member — California Association of Legal Support Professionals';
-    img.width = 140;
-    img.height = 60;
+    img.width = 125;
+    img.height = 50;
     img.loading = 'lazy';
     link.appendChild(img);
     wrap.appendChild(link);
-    brand.appendChild(wrap);
+    container.appendChild(wrap);
   });
 }
 

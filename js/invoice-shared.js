@@ -237,14 +237,143 @@ function ensureAbsoluteUrl(url) {
 }
 
 function printInvoice() {
-  var origTitle = document.title;
-  var invNumEl = document.getElementById('inv-num');
-  var invNum = invNumEl ? invNumEl.value : '';
-  if (invNum) {
-    document.title = 'Invoice-' + String(invNum).trim().replace(/[^a-zA-Z0-9_-]/g, '') + '-Prestige-Serves';
+  // If jsPDF / html2canvas aren't loaded yet, fall back to window.print()
+  if (typeof window.jspdf === 'undefined' || typeof html2canvas === 'undefined') {
+    console.warn('PDF libraries not loaded – falling back to window.print()');
+    window.print();
+    return;
   }
-  window.print();
-  setTimeout(function () { document.title = origTitle; }, 500);
+
+  // The quote-builder uses #invoice-form; client view uses #inv-display
+  var invEl = document.getElementById('invoice-form') || document.getElementById('inv-display');
+  if (!invEl) { window.print(); return; }
+
+  // Show a generating overlay
+  var overlay = document.createElement('div');
+  overlay.id = 'pdf-generating-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:99999;';
+  overlay.innerHTML = '<div style="background:#fff;padding:32px 48px;border-radius:8px;text-align:center;font-family:Inter,sans-serif;">' +
+    '<div style="font-size:18px;font-weight:600;color:#2a3a6e;margin-bottom:8px;">Generating PDF…</div>' +
+    '<div style="font-size:13px;color:#6b7280;">Please wait a moment</div></div>';
+  document.body.appendChild(overlay);
+
+  // Hide UI-only elements before capture
+  var hideEls = invEl.querySelectorAll('.inv-btn-print, .inv-add-row, .del-btn, .inv-action-bar, .inv-stripe-url-input');
+  hideEls.forEach(function(el) { el.dataset.wasDisplay = el.style.display; el.style.display = 'none'; });
+
+  // Also hide the Stripe URL input by ID
+  var stripeInput = document.getElementById('inv-stripe-url');
+  if (stripeInput) { stripeInput.dataset.wasDisplay = stripeInput.style.display; stripeInput.style.display = 'none'; }
+
+  html2canvas(invEl, {
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: '#ffffff',
+    logging: false,
+  }).then(function(canvas) {
+    var jsPDF = window.jspdf.jsPDF;
+
+    var pageWidthMm = 215.9;
+    var pageHeightMm = 279.4;
+    var marginMm = 6;
+    var contentWidthMm = pageWidthMm - (marginMm * 2);
+
+    var imgWidth = canvas.width;
+    var imgHeight = canvas.height;
+    var ratio = contentWidthMm / imgWidth;
+    var contentHeightMm = imgHeight * ratio;
+
+    var pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'letter',
+    });
+
+    var usablePageHeight = pageHeightMm - (marginMm * 2);
+
+    if (contentHeightMm <= usablePageHeight) {
+      var imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'PNG', marginMm, marginMm, contentWidthMm, contentHeightMm);
+    } else {
+      var pageCount = Math.ceil(contentHeightMm / usablePageHeight);
+      for (var p = 0; p < pageCount; p++) {
+        if (p > 0) pdf.addPage();
+        var srcY = Math.round(p * usablePageHeight / ratio);
+        var srcH = Math.round(usablePageHeight / ratio);
+        if (srcY + srcH > imgHeight) srcH = imgHeight - srcY;
+
+        var sliceCanvas = document.createElement('canvas');
+        sliceCanvas.width = imgWidth;
+        sliceCanvas.height = srcH;
+        var ctx = sliceCanvas.getContext('2d');
+        ctx.drawImage(canvas, 0, srcY, imgWidth, srcH, 0, 0, imgWidth, srcH);
+
+        var sliceData = sliceCanvas.toDataURL('image/png');
+        var sliceHeightMm = srcH * ratio;
+        pdf.addImage(sliceData, 'PNG', marginMm, marginMm, contentWidthMm, sliceHeightMm);
+      }
+    }
+
+    // Add clickable link annotations over every <a> in the invoice
+    var allLinks = invEl.querySelectorAll('a[href]');
+    var invRect = invEl.getBoundingClientRect();
+    var scaleX = contentWidthMm / invEl.offsetWidth;
+    var scaleY = contentHeightMm / (imgHeight / (canvas.width / invEl.offsetWidth));
+
+    allLinks.forEach(function(link) {
+      var href = link.getAttribute('href');
+      if (!href || href === '#' || href.startsWith('javascript:')) return;
+      // Skip hidden links
+      if (link.offsetParent === null && link.style.display === 'none') return;
+
+      var linkRect = link.getBoundingClientRect();
+      if (linkRect.width === 0 || linkRect.height === 0) return;
+
+      var x = (linkRect.left - invRect.left) * scaleX + marginMm;
+      var y = (linkRect.top - invRect.top) * scaleY + marginMm;
+      var w = linkRect.width * scaleX;
+      var h = linkRect.height * scaleY;
+
+      var linkPage = 0;
+      if (contentHeightMm > usablePageHeight) {
+        linkPage = Math.floor(y / usablePageHeight);
+        y = y - (linkPage * usablePageHeight);
+      }
+
+      if (linkPage < pdf.getNumberOfPages()) {
+        pdf.setPage(linkPage + 1);
+        pdf.link(x, y, w, h, { url: href });
+      }
+    });
+
+    // Set metadata and save
+    var invNumEl = document.getElementById('inv-num');
+    var invNum = invNumEl ? invNumEl.value : '';
+    var filename = 'Invoice-' + (invNum ? String(invNum).trim().replace(/[^a-zA-Z0-9_-]/g, '') : 'Quote') + '-Prestige-Serves.pdf';
+    pdf.setProperties({
+      title: filename.replace('.pdf', ''),
+      subject: 'Invoice from Prestige Serves LLC',
+      creator: 'Prestige Serves LLC',
+    });
+
+    pdf.save(filename);
+
+    // Restore hidden elements
+    hideEls.forEach(function(el) { el.style.display = el.dataset.wasDisplay || ''; delete el.dataset.wasDisplay; });
+    if (stripeInput) { stripeInput.style.display = stripeInput.dataset.wasDisplay || ''; delete stripeInput.dataset.wasDisplay; }
+
+    var ov = document.getElementById('pdf-generating-overlay');
+    if (ov) ov.remove();
+
+  }).catch(function(err) {
+    console.error('PDF generation failed:', err);
+    hideEls.forEach(function(el) { el.style.display = el.dataset.wasDisplay || ''; delete el.dataset.wasDisplay; });
+    if (stripeInput) { stripeInput.style.display = stripeInput.dataset.wasDisplay || ''; delete stripeInput.dataset.wasDisplay; }
+    var ov = document.getElementById('pdf-generating-overlay');
+    if (ov) ov.remove();
+    window.print();
+  });
 }
 
 function savePDF() { printInvoice(); }
