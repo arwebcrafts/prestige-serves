@@ -1,5 +1,4 @@
-// Structured logging utility for Vercel deployment
-// Provides performance tracking, structured JSON logs, and categorized logging
+import { performance } from 'perf_hooks';
 
 const LOG_LEVELS = {
   ERROR: 'error',
@@ -76,7 +75,7 @@ class Logger {
 // Performance tracking utility
 class PerformanceTracker {
   constructor() {
-    this.performance = require('perf_hooks').performance;
+    this.performance = performance;
   }
 
   startTimer(label) {
@@ -187,7 +186,7 @@ const apiLogger = {
   }
 };
 
-module.exports = {
+export {
   logger,
   perf,
   pstLogger,

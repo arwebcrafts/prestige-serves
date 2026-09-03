@@ -6,10 +6,10 @@ import { sendSMTPEmail } from './smtp-email.js';
 import { buildServiceRequestEmailHtml } from './email-templates.js';
 import { logger, perf, blobLogger, LOG_CATEGORIES } from './logger.js';
 import { processServiceRequestToPST } from './pst-integration.js';
-import { createRequire } from 'module';
-
-const require = createRequire(import.meta.url);
-const { MAX_UPLOAD_FILE_BYTES, MAX_UPLOAD_FILE_MB, MAX_UPLOAD_TOTAL_BYTES } = require('../lib/upload-limits.js');
+const MAX_UPLOAD_FILE_MB = Math.max(1, parseInt(process.env.UPLOAD_MAX_FILE_MB, 10) || 25);
+const MAX_UPLOAD_FILE_BYTES = MAX_UPLOAD_FILE_MB * 1024 * 1024;
+const MAX_UPLOAD_TOTAL_MB = Math.max(MAX_UPLOAD_FILE_MB, parseInt(process.env.UPLOAD_MAX_TOTAL_MB, 10) || 100);
+const MAX_UPLOAD_TOTAL_BYTES = MAX_UPLOAD_TOTAL_MB * 1024 * 1024;
 
 const DATABASE_URL = process.env.DATABASE_URL;
 const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;

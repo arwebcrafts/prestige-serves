@@ -1,7 +1,4 @@
-// PST API Integration for Prestige Serves
-// This module handles all PST API communication
-
-const { logger, perf, pstLogger, LOG_CATEGORIES } = require('./logger');
+import { logger, perf, pstLogger, LOG_CATEGORIES } from './logger.js';
 
 const PST_API_CONFIG = {
   testBaseUrl: 'https://testpstapi.dbsinfo.com',

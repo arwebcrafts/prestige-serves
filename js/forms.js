@@ -1969,6 +1969,8 @@ function handleRequestSubmit(event) {
   .then(function(res) {
     return res.json().then(function(data) {
       return { ok: res.ok, data: data };
+    }).catch(function() {
+      return { ok: res.ok, data: { success: false, message: 'Server error (' + res.status + '). Please try again or call 424.235.3089.' } };
     });
   })
   .then(function(result) {
