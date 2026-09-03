@@ -37,6 +37,41 @@ async function ensureEmailSentColumn(sql) {
   }
 }
 
+async function ensureTablesExist(sql) {
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS service_requests (
+        id SERIAL PRIMARY KEY,
+        client_name VARCHAR(200),
+        contact_name VARCHAR(100),
+        email VARCHAR(255),
+        phone VARCHAR(50),
+        address_line1 VARCHAR(255),
+        address_line2 VARCHAR(255),
+        city VARCHAR(100),
+        state VARCHAR(50),
+        zip VARCHAR(20),
+        defendant_name VARCHAR(200),
+        case_number VARCHAR(100),
+        court_jurisdiction VARCHAR(200),
+        multiple_defendants BOOLEAN DEFAULT false,
+        service_type VARCHAR(100),
+        deadline_date DATE,
+        special_instructions TEXT,
+        defendants_data JSONB,
+        uploaded_files JSONB,
+        skip_trace_data JSONB,
+        email_sent INTEGER DEFAULT -1,
+        stripe_checkout_session_id TEXT,
+        payment_status TEXT DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+  } catch (e) {
+    // Table may already exist
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -58,6 +93,7 @@ export default async function handler(req, res) {
   try {
     const sql = neon(DATABASE_URL);
     await sql`CREATE TABLE IF NOT EXISTS settings (key VARCHAR(255) PRIMARY KEY, value TEXT)`.catch(() => {});
+    await ensureTablesExist(sql);
     await ensureEmailSentColumn(sql);
     
     // Get owner email from settings
@@ -96,13 +132,28 @@ export default async function handler(req, res) {
     courtJurisdiction = Array.isArray(fields.courtJurisdiction) ? fields.courtJurisdiction[0] : fields.courtJurisdiction || '';
     multipleDefendants = fields.multiple_defendants === 'true';
     serviceType = Array.isArray(fields.serviceType) ? fields.serviceType[0] : fields.serviceType || '';
-    deadlineDate = Array.isArray(fields.deadlineDate) ? fields.deadlineDate[0] : fields.deadlineDate || null;
+    
+    const rawDeadline = Array.isArray(fields.deadlineDate) ? fields.deadlineDate[0] : fields.deadlineDate;
+    deadlineDate = (rawDeadline && String(rawDeadline).trim()) ? String(rawDeadline).trim() : null;
+
     specialInstructions = Array.isArray(fields.specialInstructions) ? fields.specialInstructions[0] : fields.specialInstructions || '';
+    
     let defendantsData = null;
-    try {
-      defendantsData = fields.defendantsData ? JSON.parse(fields.defendantsData[0] || fields.defendantsData) : null;
-    } catch (e) {
-      defendantsData = null;
+    let defendantsDataJson = null;
+    if (fields.defendantsData) {
+      try {
+        const rawDef = Array.isArray(fields.defendantsData) ? fields.defendantsData[0] : fields.defendantsData;
+        if (typeof rawDef === 'string') {
+          defendantsDataJson = rawDef.trim() || null;
+          defendantsData = JSON.parse(rawDef);
+        } else {
+          defendantsDataJson = JSON.stringify(rawDef);
+          defendantsData = rawDef;
+        }
+      } catch (e) {
+        defendantsData = null;
+        defendantsDataJson = null;
+      }
     }
 
     const fileField = files.files || files.file;
@@ -152,7 +203,7 @@ export default async function handler(req, res) {
         ${addressLine1 || ''}, ${addressLine2 || ''}, ${city || ''}, ${state || ''}, ${zip || ''},
         ${defendantName || ''}, ${caseNumber || ''}, ${courtJurisdiction || ''},
         ${multipleDefendants || false}, ${serviceType || ''}, ${deadlineDate},
-        ${specialInstructions || ''}, ${defendantsData}, ${uploadedFilesJson}, ${skipTraceData ? JSON.stringify(skipTraceData) : null}, -1
+        ${specialInstructions || ''}, ${defendantsDataJson}, ${uploadedFilesJson}, ${skipTraceData ? JSON.stringify(skipTraceData) : null}, -1
       )
       RETURNING id
     `;

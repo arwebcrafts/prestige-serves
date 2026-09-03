@@ -445,6 +445,60 @@ function getSql() {
   return neon(DATABASE_URL);
 }
 
+async function ensureDbTables(sql) {
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS contact_submissions (
+        id SERIAL PRIMARY KEY,
+        first_name VARCHAR(100),
+        last_name VARCHAR(100),
+        company VARCHAR(200),
+        email VARCHAR(255),
+        phone VARCHAR(50),
+        reason VARCHAR(100),
+        county VARCHAR(100),
+        state VARCHAR(50),
+        case_details TEXT,
+        urgency VARCHAR(50),
+        consent BOOLEAN DEFAULT false,
+        email_sent INTEGER DEFAULT -1,
+        skip_trace_data JSONB,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    await sql`
+      CREATE TABLE IF NOT EXISTS service_requests (
+        id SERIAL PRIMARY KEY,
+        client_name VARCHAR(200),
+        contact_name VARCHAR(100),
+        email VARCHAR(255),
+        phone VARCHAR(50),
+        address_line1 VARCHAR(255),
+        address_line2 VARCHAR(255),
+        city VARCHAR(100),
+        state VARCHAR(50),
+        zip VARCHAR(20),
+        defendant_name VARCHAR(200),
+        case_number VARCHAR(100),
+        court_jurisdiction VARCHAR(200),
+        multiple_defendants BOOLEAN DEFAULT false,
+        service_type VARCHAR(100),
+        deadline_date DATE,
+        special_instructions TEXT,
+        defendants_data JSONB,
+        uploaded_files JSONB,
+        skip_trace_data JSONB,
+        email_sent INTEGER DEFAULT -1,
+        stripe_checkout_session_id TEXT,
+        payment_status TEXT DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+  } catch (e) {
+    // Tables may already exist
+  }
+}
+
 // Buffer raw bytes — required for Stripe webhook signature verification
 function getRawBody(req) {
   return new Promise(function (resolve, reject) {
@@ -646,7 +700,7 @@ const server = http.createServer(async (req, res) => {
         const body = await parseBody(req);
         const sql = getSql();
         
-        // Ensure email_sent and skip_trace_data columns exist
+        await ensureDbTables(sql);
         await sql`ALTER TABLE contact_submissions ADD COLUMN IF NOT EXISTS email_sent INTEGER DEFAULT -1`;
         await sql`ALTER TABLE contact_submissions ADD COLUMN IF NOT EXISTS skip_trace_data JSONB`;
         
@@ -1002,11 +1056,12 @@ const server = http.createServer(async (req, res) => {
     if (url === '/api/admin/requests' && method === 'GET') {
       try {
         const sql = getSql();
+        await ensureDbTables(sql);
         const result = await sql`SELECT * FROM service_requests ORDER BY created_at DESC LIMIT 2000`;
         jsonResponse(res, 200, { success: true, data: result });
       } catch (err) {
         logger.error(LOG_CATEGORIES.API, 'Admin requests error', err);
-        jsonResponse(res, 500, { success: false, message: 'Database error' });
+        jsonResponse(res, 500, { success: false, message: 'Database error: ' + err.message });
       }
       return;
     }
@@ -1015,11 +1070,12 @@ const server = http.createServer(async (req, res) => {
     if (url === '/api/admin/contacts' && method === 'GET') {
       try {
         const sql = getSql();
+        await ensureDbTables(sql);
         const result = await sql`SELECT * FROM contact_submissions ORDER BY created_at DESC LIMIT 2000`;
         jsonResponse(res, 200, { success: true, data: result });
       } catch (err) {
         logger.error(LOG_CATEGORIES.API, 'Admin contacts error', err);
-        jsonResponse(res, 500, { success: false, message: 'Database error' });
+        jsonResponse(res, 500, { success: false, message: 'Database error: ' + err.message });
       }
       return;
     }

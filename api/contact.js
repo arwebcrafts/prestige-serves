@@ -31,6 +31,32 @@ async function ensureSkipTraceDataColumn(sql) {
   }
 }
 
+async function ensureTablesExist(sql) {
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS contact_submissions (
+        id SERIAL PRIMARY KEY,
+        first_name VARCHAR(100),
+        last_name VARCHAR(100),
+        company VARCHAR(200),
+        email VARCHAR(255),
+        phone VARCHAR(50),
+        reason VARCHAR(100),
+        county VARCHAR(100),
+        state VARCHAR(50),
+        case_details TEXT,
+        urgency VARCHAR(50),
+        consent BOOLEAN DEFAULT false,
+        email_sent INTEGER DEFAULT -1,
+        skip_trace_data JSONB,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+  } catch (e) {
+    // Table may already exist
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -54,6 +80,7 @@ export default async function handler(req, res) {
     
     const sql = neon(DATABASE_URL);
     await sql`CREATE TABLE IF NOT EXISTS settings (key VARCHAR(255) PRIMARY KEY, value TEXT)`.catch(() => {});
+    await ensureTablesExist(sql);
     await ensureEmailSentColumn(sql);
     await ensureSkipTraceDataColumn(sql);
     
