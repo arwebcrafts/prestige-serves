@@ -4,25 +4,77 @@ const PST_API_CONFIG = {
   testBaseUrl: 'https://testpstapi.dbsinfo.com',
   prodBaseUrl: 'https://pstapi.dbsinfo.com',
   tokenEndpoint: '/token',
-  timeout: 30000
+  // Per-call ceiling. PST occasionally stalls; without an abort the whole
+  // serverless invocation is killed by the platform and the browser sees a
+  // dropped connection ("Network error") even though the request was saved.
+  timeout: parseInt(process.env.PST_REQUEST_TIMEOUT_MS, 10) || 12000,
+  // Ceiling for a full sync (token + entity/case lookups + job create).
+  budget: parseInt(process.env.PST_TOTAL_BUDGET_MS, 10) || 20000
 };
 
 // Token cache
 let cachedToken = null;
 let tokenExpiry = null;
 
+class PSTTimeoutError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'PSTTimeoutError';
+    this.isTimeout = true;
+  }
+}
+
+// fetch() with a hard abort. Node's fetch has no default timeout, so a
+// non-responsive upstream would otherwise hang until the platform kills us.
+async function fetchWithTimeout(url, options = {}, timeoutMs = PST_API_CONFIG.timeout) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), Math.max(1000, timeoutMs));
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } catch (err) {
+    if (err && (err.name === 'AbortError' || err.name === 'TimeoutError')) {
+      throw new PSTTimeoutError(`PST request timed out after ${timeoutMs}ms: ${url}`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 class PSTAPIClient {
   constructor(apiUsername, apiPassword, dbsCode, useTest = false) {
     this.apiUsername = apiUsername;
     this.apiPassword = apiPassword;
     this.dbsCode = dbsCode;
-    this.baseUrl = useTest ? PST_API_CONFIG.testBaseUrl : PST_API_CONFIG.prodBaseUrl;
+    this.baseUrl = process.env.PST_API_BASE_URL
+      || (useTest ? PST_API_CONFIG.testBaseUrl : PST_API_CONFIG.prodBaseUrl);
     this.token = null;
+    this.deadline = null;
     logger.info(LOG_CATEGORIES.PST_API, 'PSTAPIClient initialized', {
       apiUsername: this.apiUsername,
       dbsCode: this.dbsCode,
       baseUrl: this.baseUrl
     });
+  }
+
+  // Start a time budget for one logical sync. Every subsequent call is capped
+  // by whatever is left, so PST can never outlive the serverless invocation.
+  startBudget(ms) {
+    this.deadline = Date.now() + (ms || PST_API_CONFIG.budget);
+  }
+
+  remainingBudget() {
+    if (!this.deadline) return PST_API_CONFIG.timeout;
+    return this.deadline - Date.now();
+  }
+
+  callTimeout() {
+    if (!this.deadline) return PST_API_CONFIG.timeout;
+    const left = this.remainingBudget();
+    if (left <= 0) {
+      throw new PSTTimeoutError('PST time budget exhausted');
+    }
+    return Math.min(PST_API_CONFIG.timeout, left);
   }
 
   async getToken() {
@@ -50,14 +102,14 @@ class PSTAPIClient {
     });
 
     try {
-      const response = await fetch(this.baseUrl + PST_API_CONFIG.tokenEndpoint, {
+      const response = await fetchWithTimeout(this.baseUrl + PST_API_CONFIG.tokenEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           'Accept': '*/*'
         },
         body: params.toString()
-      });
+      }, this.callTimeout());
 
       logger.info(LOG_CATEGORIES.PST_API, 'PST Token Response received', {
         status: response.status,
@@ -122,7 +174,7 @@ class PSTAPIClient {
     });
 
     try {
-      const response = await fetch(url, config);
+      const response = await fetchWithTimeout(url, config, this.callTimeout());
 
       if (response.status === 401 && cachedToken) {
         logger.warn(LOG_CATEGORIES.PST_API, 'PST Token expired, refreshing');
@@ -536,7 +588,7 @@ async function findOrCreateCase(pstClient, caseData) {
 }
 
 // Process contact form submission to PST
-async function processContactFormToPST(formData) {
+async function processContactFormToPST(formData, options = {}) {
   const timer = perf.startTimer('processContactFormToPST');
   
   // Console log for debugging - always shows in local console
@@ -560,6 +612,8 @@ async function processContactFormToPST(formData) {
     console.log('=== processContactFormToPST ending - pstClient is NULL ===');
     return { success: false, message: 'PST not configured' };
   }
+
+  pstClient.startBudget(options.budgetMs);
 
   try {
     const entityData = {
@@ -607,7 +661,7 @@ async function processContactFormToPST(formData) {
 }
 
 // Process service request form submission to PST
-async function processServiceRequestToPST(formData) {
+async function processServiceRequestToPST(formData, options = {}) {
   const timer = perf.startTimer('processServiceRequestToPST');
   logger.info(LOG_CATEGORIES.PST_API, '========================================');
   logger.info(LOG_CATEGORIES.PST_API, 'processServiceRequestToPST STARTED', {
@@ -625,6 +679,8 @@ async function processServiceRequestToPST(formData) {
     logger.warn(LOG_CATEGORIES.PST_API, 'PST client not configured, skipping PST service request');
     return { success: false, message: 'PST not configured' };
   }
+
+  pstClient.startBudget(options.budgetMs);
 
   try {
     logger.info(LOG_CATEGORIES.PST_API, 'Step 1: Creating/finding attorney entity');
@@ -811,8 +867,10 @@ async function processServiceRequestToPST(formData) {
   }
 }
 
-module.exports = {
+export {
   PSTAPIClient,
+  PSTTimeoutError,
+  PST_API_CONFIG,
   getPSTClient,
   processContactFormToPST,
   processServiceRequestToPST,

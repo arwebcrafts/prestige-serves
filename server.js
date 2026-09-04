@@ -34,8 +34,10 @@ const PRICE_CATALOG = {
 
 const SITE_URL = (process.env.SITE_URL || 'http://localhost:3002').replace(/\/$/, '');
 
-const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_P8aH3JElyXBw@ep-gentle-frog-a4yzwn3w-pooler.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require';
-const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN || 'vercel_blob_rw_1qFTdRzk36aoQZsG_uiiyBg0DZ8Sl5zySi6DmqaMnIz9eqV';
+// Credentials come from .env.local only — never inline. The values that used
+// to sit here as fallbacks are in this repo's git history and must be rotated.
+const DATABASE_URL = process.env.DATABASE_URL;
+const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
 
 // Hostinger SMTP Configuration
 const HOSTINGER_SMTP_HOST = process.env.HOSTINGER_SMTP_HOST || 'smtp.hostinger.com';

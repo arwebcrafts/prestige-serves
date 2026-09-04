@@ -104,6 +104,146 @@ function redirectAfterServiceSubmit(serviceType, submissionId) {
   window.location.href = 'payment.html' + qs;
 }
 
+/* ---------------------------------------------------------------------------
+ * Submission pipeline
+ *
+ * Documents no longer travel inside the form POST. Vercel caps every
+ * serverless request body at 4.5 MB, so a real court packet made the platform
+ * drop the connection and the browser reported a bare "Network error" — the
+ * failure clients kept hitting. Files now go straight to Blob storage first
+ * (js/blob-upload.js), and only their URLs are posted with the form as JSON.
+ * ------------------------------------------------------------------------- */
+
+var SUBMIT_TIMEOUT_MS = 60000;
+var SUPPORT_LINE = 'If it keeps happening, call 424.235.3089 or email info@prestigeserves.com.';
+
+function isFileValue(value) {
+  return typeof File !== 'undefined' && value instanceof File;
+}
+
+/* Split a FormData into a plain JSON object plus the File objects, so the
+ * files can be uploaded separately and the rest posted as JSON. */
+function splitFormData(formData) {
+  var payload = {};
+  var files = [];
+  var seen = {};
+  formData.forEach(function (value, key) {
+    if (isFileValue(value)) {
+      if (!value.size) return;
+      var fingerprint = value.name + ':' + value.size + ':' + (value.lastModified || 0);
+      if (seen[fingerprint]) return;
+      seen[fingerprint] = true;
+      files.push(value);
+      return;
+    }
+    payload[key] = value;
+  });
+  return { payload: payload, files: files };
+}
+
+function setSubmitState(button, text) {
+  if (!button) return;
+  if (button.dataset.originalLabel === undefined) {
+    button.dataset.originalLabel = button.textContent;
+  }
+  button.disabled = true;
+  button.textContent = text;
+}
+
+function restoreSubmitState(button) {
+  if (!button) return;
+  button.disabled = false;
+  if (button.dataset.originalLabel !== undefined) {
+    button.textContent = button.dataset.originalLabel;
+  }
+}
+
+function fetchJsonWithTimeout(url, options, timeoutMs) {
+  options = options || {};
+  var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  var timer = null;
+  if (controller) {
+    options.signal = controller.signal;
+    timer = setTimeout(function () { controller.abort(); }, timeoutMs || SUBMIT_TIMEOUT_MS);
+  }
+  return fetch(url, options).then(function (res) {
+    if (timer) clearTimeout(timer);
+    return res.json().catch(function () {
+      return { success: false, message: 'The server returned an unexpected response (' + res.status + ').' };
+    }).then(function (data) {
+      return { ok: res.ok, status: res.status, data: data || {} };
+    });
+  }, function (err) {
+    if (timer) clearTimeout(timer);
+    throw err;
+  });
+}
+
+/* Upload any attached documents, then post the form itself.
+ * Resolves with the API payload; rejects with an Error whose message is safe
+ * to show the client verbatim. */
+function submitServiceRequest(formData, options) {
+  options = options || {};
+  var submitBtn = options.submitButton || null;
+  var parts = splitFormData(formData);
+
+  var uploadStep;
+  if (!parts.files.length) {
+    uploadStep = Promise.resolve([]);
+  } else if (!window.PSBlobUpload) {
+    uploadStep = Promise.reject(new Error(
+      'The upload component did not load. Please refresh the page and try again.'
+    ));
+  } else {
+    // Check every file before uploading any, so an oversized document is
+    // reported immediately instead of after a long partial upload.
+    for (var i = 0; i < parts.files.length; i++) {
+      var problem = window.PSBlobUpload.validateFile(parts.files[i]);
+      if (problem) {
+        return Promise.reject(new Error(problem));
+      }
+    }
+    uploadStep = window.PSBlobUpload.uploadFiles(parts.files, function (progress) {
+      if (progress.status === 'uploading') {
+        setSubmitState(submitBtn, progress.total > 1
+          ? 'Uploading ' + (progress.index + 1) + ' of ' + progress.total + '…'
+          : 'Uploading document…');
+      }
+    });
+  }
+
+  return uploadStep.then(function (uploaded) {
+    if (uploaded && uploaded.length) {
+      parts.payload.uploadedFiles = JSON.stringify(uploaded);
+    }
+    setSubmitState(submitBtn, 'Submitting…');
+
+    return fetchJsonWithTimeout('/api/request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(parts.payload)
+    }, SUBMIT_TIMEOUT_MS).then(function (result) {
+      if (!result.ok || !result.data.success) {
+        throw new Error(result.data.message
+          || 'We could not submit your request. Please try again. ' + SUPPORT_LINE);
+      }
+      return result.data;
+    }, function (err) {
+      if (err && err.name === 'AbortError') {
+        // The POST may or may not have landed. Never invite a resubmit here —
+        // that is how duplicate jobs get created.
+        throw new Error(
+          'Your request is taking longer than expected. Please do not resubmit — '
+          + 'call 424.235.3089 to confirm we received it.'
+        );
+      }
+      throw new Error(
+        'We could not reach the server. Please check your connection and try again. ' + SUPPORT_LINE
+      );
+    });
+  });
+}
+
 function appendProcessServeFieldsToFormData(form, formData) {
   var serveA1 = form.querySelector('[name="serve_addressLine1"]');
   var serveA2 = form.querySelector('[name="serve_addressLine2"]');
@@ -1358,13 +1498,11 @@ function submitHomeProcessServe(form, successId) {
 
   appendHomeFilesToFormData(fd);
 
-  fetch('/api/request', { method: 'POST', body: fd })
-    .then(function (res) { return res.json(); })
+  var submitBtn = form.querySelector('button[type="submit"]');
+  setSubmitState(submitBtn, 'Submitting…');
+
+  submitServiceRequest(fd, { submitButton: submitBtn })
     .then(function (data) {
-      if (!data.success) {
-        alert(data.message || 'Could not submit request. Please try again.');
-        return;
-      }
       var el = document.getElementById(successId);
       if (el) el.classList.add('show');
       var st = (form.querySelector('[name="serviceType"]') || {}).value || '';
@@ -1390,7 +1528,10 @@ function submitHomeProcessServe(form, successId) {
     })
     .catch(function (err) {
       console.error('Home process serve submit error:', err);
-      alert('Submission failed. Please try again.');
+      alert((err && err.message) || 'We could not submit your request. Please try again. ' + SUPPORT_LINE);
+    })
+    .finally(function () {
+      restoreSubmitState(submitBtn);
     });
 }
 
@@ -1451,54 +1592,27 @@ function getRequestFormFieldsHtml() {
       </select>
       <div id="skip-trace-summary-container" style="display:none; flex-direction:column; gap:10px; margin-top:12px;"></div>
     </div>
-    <div id="home-process-extra" class="home-process-extra" style="display:none;">
-      <p class="form-hint" style="margin:12px 0 16px;font-style:italic;">Complete process serving details below.</p>
-      <div class="form-group">
-        <label>Service Address <span class="req">(required)</span></label>
-        <input type="text" name="serve_addressLine1" data-home-required placeholder="Address Line 1" style="margin-bottom:8px;">
-        <input type="text" name="serve_addressLine2" placeholder="Address Line 2" style="margin-bottom:8px;">
-        <div class="city-state-zip-row" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-          <div class="city-select-wrapper">
-            <input type="text" id="home-svc-city-input" placeholder="City" autocomplete="off">
-            <input type="hidden" id="home-svc-city-value" value="">
-            <div class="city-dropdown" id="home-svc-city-dropdown"></div>
-          </div>
-          <div class="state-select-wrapper">
-            <input type="text" id="home-svc-state-input" placeholder="State" autocomplete="off">
-            <input type="hidden" id="home-svc-state-value" value="CA">
-            <div class="state-dropdown" id="home-svc-state-dropdown"></div>
-          </div>
-          <input type="text" name="serve_zip" data-home-required placeholder="12345" maxlength="5" inputmode="numeric" pattern="\\d{5}" title="5-digit US ZIP" autocomplete="postal-code">
-        </div>
+    <div class="form-group">
+      <label>Deadline Date</label>
+      <div class="form-hint" style="margin-bottom:8px;">Serve-by date, hearing date, or court deadline.</div>
+      <input type="date" name="deadlineDate" id="home-deadlineDate" data-min-tomorrow>
+    </div>
+    <div class="form-group">
+      <label>Upload Documents <span class="req">(required)</span></label>
+      <div class="form-hint" style="margin-bottom:8px;">Add every document for this request. Upload them one at a time or select several at once. PDF, Word, and image files accepted (up to 25 MB each).</div>
+      <div class="file-upload-area" onclick="this.querySelector('input').click()">
+        <input type="file" id="home-file-input" name="files" style="display:none;" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-home-required>
+        <span id="home-file-upload-text">+ Add Files</span>
       </div>
-      <div class="form-group"><label>Defendant / Recipient Full Name <span class="req">(required)</span></label><input type="text" name="serve_defendantName" data-home-required></div>
-      <div class="form-group"><label>Case Number</label><input type="text" name="serve_caseNumber"></div>
-      <div class="form-group"><label>Court / Jurisdiction</label><input type="text" name="serve_courtJurisdiction"></div>
-      <div class="form-group">
-        <label>Are there multiple defendants to be served?</label>
-        <div class="form-hint" style="margin-bottom:10px;">Selecting &quot;Yes&quot; allows you to add up to 10 additional defendants.</div>
-        <div class="radio-toggle-group">
-          <label class="radio-toggle"><input type="radio" name="home_multiple_defendants" value="yes"><span>Yes</span></label>
-          <label class="radio-toggle"><input type="radio" name="home_multiple_defendants" value="no" checked><span>No</span></label>
-        </div>
-        <div id="home-defendants-list-container" style="display:none; flex-direction:column; gap:10px; margin-bottom: 15px;"></div>
-        <button type="button" id="home-btn-add-defendant" class="btn-navy" style="display:none; width:auto; padding: 10px 20px; background-color: #f4f4f4; color: #333; border: 1px solid #ccc;" onclick="openHomeDefendantModal()">+ Add Defendant</button>
-      </div>
-      <div class="form-group"><label>Deadline Date</label><input type="date" name="home_deadlineDate" id="home-deadlineDate" data-min-tomorrow></div>
-      <div class="form-group">
-        <label>Upload Documents <span class="req">(required)</span></label>
-        <div class="form-hint" style="margin-bottom:8px;">Add all documents to be served. You can upload files one at a time or select several at once. PDF, Word, and image files accepted (up to 25 MB each).</div>
-        <div class="file-upload-area" onclick="this.querySelector('input').click()">
-          <input type="file" id="home-file-input" name="files" style="display:none;" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-home-required>
-          <span id="home-file-upload-text">+ Add Files</span>
-        </div>
-        <div id="home-file-list" style="margin-top:8px;font-size:13px;color:#333;"></div>
-      </div>
+      <div id="home-file-list" style="margin-top:8px;font-size:13px;color:#333;"></div>
     </div>
     <div class="form-group"><label>Special Instructions</label><textarea name="specialInstructions" rows="3"></textarea></div>`;
 }
 
-function buildHomeRequestForm(containerId, formId) {
+/* Single definition of the service request form. Rendered into
+ * #home-form-container on both the homepage and request.html, so the two pages
+ * cannot drift apart the way the hand-copied versions did. */
+function buildRequestForm(containerId, formId) {
   var c = document.getElementById(containerId);
   if (!c) return;
   c.innerHTML = `
@@ -1516,6 +1630,11 @@ function buildHomeRequestForm(containerId, formId) {
   if (window.initPhoneAutoFormat) window.initPhoneAutoFormat();
   initRequestFormBindings(c);
 }
+
+// Former name — kept so a cached page calling it still renders.
+var buildHomeRequestForm = buildRequestForm;
+window.buildRequestForm = buildRequestForm;
+window.buildHomeRequestForm = buildRequestForm;
 
 function initRequestFormBindings(root) {
   var scope = root || document;
@@ -1761,40 +1880,56 @@ function handleFormSubmit(event, id, formType) {
       consent: form.querySelector('[name="consent"]')?.checked || false,
       skipTraceData: skipTraceFormData
     };
-    fetch('/api/contact', {
+    var submitBtn = form.querySelector('button[type="submit"]');
+    setSubmitState(submitBtn, 'Submitting…');
+
+    // Success and form reset must happen only after the server confirms.
+    // These used to run synchronously alongside the fetch, so a failed
+    // submission still showed "Thank you!" and cleared the form — the client
+    // walked away believing they had contacted us and the lead was lost.
+    fetchJsonWithTimeout('/api/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)
-    })
-    .then(function(res) {
-      return res.json();
-    })
-    .then(function(data) {
-      if (data.success) {
-        var serviceType = form.querySelector('[name="serviceType"]')?.value || '';
-        if (isSkipTraceService(serviceType)) {
-          if (data.submissionId) sessionStorage.setItem('ps_submissionId', data.submissionId);
-          var emailField = form.querySelector('[name="email"]');
-          if (emailField && emailField.value) sessionStorage.setItem('ps_customerEmail', emailField.value.trim());
-          setTimeout(function () { redirectAfterServiceSubmit(serviceType, data.submissionId); }, 1200);
-        } else {
-          showToast && showToast('Request submitted successfully!', 'ok');
-        }
+    }, SUBMIT_TIMEOUT_MS)
+    .then(function(result) {
+      if (!result.ok || !result.data.success) {
+        throw new Error(result.data.message
+          || 'We could not send your message. Please try again. ' + SUPPORT_LINE);
+      }
+      var data = result.data;
+      var serviceType = form.querySelector('[name="serviceType"]')?.value || '';
+
+      const el = document.getElementById(id);
+      if (el) el.classList.add('show');
+      form.reset();
+      clearHomeUploadedFiles();
+
+      if (isSkipTraceService(serviceType)) {
+        if (data.submissionId) sessionStorage.setItem('ps_submissionId', data.submissionId);
+        var emailField = form.querySelector('[name="email"]');
+        if (emailField && emailField.value) sessionStorage.setItem('ps_customerEmail', emailField.value.trim());
+        setTimeout(function () { redirectAfterServiceSubmit(serviceType, data.submissionId); }, 1200);
+        skipTraceFormData = null;
+        skipTraceModalFilled = false;
+        renderSkipTraceSummary();
+      } else {
+        if (typeof showToast === 'function') showToast('Request submitted successfully!', 'ok');
       }
     })
-    .catch(err => console.error('Form submission error:', err));
-  }
-  if (formType === 'contact') {
-    const el = document.getElementById(id);
-    if (el) el.classList.add('show');
-    const serviceTypeValReset = form.querySelector('[name="serviceType"]')?.value || '';
-    form.reset();
-    clearHomeUploadedFiles();
-    if (isSkipTraceService(serviceTypeValReset)) {
-      skipTraceFormData = null;
-      skipTraceModalFilled = false;
-      renderSkipTraceSummary();
-    }
+    .catch(function(err) {
+      console.error('Form submission error:', err);
+      if (err && err.name === 'AbortError') {
+        alert('Your message is taking longer than expected. Please do not resubmit — '
+          + 'call 424.235.3089 to confirm we received it.');
+        return;
+      }
+      alert((err && err.message)
+        || 'We could not send your message. Please try again. ' + SUPPORT_LINE);
+    })
+    .finally(function() {
+      restoreSubmitState(submitBtn);
+    });
   }
 }
 
@@ -1925,6 +2060,33 @@ function handleRequestSubmit(event) {
     }
   }
 
+  // Documents are required for anything we have to serve, file or record.
+  // Skip trace is the exception — there is nothing to hand over, we are
+  // locating a person. This check used to live on the process-serving-only
+  // sub-form, so eFiling and eRecording requests arrived with no document.
+  var needsDocuments = !isSkipTrace && serviceTypeVal && serviceTypeVal !== 'Custom / Other Service';
+  var homeFileInput = document.getElementById('home-file-input');
+  if (needsDocuments && homeFileInput) {
+    var hasDocs = homeUploadedFiles.length > 0
+      || (homeFileInput.files && homeFileInput.files.length > 0);
+    if (!hasDocs) {
+      missing.push('Upload Documents (at least one file)');
+      homeFileInput.style.border = '2px solid #e74c3c';
+      if (!firstEmptyField) firstEmptyField = homeFileInput;
+    } else {
+      homeFileInput.style.border = '';
+    }
+  }
+
+  var deadlineEl = document.getElementById('home-deadlineDate');
+  if (deadlineEl && deadlineEl.value && deadlineEl.min && deadlineEl.value < deadlineEl.min) {
+    missing.push('Deadline date (must be a future date)');
+    deadlineEl.style.border = '2px solid #e74c3c';
+    if (!firstEmptyField) firstEmptyField = deadlineEl;
+  } else if (deadlineEl) {
+    deadlineEl.style.border = '';
+  }
+
   if (missing.length) {
     showMissingFieldsAlert('Please complete your request:', missing);
     if (firstEmptyField && firstEmptyField.focus) firstEmptyField.focus();
@@ -1953,34 +2115,16 @@ function handleRequestSubmit(event) {
     if (homeDefendantsArray.length > 0) {
       formData.set('defendantsData', JSON.stringify(homeDefendantsArray));
     }
-    appendHomeFilesToFormData(formData);
   }
+  // Documents are a top-level field now, so attach them for every service type.
+  appendHomeFilesToFormData(formData);
 
   var submitBtn = form.querySelector('button[type="submit"]');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting…';
-  }
+  setSubmitState(submitBtn, 'Submitting…');
 
-  fetch('/api/request', {
-    method: 'POST',
-    body: formData
-  })
-  .then(function(res) {
-    return res.json().then(function(data) {
-      return { ok: res.ok, data: data };
-    }).catch(function() {
-      return { ok: res.ok, data: { success: false, message: 'Server error (' + res.status + '). Please try again or call 424.235.3089.' } };
-    });
-  })
-  .then(function(result) {
-    var data = result.data;
-    if (!result.ok || !data.success) {
-      var errMsg = (data && data.message) ? data.message : 'Could not submit your request. Please try again or call 424.235.3089.';
-      alert(errMsg);
-      return;
-    }
-    if (data.success) {
+  submitServiceRequest(formData, { submitButton: submitBtn })
+  .then(function(data) {
+    {
       const serviceType = form.querySelector('[name="serviceType"]')?.value || '';
       var successEl = form.querySelector('.form-success') || document.getElementById('req-success');
       if (successEl) successEl.classList.add('show');
@@ -2030,13 +2174,10 @@ function handleRequestSubmit(event) {
   })
   .catch(function(err) {
     console.error('Request submission error:', err);
-    alert('Network error — your request could not be sent. Please check your connection and try again.');
+    alert((err && err.message) || 'We could not submit your request. Please try again. ' + SUPPORT_LINE);
   })
   .finally(function() {
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit Request';
-    }
+    restoreSubmitState(submitBtn);
   });
 }
 

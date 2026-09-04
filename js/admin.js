@@ -355,7 +355,10 @@ function exportRequestsCsv() {
     'zip',
     'defendant_name',
     'court_jurisdiction',
-    'email_sent'
+    'email_sent',
+    'pst_synced',
+    'pst_job_number',
+    'pst_message'
   ];
   var lines = [keys.join(',')];
   rows.forEach(function(r) {
@@ -666,6 +669,7 @@ function renderRequestsTable() {
         '">' +
         (r.email_sent === 1 ? 'Sent' : r.email_sent === 0 ? 'Failed' : 'Pending') +
         '</span></td>' +
+        '<td>' + getPstStatusBadge(r) + '</td>' +
         '<td><button type="button" class="action-btn view" onclick="viewRequest(' +
         r.id +
         ')">View</button> ' +
@@ -678,6 +682,25 @@ function renderRequestsTable() {
     .join('');
   renderRequestsPagination(total, requestsPage, requestsPageSize);
   makeTablesScrollable();
+}
+
+/* PST sync state for one request. -1/null = never attempted (a row created
+ * before PST status was tracked), 1 = job created, 0 = the sync failed and the
+ * job is not in the Toolbox. */
+function getPstStatusBadge(r) {
+  var synced = r.pst_synced;
+  var cls = synced === 1 ? 'success' : synced === 0 ? 'failed' : 'pending';
+  var label = synced === 1 ? 'Synced' : synced === 0 ? 'Failed' : 'Pending';
+  var title = '';
+  if (synced === 1 && r.pst_job_number) {
+    label = String(r.pst_job_number);
+    title = 'PST job number ' + r.pst_job_number;
+  } else if (synced === 0 && r.pst_message) {
+    title = String(r.pst_message);
+  }
+  return '<span class="email-status-badge ' + cls + '"' +
+    (title ? ' title="' + escapeHtml(title) + '"' : '') + '>' +
+    escapeHtml(label) + '</span>';
 }
 
 async function deleteRequestRow(id) {
@@ -1076,6 +1099,7 @@ function buildRequestDetailView(r) {
     '<span class="va-service-badge ' + badgeClass + '">' + escapeHtml(serviceType || 'Service Request') + '</span>' +
     '<span class="va-meta-chip">Submitted ' + formatDateColor(r.created_at) + '</span>' +
     '<span class="va-meta-chip">Email: <span class="email-status-badge ' + (r.email_sent === 1 ? 'success' : r.email_sent === 0 ? 'failed' : 'pending') + '">' + (r.email_sent === 1 ? 'Sent' : r.email_sent === 0 ? 'Failed' : 'Pending') + '</span></span>' +
+    '<span class="va-meta-chip">PST: ' + getPstStatusBadge(r) + '</span>' +
     (r.multiple_defendants ? '<span class="va-meta-chip">Multiple defendants: Yes</span>' : '') +
     '</div>';
 

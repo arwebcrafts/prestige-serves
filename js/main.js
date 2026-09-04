@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Initialize page-specific content
   if (document.getElementById('home-form-container')) {
-    buildHomeRequestForm('home-form-container', 'home');
+    buildRequestForm('home-form-container', 'home');
   }
 
   // Phone auto-format runs on ALL pages — independent of home-form-container
