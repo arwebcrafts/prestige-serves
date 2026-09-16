@@ -27,7 +27,7 @@ function loadInvoiceCatalog(cb) {
       INVOICE_PRICES = {
         'Standard Serve': 97.99, 'Rush Serve': 119.99, 'Priority Serve': 149.99,
         'Emergency Serve': 249.99, 'eFiling': 75, 'eFiling - Standard': 75, 'eFiling - Rush': 125,
-        'eRecording': 75, 'Skip Trace': 125, 'Legal Courier': 85, 'Nationwide Service': 150,
+        'eRecording': 85, 'Skip Trace': 125, 'Legal Courier': 85, 'Nationwide Service': 150,
         'Concierge': 200, 'Stakeout 2 Hours': 250, 'Extended Stakeout': 450,
         'Half Day Stakeout': 600, 'Stakeout Extra Hour': 115, 'Second Location Surcharge': 75,
         'Document Printing (per page)': 0.35, 'POS Preparation': 35, 'First-Class Mailing': 20,
