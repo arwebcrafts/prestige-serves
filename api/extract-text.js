@@ -1,7 +1,11 @@
 /**
  * extract-text.js
  * Fetches a file URL and extracts readable text from it.
- * Supports: PDF, plain text. Returns up to MAX_CHARS characters.
+ * Supports: PDF, plain text, DOCX. Returns up to MAX_CHARS characters.
+ *
+ * Compatible with:
+ *  - node-fetch v3 (uses arrayBuffer(), not buffer())
+ *  - pdf-parse v2 (uses ESM export at 'pdf-parse')
  */
 
 import { logger, LOG_CATEGORIES } from './logger.js';
@@ -25,7 +29,7 @@ export async function extractTextFromUrl(url, filename = '') {
     }
 
     const contentType = response.headers.get('content-type') || '';
-    const lowerName = filename.toLowerCase();
+    const lowerName = (filename || '').toLowerCase();
 
     // ── Plain text ──────────────────────────────────────────────────────────
     if (contentType.includes('text/plain') || lowerName.endsWith('.txt')) {
@@ -36,8 +40,11 @@ export async function extractTextFromUrl(url, filename = '') {
     // ── PDF ─────────────────────────────────────────────────────────────────
     if (contentType.includes('pdf') || lowerName.endsWith('.pdf')) {
       try {
-        const { default: pdfParse } = await import('pdf-parse/lib/pdf-parse.js');
-        const buffer = await response.buffer();
+        // pdf-parse v2 has proper ESM export
+        const { default: pdfParse } = await import('pdf-parse');
+        // node-fetch v3: use arrayBuffer() then convert to Buffer
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
         const data = await pdfParse(buffer);
         const text = (data.text || '').replace(/\s+/g, ' ').trim();
         return text.slice(0, MAX_CHARS);
@@ -47,11 +54,11 @@ export async function extractTextFromUrl(url, filename = '') {
       }
     }
 
-    // ── DOCX (basic — extract raw XML text) ─────────────────────────────────
+    // ── DOCX (minimal inline extraction) ────────────────────────────────────
     if (lowerName.endsWith('.docx')) {
       try {
-        const buffer = await response.buffer();
-        // Minimal DOCX text extraction without extra deps: parse XML content
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
         const text = buffer.toString('utf8');
         const matches = text.match(/<w:t[^>]*>([^<]+)<\/w:t>/g) || [];
         const extracted = matches
