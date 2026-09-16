@@ -1569,8 +1569,54 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+
+    // GET /api/ai-handoff — owner clicks "Take Over" button in AI alert email
+    if (url === '/api/ai-handoff' && method === 'GET') {
+      const AI_HANDOFF_SECRET = process.env.AI_HANDOFF_SECRET || 'prestige-handoff-2024';
+      const params = new URLSearchParams(req.url.split('?')[1] || '');
+      const token = params.get('token');
+      const id = parseInt(params.get('id'), 10);
+      const type = params.get('type') === 'request' ? 'service_requests' : 'contact_submissions';
+
+      function handoffPage(title, body, color) {
+        return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} — Prestige Serves</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,sans-serif;background:linear-gradient(135deg,#1a3a5c,#0f2340);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}.card{background:#fff;border-radius:16px;padding:48px 40px;max-width:520px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}.icon{font-size:64px;margin-bottom:24px}h1{font-size:22px;font-weight:700;color:${color};margin-bottom:16px}p{font-size:15px;line-height:1.7;color:#555}.brand{margin-top:32px;padding-top:24px;border-top:1px solid #e2e8f0;font-size:13px;color:#94a3b8}.brand strong{color:#1a3a5c}</style></head><body><div class="card"><div class="icon">${color==='#16a34a'?'🤝':'⚠️'}</div><h1>${title}</h1><p>${body}</p><div class="brand"><strong>Prestige Serves LLC</strong><br>Professional Process Serving · Los Angeles, CA<br>📞 424-235-3089</div></div></body></html>`;
+      }
+
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+
+      if (!token || token !== AI_HANDOFF_SECRET) {
+        res.writeHead(403);
+        res.end(handoffPage('❌ Access Denied', 'Invalid or missing security token.', '#dc2626'));
+        return;
+      }
+      if (!id || isNaN(id)) {
+        res.writeHead(400);
+        res.end(handoffPage('❌ Invalid Request', 'Missing or invalid submission ID.', '#dc2626'));
+        return;
+      }
+
+      try {
+        const sql = getSql();
+        await sql`ALTER TABLE ${sql(type)} ADD COLUMN IF NOT EXISTS ai_mode VARCHAR(20) DEFAULT 'ai'`.catch(() => {});
+        await sql`UPDATE ${sql(type)} SET ai_mode = 'owner' WHERE id = ${id}`;
+        logger.info(LOG_CATEGORIES.EMAIL, 'AI handoff activated', { id, type });
+        res.writeHead(200);
+        res.end(handoffPage(
+          '✅ You Are Now in Control',
+          `The AI assistant has been silenced for submission #${id}.<br><br>Reply to the client directly from your email — the AI will <strong>not</strong> send any further automated replies to this thread.`,
+          '#16a34a'
+        ));
+      } catch (err) {
+        logger.error(LOG_CATEGORIES.EMAIL, 'ai-handoff DB error', err);
+        res.writeHead(500);
+        res.end(handoffPage('❌ Server Error', err.message, '#dc2626'));
+      }
+      return;
+    }
+
     jsonResponse(res, 404, { message: 'API endpoint not found' });
     return;
+
   }
   // Static file handling — also serves SEO assets (robots.txt, sitemap.xml,
   // llms.txt, .well-known/*, etc.) with correct MIME types.

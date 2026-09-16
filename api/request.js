@@ -6,6 +6,7 @@ import { sendSMTPEmail } from './smtp-email.js';
 import { buildServiceRequestEmailHtml } from './email-templates.js';
 import { logger, perf, blobLogger, LOG_CATEGORIES } from './logger.js';
 import { processServiceRequestToPST } from './pst-integration.js';
+import { generateAndSendAiReply } from './ai-reply.js';
 const MAX_UPLOAD_FILE_MB = Math.max(1, parseInt(process.env.UPLOAD_MAX_FILE_MB, 10) || 25);
 const MAX_UPLOAD_FILE_BYTES = MAX_UPLOAD_FILE_MB * 1024 * 1024;
 const MAX_UPLOAD_TOTAL_MB = Math.max(MAX_UPLOAD_FILE_MB, parseInt(process.env.UPLOAD_MAX_TOTAL_MB, 10) || 100);
@@ -223,6 +224,28 @@ export default async function handler(req, res) {
 
     const emailSentStatus = emailResult.success ? 1 : 0;
     await sql`UPDATE service_requests SET email_sent = ${emailSentStatus} WHERE id = (SELECT id FROM service_requests WHERE email = ${email || ''} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1)`;
+
+    // ── AI Auto-Reply (fire-and-forget, non-blocking) ─────────────────────
+    const srInquiryText = [
+      clientName && `Client / Firm: ${clientName}`,
+      contactName && `Contact person: ${contactName}`,
+      defendantName && `Defendant / Recipient: ${defendantName}`,
+      caseNumber && `Case number: ${caseNumber}`,
+      courtJurisdiction && `Court / Jurisdiction: ${courtJurisdiction}`,
+      addressLine1 && `Service address: ${addressLine1}${addressLine2 ? ', ' + addressLine2 : ''}, ${city}, ${state} ${zip}`,
+      deadlineDate && `Deadline: ${deadlineDate}`,
+      specialInstructions && `Special instructions: ${specialInstructions}`,
+    ].filter(Boolean).join('\n');
+    generateAndSendAiReply({
+      submissionId: submissionId,
+      tableType: 'request',
+      clientName: contactName || clientName || 'there',
+      clientEmail: email,
+      serviceType: serviceType,
+      inquiry: srInquiryText,
+      specialInstructions: specialInstructions,
+      uploadedFiles: uploadedFiles,
+    }).catch(err => logger.error(LOG_CATEGORIES.EMAIL, 'AI auto-reply failed (request)', err));
 
     // Sync to PST in background — does not block the client response
     const pstPayload = {

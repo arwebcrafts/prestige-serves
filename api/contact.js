@@ -3,6 +3,7 @@ import { sendSMTPEmail } from './smtp-email.js';
 import { buildContactEmailHtml } from './email-templates.js';
 import { logger, perf, emailLogger, LOG_CATEGORIES } from './logger.js';
 import { processContactFormToPST } from './pst-integration.js';
+import { generateAndSendAiReply } from './ai-reply.js';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -126,6 +127,27 @@ export default async function handler(req, res) {
     logger.info(LOG_CATEGORIES.EMAIL, 'Contact email result', { success: emailResult.success, status: emailSentStatus });
     await sql`UPDATE contact_submissions SET email_sent = ${emailSentStatus} WHERE id = (SELECT id FROM contact_submissions WHERE email = ${email || ''} AND email_sent = -1 ORDER BY created_at DESC LIMIT 1)`;
     logger.info(LOG_CATEGORIES.DB, 'Contact email_sent update completed');
+
+    // ── AI Auto-Reply (fire-and-forget, non-blocking) ─────────────────────
+    const contactedId = await sql`SELECT id FROM contact_submissions WHERE email = ${email || ''} ORDER BY created_at DESC LIMIT 1`
+      .then(r => r[0]?.id).catch(() => null);
+    const inquiryText = [
+      firstName && `Name: ${firstName} ${lastName || ''}`,
+      company && `Company: ${company}`,
+      reason && `Reason for contact: ${reason}`,
+      county && `County: ${county}`,
+      state && `State: ${state}`,
+      caseDetails && `Message:\n${caseDetails}`,
+      urgency && `Urgency: ${urgency}`,
+    ].filter(Boolean).join('\n');
+    generateAndSendAiReply({
+      submissionId: contactedId,
+      tableType: 'contact',
+      clientName: `${firstName || ''} ${lastName || ''}`.trim() || 'there',
+      clientEmail: email,
+      serviceType: serviceType || reason || 'General Inquiry',
+      inquiry: inquiryText,
+    }).catch(err => logger.error(LOG_CATEGORIES.EMAIL, 'AI auto-reply failed (contact)', err));
 
     let pstResult = { success: false, message: 'PST sync skipped' };
     try {
