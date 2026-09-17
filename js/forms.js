@@ -765,6 +765,14 @@ function appendHomeFilesToFormData(formData) {
   });
 }
 
+function appendLegacyFilesToFormData(formData) {
+  if (!formData || !legacyUploadedFiles || !legacyUploadedFiles.length) return;
+  try { formData.delete('files'); } catch (e) { /* ignore */ }
+  legacyUploadedFiles.forEach(function (file) {
+    formData.append('files', file, file.name);
+  });
+}
+
 function clearSkipTraceValidationErrors() {
   var body = document.getElementById('skip-trace-modal-body');
   if (!body) return;
@@ -1930,8 +1938,9 @@ function handleRequestSubmit(event) {
     if (homeDefendantsArray.length > 0) {
       formData.set('defendantsData', JSON.stringify(homeDefendantsArray));
     }
-    appendHomeFilesToFormData(formData);
   }
+  appendLegacyFilesToFormData(formData);
+  appendHomeFilesToFormData(formData);
 
   var submitBtn = form.querySelector('button[type="submit"]');
   if (submitBtn) {

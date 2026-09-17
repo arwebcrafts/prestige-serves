@@ -457,17 +457,18 @@ async function findOrCreateEntity(pstClient, entityData) {
     logger.info(LOG_CATEGORIES.PST_API, 'Creating new entity in PST');
     const createResult = await pstClient.createEntity(entityData);
     
+    const createdEntity = createResult.Entity || (createResult.Entities && createResult.Entities[0]);
     logger.info(LOG_CATEGORIES.PST_API, 'Entity create completed', {
       isSuccess: createResult.IsSuccess,
-      createdCount: createResult.Entities?.length || 0
+      serialNumber: createdEntity?.SerialNumber
     });
     
-    if (createResult.IsSuccess && createResult.Entities && createResult.Entities.length > 0) {
+    if (createResult.IsSuccess && createdEntity) {
       logger.info(LOG_CATEGORIES.PST_API, 'Entity created successfully', {
-        serialNumber: createResult.Entities[0].SerialNumber,
-        firmName: createResult.Entities[0].FirmName
+        serialNumber: createdEntity.SerialNumber,
+        firmName: createdEntity.FirmName
       });
-      return createResult.Entities[0];
+      return createdEntity;
     }
 
     logger.error(LOG_CATEGORIES.PST_API, 'Entity creation failed', null, { errors: createResult.TransactionErrors });
@@ -514,17 +515,18 @@ async function findOrCreateCase(pstClient, caseData) {
     logger.info(LOG_CATEGORIES.PST_API, 'Creating new case in PST');
     const createResult = await pstClient.createCase(caseData);
 
+    const createdCase = createResult.Case || (createResult.Cases && createResult.Cases[0]);
     logger.info(LOG_CATEGORIES.PST_API, 'Case create completed', {
       isSuccess: createResult.IsSuccess,
-      createdCount: createResult.Cases?.length || 0
+      serialNumber: createdCase?.SerialNumber
     });
     
-    if (createResult.IsSuccess && createResult.Cases && createResult.Cases.length > 0) {
+    if (createResult.IsSuccess && createdCase) {
       logger.info(LOG_CATEGORIES.PST_API, 'Case created successfully', {
-        serialNumber: createResult.Cases[0].SerialNumber,
-        caseNumber: createResult.Cases[0].CaseNumber
+        serialNumber: createdCase.SerialNumber,
+        caseNumber: createdCase.CaseNumber
       });
-      return createResult.Cases[0];
+      return createdCase;
     }
 
     logger.error(LOG_CATEGORIES.PST_API, 'Case creation failed', null, { errors: createResult.TransactionErrors });
@@ -759,8 +761,9 @@ async function processServiceRequestToPST(formData) {
     logger.info(LOG_CATEGORIES.PST_API, 'Step 8: Creating job in PST', jobData);
     const jobResponse = await pstClient.createJob(jobData);
 
-    if (jobResponse.IsSuccess && jobResponse.Jobs && jobResponse.Jobs.length > 0) {
-      const jobNumber = jobResponse.Jobs[0].JobNumber;
+    const createdJob = jobResponse.Job || (jobResponse.Jobs && jobResponse.Jobs[0]);
+    if (jobResponse.IsSuccess && createdJob) {
+      const jobNumber = createdJob.JobNumber;
       timer.end();
       logger.info(LOG_CATEGORIES.PST_API, '========================================');
       logger.info(LOG_CATEGORIES.PST_API, 'Service request SAVED TO PST SUCCESSFULLY', { 
@@ -811,7 +814,17 @@ async function processServiceRequestToPST(formData) {
   }
 }
 
-module.exports = {
+export {
+  PSTAPIClient,
+  getPSTClient,
+  processContactFormToPST,
+  processServiceRequestToPST,
+  findOrCreateEntity,
+  findOrCreateCase,
+  mapServiceTypeToPriority
+};
+
+export default {
   PSTAPIClient,
   getPSTClient,
   processContactFormToPST,
