@@ -264,6 +264,7 @@ export default async function handler(req, res) {
       serviceType,
       deadlineDate,
       specialInstructions,
+      uploadedFiles,
       defendantsData: defendantsData ? JSON.stringify(defendantsData) : null
     };
     if (skipTraceData) {

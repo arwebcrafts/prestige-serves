@@ -754,6 +754,27 @@ async function processServiceRequestToPST(formData) {
       }
     };
 
+    const commentLines = [];
+    if (formData.specialInstructions) {
+      commentLines.push(`Special Instructions: ${formData.specialInstructions}`);
+    }
+    if (formData.uploadedFiles && Array.isArray(formData.uploadedFiles) && formData.uploadedFiles.length > 0) {
+      commentLines.push('Uploaded Documents for Service:');
+      formData.uploadedFiles.forEach(function (file) {
+        commentLines.push(`• ${file.name}: ${file.url}`);
+      });
+    }
+
+    if (commentLines.length > 0) {
+      jobData.CreateComments = [{
+        CommentDateTime: new Date().toLocaleString(),
+        CommentText: commentLines.join('\n'),
+        IsAttempt: false,
+        IsStatusReport: true,
+        IsReviewed: true
+      }];
+    }
+
     if (formData.deadlineDate) {
       jobData.ExpireDate = formData.deadlineDate;
     }
@@ -773,17 +794,6 @@ async function processServiceRequestToPST(formData) {
         caseSerialNumber: caseData?.SerialNumber,
         formType: 'service_request'
       });
-
-      // Add special instructions as comment if provided
-      if (formData.specialInstructions) {
-        await pstClient.addJobComment(jobNumber, {
-          CommentDateTime: new Date().toLocaleString(),
-          CommentText: `Special Instructions: ${formData.specialInstructions}`,
-          IsAttempt: false,
-          IsStatusReport: true,
-          IsReviewed: true
-        });
-      }
 
       return {
         success: true,
