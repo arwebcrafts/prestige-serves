@@ -1925,6 +1925,16 @@ function handleRequestSubmit(event) {
     }
   }
 
+  // Deadline date — not required, but warn if past date
+  var reqDeadline = form.querySelector('input[name="deadlineDate"]');
+  if (reqDeadline && reqDeadline.value && reqDeadline.min && reqDeadline.value < reqDeadline.min) {
+    missing.push('Deadline date (must be a future date)');
+    reqDeadline.style.border = '2px solid #e74c3c';
+    if (!firstEmptyField) firstEmptyField = reqDeadline;
+  } else if (reqDeadline) {
+    reqDeadline.style.border = '';
+  }
+
   if (missing.length) {
     showMissingFieldsAlert('Please complete your request:', missing);
     if (firstEmptyField && firstEmptyField.focus) firstEmptyField.focus();
@@ -2376,12 +2386,6 @@ function toggleDefendantUI() {
       addBtn.style.display = 'block';
     } else {
       addBtn.style.display = 'none';
-    }
-    // Open the existing modal once when enabling multiple defendants so users can add via the full form
-    if (defendantsArray.length === 0 && typeof openDefendantModal === 'function') {
-      requestAnimationFrame(function () {
-        openDefendantModal(-1);
-      });
     }
   } else {
     listContainer.style.display = 'none';

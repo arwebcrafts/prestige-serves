@@ -235,55 +235,15 @@
       </select>
       <div id="skip-trace-summary-container" style="display:none; flex-direction:column; gap:10px; margin-top:12px;"></div>
     </div>
-    <div id="home-process-extra" class="home-process-extra" style="display:none;">
-      <p class="form-hint" style="margin:12px 0 16px;font-style:italic;">Complete process serving details below.</p>
-      <div class="form-group">
-        <label>Service Address <span class="req">(required)</span></label>
-        <input type="text" name="serve_addressLine1" data-home-required placeholder="Address Line 1" style="margin-bottom:8px;">
-        <input type="text" name="serve_addressLine2" placeholder="Address Line 2" style="margin-bottom:8px;">
-        <div class="city-state-zip-row" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-          <div class="city-select-wrapper">
-            <input type="text" id="home-svc-city-input" placeholder="City" autocomplete="off">
-            <input type="hidden" id="home-svc-city-value" value="">
-            <div class="city-dropdown" id="home-svc-city-dropdown"></div>
-          </div>
-          <div class="state-select-wrapper">
-            <input type="text" id="home-svc-state-input" placeholder="State" autocomplete="off">
-            <input type="hidden" id="home-svc-state-value" value="CA">
-            <div class="state-dropdown" id="home-svc-state-dropdown"></div>
-          </div>
-          <input type="text" name="serve_zip" data-home-required placeholder="12345" maxlength="5" inputmode="numeric" pattern="\d{5}" title="5-digit US ZIP" autocomplete="postal-code">
-        </div>
+    <div class="form-group"><label>Deadline Date</label><input type="date" name="deadlineDate" id="req-deadlineDate" data-min-tomorrow></div>
+    <div class="form-group">
+      <label>Upload Documents</label>
+      <div class="form-hint" style="margin-bottom:8px;">Add all documents to be served. You can upload files one at a time or select several at once. PDF, Word, and image files accepted (up to 25 MB each).</div>
+      <div class="file-upload-area" onclick="this.querySelector('input').click()">
+        <input type="file" id="file-input" name="files" style="display:none;" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+        <span id="file-upload-text">+ Add Files</span>
       </div>
-      <div class="form-group"><label>Defendant / Recipient Full Name <span class="req">(required)</span></label><input type="text" name="serve_defendantName" data-home-required></div>
-      <div class="form-group"><label>Case Number</label><input type="text" name="serve_caseNumber"></div>
-      <div class="form-group"><label>Court / Jurisdiction</label><input type="text" name="serve_courtJurisdiction"></div>
-      <div class="form-group">
-        <label>Are there multiple defendants to be served?</label>
-        <div class="form-hint" style="margin-bottom:10px;">Selecting "Yes" allows you to add up to 10 additional defendants.</div>
-        <div class="radio-toggle-group">
-          <label class="radio-toggle">
-            <input type="radio" name="home_multiple_defendants" value="yes">
-            <span>Yes</span>
-          </label>
-          <label class="radio-toggle">
-            <input type="radio" name="home_multiple_defendants" value="no" checked="">
-            <span>No</span>
-          </label>
-        </div>
-        <div id="home-defendants-list-container" style="display:none; flex-direction:column; gap:10px; margin-bottom: 15px;"></div>
-        <button type="button" id="home-btn-add-defendant" class="btn-navy" style="display:none; width:auto; padding: 10px 20px; background-color: #f4f4f4; color: #333; border: 1px solid #ccc;" onclick="openHomeDefendantModal()">+ Add Defendant</button>
-      </div>
-      <div class="form-group"><label>Deadline Date</label><input type="date" name="home_deadlineDate" id="home-deadlineDate" data-min-tomorrow></div>
-      <div class="form-group">
-        <label>Upload Documents <span class="req">(required)</span></label>
-        <div class="form-hint" style="margin-bottom:8px;">Add all documents to be served. You can upload files one at a time or select several at once. PDF, Word, and image files accepted (up to 25 MB each).</div>
-        <div class="file-upload-area" onclick="this.querySelector('input').click()">
-          <input type="file" id="home-file-input" name="files" style="display:none;" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-home-required>
-          <span id="home-file-upload-text">+ Add Files</span>
-        </div>
-        <div id="home-file-list" style="margin-top:8px;font-size:13px;color:#333;"></div>
-      </div>
+      <div id="file-list" style="margin-top:8px;font-size:13px;color:#333;"></div>
     </div>
     <div class="form-group"><label>Special Instructions</label><textarea name="specialInstructions" rows="3"></textarea></div>
     <button type="submit" class="btn-navy" style="width:100%;">Submit Request</button>
@@ -291,6 +251,7 @@
     <div class="toast" id="toast" aria-live="polite"></div>
     </form>
   </div>
+
   <footer>
     <div class="footer-brand">
       <div class="footer-brand-name">Prestige Serves</div>
