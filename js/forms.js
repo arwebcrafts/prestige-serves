@@ -1471,7 +1471,6 @@ function getRequestFormFieldsHtml() {
     </div>
     <div class="form-group"><label>Special Instructions</label><textarea name="specialInstructions" rows="3"></textarea></div>`;
 }
-}
 
 function buildHomeRequestForm(containerId, formId) {
   var c = document.getElementById(containerId);
