@@ -732,10 +732,8 @@ async function processServiceRequestToPST(formData) {
       });
     }
 
-    // 7. Build job servers
-    const jobServers = defendants.length > 0 ? [{ IsDefault: true }] : [];
-
-    // 8. Create job
+    // 8. Create job (do NOT include AddJobServers — PST requires a valid
+    //    Server Serial Number which is assigned manually by the owner)
     const jobData = {
       AttorneySerialNumber: attorneyEntity?.SerialNumber,
       ClientSerialNumber: clientEntity?.SerialNumber,
@@ -746,7 +744,6 @@ async function processServiceRequestToPST(formData) {
       Priority: mapServiceTypeToPriority(formData.serviceType),
       PartyToBeServed: partyToBeServed,
       CreateServeeDetails: serveeDetails,
-      AddJobServers: jobServers.length > 0 ? jobServers : undefined,
       QueueDocumentOptions: {
         QueueFieldSheetOptions: {
           AttachPDF: true
