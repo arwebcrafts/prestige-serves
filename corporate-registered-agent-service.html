@@ -265,6 +265,20 @@
 .corp-pricing-card:hover .corp-tier-btn {
   background: var(--navy-hover);
 }
+.corp-tier-icon-wrap {
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 16px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.corp-tier-icon {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.08));
+}
 
 @media(max-width: 960px) {
   .corp-hero-content { padding: 56px 28px; }
@@ -385,45 +399,69 @@
     </div>
 
     <div class="corp-pricing-grid">
-      <a href="corporate-service-request.html" class="corp-pricing-card">
+      <div class="corp-pricing-card" onclick="triggerCheckout('Corporate Standard Service', 145)" style="cursor:pointer;">
         <div class="corp-tier-header">
+          <div class="corp-tier-icon-wrap">
+            <img src="assets/images/corp-tier-standard.png" alt="Standard Service Icon" class="corp-tier-icon" loading="lazy">
+          </div>
           <span class="corp-tier-badge">5–7 Business Days</span>
           <div class="corp-tier-price">$145</div>
           <div class="corp-tier-title">Standard Service</div>
           <div class="corp-tier-desc">Agent verification, discreet attempts, and photo-verified Proof of Service.</div>
         </div>
-        <span class="corp-tier-btn">Request Standard</span>
-      </a>
+        <div>
+          <button type="button" onclick="event.stopPropagation(); triggerCheckout('Corporate Standard Service', 145)" class="corp-tier-btn" style="width:100%;border:none;cursor:pointer;">Pay &amp; Start Service</button>
+          <a href="corporate-service-request.html" onclick="event.stopPropagation();" style="font-size:12px;color:var(--text-muted);text-decoration:underline;margin-top:10px;text-align:center;display:block;">Or Submit Request Form First →</a>
+        </div>
+      </div>
 
-      <a href="corporate-service-request.html" class="corp-pricing-card">
+      <div class="corp-pricing-card" onclick="triggerCheckout('Corporate Rush Service', 167)" style="cursor:pointer;">
         <div class="corp-tier-header">
+          <div class="corp-tier-icon-wrap">
+            <img src="assets/images/corp-tier-rush.png" alt="Rush Service Icon" class="corp-tier-icon" loading="lazy">
+          </div>
           <span class="corp-tier-badge">3 Business Days</span>
           <div class="corp-tier-price">$167</div>
           <div class="corp-tier-title">Rush Service</div>
           <div class="corp-tier-desc">Expedited service attempts for time-sensitive corporate filings.</div>
         </div>
-        <span class="corp-tier-btn">Request Rush</span>
-      </a>
+        <div>
+          <button type="button" onclick="event.stopPropagation(); triggerCheckout('Corporate Rush Service', 167)" class="corp-tier-btn" style="width:100%;border:none;cursor:pointer;">Pay &amp; Start Service</button>
+          <a href="corporate-service-request.html" onclick="event.stopPropagation();" style="font-size:12px;color:var(--text-muted);text-decoration:underline;margin-top:10px;text-align:center;display:block;">Or Submit Request Form First →</a>
+        </div>
+      </div>
 
-      <a href="corporate-service-request.html" class="corp-pricing-card">
+      <div class="corp-pricing-card" onclick="triggerCheckout('Corporate Priority Service', 197)" style="cursor:pointer;">
         <div class="corp-tier-header">
+          <div class="corp-tier-icon-wrap">
+            <img src="assets/images/corp-tier-priority.png" alt="Priority Service Icon" class="corp-tier-icon" loading="lazy">
+          </div>
           <span class="corp-tier-badge">2 Business Days</span>
           <div class="corp-tier-price">$197</div>
           <div class="corp-tier-title">Priority Service</div>
           <div class="corp-tier-desc">Fast-track priority attempts for approaching court deadlines.</div>
         </div>
-        <span class="corp-tier-btn">Request Priority</span>
-      </a>
+        <div>
+          <button type="button" onclick="event.stopPropagation(); triggerCheckout('Corporate Priority Service', 197)" class="corp-tier-btn" style="width:100%;border:none;cursor:pointer;">Pay &amp; Start Service</button>
+          <a href="corporate-service-request.html" onclick="event.stopPropagation();" style="font-size:12px;color:var(--text-muted);text-decoration:underline;margin-top:10px;text-align:center;display:block;">Or Submit Request Form First →</a>
+        </div>
+      </div>
 
-      <a href="corporate-service-request.html" class="corp-pricing-card">
+      <div class="corp-pricing-card" onclick="triggerCheckout('Corporate Emergency Service', 297)" style="cursor:pointer;">
         <div class="corp-tier-header">
+          <div class="corp-tier-icon-wrap">
+            <img src="assets/images/corp-tier-emergency.png" alt="Emergency Service Icon" class="corp-tier-icon" loading="lazy">
+          </div>
           <span class="corp-tier-badge">Same-Day Dispatch</span>
           <div class="corp-tier-price">$297</div>
           <div class="corp-tier-title">Emergency Service</div>
           <div class="corp-tier-desc">Immediate dispatch with dedicated senior process server assignment.</div>
         </div>
-        <span class="corp-tier-btn">Request Emergency</span>
-      </a>
+        <div>
+          <button type="button" onclick="event.stopPropagation(); triggerCheckout('Corporate Emergency Service', 297)" class="corp-tier-btn" style="width:100%;border:none;cursor:pointer;">Pay &amp; Start Service</button>
+          <a href="corporate-service-request.html" onclick="event.stopPropagation();" style="font-size:12px;color:var(--text-muted);text-decoration:underline;margin-top:10px;text-align:center;display:block;">Or Submit Request Form First →</a>
+        </div>
+      </div>
     </div>
   </div>
 
