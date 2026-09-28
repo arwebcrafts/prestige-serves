@@ -66,7 +66,11 @@ var SERVICE_TYPE_PRICES = {
   'Rush Trace': 225,
   'Business / Agent Verification': 225,
   'Court-Ready Skip Trace Report': 250,
-  'Corporate & Registered Agent Service': 145
+  'Corporate & Registered Agent Service': 145,
+  'Corporate Standard': 145,
+  'Corporate Rush': 167,
+  'Corporate Priority': 197,
+  'Corporate Emergency': 297
 };
 
 function resolveServicePrice(serviceType) {
