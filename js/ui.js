@@ -421,6 +421,17 @@ document.addEventListener('DOMContentLoaded', async function() {
     ]);
   }
 
+  // Corporate & Registered Agent Service FAQ
+  if (document.getElementById('ca-faq')) {
+    buildFAQ('ca-faq', [
+      {q:"What if the registered agent on file with the Secretary of State is outdated?",a:"We cross-reference state filings against active operating addresses and corporate databases using our skip-tracing tools before making an attempt. If the agent has relocated, we locate the current operating address or an authorized officer."},
+      {q:"Can you serve an officer directly instead of the registered agent?",a:"Yes. Under California Code of Civil Procedure (CCP § 416.10), service can be completed on a corporation's registered agent, president, vice president, secretary, treasurer, or authorized officer."},
+      {q:"Do you provide due diligence documentation if substitute service is required?",a:"Yes. Every attempt is logged with timestamped notes, GPS verification, and photos — providing a complete paper trail for a Declaration of Due Diligence if personal service on the agent cannot be completed."},
+      {q:"How fast can corporate service be dispatched?",a:"We offer four turnaround tiers: Standard (5–7 business days), Rush (3 business days), Priority (2 business days), and Emergency (Same-Day dispatch)."},
+      {q:"Do you handle corporate service outside of Los Angeles?",a:"Yes. We provide direct corporate service throughout Los Angeles County and manage statewide California and nationwide corporate process serving."}
+    ]);
+  }
+
   // Load real Google reviews before the carousel is initialized.
   await loadGoogleReviews();
 
