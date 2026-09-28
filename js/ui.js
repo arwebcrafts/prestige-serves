@@ -79,6 +79,33 @@ function toggleAccordion(btn) {
   span.textContent = isOpen ? '+' : '−';
 }
 
+// Global dynamic Stripe Checkout trigger (includes 3% transfer fee automatically)
+async function triggerCheckout(serviceName, amount, email, clientName, caseNumber, specialInstructions) {
+  try {
+    const resp = await fetch('/api/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        serviceName: serviceName,
+        amount: amount,
+        email: email || '',
+        clientName: clientName || '',
+        caseNumber: caseNumber || '',
+        specialInstructions: specialInstructions || ''
+      })
+    });
+    const data = await resp.json();
+    if (data.success && data.url) {
+      window.location.href = data.url;
+      return;
+    }
+    throw new Error(data.message || 'Checkout session creation failed.');
+  } catch (err) {
+    alert('Payment Checkout Error: ' + (err.message || 'Please try again or call us at 424-235-3089.'));
+  }
+}
+window.triggerCheckout = triggerCheckout;
+
 // ── CART ──
 var cart = [];
 

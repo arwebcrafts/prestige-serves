@@ -41,24 +41,43 @@ export default async function handler(req, res) {
       }
     }
 
+    // 3% Transfer / Processing Fee (e.g. $100 -> $3 fee -> $103 total)
+    const feeInCents = Math.round(parsedAmountInCents * 0.03);
+
+    const lineItems = [
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: serviceName,
+            description: caseNumber ? `Case #${caseNumber}` : 'Legal Process Serving & Support'
+          },
+          unit_amount: parsedAmountInCents,
+        },
+        quantity: 1,
+      }
+    ];
+
+    if (feeInCents > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'Processing & Transfer Fee (3%)',
+            description: 'Standard 3% transaction processing fee'
+          },
+          unit_amount: feeInCents,
+        },
+        quantity: 1,
+      });
+    }
+
     const domain = process.env.SITE_URL || `https://${req.headers.host}` || 'https://www.prestigeserves.com';
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       customer_email: email || undefined,
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: serviceName,
-              description: caseNumber ? `Case #${caseNumber}` : 'Legal Process Serving & Support'
-            },
-            unit_amount: parsedAmountInCents,
-          },
-          quantity: 1,
-        },
-      ],
+      line_items: lineItems,
       mode: 'payment',
       metadata: {
         clientName: clientName || '',
