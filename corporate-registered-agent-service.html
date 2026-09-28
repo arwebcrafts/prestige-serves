@@ -66,31 +66,97 @@
 }
 </script>
 <style>
-/* Page-specific layout refinements following site design system */
-.corp-hero-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 520px;
-  border-bottom: 1px solid var(--border);
-}
-.corp-hero-left {
-  padding: 72px 72px 64px;
+/* Full Bleed Hero Section */
+.corp-hero {
+  position: relative;
+  min-height: 560px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: var(--bg-white);
 }
-.corp-hero-right {
-  position: relative;
-  overflow: hidden;
-  min-height: 400px;
-}
-.corp-hero-right img {
+.corp-hero-bg {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center 25%;
-  display: block;
+  z-index: 0;
+}
+.corp-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to right, rgba(10, 15, 40, 0.85) 0%, rgba(10, 15, 40, 0.65) 55%, rgba(10, 15, 40, 0.35) 100%);
+  pointer-events: none;
+}
+.corp-hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 88px 72px;
+  color: #fff;
+  max-width: 780px;
+}
+.corp-hero-kicker {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  margin-bottom: 18px;
+  font-weight: 600;
+}
+.corp-hero-title {
+  font-size: clamp(38px, 5vw, 68px);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  margin-bottom: 22px;
+  color: #ffffff;
+}
+.corp-hero-sub {
+  font-size: 18px;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.65;
+  max-width: 580px;
+  margin-bottom: 36px;
+}
+.corp-hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.btn-gold {
+  display: inline-block;
+  background: var(--accent-gold);
+  color: #0d0d0d;
+  padding: 15px 38px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 100px;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.btn-gold:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+.btn-outline-white {
+  display: inline-block;
+  background: transparent;
+  color: #ffffff;
+  padding: 14px 38px;
+  border-radius: 100px;
+  font-size: 15px;
+  font-weight: 400;
+  text-decoration: none;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  transition: all 0.2s;
+}
+.btn-outline-white:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #ffffff;
 }
 
 .corp-feature-grid {
@@ -201,9 +267,7 @@
 }
 
 @media(max-width: 960px) {
-  .corp-hero-split { grid-template-columns: 1fr; }
-  .corp-hero-left { padding: 48px 28px; }
-  .corp-hero-right { height: 320px; }
+  .corp-hero-content { padding: 56px 28px; }
   .corp-feature-grid { grid-template-columns: 1fr; padding: 48px 28px; gap: 20px; }
   .corp-pricing-section { padding: 48px 28px; }
   .corp-pricing-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -253,27 +317,22 @@
 </nav>
 <img src="assets/images/top.png" alt="Follow us" style="position:fixed;top:4px;right:22px;width:72px;height:22px;z-index:1001;pointer-events:none;">
 
-<div id="page-corporate" class="page active">
+<!-- Full Bleed Hero Section with Image & Overlay -->
+<section class="corp-hero">
+  <img class="corp-hero-bg" src="assets/images/corporate-agent-banner.png" alt="Corporate &amp; Registered Agent Service Los Angeles — Prestige Serves professional at desk with LA skyline">
+  <div class="corp-hero-overlay"></div>
+  <div class="corp-hero-content">
+    <div class="corp-hero-kicker">✦ Corporate &amp; Registered Agent Service — Los Angeles County</div>
+    <h1 class="corp-hero-title">Serve the company.<br>Not just the address.</h1>
+    <p class="corp-hero-sub">Discreet, diligent service on LLCs, corporations, and their registered agents — with verified agent lookups and court-ready documentation, so a stale Secretary of State filing doesn't stall your case.</p>
+    <div class="corp-hero-actions">
+      <a class="btn-gold" href="corporate-service-request.html">Request Corporate Service</a>
+      <a class="btn-outline-white" href="#corp-pricing">See Pricing</a>
+    </div>
+  </div>
+</section>
 
-  <!-- Hero Section -->
-  <section class="corp-hero-split">
-    <div class="corp-hero-left">
-      <div class="hero-eyebrow">✦ CORPORATE PROCESS SERVING LOS ANGELES</div>
-      <h1 style="font-size:clamp(38px,4.5vw,62px);font-weight:300;line-height:1.1;margin-bottom:20px;color:var(--text-dark);">
-        Serve the Company.<br>Not Just the Address.
-      </h1>
-      <p class="hero-body" style="font-size:17px;color:var(--text-muted);margin-bottom:28px;max-width:540px;">
-        Discreet, diligent service on LLCs, corporations, and registered agents across Los Angeles County. We verify Secretary of State filings and operating addresses before attempting, ensuring court-ready Proof of Service.
-      </p>
-      <div style="display:flex;gap:16px;flex-wrap:wrap;">
-        <a href="corporate-service-request.html" class="btn-navy">Request Corporate Service</a>
-        <a href="tel:4242353089" class="btn-outline">Call 424.235.3089</a>
-      </div>
-    </div>
-    <div class="corp-hero-right">
-      <img src="assets/images/corporate-agent-banner.png" alt="Corporate &amp; Registered Agent Service Los Angeles">
-    </div>
-  </section>
+<div id="page-corporate" class="page active">
 
   <!-- Overview Section -->
   <div style="padding:72px;background:var(--bg-white);">
@@ -317,7 +376,7 @@
   </div>
 
   <!-- Pricing Tiers Section -->
-  <div class="corp-pricing-section">
+  <div class="corp-pricing-section" id="corp-pricing">
     <div style="max-width:880px;">
       <h2 style="font-size:38px;font-weight:300;color:var(--accent-blue);margin-bottom:10px;">Turnaround Tiers &amp; Pricing</h2>
       <p style="font-size:15.5px;color:var(--text-muted);">
