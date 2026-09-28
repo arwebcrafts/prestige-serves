@@ -858,6 +858,29 @@ async function submitCorpForm(e) {
     const result = await resp.json();
 
     if (result.success) {
+      // Automatically generate dynamic Stripe Checkout session & redirect to payment
+      try {
+        const checkoutResp = await fetch('/api/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            serviceName: 'Corporate & Registered Agent Service — ' + tierRadio.value,
+            amount: tierRadio.value,
+            email: form['req-email'].value,
+            clientName: form['req-name'].value,
+            caseNumber: form['case-number'].value,
+            specialInstructions: extras
+          })
+        });
+        const checkoutData = await checkoutResp.json();
+        if (checkoutData.success && checkoutData.url) {
+          window.location.href = checkoutData.url;
+          return;
+        }
+      } catch (checkoutErr) {
+        console.warn('Stripe checkout redirect fallback:', checkoutErr);
+      }
+
       form.style.opacity = '0.4';
       form.style.pointerEvents = 'none';
       successEl.style.display = 'block';
