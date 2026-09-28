@@ -56,48 +56,33 @@ var DROPDOWN_TO_SKIP_MODAL = {
   'Court-Ready Skip Trace Report — $250': 'court'
 };
 
-/** Stripe Payment Links — one per service tier (from payment.html) */
-var SERVICE_STRIPE_LINKS = {
-  standard_service: 'https://buy.stripe.com/fZuaEX3lL0F58mZbaZ6sw05',
-  rush_serve: 'https://buy.stripe.com/6oU6oH2hHevV1YB4MB6sw09',
-  priority_serve: 'https://buy.stripe.com/bJeaEX09z3RhgTvcf36sw02',
-  emergency_serve: 'https://buy.stripe.com/00w4gz1dD1J9fPr0wl6sw03',
-  skip_trace_standard: 'https://buy.stripe.com/9B6aEX8G573tav7a6V6sw0c',
-  skip_trace_rush: 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06',
-  skip_trace_court_ready: 'https://buy.stripe.com/cNieVd1dD87xcDfenb6sw0a',
-  skip_trace_enhanced: 'https://buy.stripe.com/8x24gz7C11J9dHj3Ix6sw04',
-  skip_trace_business: 'https://buy.stripe.com/9B64gze0pafFcDf0wl6sw06'
+var SERVICE_TYPE_PRICES = {
+  'Standard Service': 97.99,
+  'Rush Service': 119.99,
+  'Priority Serve': 149.99,
+  'Emergency Serve': 249.99,
+  'Standard Skip Trace': 75,
+  'Enhanced Trace': 150,
+  'Rush Trace': 225,
+  'Business / Agent Verification': 225,
+  'Court-Ready Skip Trace Report': 250,
+  'Corporate & Registered Agent Service': 145
 };
 
-var SERVICE_TYPE_TO_CART_KEY = {
-  'Standard Service': 'standard_service',
-  'Rush Service': 'rush_serve',
-  'Priority Serve': 'priority_serve',
-  'Emergency Serve': 'emergency_serve',
-  'Standard Skip Trace': 'skip_trace_standard',
-  'Enhanced Trace': 'skip_trace_enhanced',
-  'Rush Trace': 'skip_trace_rush',
-  'Business / Agent Verification': 'skip_trace_business',
-  'Court-Ready Skip Trace Report': 'skip_trace_court_ready'
-};
-
-function resolveServiceCartKey(serviceType) {
-  if (!serviceType) return null;
-  for (var label in SERVICE_TYPE_TO_CART_KEY) {
-    if (serviceType.indexOf(label) !== -1) return SERVICE_TYPE_TO_CART_KEY[label];
+function resolveServicePrice(serviceType) {
+  if (!serviceType) return 97.99;
+  for (var label in SERVICE_TYPE_PRICES) {
+    if (serviceType.indexOf(label) !== -1) return SERVICE_TYPE_PRICES[label];
   }
-  return null;
+  var match = (serviceType || '').match(/\$(\d+(\.\d+)?)/);
+  if (match) return parseFloat(match[1]);
+  return 97.99;
 }
 
-function getStripePaymentUrl(serviceType) {
-  var key = resolveServiceCartKey(serviceType);
-  return key ? (SERVICE_STRIPE_LINKS[key] || null) : null;
-}
-
-function redirectAfterServiceSubmit(serviceType, submissionId) {
-  var stripeUrl = getStripePaymentUrl(serviceType);
-  if (stripeUrl) {
-    window.location.href = stripeUrl;
+function redirectAfterServiceSubmit(serviceType, submissionId, email, name, caseNum) {
+  var price = resolveServicePrice(serviceType);
+  if (typeof window.triggerCheckout === 'function') {
+    window.triggerCheckout(serviceType || 'Process Serving', price, email, name, caseNum);
     return;
   }
   var qs = submissionId ? '?ref=' + submissionId : '';
