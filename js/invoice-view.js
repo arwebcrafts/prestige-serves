@@ -239,6 +239,7 @@ function lookupInvoice(e) {
 async function payInvoice() {
   var btn = document.getElementById('inv-pay-btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Opening checkout…'; }
+  var payWindow = window.open('about:blank', '_blank');
   try {
     var resp = await fetch('/api/invoices/' + encodeURIComponent(currentNumber) + '/checkout', {
       method: 'POST',
@@ -246,9 +247,18 @@ async function payInvoice() {
       body: JSON.stringify({ token: currentToken }),
     });
     var data = await resp.json();
-    if (data.success && data.url) { window.location.href = data.url; return; }
+    if (data.success && data.url) {
+      if (payWindow) {
+        payWindow.location.href = data.url;
+      } else {
+        window.open(data.url, '_blank');
+      }
+      return;
+    }
+    if (payWindow) payWindow.close();
     alert(data.message || 'Could not start payment.');
   } catch (err) {
+    if (payWindow) payWindow.close();
     alert('Network error. Please try again.');
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Pay Now'; }

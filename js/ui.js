@@ -79,8 +79,10 @@ function toggleAccordion(btn) {
   span.textContent = isOpen ? '+' : '−';
 }
 
-// Global dynamic Stripe Checkout trigger (includes 3% transfer fee automatically)
+// Global dynamic Stripe Checkout trigger (includes 3% transfer fee automatically; opens in a new tab)
 async function triggerCheckout(serviceName, amount, email, clientName, caseNumber, specialInstructions) {
+  // Pre-open new tab synchronously to bypass browser popup blockers
+  var payWindow = window.open('about:blank', '_blank');
   try {
     const resp = await fetch('/api/create-checkout-session', {
       method: 'POST',
@@ -96,11 +98,17 @@ async function triggerCheckout(serviceName, amount, email, clientName, caseNumbe
     });
     const data = await resp.json();
     if (data.success && data.url) {
-      window.location.href = data.url;
+      if (payWindow) {
+        payWindow.location.href = data.url;
+      } else {
+        window.open(data.url, '_blank');
+      }
       return;
     }
+    if (payWindow) payWindow.close();
     throw new Error(data.message || 'Checkout session creation failed.');
   } catch (err) {
+    if (payWindow) payWindow.close();
     alert('Payment Checkout Error: ' + (err.message || 'Please try again or call us at 424-235-3089.'));
   }
 }

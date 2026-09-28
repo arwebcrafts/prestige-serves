@@ -145,6 +145,8 @@
     var btn = document.getElementById('cart-checkout-btn');
     if (btn) { btn.disabled = true; btn.textContent = 'Redirecting…'; }
 
+    var payWindow = window.open('about:blank', '_blank');
+
     var payload = {
       items: keys.map(function (k) { return { key: k, qty: items[k] }; }),
     };
@@ -162,12 +164,18 @@
       });
       var data = await resp.json();
       if (data.url) {
-        window.location.href = data.url;
+        if (payWindow) {
+          payWindow.location.href = data.url;
+        } else {
+          window.open(data.url, '_blank');
+        }
       } else {
+        if (payWindow) payWindow.close();
         alert(data.message || 'Could not start checkout. Please try again.');
         if (btn) { btn.disabled = false; btn.textContent = 'Proceed to Checkout'; }
       }
     } catch (err) {
+      if (payWindow) payWindow.close();
       console.error('[Cart] Checkout error:', err);
       alert('Network error. Please check your connection and try again.');
       if (btn) { btn.disabled = false; btn.textContent = 'Proceed to Checkout'; }
