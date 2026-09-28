@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Request Corporate &amp; Registered Agent Service | Prestige Serves</title>
+<meta name="description" content="Request corporate or registered agent service of process in Los Angeles County. Tell us about the entity, the case, and any discretion needed, and we'll confirm scope and pricing.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://www.prestigeserves.com/corporate-service-request.html">
+<meta name="theme-color" content="#0a2540">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/global.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="icon" type="image/png" href="/assets/images/mail.png">
+<link rel="apple-touch-icon" href="/assets/images/mail.png">
+<style>
+/* ── Corporate Service Request page styles ── */
+.csrf-wrap{max-width:860px;margin:0 auto;padding:0 28px;}
+
+/* Minimal header for form pages */
+.csrf-header{
+  border-bottom:1px solid var(--border);
+  padding:18px 0;
+  background:var(--bg-white);
+  position:sticky;top:0;z-index:100;
+}
+.csrf-header-row{display:flex;align-items:center;justify-content:space-between;gap:24px;}
+.csrf-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text-dark);font-size:20px;font-family:var(--serif);font-weight:400;}
+.csrf-brand img{width:44px;height:44px;object-fit:contain;}
+.csrf-back{
+  font-size:14px;color:var(--accent-blue);text-decoration:none;
+  border-bottom:1px solid var(--accent-gold);
+  padding-bottom:1px;
+  transition:color 0.2s,border-color 0.2s;
+}
+.csrf-back:hover{color:var(--text-dark);border-color:var(--text-dark);}
+
+/* Hero */
+.csrf-hero{padding:56px 0 8px;}
+.csrf-hero-kicker{font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent-gold);font-weight:500;margin-bottom:14px;}
+.csrf-hero h1{font-size:clamp(30px,4.5vw,48px);font-weight:300;color:var(--accent-blue);margin-bottom:16px;}
+.csrf-hero p{max-width:60ch;color:var(--text-muted);font-size:16.5px;line-height:1.7;margin:0;}
+
+/* Form */
+.csrf-form{padding:24px 0 96px;}
+
+fieldset.csrf-fs{
+  border:none;
+  border-top:1px solid var(--border);
+  padding:36px 0;
+  margin:0;
+}
+fieldset.csrf-fs legend{
+  font-family:var(--serif);
+  font-size:26px;font-weight:300;
+  color:var(--accent-blue);
+  padding:0 0 8px;
+  float:left;width:100%;
+}
+.csrf-field-note{
+  font-size:14px;color:var(--text-muted);
+  margin:0 0 24px;line-height:1.55;
+  clear:both;
+}
+.csrf-grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px 24px;}
+@media(max-width:640px){.csrf-grid2{grid-template-columns:1fr;}}
+.csrf-field{margin-bottom:20px;}
+.csrf-field.full{grid-column:1 / -1;}
+
+label.csrf-label{
+  display:block;
+  font-size:13.5px;font-weight:600;letter-spacing:0.03em;
+  color:var(--text-dark);
+  margin-bottom:7px;
+}
+label.csrf-label .opt{font-weight:400;color:var(--text-muted);}
+
+input[type=text].csrf-input,
+input[type=email].csrf-input,
+input[type=tel].csrf-input,
+input[type=number].csrf-input,
+select.csrf-select,
+textarea.csrf-textarea{
+  width:100%;
+  padding:11px 13px;
+  border:1px solid var(--border);
+  background:var(--bg-white);
+  font-family:var(--serif);
+  font-size:15.5px;
+  color:var(--text-dark);
+  transition:border-color 0.2s,box-shadow 0.2s;
+  border-radius:0;
+  appearance:none;
+}
+input.csrf-input:focus,
+select.csrf-select:focus,
+textarea.csrf-textarea:focus{
+  outline:none;
+  border-color:var(--accent-blue);
+  box-shadow:0 0 0 3px rgba(45,58,124,0.1);
+}
+textarea.csrf-textarea{resize:vertical;min-height:96px;}
+
+/* Radio tier cards */
+.csrf-tier-label{
+  font-size:13.5px;font-weight:600;letter-spacing:0.03em;
+  color:var(--text-dark);
+  margin-bottom:14px;
+  display:block;
+}
+.csrf-tier-options{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;flex-wrap:wrap;}
+@media(max-width:640px){.csrf-tier-options{grid-template-columns:1fr 1fr;}}
+.csrf-radio-card{
+  border:1px solid var(--border);
+  padding:16px;
+  cursor:pointer;
+  transition:border-color 0.2s,background 0.2s;
+  position:relative;
+}
+.csrf-radio-card:has(input:checked){
+  border-color:var(--accent-blue);
+  background:rgba(45,58,124,0.04);
+}
+.csrf-radio-card input{
+  position:absolute;opacity:0;width:0;height:0;
+}
+.csrf-radio-card:hover{border-color:var(--accent-blue);}
+.csrf-tier-name{display:block;font-size:15px;font-weight:600;color:var(--accent-blue);margin-bottom:4px;}
+.csrf-tier-price{display:block;font-size:18px;font-weight:300;color:var(--accent-gold);font-family:var(--serif);margin-bottom:2px;}
+.csrf-tier-detail{display:block;font-size:13px;color:var(--text-muted);}
+
+/* Checkboxes */
+.csrf-check-row{
+  display:flex;align-items:flex-start;gap:11px;
+  margin-bottom:14px;
+}
+.csrf-check-row input[type=checkbox]{
+  margin-top:3px;flex-shrink:0;
+  width:16px;height:16px;
+  accent-color:var(--accent-blue);
+}
+.csrf-check-row label{
+  margin:0;font-weight:400;font-size:15px;
+  color:var(--text-body);line-height:1.55;
+  cursor:pointer;
+}
+
+/* Submit row */
+.csrf-submit-row{
+  display:flex;align-items:center;gap:24px;
+  flex-wrap:wrap;padding-top:36px;
+  border-top:1px solid var(--border);
+  margin-top:8px;
+}
+.csrf-submit-btn{
+  display:inline-block;
+  background:var(--accent-blue);
+  color:#fff;
+  padding:15px 40px;
+  font-size:16px;font-weight:400;font-family:var(--serif);
+  border:none;cursor:pointer;
+  transition:background 0.2s;
+  letter-spacing:0.04em;
+}
+.csrf-submit-btn:hover{background:var(--navy-hover);}
+.csrf-submit-note{font-size:14px;color:var(--text-muted);line-height:1.55;max-width:38ch;}
+
+/* Status messages */
+.csrf-success-msg{
+  display:none;
+  padding:20px 24px;
+  border:1px solid var(--border);
+  border-left:3px solid #2a7a4b;
+  background:#f4faf6;
+  color:#1a5035;
+  font-size:15.5px;
+  line-height:1.6;
+  margin-top:24px;
+}
+.csrf-error-msg{
+  display:none;
+  padding:16px 20px;
+  border:1px solid #e3b4b4;
+  border-left:3px solid #c0392b;
+  background:#fdf4f4;
+  color:#7a1a1a;
+  font-size:14.5px;
+  margin-top:16px;
+}
+
+/* Footer */
+.csrf-footer{
+  padding:36px 0 28px;
+  border-top:1px solid var(--border);
+  text-align:center;
+  font-size:13.5px;
+  color:var(--text-muted);
+}
+.csrf-footer a{color:var(--text-muted);text-decoration:none;}
+.csrf-footer a:hover{color:var(--text-dark);}
+</style>
+</head>
+<body style="background:var(--bg-white);">
+
+<!-- Minimal sticky header -->
+<header class="csrf-header">
+  <div class="csrf-wrap csrf-header-row">
+    <a href="index.html" class="csrf-brand">
+      <img src="assets/images/mail.png" alt="Prestige Serves">
+      Prestige Serves
+    </a>
+    <a href="corporate-registered-agent-service.html" class="csrf-back">← Back to Corporate Service</a>
+  </div>
+</header>
+
+<img src="assets/images/top.png" alt="" style="position:fixed;top:4px;right:22px;width:72px;height:22px;z-index:1001;pointer-events:none;">
+
+<div class="csrf-wrap">
+
+  <!-- Hero -->
+  <div class="csrf-hero">
+    <p class="csrf-hero-kicker">Corporate &amp; Registered Agent Service</p>
+    <h1>Tell us about the entity and the case</h1>
+    <p>The more we know before the first attempt, the fewer surprises at the door. Fill out what you have — we'll follow up on anything missing before scheduling.</p>
+  </div>
+
+  <!-- Form -->
+  <form class="csrf-form" id="csrf-form" onsubmit="handleCorpFormSubmit(event)">
+
+    <!-- 1. Entity Information -->
+    <fieldset class="csrf-fs">
+      <legend>Entity Information</legend>
+      <p class="csrf-field-note">The company being served, exactly as named in the case.</p>
+      <div class="csrf-grid2">
+        <div class="csrf-field full">
+          <label class="csrf-label" for="entity-name">Full legal entity name *</label>
+          <input class="csrf-input" type="text" id="entity-name" name="entity-name" required placeholder="e.g. Acme Holdings, LLC">
+        </div>
+        <div class="csrf-field">
+          <label class="csrf-label" for="entity-type">Entity type *</label>
+          <select class="csrf-select" id="entity-type" name="entity-type" required>
+            <option value="">Select...</option>
+            <option>LLC</option>
+            <option>Corporation</option>
+            <option>Partnership</option>
+            <option>Sole Proprietorship (DBA)</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="csrf-field">
+          <label class="csrf-label" for="entity-state">State of formation / incorporation</label>
+          <input class="csrf-input" type="text" id="entity-state" name="entity-state" placeholder="e.g. California">
+        </div>
+        <div class="csrf-field full">
+          <label class="csrf-label" for="sos-number">Secretary of State entry number <span class="opt">(optional — speeds up verification)</span></label>
+          <input class="csrf-input" type="text" id="sos-number" name="sos-number" placeholder="e.g. 202100010001">
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- 2. Registered Agent / Service Target -->
+    <fieldset class="csrf-fs">
+      <legend>Registered Agent / Service Target</legend>
+      <p class="csrf-field-note">Who or where you'd like us to attempt service. If you're not sure the filing is current, say so — we'll verify before attempting.</p>
+      <div class="csrf-grid2">
+        <div class="csrf-field full">
+          <label class="csrf-label" for="agent-name">Registered agent name on file <span class="opt">(if known)</span></label>
+          <input class="csrf-input" type="text" id="agent-name" name="agent-name" placeholder="e.g. Jane Smith or CT Corporation System">
+        </div>
+        <div class="csrf-field full">
+          <label class="csrf-label" for="agent-address">Registered agent address on file <span class="opt">(if known)</span></label>
+          <input class="csrf-input" type="text" id="agent-address" name="agent-address" placeholder="Street, City, State, Zip">
+        </div>
+        <div class="csrf-field full">
+          <label class="csrf-label" for="alt-target">Alternate target <span class="opt">(e.g. a specific officer instead of the agent)</span></label>
+          <input class="csrf-input" type="text" id="alt-target" name="alt-target" placeholder="Name, title, and address if different from above">
+        </div>
+      </div>
+      <div class="csrf-check-row">
+        <input type="checkbox" id="filing-outdated" name="filing-outdated">
+        <label for="filing-outdated">The Secretary of State filing may be outdated or the agent may have relocated</label>
+      </div>
+    </fieldset>
+
+    <!-- 3. Case Information -->
+    <fieldset class="csrf-fs">
+      <legend>Case Information</legend>
+      <div class="csrf-grid2">
+        <div class="csrf-field">
+          <label class="csrf-label" for="case-number">Case number *</label>
+          <input class="csrf-input" type="text" id="case-number" name="case-number" required placeholder="e.g. 24STCV00001">
+        </div>
+        <div class="csrf-field">
+          <label class="csrf-label" for="court">Court</label>
+          <input class="csrf-input" type="text" id="court" name="court" placeholder="e.g. Los Angeles Superior Court">
+        </div>
+        <div class="csrf-field">
+          <label class="csrf-label" for="county">County *</label>
+          <input class="csrf-input" type="text" id="county" name="county" required placeholder="e.g. Los Angeles">
+        </div>
+        <div class="csrf-field">
+          <label class="csrf-label" for="plaintiff">Plaintiff / Petitioner name</label>
+          <input class="csrf-input" type="text" id="plaintiff" name="plaintiff" placeholder="e.g. Smith Law Group">
+        </div>
+        <div class="csrf-field">
+          <label class="csrf-label" for="doc-type">Document type *</label>
+          <select class="csrf-select" id="doc-type" name="doc-type" required>
+            <option value="">Select...</option>
+            <option>Summons &amp; Complaint</option>
+            <option>Subpoena</option>
+            <option>Divorce Petition</option>
+            <option>Other Civil Document</option>
+          </select>
+        </div>
+        <div class="csrf-field">
+          <label class="csrf-label" for="page-count">Approx. page count</label>
+          <input class="csrf-input" type="number" id="page-count" name="page-count" min="1" placeholder="e.g. 45">
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- 4. Service Preferences -->
+    <fieldset class="csrf-fs">
+      <legend>Service Preferences</legend>
+
+      <span class="csrf-tier-label">Requested turnaround tier *</span>
+      <div class="csrf-tier-options" id="csrf-tier-group">
+        <label class="csrf-radio-card">
+          <input type="radio" name="tier" value="Standard — $145" required>
+          <span class="csrf-tier-name">Standard</span>
+          <span class="csrf-tier-price">$145</span>
+          <span class="csrf-tier-detail">5–7 business days</span>
+        </label>
+        <label class="csrf-radio-card">
+          <input type="radio" name="tier" value="Rush — $167">
+          <span class="csrf-tier-name">Rush</span>
+          <span class="csrf-tier-price">$167</span>
+          <span class="csrf-tier-detail">3 business days</span>
+        </label>
+        <label class="csrf-radio-card">
+          <input type="radio" name="tier" value="Priority — $197">
+          <span class="csrf-tier-name">Priority</span>
+          <span class="csrf-tier-price">$197</span>
+          <span class="csrf-tier-detail">2 business days</span>
+        </label>
+        <label class="csrf-radio-card">
+          <input type="radio" name="tier" value="Emergency — $297">
+          <span class="csrf-tier-name">Emergency</span>
+          <span class="csrf-tier-price">$297</span>
+          <span class="csrf-tier-detail">Same-day</span>
+        </label>
+      </div>
+
+      <div class="csrf-field full" style="margin-top:32px;">
+        <label class="csrf-label" for="discretion-notes">Discretion notes <span class="opt">(anything that would help us plan a low-profile approach)</span></label>
+        <textarea class="csrf-textarea" id="discretion-notes" name="discretion-notes" placeholder="e.g. Front desk screens all visitors; agent shares a suite with several other businesses; staff has been instructed to deny receipt of documents."></textarea>
+      </div>
+
+      <div class="csrf-field full">
+        <label class="csrf-label" for="fallback">If personal service isn't completed</label>
+        <select class="csrf-select" id="fallback" name="fallback">
+          <option value="">Select a preference...</option>
+          <option value="proceed">Proceed straight to Substitute Service by Mail</option>
+          <option value="checkback">Check back with me before proceeding</option>
+        </select>
+      </div>
+    </fieldset>
+
+    <!-- 5. Documentation Needs -->
+    <fieldset class="csrf-fs">
+      <legend>Documentation Needs</legend>
+      <div class="csrf-check-row">
+        <input type="checkbox" id="specific-format" name="specific-format">
+        <label for="specific-format">My court requires a specific due diligence declaration format — we'll follow up for the template</label>
+      </div>
+      <div class="csrf-check-row">
+        <input type="checkbox" id="notarization" name="notarization">
+        <label for="notarization">Notarized Proof of Service required <span style="color:var(--text-muted);">(+$25)</span></label>
+      </div>
+    </fieldset>
+
+    <!-- 6. Billing & Contact -->
+    <fieldset class="csrf-fs">
+      <legend>Billing &amp; Contact</legend>
+      <div class="csrf-grid2">
+        <div class="csrf-field">
+          <label class="csrf-label" for="req-name">Your name *</label>
+          <input class="csrf-input" type="text" id="req-name" name="req-name" required placeholder="Full name">
+        </div>
+        <div class="csrf-field">
+          <label class="csrf-label" for="req-firm">Firm / Company <span class="opt">(if applicable)</span></label>
+          <input class="csrf-input" type="text" id="req-firm" name="req-firm" placeholder="e.g. Smith &amp; Associates LLP">
+        </div>
+        <div class="csrf-field">
+          <label class="csrf-label" for="req-role">Role</label>
+          <input class="csrf-input" type="text" id="req-role" name="req-role" placeholder="Plaintiff in Pro Per, Attorney, Paralegal...">
+        </div>
+        <div class="csrf-field">
+          <label class="csrf-label" for="req-phone">Phone *</label>
+          <input class="csrf-input" type="tel" id="req-phone" name="req-phone" required placeholder="(424) 000-0000">
+        </div>
+        <div class="csrf-field full">
+          <label class="csrf-label" for="req-email">Email *</label>
+          <input class="csrf-input" type="email" id="req-email" name="req-email" required placeholder="you@firm.com">
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- File Upload -->
+    <fieldset class="csrf-fs">
+      <legend>Documents <span style="font-size:18px;font-weight:300;color:var(--text-muted);">(optional)</span></legend>
+      <p class="csrf-field-note">Upload any documents to be served, or supporting materials. PDF, DOC, DOCX, JPG, PNG accepted — 25 MB per file, 100 MB total.</p>
+      <div class="csrf-field">
+        <label class="csrf-label" for="corp-files">Attach files</label>
+        <input type="file" id="corp-files" name="files" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="font-family:var(--serif);font-size:14.5px;color:var(--text-muted);">
+      </div>
+    </fieldset>
+
+    <!-- Error/Success messages -->
+    <div class="csrf-error-msg" id="csrf-error"></div>
+    <div class="csrf-success-msg" id="csrf-success">
+      <strong>Request received.</strong> We'll review your submission and confirm scope and final pricing by email — usually within one business hour during operating hours.
+    </div>
+
+    <!-- Submit -->
+    <div class="csrf-submit-row">
+      <button type="submit" class="csrf-submit-btn" id="csrf-submit-btn">Submit Request</button>
+      <span class="csrf-submit-note">We'll confirm scope and final pricing by email before scheduling any attempt.</span>
+    </div>
+
+  </form>
+</div>
+
+<footer class="csrf-footer">
+  Prestige Serves LLC · 1240 S Corning Street, Suite 105, Los Angeles, CA 90035 ·
+  <a href="tel:4242353089">424.235.3089</a> ·
+  <a href="mailto:info@prestigeserves.com">info@prestigeserves.com</a>
+</footer>
+
+<script>
+async function handleCorpFormSubmit(e) {
+  e.preventDefault();
+
+  const form = document.getElementById('csrf-form');
+  const submitBtn = document.getElementById('csrf-submit-btn');
+  const successEl = document.getElementById('csrf-success');
+  const errorEl = document.getElementById('csrf-error');
+
+  // Reset state
+  errorEl.style.display = 'none';
+  successEl.style.display = 'none';
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting…';
+
+  // Validate tier selected
+  const tier = form.querySelector('input[name="tier"]:checked');
+  if (!tier) {
+    errorEl.textContent = 'Please select a service tier before submitting.';
+    errorEl.style.display = 'block';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Request';
+    return;
+  }
+
+  try {
+    const fd = new FormData();
+
+    // Map form fields to the API's expected keys
+    fd.append('clientName', form['req-firm'].value || form['req-name'].value);
+    fd.append('contactName', form['req-name'].value);
+    fd.append('email', form['req-email'].value);
+    fd.append('phone', form['req-phone'].value);
+    fd.append('caseNumber', form['case-number'].value);
+    fd.append('courtJurisdiction', [form['court'].value, form['county'].value].filter(Boolean).join(', '));
+    fd.append('serviceType', 'Corporate & Registered Agent Service — ' + tier.value);
+
+    // Special instructions: combine all extra details
+    const extras = [
+      form['entity-name'].value && 'Entity: ' + form['entity-name'].value,
+      form['entity-type'].value && 'Entity Type: ' + form['entity-type'].value,
+      form['entity-state'].value && 'State of Formation: ' + form['entity-state'].value,
+      form['sos-number'].value && 'SOS Number: ' + form['sos-number'].value,
+      form['agent-name'].value && 'Registered Agent: ' + form['agent-name'].value,
+      form['agent-address'].value && 'Agent Address: ' + form['agent-address'].value,
+      form['alt-target'].value && 'Alternate Target: ' + form['alt-target'].value,
+      form['filing-outdated'].checked && 'Note: SOS filing may be outdated / agent may have relocated.',
+      form['doc-type'].value && 'Document Type: ' + form['doc-type'].value,
+      form['page-count'].value && 'Page Count: ' + form['page-count'].value,
+      form['plaintiff'].value && 'Plaintiff: ' + form['plaintiff'].value,
+      form['discretion-notes'].value && 'Discretion Notes: ' + form['discretion-notes'].value,
+      form['fallback'].value && 'If Personal Service Fails: ' + form['fallback'].options[form['fallback'].selectedIndex].text,
+      form['req-role'].value && 'Role: ' + form['req-role'].value,
+      form['specific-format'].checked && 'Court requires specific due diligence declaration format.',
+      form['notarization'].checked && 'Notarized Proof of Service requested (+$25).',
+    ].filter(Boolean).join('\n');
+
+    fd.append('specialInstructions', extras);
+    fd.append('defendantName', form['entity-name'].value);
+
+    // Files
+    const fileInput = document.getElementById('corp-files');
+    if (fileInput.files.length) {
+      for (const f of fileInput.files) {
+        fd.append('files', f);
+      }
+    }
+
+    const resp = await fetch('/api/request', { method: 'POST', body: fd });
+    const result = await resp.json();
+
+    if (result.success) {
+      form.style.opacity = '0.4';
+      form.style.pointerEvents = 'none';
+      successEl.style.display = 'block';
+      successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      throw new Error(result.message || 'Submission failed.');
+    }
+  } catch (err) {
+    errorEl.textContent = 'Something went wrong: ' + (err.message || 'Please try again or call us at 424-235-3089.');
+    errorEl.style.display = 'block';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Request';
+  }
+}
+</script>
+</body>
+</html>
