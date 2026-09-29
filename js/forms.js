@@ -70,7 +70,12 @@ var SERVICE_TYPE_PRICES = {
   'Corporate Standard': 145,
   'Corporate Rush': 167,
   'Corporate Priority': 197,
-  'Corporate Emergency': 297
+  'Corporate Emergency': 297,
+  'Standard First-Class Mailing': 25,
+  'Certified Mail Upgrade': 35,
+  'Basic N&A Mail Service': 65,
+  'N&A Plus': 85,
+  'N&A with Fallback': 150
 };
 
 function resolveServicePrice(serviceType) {

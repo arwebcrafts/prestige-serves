@@ -126,6 +126,7 @@
           <p class="ms-section-desc">When documents are left with a competent adult or posted at the property, California law requires a follow-up mailing to complete service. You are charged <strong>only when substituted or posted service actually occurs</strong>. If we serve your party personally, this fee never applies. It is an add-on to a serve and is never billed on its own.</p>
         </div>
       </div>
+      <p style="font-size:13.5px;color:var(--text-muted);margin:12px 0 18px;">Note: Standard 3% transfer &amp; processing fee is calculated and added automatically at checkout.</p>
       <div class="ms-rate-table-wrap">
         <table class="ms-rate-table">
           <thead>
@@ -134,6 +135,7 @@
               <th scope="col">Rate</th>
               <th scope="col">What's Included</th>
               <th scope="col">Best For</th>
+              <th scope="col" style="text-align:center;">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -142,12 +144,18 @@
               <td class="ms-rate">$25</td>
               <td>USPS First-Class postage, envelope prep, and the declaration of mailing added to your proof of service.</td>
               <td class="ms-best-for">Most matters. The standard, court-accepted option.</td>
+              <td style="text-align:center;vertical-align:middle;">
+                <button type="button" onclick="triggerCheckout('Standard First-Class Mailing', 25)" style="background:var(--accent-blue);color:#fff;border:none;padding:8px 16px;border-radius:100px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;">Pay &amp; Start ($25)</button>
+              </td>
             </tr>
             <tr>
               <td class="ms-service-name">Certified Mail Upgrade</td>
               <td class="ms-rate">$35</td>
               <td>Everything in Standard, sent Certified Mail with tracking for a documented paper trail.</td>
               <td class="ms-best-for">Matters where counsel wants tracked proof of mailing beyond the declaration.</td>
+              <td style="text-align:center;vertical-align:middle;">
+                <button type="button" onclick="triggerCheckout('Certified Mail Upgrade', 35)" style="background:var(--accent-blue);color:#fff;border:none;padding:8px 16px;border-radius:100px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;">Pay &amp; Start ($35)</button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -171,6 +179,7 @@
               <th scope="col">Rate</th>
               <th scope="col">What's Included</th>
               <th scope="col">Best For</th>
+              <th scope="col" style="text-align:center;">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -179,18 +188,27 @@
               <td class="ms-rate">$65</td>
               <td>Document prep and First-Class mailing with N&amp;A forms and a prepaid return envelope; monitoring for the signed acknowledgment; completed proof of service on return.</td>
               <td class="ms-best-for">Cooperative parties, amicable matters, and represented defendants.</td>
+              <td style="text-align:center;vertical-align:middle;">
+                <button type="button" onclick="triggerCheckout('Basic N&amp;A Mail Service', 65)" style="background:var(--accent-blue);color:#fff;border:none;padding:8px 16px;border-radius:100px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;">Pay &amp; Start ($65)</button>
+              </td>
             </tr>
             <tr>
               <td class="ms-service-name">N&amp;A Plus</td>
               <td class="ms-rate">$85</td>
               <td>Everything in Basic, sent Certified Mail with Return Receipt, plus one follow-up reminder mailing if the acknowledgment is not returned within 20 days.</td>
               <td class="ms-best-for">When you want a tracked paper trail or expect the defendant may need a reminder.</td>
+              <td style="text-align:center;vertical-align:middle;">
+                <button type="button" onclick="triggerCheckout('N&amp;A Plus Mail Service', 85)" style="background:var(--accent-blue);color:#fff;border:none;padding:8px 16px;border-radius:100px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;">Pay &amp; Start ($85)</button>
+              </td>
             </tr>
             <tr>
               <td class="ms-service-name">N&amp;A with Fallback</td>
               <td class="ms-rate">$150</td>
               <td>Everything in N&amp;A Plus. If the defendant never signs, $100 converts to a credit toward standard personal service, so you never pay for service twice.</td>
               <td class="ms-best-for">When cooperation is uncertain and you want zero risk of paying twice.</td>
+              <td style="text-align:center;vertical-align:middle;">
+                <button type="button" onclick="triggerCheckout('N&amp;A Mail Service with Fallback', 150)" style="background:var(--accent-blue);color:#fff;border:none;padding:8px 16px;border-radius:100px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;">Pay &amp; Start ($150)</button>
+              </td>
             </tr>
           </tbody>
         </table>
