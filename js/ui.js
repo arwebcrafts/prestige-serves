@@ -472,4 +472,57 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   // Initialize testimonial carousel safely once
   initTestimonialCarousel();
+
+  // Initialize services carousel safely
+  initSvcCarousel();
 });
+
+// SERVICES CAROUSEL CONTROLLER
+function moveSvcCarousel(dir) {
+  const track = document.getElementById('svc-carousel-track');
+  if (!track) return;
+  const card = track.querySelector('.carousel-card');
+  if (!card) return;
+  const cardWidth = card.offsetWidth + 24; // card width + gap
+  track.scrollBy({ left: dir * cardWidth, behavior: 'smooth' });
+}
+
+function initSvcCarousel() {
+  const track = document.getElementById('svc-carousel-track');
+  const dotsContainer = document.getElementById('svc-carousel-dots');
+  if (!track || !dotsContainer) return;
+
+  const cards = track.querySelectorAll('.carousel-card');
+  if (!cards.length) return;
+
+  function updateDots() {
+    dotsContainer.innerHTML = '';
+    const containerWidth = track.clientWidth;
+    const cardWidth = cards[0].offsetWidth + 24;
+    const visibleCount = Math.max(1, Math.round(containerWidth / cardWidth));
+    const totalPages = Math.max(1, Math.ceil(cards.length / visibleCount));
+
+    const scrollPos = track.scrollLeft;
+    const currentPage = Math.min(totalPages - 1, Math.max(0, Math.round(scrollPos / (cardWidth * visibleCount))));
+
+    for (let i = 0; i < totalPages; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'svc-carousel-dot' + (i === currentPage ? ' active' : '');
+      dot.setAttribute('role', 'button');
+      dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+      dot.onclick = (function(pageIndex) {
+        return function() {
+          track.scrollTo({ left: pageIndex * visibleCount * cardWidth, behavior: 'smooth' });
+        };
+      })(i);
+      dotsContainer.appendChild(dot);
+    }
+  }
+
+  updateDots();
+  track.addEventListener('scroll', function() {
+    clearTimeout(track._scrollTimeout);
+    track._scrollTimeout = setTimeout(updateDots, 60);
+  });
+  window.addEventListener('resize', updateDots);
+}
