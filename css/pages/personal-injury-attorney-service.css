@@ -1,0 +1,272 @@
+/* personal-injury-attorney-service.css — Personal Injury Attorney Service page */
+
+.pi-hero {
+  position: relative;
+  left: 50%;
+  width: 100vw;
+  margin-left: -50vw;
+  min-height: min(560px, 72vh);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  background: #0f1419;
+}
+
+.pi-hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.pi-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(10, 15, 35, 0.94) 0%, rgba(10, 15, 35, 0.78) 55%, rgba(10, 15, 35, 0.3) 100%);
+}
+
+.pi-hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 56px 72px;
+  color: #fff;
+  max-width: 820px;
+}
+
+.pi-hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #e5c158;
+  font-weight: 600;
+  margin-bottom: 16px;
+  padding: 5px 14px;
+  background: rgba(201, 168, 76, 0.15);
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  border-radius: 100px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  width: fit-content;
+  max-width: 100%;
+}
+
+.pi-hero-title {
+  font-size: clamp(34px, 4.2vw, 58px);
+  font-weight: 300;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  margin-bottom: 18px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.pi-hero-sub {
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.65;
+  opacity: 0.92;
+  max-width: 680px;
+  margin-bottom: 22px;
+}
+
+.pi-hero-badges {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+  margin-bottom: 28px;
+}
+
+.pi-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+}
+
+.pi-hero-call {
+  color: #fff;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.pi-hero-call:hover {
+  text-decoration: underline;
+}
+
+.pi-intro {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 56px;
+  padding: 80px 0 72px;
+  align-items: start;
+}
+
+.pi-section-kicker {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-blue);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.pi-section-title {
+  font-size: 34px;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  margin-bottom: 24px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.pi-two-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  padding: 48px 0 72px;
+  border-top: 1px solid var(--border);
+}
+
+.pi-card {
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px 36px;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pi-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-blue);
+  box-shadow: 0 12px 30px rgba(10,37,64,0.06);
+}
+
+.pi-card h3 {
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--text-dark);
+  margin-bottom: 18px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.pi-card ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.pi-card li {
+  margin-bottom: 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.pi-card li strong {
+  color: var(--text-dark);
+}
+
+.pi-pricing-section {
+  padding: 80px 0;
+  border-top: 1px solid var(--border);
+}
+
+.pi-pricing-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 32px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.pi-pricing-table th {
+  background: var(--bg-warm);
+  color: var(--text-muted);
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 18px 24px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.pi-pricing-table td {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  font-size: 15px;
+}
+
+.pi-pricing-table tr:last-child td {
+  border-bottom: none;
+}
+
+.pi-pricing-table td strong {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+}
+
+.pi-pricing-table td small {
+  color: var(--text-muted);
+  font-size: 13.5px;
+}
+
+.pi-pricing-table td.amt {
+  text-align: right;
+  white-space: nowrap;
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--accent-blue);
+}
+
+.pi-cta {
+  background: var(--bg-dark);
+  color: #fff;
+  border-radius: 16px;
+  padding: 64px 56px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 32px;
+  margin: 64px 0 80px;
+}
+
+.pi-cta h2 {
+  font-size: clamp(28px, 3.2vw, 42px);
+  font-weight: 300;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  margin-bottom: 8px;
+}
+
+.pi-cta p {
+  color: rgba(255,255,255,0.8);
+  font-size: 16px;
+  margin: 0;
+}
+
+@media (max-width: 960px) {
+  .pi-intro {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .pi-two-grid {
+    grid-template-columns: 1fr;
+  }
+  .pi-hero-content {
+    padding: 40px 28px;
+  }
+  .pi-cta {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 40px 32px;
+  }
+}
