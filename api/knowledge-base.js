@@ -63,8 +63,8 @@ reliable, and legally compliant service of process.
 
 8. STAKEOUT / SURVEILLANCE SERVICE
    - Extended attempts for difficult-to-serve subjects
-   - Multiple visits at different times / days
-   - Price: quoted per case
+   - On-location surveillance (2h $250, 4h $450, 6h $600)
+   - Note: Process serving fee ($97.99) is billed separately in addition to stakeout time if service is completed
 
 9. SUBPOENA SERVICE
    - Service of deposition subpoenas, trial subpoenas, and SDTs (Subpoena Duces Tecum)
