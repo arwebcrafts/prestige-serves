@@ -51,7 +51,7 @@ function closeMobileNav() {
 
 function buildFAQ(containerId, items) {
   const c = document.getElementById(containerId);
-  if (!c) return;
+  if (!c || c.children.length > 0) return;
   c.innerHTML = items.map(item => `
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFAQ(this)">
@@ -398,19 +398,14 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Process Serving FAQ
   if (document.getElementById('ps-faq')) {
     buildFAQ('ps-faq', [
-      {q:"What exactly is 'Process Serving'?",a:"Process Serving is the legal procedure of delivering documents (like a summons, complaint, or subpoena) to a defendant or witness to notify them of legal action. It is a constitutional requirement to ensure 'due process' so the other party has a chance to respond."},
-      {q:"How much does a process server cost in Los Angeles?",a:"Rates vary based on the location and speed of service required. Our Routine LA service starts at competitive rates. Contact us for a free quote."},
-      {q:"What happens if the defendant avoids service?",a:"We utilize advanced techniques to effectuate service on evasive individuals, including surveillance (stakeouts) and comprehensive background checks to verify active addresses."},
-      {q:"Is your service valid for California courts?",a:"Yes. All our servers are registered and bonded in accordance with California law, ensuring that your Process Serving will be upheld by the judge."},
-      {q:"Do you serve nationwide or just in Los Angeles?",a:"We are based in Los Angeles but handle service across the entire United States. For nationwide jobs, we act as your project manager, utilizing our vetted network of affiliates."},
-      {q:"Logistics & Turnaround Times",a:"<strong>Standard:</strong> First attempt within 5–7 business days with 3 attempts.<br><strong>Rush:</strong> First attempt within 3 business days with 2–3 attempts.<br><strong>Priority:</strong> First attempt within 2 business days.<br><strong>Emergency:</strong> Immediate dispatch."},
-      {q:"How many attempts do I get?",a:"Our standard fee includes up to 3 attempts at a single address. We make attempts at different times of day (morning, afternoon, evening) and usually one weekend attempt to maximize the chances of contact."},
-      {q:"What if the person isn't home or refuses to open the door?",a:"If a subject is evasive, we document every attempt thoroughly. In California, we may be able to perform <strong>Substitute Service</strong> after diligent attempts, followed by mailing a copy."},
-      {q:"What happens if the address I gave you is wrong/bad?",a:"We will notify you immediately. We offer <strong>Skip Tracing services</strong> to locate a current address for an additional fee."},
-      {q:"Can you serve someone in a gated community or secure office building?",a:"Yes. In California, process servers have specific legal rights to access gated communities for the purpose of service."},
-      {q:"How do I prove to the court that the papers were served?",a:"Once service is complete, we generate a <strong>Proof of Service (POS)</strong> or Affidavit of Service — a legal document signed by the process server stating who was served, when, where, and how."},
-      {q:"Do you file the Proof of Service for me?",a:"We can! For an additional small fee, we can e-file your Proof of Service with the court or physically file it for you."},
-      {q:"What if you can't serve them at all?",a:"If we exhaust all attempts, we will provide a <strong>Declaration of Due Diligence</strong>. This document details every attempt we made and why service was unsuccessful."}
+      {q:"Do you provide photos of service attempts?",a:"Yes. Prestige Serves documents every service attempt with geotagged and timestamped photos. You receive them with your real-time updates, and they are included in your file along with your court-ready proof of service."},
+      {q:"What is a geotagged photo, and why does it matter in court?",a:"A geotagged photo has GPS coordinates embedded in its file data that show where it was taken, and a timestamp records when. Together they give objective support that our process server was at the address on the stated date and time. This can help if someone later claims service was never attempted or was made at the wrong place. The sworn proof of service remains the legal record, and the photos support it."},
+      {q:"How quickly will I receive documentation after an attempt?",a:"You receive an update by email after each attempt, and you can check status in your client portal. Photos are included with those updates. When the first attempt happens depends on your service level: Emergency is same-day, Priority is within 2 business days, Rush is within 3 business days, and Standard is within 5–7 business days."},
+      {q:"Can photo documentation support a request for substituted service?",a:"Yes, it can help. In California, substituted service under Code of Civil Procedure § 415.20 generally requires that personal service was first attempted with reasonable diligence. Geotagged, timestamped photos of each attempt help document that effort in your declaration. The court decides whether diligence was shown, and this is general information, not legal advice."},
+      {q:"Does Prestige Serves provide proof of service for California courts?",a:"Yes. When service is completed, a registered process server signs a proof of service declaration that is ready to file in California courts, and we include your photo documentation with the file. We can also prepare, mail and file proofs of service by mail for you; see the pricing on our process serving page."},
+      {q:"How fast can you serve documents?",a:"Standard service ($97.99) makes the first attempt within 5–7 business days. Rush ($119.99) is within 3 business days, Priority ($149.99) is within 2 business days, and Emergency ($249.99) is same-day. A 3% transfer and processing fee is added at checkout."},
+      {q:"Do you serve outside Los Angeles?",a:"Yes. We serve throughout Los Angeles County, across California in compliance with the California Code of Civil Procedure, and in all 50 states through our affiliate network. You receive a proof of service for your local court filing."},
+      {q:"What happens if service cannot be completed?",a:"Every attempt is documented and reported to you, including attempts that find no one home or a bad address. If the person cannot be found, that record shows what was tried and when. You can then order skip tracing (/skip-tracing.html) to locate a new address or a stakeout (/stakeout-service.html) for a difficult location."}
     ]);
   }
 
