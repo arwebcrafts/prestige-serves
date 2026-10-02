@@ -427,6 +427,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Stakeout Service FAQ
   if (document.getElementById('so-faq')) {
     buildFAQ('so-faq', [
+      {q:"Is the process serving fee included in the stakeout price?",a:"No. The process serving fee is billed separately from the stakeout time. If personal service is completed during the booked window, the standard process serving fee ($97.99) applies in addition to the stakeout price."},
       {q:"Do you need to be a licensed private investigator to do this?",a:"No. As a registered process server, watching a known address to complete personal service falls within our core service-of-process work, not investigative work. California law (CCP §1033.5(a)(4)(B)) specifically recognizes stakeout fees as a recoverable process-serving cost, separate from investigation expenses."},
       {q:"What happens if the subject never shows up?",a:"You're billed for the time booked, and we'll give you a full log of what was observed. From there we can recommend next steps — a longer window, a second location, or moving toward service by publication if the deadline is close."},
       {q:"Can this be combined with Skip Tracing?",a:"Yes — if the address itself is uncertain, we recommend starting with Skip Tracing to confirm a current location before booking surveillance time."},
