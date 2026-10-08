@@ -413,38 +413,78 @@
 
   <div style="padding:56px 72px;border-top:1px solid var(--border);">
     <h2 style="font-size:38px;font-weight:300;padding-bottom:32px;">Frequently Asked Questions</h2>
-    <div id="ps-faq" class="faq-list" style="max-width:800px;display:flex;flex-direction:column;gap:16px;">
-      <div class="faq-item" style="border:1px solid var(--border);border-radius:8px;padding:20px 24px;background:#fff;">
-        <h3 style="font-size:18px;font-weight:600;color:var(--text-dark);margin-bottom:8px;">Do you provide photos of service attempts?</h3>
-        <p class="body-text" style="font-size:15px;line-height:1.6;margin:0;">Yes. Prestige Serves documents every service attempt with geotagged and timestamped photos. You receive them with your real-time updates, and they are included in your file along with your court-ready proof of service.</p>
+    <div id="ps-faq" class="faq-list" style="max-width:800px;">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFAQ(this)">
+          <span>Do you provide photos of service attempts?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          Yes. Prestige Serves documents every service attempt with geotagged and timestamped photos. You receive them with your real-time updates, and they are included in your file along with your court-ready proof of service.
+        </div>
       </div>
-      <div class="faq-item" style="border:1px solid var(--border);border-radius:8px;padding:20px 24px;background:#fff;">
-        <h3 style="font-size:18px;font-weight:600;color:var(--text-dark);margin-bottom:8px;">What is a geotagged photo, and why does it matter in court?</h3>
-        <p class="body-text" style="font-size:15px;line-height:1.6;margin:0;">A geotagged photo has GPS coordinates embedded in its file data that show where it was taken, and a timestamp records when. Together they give objective support that our process server was at the address on the stated date and time. This can help if someone later claims service was never attempted or was made at the wrong place. The sworn proof of service remains the legal record, and the photos support it.</p>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFAQ(this)">
+          <span>What is a geotagged photo, and why does it matter in court?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          A geotagged photo has GPS coordinates embedded in its file data that show where it was taken, and a timestamp records when. Together they give objective support that our process server was at the address on the stated date and time. This can help if someone later claims service was never attempted or was made at the wrong place. The sworn proof of service remains the legal record, and the photos support it.
+        </div>
       </div>
-      <div class="faq-item" style="border:1px solid var(--border);border-radius:8px;padding:20px 24px;background:#fff;">
-        <h3 style="font-size:18px;font-weight:600;color:var(--text-dark);margin-bottom:8px;">How quickly will I receive documentation after an attempt?</h3>
-        <p class="body-text" style="font-size:15px;line-height:1.6;margin:0;">You receive an update by email after each attempt, and you can check status in your client portal. Photos are included with those updates. When the first attempt happens depends on your service level: Emergency is same-day, Priority is within 2 business days, Rush is within 3 business days, and Standard is within 5–7 business days.</p>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFAQ(this)">
+          <span>How quickly will I receive documentation after an attempt?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          You receive an update by email after each attempt, and you can check status in your client portal. Photos are included with those updates. When the first attempt happens depends on your service level: Emergency is same-day, Priority is within 2 business days, Rush is within 3 business days, and Standard is within 5–7 business days.
+        </div>
       </div>
-      <div class="faq-item" style="border:1px solid var(--border);border-radius:8px;padding:20px 24px;background:#fff;">
-        <h3 style="font-size:18px;font-weight:600;color:var(--text-dark);margin-bottom:8px;">Can photo documentation support a request for substituted service?</h3>
-        <p class="body-text" style="font-size:15px;line-height:1.6;margin:0;">Yes, it can help. In California, substituted service under Code of Civil Procedure § 415.20 generally requires that personal service was first attempted with reasonable diligence. Geotagged, timestamped photos of each attempt help document that effort in your declaration. The court decides whether diligence was shown, and this is general information, not legal advice.</p>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFAQ(this)">
+          <span>Can photo documentation support a request for substituted service?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          Yes, it can help. In California, substituted service under Code of Civil Procedure § 415.20 generally requires that personal service was first attempted with reasonable diligence. Geotagged, timestamped photos of each attempt help document that effort in your declaration. The court decides whether diligence was shown, and this is general information, not legal advice.
+        </div>
       </div>
-      <div class="faq-item" style="border:1px solid var(--border);border-radius:8px;padding:20px 24px;background:#fff;">
-        <h3 style="font-size:18px;font-weight:600;color:var(--text-dark);margin-bottom:8px;">Does Prestige Serves provide proof of service for California courts?</h3>
-        <p class="body-text" style="font-size:15px;line-height:1.6;margin:0;">Yes. When service is completed, a registered process server signs a proof of service declaration that is ready to file in California courts, and we include your photo documentation with the file. We can also prepare, mail and file proofs of service by mail for you; see the pricing on our process serving page.</p>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFAQ(this)">
+          <span>Does Prestige Serves provide proof of service for California courts?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          Yes. When service is completed, a registered process server signs a proof of service declaration that is ready to file in California courts, and we include your photo documentation with the file. We can also prepare, mail and file proofs of service by mail for you; see the pricing on our process serving page.
+        </div>
       </div>
-      <div class="faq-item" style="border:1px solid var(--border);border-radius:8px;padding:20px 24px;background:#fff;">
-        <h3 style="font-size:18px;font-weight:600;color:var(--text-dark);margin-bottom:8px;">How fast can you serve documents?</h3>
-        <p class="body-text" style="font-size:15px;line-height:1.6;margin:0;">Standard service ($97.99) makes the first attempt within 5–7 business days. Rush ($119.99) is within 3 business days, Priority ($149.99) is within 2 business days, and Emergency ($249.99) is same-day. A 3% transfer and processing fee is added at checkout.</p>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFAQ(this)">
+          <span>How fast can you serve documents?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          Standard service ($97.99) makes the first attempt within 5–7 business days. Rush ($119.99) is within 3 business days, Priority ($149.99) is within 2 business days, and Emergency ($249.99) is same-day. A 3% transfer and processing fee is added at checkout.
+        </div>
       </div>
-      <div class="faq-item" style="border:1px solid var(--border);border-radius:8px;padding:20px 24px;background:#fff;">
-        <h3 style="font-size:18px;font-weight:600;color:var(--text-dark);margin-bottom:8px;">Do you serve outside Los Angeles?</h3>
-        <p class="body-text" style="font-size:15px;line-height:1.6;margin:0;">Yes. We serve throughout Los Angeles County, across California in compliance with the California Code of Civil Procedure, and in all 50 states through our affiliate network. You receive a proof of service for your local court filing.</p>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFAQ(this)">
+          <span>Do you serve outside Los Angeles?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          Yes. We serve throughout Los Angeles County, across California in compliance with the California Code of Civil Procedure, and in all 50 states through our affiliate network. You receive a proof of service for your local court filing.
+        </div>
       </div>
-      <div class="faq-item" style="border:1px solid var(--border);border-radius:8px;padding:20px 24px;background:#fff;">
-        <h3 style="font-size:18px;font-weight:600;color:var(--text-dark);margin-bottom:8px;">What happens if service cannot be completed?</h3>
-        <p class="body-text" style="font-size:15px;line-height:1.6;margin:0;">Every attempt is documented and reported to you, including attempts that find no one home or a bad address. If the person cannot be found, that record shows what was tried and when. You can then order <a href="skip-tracing.html">skip tracing</a> to locate a new address or a <a href="stakeout-service.html">stakeout</a> for a difficult location.</p>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFAQ(this)">
+          <span>What happens if service cannot be completed?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          Every attempt is documented and reported to you, including attempts that find no one home or a bad address. If the person cannot be found, that record shows what was tried and when. You can then order <a href="skip-tracing.html" style="color:var(--accent-blue);text-decoration:underline;">skip tracing</a> to locate a new address or a <a href="stakeout-service.html" style="color:var(--accent-blue);text-decoration:underline;">stakeout</a> for a difficult location.
+        </div>
       </div>
     </div>
   </div>
