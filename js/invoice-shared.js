@@ -84,6 +84,11 @@ function recalcInvoiceTable() {
   el = document.getElementById('inv-grand'); if (el) el.textContent = formatUsdFromDollars(grand);
   el = document.getElementById('inv-stripe-fee-line'); if (el) el.style.display = stripeOn ? 'block' : 'none';
 
+  var payBtn = document.getElementById('inv-stripe-btn-link');
+  if (payBtn) {
+    payBtn.textContent = 'PAY NOW VIA STRIPE · ' + formatUsdFromDollars(grand);
+  }
+
   return {
     subtotal_cents: Math.round(sub * 100),
     tax_pct: taxPct,
@@ -218,7 +223,9 @@ function collectInvoicePayload() {
     stripe_fee_enabled: totals.stripe_fee_enabled,
     notes: val('inv-notes'),
     client_email: val('bill-email'),
-    stripe_pay_url: ensureAbsoluteUrl(val('inv-stripe-url')) || 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n',
+    stripe_pay_url: (val('inv-stripe-url') && val('inv-stripe-url') !== 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n')
+      ? ensureAbsoluteUrl(val('inv-stripe-url'))
+      : null,
   };
 }
 
@@ -318,11 +325,11 @@ function printInvoice() {
     // Add clickable link annotations over every <a> in the invoice
     var allLinks = invEl.querySelectorAll('a[href]');
     var invRect = invEl.getBoundingClientRect();
-    var scaleX = contentWidthMm / invEl.offsetWidth;
-    var scaleY = contentHeightMm / (imgHeight / (canvas.width / invEl.offsetWidth));
+    var scaleX = contentWidthMm / (invEl.offsetWidth || 1);
+    var scaleY = contentHeightMm / (invEl.offsetHeight || 1);
 
     allLinks.forEach(function(link) {
-      var href = link.getAttribute('href');
+      var href = link.href || link.getAttribute('href');
       if (!href || href === '#' || href.startsWith('javascript:')) return;
       // Skip hidden links
       if (link.offsetParent === null && link.style.display === 'none') return;
@@ -335,6 +342,12 @@ function printInvoice() {
       var w = linkRect.width * scaleX;
       var h = linkRect.height * scaleY;
 
+      // Ensure generous clickable hit target in PDF reader (at least 6mm tall)
+      if (h < 6) {
+        y = Math.max(marginMm, y - 1);
+        h = Math.max(h, 6);
+      }
+
       var linkPage = 0;
       if (contentHeightMm > usablePageHeight) {
         linkPage = Math.floor(y / usablePageHeight);
@@ -343,7 +356,7 @@ function printInvoice() {
 
       if (linkPage < pdf.getNumberOfPages()) {
         pdf.setPage(linkPage + 1);
-        pdf.link(x, y, w, h, { url: href });
+        pdf.link(x, y, w, h, { url: ensureAbsoluteUrl(href) });
       }
     });
 

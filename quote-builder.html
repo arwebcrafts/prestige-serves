@@ -122,13 +122,13 @@
         <div class="inv-stripe-block">
           <div class="inv-stripe-wordmark">str<b>i</b>pe <span style="font-size:7px;letter-spacing:2px;background:rgba(255,255,255,0.12);padding:2px 6px;">Secure</span></div>
           <div style="margin-top:10px;" class="inv-stripe-url-input">
-            <label style="font-size:9px;color:rgba(255,255,255,0.85);display:block;margin-bottom:3px;">Stripe Payment Link URL:</label>
-            <input id="inv-stripe-url" value="https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n" placeholder="https://buy.stripe.com/..." style="width:100%;font-size:11px;padding:6px 8px;background:#fff;border:1px solid #ccc;color:#111;border-radius:3px;box-sizing:border-box;" oninput="updateStripeUrlPreview(this.value)">
+            <label style="font-size:9px;color:rgba(255,255,255,0.85);display:block;margin-bottom:3px;">Stripe Payment Link URL (Auto or Custom):</label>
+            <input id="inv-stripe-url" value="" placeholder="Auto-generated on save (or paste custom Stripe link)" style="width:100%;font-size:11px;padding:6px 8px;background:#fff;border:1px solid #ccc;color:#111;border-radius:3px;box-sizing:border-box;" oninput="updateStripeUrlPreview(this.value)">
           </div>
           <div style="margin-top:12px;" class="inv-pdf-pay-block">
-            <a id="inv-stripe-btn-link" href="https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n" target="_blank" rel="noopener" class="inv-pay-btn-anchor">PAY NOW VIA STRIPE</a>
+            <a id="inv-stripe-btn-link" href="#" target="_blank" rel="noopener" class="inv-pay-btn-anchor">PAY NOW VIA STRIPE</a>
             <div style="margin-top:8px;font-size:9.5px;color:rgba(255,255,255,0.9);word-break:break-all;" class="inv-pdf-pay-url-box">
-              Clickable Link: <a id="inv-stripe-text-link" href="https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:underline;">https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n</a>
+              Clickable Link: <a id="inv-stripe-text-link" href="#" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:underline;">(Generates automatically on save)</a>
             </div>
           </div>
         </div>
@@ -158,7 +158,7 @@
 
     <div class="inv-pdf-link-banner" style="padding:7px 20px;background:#f4f6fa;border-top:1px solid #e2e0db;border-bottom:1px solid #e2e0db;font-size:10.5px;color:#1e2d5a;text-align:center;">
       <strong>Click to Pay via Stripe Online:</strong>
-      <a id="inv-pdf-banner-link" href="https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n" target="_blank" rel="noopener" style="color:#1d4ed8;font-weight:bold;text-decoration:underline;margin-left:4px;word-break:break-all;">https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n</a>
+      <a id="inv-pdf-banner-link" href="#" target="_blank" rel="noopener" style="color:#1d4ed8;font-weight:bold;text-decoration:underline;margin-left:4px;word-break:break-all;">(Generates automatically on save)</a>
     </div>
 
     <div style="padding:8px 20px;border-bottom:1px solid #e2e0db;" class="inv-notes">
@@ -183,7 +183,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="js/invoice-shared.js"></script>
 <script src="js/quote-builder.js"></script>
 </body>

@@ -104,17 +104,20 @@ async function saveInvoice() {
     ));
 
     var currentStripeUrl = val('inv-stripe-url');
-    var activePayUrl = currentStripeUrl ? ensureAbsoluteUrl(currentStripeUrl) : payUrl;
+    var isCustom = currentStripeUrl && currentStripeUrl !== 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n';
+    var activePayUrl = isCustom ? ensureAbsoluteUrl(currentStripeUrl) : (payUrl + '&pay=1');
 
     if (document.getElementById('inv-stripe-url')) {
-      document.getElementById('inv-stripe-url').value = activePayUrl;
+      document.getElementById('inv-stripe-url').value = isCustom ? currentStripeUrl : '';
     }
     updateStripeUrlPreview(activePayUrl);
 
-    showMsg('Invoice saved successfully.', false);
+    showMsg('Invoice saved successfully. Total: ' + formatUsdFromDollars((inv.total_cents || 0) / 100), false);
     showPayLink(payUrl, inv.invoice_number, inv.access_token);
+    return true;
   } catch (err) {
     showMsg('Network error. Try again.', true);
+    return false;
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Save Quote & Get Pay Link'; }
   }
@@ -144,9 +147,10 @@ function loadInvoiceFromQuery() {
       document.getElementById('inv-notes').value = inv.notes || '';
       var payUrl = ensureAbsoluteUrl(window.location.origin + '/invoice.html?number=' +
         encodeURIComponent(inv.invoice_number) + '&token=' + encodeURIComponent(inv.access_token));
-      var stripeUrl = ensureAbsoluteUrl(inv.stripe_pay_url || payUrl || 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n');
+      var isCustom = inv.stripe_pay_url && inv.stripe_pay_url !== 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n';
+      var stripeUrl = isCustom ? ensureAbsoluteUrl(inv.stripe_pay_url) : (payUrl + '&pay=1');
       if (document.getElementById('inv-stripe-url')) {
-        document.getElementById('inv-stripe-url').value = stripeUrl;
+        document.getElementById('inv-stripe-url').value = isCustom ? inv.stripe_pay_url : '';
       }
       updateStripeUrlPreview(stripeUrl);
 
@@ -163,20 +167,34 @@ function loadInvoiceFromQuery() {
 }
 
 function updateStripeUrlPreview(url) {
-  var target = ensureAbsoluteUrl(url || 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n');
+  var target = (!url || url === '#' || url === 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n') ? '' : ensureAbsoluteUrl(url);
   var btn = document.getElementById('inv-stripe-btn-link');
   var txt = document.getElementById('inv-stripe-text-link');
   var bnr = document.getElementById('inv-pdf-banner-link');
-  if (btn) btn.href = target;
+  if (btn) {
+    btn.href = target || '#';
+  }
   if (txt) {
-    txt.href = target;
-    txt.textContent = target;
+    txt.href = target || '#';
+    txt.textContent = target || '(Generates automatically on save)';
   }
   if (bnr) {
-    bnr.href = target;
-    bnr.textContent = target;
+    bnr.href = target || '#';
+    bnr.textContent = target || '(Generates automatically on save)';
   }
 }
+
+// Ensure PDF export auto-saves first if unsaved so the link is never empty in the PDF
+var _originalPrintInvoice = window.printInvoice;
+window.printInvoice = async function () {
+  if (!editingInvoiceId) {
+    var ok = await saveInvoice();
+    if (!ok) return;
+  }
+  if (typeof _originalPrintInvoice === 'function') {
+    _originalPrintInvoice();
+  }
+};
 
 document.addEventListener('DOMContentLoaded', function () {
   if (!checkAdmin()) return;

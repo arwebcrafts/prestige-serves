@@ -87,10 +87,13 @@ function renderInvoice(inv) {
   }).join('');
 
   // Resolve the payment URL — must be absolute for PDF
-  var stripeTargetUrl = ensureAbsoluteUrl(
-    inv.stripe_pay_url ||
-    'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n'
+  var autoInvoicePayUrl = ensureAbsoluteUrl(
+    window.location.origin + '/invoice.html?number=' +
+    encodeURIComponent(inv.invoice_number) + '&token=' + encodeURIComponent(currentToken) + '&pay=1'
   );
+  var stripeTargetUrl = (inv.stripe_pay_url && inv.stripe_pay_url !== 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n')
+    ? ensureAbsoluteUrl(inv.stripe_pay_url)
+    : autoInvoicePayUrl;
 
   // Payment block inside the dark navy Stripe box
   var payBlock;
@@ -99,7 +102,7 @@ function renderInvoice(inv) {
       '<div style="padding:10px 14px;background:#27ae60;color:#fff;font-size:12px;font-weight:600;text-align:center;border-radius:4px;margin-top:10px;">PAID IN FULL</div>';
   } else {
     payBlock =
-      '<a href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener" class="inv-pay-btn-anchor">' +
+      '<a href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener" class="inv-pay-btn-anchor" onclick="if(!this.getAttribute(\'href\').includes(\'buy.stripe.com\')){event.preventDefault();payInvoice();}">' +
         'PAY NOW VIA STRIPE · ' + formatUsd(inv.total_cents) +
       '</a>' +
       '<div class="inv-pdf-pay-url-box" style="margin-top:6px;font-size:9px;color:rgba(255,255,255,0.85);word-break:break-all;">' +
@@ -280,7 +283,14 @@ document.addEventListener('DOMContentLoaded', function () {
     currentNumber = number;
     currentToken  = token;
     fetchInvoice(number, token).then(function (data) {
-      if (data.success) renderInvoice(data.data);
+      if (data.success) {
+        renderInvoice(data.data);
+        if (params.get('pay') === '1' && data.data.status !== 'paid') {
+          setTimeout(function() {
+            payInvoice();
+          }, 400);
+        }
+      }
     });
   }
 });
@@ -377,18 +387,27 @@ function printInvoice() {
     // ── Add clickable link annotations over every <a> in the invoice ──
     var allLinks = invEl.querySelectorAll('a[href]');
     var invRect = invEl.getBoundingClientRect();
-    var scaleX = contentWidthMm / invEl.offsetWidth;
-    var scaleY = contentHeightMm / (imgHeight / (canvas.width / invEl.offsetWidth));
+    var scaleX = contentWidthMm / (invEl.offsetWidth || 1);
+    var scaleY = contentHeightMm / (invEl.offsetHeight || 1);
 
     allLinks.forEach(function(link) {
-      var href = link.getAttribute('href');
+      var href = link.href || link.getAttribute('href');
       if (!href || href === '#' || href.startsWith('javascript:')) return;
+      if (link.offsetParent === null && link.style.display === 'none') return;
 
       var linkRect = link.getBoundingClientRect();
+      if (linkRect.width === 0 || linkRect.height === 0) return;
+
       var x = (linkRect.left - invRect.left) * scaleX + marginMm;
       var y = (linkRect.top - invRect.top) * scaleY + marginMm;
       var w = linkRect.width * scaleX;
       var h = linkRect.height * scaleY;
+
+      // Ensure generous clickable hit target in PDF reader (at least 6mm tall)
+      if (h < 6) {
+        y = Math.max(marginMm, y - 1);
+        h = Math.max(h, 6);
+      }
 
       // Determine which page this link falls on
       var linkPage = 0;
@@ -400,7 +419,7 @@ function printInvoice() {
       if (linkPage < pdf.getNumberOfPages()) {
         pdf.setPage(linkPage + 1);
         // Use pdf.link() to add a clickable annotation rectangle
-        pdf.link(x, y, w, h, { url: href });
+        pdf.link(x, y, w, h, { url: ensureAbsoluteUrl(href) });
       }
     });
 
