@@ -98,7 +98,7 @@ export default async function handler(req, res) {
     await ensureEmailSentColumn(sql);
     
     // Get owner email from settings
-    const ownerEmail = await getOwnerEmail(sql) || process.env.TO_EMAIL || 'muhammadwaqarsikandar@gmail.com';
+    const ownerEmail = await getOwnerEmail(sql) || process.env.TO_EMAIL || 'support@prestigeserves.com';
     
     let clientName, contactName, email, phone, addressLine1, addressLine2, city, state, zip;
     let defendantName, caseNumber, courtJurisdiction, multipleDefendants, serviceType, deadlineDate;

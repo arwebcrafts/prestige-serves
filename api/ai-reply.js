@@ -226,7 +226,7 @@ export async function generateAndSendAiReply(opts) {
     });
 
     // ── Send copy + [Take Over] button to OWNER ───────────────────────────
-    const ownerEmail = process.env.TO_EMAIL || 'info@prestigeserves.com';
+    const ownerEmail = process.env.TO_EMAIL || 'support@prestigeserves.com';
     const handoffUrl = `${SITE_URL}/api/ai-handoff?id=${submissionId}&type=${tableType}&token=${AI_HANDOFF_SECRET}`;
 
     const ownerHtml = buildOwnerAiAlertHtml({

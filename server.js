@@ -47,8 +47,8 @@ const HOSTINGER_SMTP_PORT = parseInt(process.env.HOSTINGER_SMTP_PORT) || 465;
 const HOSTINGER_SMTP_SECURE = process.env.HOSTINGER_SMTP_SECURE === 'true' || true;
 const HOSTINGER_SMTP_USER = process.env.HOSTINGER_SMTP_USER;
 const HOSTINGER_SMTP_PASS = process.env.HOSTINGER_SMTP_PASS;
-const FROM_EMAIL = process.env.FROM_EMAIL || 'crm@arwebcrafts.com';
-const TO_EMAIL = process.env.TO_EMAIL || 'prestigeservesllc@gmail.com';
+const FROM_EMAIL = process.env.FROM_EMAIL || HOSTINGER_SMTP_USER || 'support@prestigeserves.com';
+const TO_EMAIL = process.env.TO_EMAIL || 'support@prestigeserves.com';
 
 let transporter = null;
 
@@ -242,7 +242,7 @@ function buildContactEmailHtml(data) {
               <p style="margin:0;font-size:13px;color:#94a3b8;text-align:center;line-height:1.6;">
                 Prestige Serves LLC<br>
                 1240 S Corning Street, Los Angeles, CA 90035<br>
-                Phone: 424-235-3089 | Email: prestigervesllc@gmail.com
+                Phone: 424-235-3089 | Email: support@prestigeserves.com
               </p>
             </td>
           </tr>
@@ -433,7 +433,7 @@ function buildServiceRequestEmailHtml(data) {
               <p style="margin:0;font-size:13px;color:#94a3b8;text-align:center;line-height:1.6;">
                 Prestige Serves LLC<br>
                 1240 S Corning Street, Los Angeles, CA 90035<br>
-                Phone: 424-235-3089 | Email: prestigervesllc@gmail.com
+                Phone: 424-235-3089 | Email: support@prestigeserves.com
               </p>
             </td>
           </tr>

@@ -86,7 +86,7 @@ export default async function handler(req, res) {
     await ensureSkipTraceDataColumn(sql);
     
     // Get owner email from settings
-    const ownerEmail = await getOwnerEmail(sql) || process.env.TO_EMAIL || 'muhammadwaqarsikandar@gmail.com';
+    const ownerEmail = await getOwnerEmail(sql) || process.env.TO_EMAIL || 'support@prestigeserves.com';
     
     // Debug: log what we're about to insert
     console.log('[DEBUG API contact] skipTraceData being inserted:', skipTraceData);

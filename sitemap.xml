@@ -8,7 +8,7 @@
 
   <url>
     <loc>https://www.prestigeserves.com/</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.00</priority>
     <image:image>
@@ -20,7 +20,7 @@
 
   <url>
     <loc>https://www.prestigeserves.com/about.html</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.80</priority>
     <image:image>
@@ -31,14 +31,14 @@
 
   <url>
     <loc>https://www.prestigeserves.com/services.html</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.90</priority>
   </url>
 
   <url>
     <loc>https://www.prestigeserves.com/process-serving.html</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.95</priority>
     <image:image>
@@ -49,7 +49,7 @@
 
   <url>
     <loc>https://www.prestigeserves.com/skip-tracing.html</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.90</priority>
     <image:image>
@@ -60,18 +60,18 @@
 
   <url>
     <loc>https://www.prestigeserves.com/stakeout-service.html</loc>
-    <lastmod>2026-06-17</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.90</priority>
     <image:image>
       <image:loc>https://www.prestigeserves.com/assets/images/stakeout-banner.png</image:loc>
-      <image:title>Stakeout & Surveillance Service Los Angeles</image:title>
+      <image:title>Stakeout &amp; Surveillance Service Los Angeles</image:title>
     </image:image>
   </url>
 
   <url>
     <loc>https://www.prestigeserves.com/efiling.html</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
     <image:image>
@@ -82,7 +82,7 @@
 
   <url>
     <loc>https://www.prestigeserves.com/erecording.html</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
     <image:image>
@@ -93,7 +93,7 @@
 
   <url>
     <loc>https://www.prestigeserves.com/concierge.html</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.80</priority>
     <image:image>
@@ -104,7 +104,7 @@
 
   <url>
     <loc>https://www.prestigeserves.com/nationwide.html</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.80</priority>
     <image:image>
@@ -115,7 +115,7 @@
 
   <url>
     <loc>https://www.prestigeserves.com/mail-service.html</loc>
-    <lastmod>2026-07-04</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
     <image:image>
@@ -126,7 +126,7 @@
 
   <url>
     <loc>https://www.prestigeserves.com/subpoena-domestication.html</loc>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.90</priority>
     <image:image>
@@ -135,16 +135,60 @@
     </image:image>
   </url>
 
+  <!-- PREVIOUSLY MISSING PAGES — now included for Google indexing -->
+
+  <url>
+    <loc>https://www.prestigeserves.com/corporate-registered-agent-service.html</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://www.prestigeserves.com/assets/images/corp-tier-priority.png</image:loc>
+      <image:title>Corporate &amp; Registered Agent Service Los Angeles</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.prestigeserves.com/personal-injury-attorney-service.html</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://www.prestigeserves.com/assets/images/personal-injury-attorney-icon.png</image:loc>
+      <image:title>Process Serving for Personal Injury Attorneys Los Angeles</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.prestigeserves.com/rental-car-subrogation-service.html</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://www.prestigeserves.com/assets/images/rental-car-subrogation-icon.png</image:loc>
+      <image:title>Rental Car &amp; Subrogation Process Serving Los Angeles</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.prestigeserves.com/corporate-service-request.html</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+
+  <!-- END previously missing pages -->
+
   <url>
     <loc>https://www.prestigeserves.com/request.html</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
 
   <url>
     <loc>https://www.prestigeserves.com/contact.html</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.80</priority>
     <image:image>
@@ -155,28 +199,28 @@
 
   <url>
     <loc>https://www.prestigeserves.com/payment.html</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.60</priority>
   </url>
 
   <url>
     <loc>https://www.prestigeserves.com/terms.html</loc>
-    <lastmod>2026-06-04</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.30</priority>
   </url>
 
   <url>
     <loc>https://www.prestigeserves.com/privacy.html</loc>
-    <lastmod>2026-06-04</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.30</priority>
   </url>
 
   <url>
     <loc>https://www.prestigeserves.com/disclaimer.html</loc>
-    <lastmod>2026-06-04</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.30</priority>
   </url>
