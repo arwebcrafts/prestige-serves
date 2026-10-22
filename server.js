@@ -1528,8 +1528,9 @@ const server = http.createServer(async (req, res) => {
       }
       const invNumber = decodeURIComponent(url.split('/')[3]);
       try {
-        const body = await parseBody(req);
-        const token = body.token;
+        const body = await parseBody(req).catch(() => ({}));
+        const queryParams = new URL(req.url, 'http://localhost').searchParams;
+        const token = (body && body.token) || queryParams.get('token');
         if (!token) {
           jsonResponse(res, 400, { success: false, message: 'Access code required.' });
           return;
