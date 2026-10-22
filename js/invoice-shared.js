@@ -298,10 +298,23 @@ function printInvoice() {
     });
 
     var usablePageHeight = pageHeightMm - (marginMm * 2);
+    var isSinglePage = false;
+    var renderWidthMm = contentWidthMm;
+    var renderHeightMm = contentHeightMm;
+    var xOffsetMm = marginMm;
+    var yOffsetMm = marginMm;
 
-    if (contentHeightMm <= usablePageHeight) {
+    // If it fits or is within 25% of 1 page, scale proportionally to fit 1 pristine page
+    if (contentHeightMm <= usablePageHeight * 1.25) {
+      isSinglePage = true;
+      if (contentHeightMm > usablePageHeight) {
+        var fitScale = usablePageHeight / contentHeightMm;
+        renderWidthMm = contentWidthMm * fitScale;
+        renderHeightMm = usablePageHeight;
+        xOffsetMm = marginMm + (contentWidthMm - renderWidthMm) / 2;
+      }
       var imgData = canvas.toDataURL('image/png');
-      pdf.addImage(imgData, 'PNG', marginMm, marginMm, contentWidthMm, contentHeightMm);
+      pdf.addImage(imgData, 'PNG', xOffsetMm, yOffsetMm, renderWidthMm, renderHeightMm);
     } else {
       var pageCount = Math.ceil(contentHeightMm / usablePageHeight);
       for (var p = 0; p < pageCount; p++) {
@@ -325,8 +338,8 @@ function printInvoice() {
     // Add clickable link annotations over every <a> in the invoice
     var allLinks = invEl.querySelectorAll('a[href]');
     var invRect = invEl.getBoundingClientRect();
-    var scaleX = contentWidthMm / (invEl.offsetWidth || 1);
-    var scaleY = contentHeightMm / (invEl.offsetHeight || 1);
+    var scaleX = renderWidthMm / (invEl.offsetWidth || 1);
+    var scaleY = renderHeightMm / (invEl.offsetHeight || 1);
 
     allLinks.forEach(function(link) {
       var href = link.href || link.getAttribute('href');
@@ -337,8 +350,8 @@ function printInvoice() {
       var linkRect = link.getBoundingClientRect();
       if (linkRect.width === 0 || linkRect.height === 0) return;
 
-      var x = (linkRect.left - invRect.left) * scaleX + marginMm;
-      var y = (linkRect.top - invRect.top) * scaleY + marginMm;
+      var x = (linkRect.left - invRect.left) * scaleX + xOffsetMm;
+      var y = (linkRect.top - invRect.top) * scaleY + yOffsetMm;
       var w = linkRect.width * scaleX;
       var h = linkRect.height * scaleY;
 
@@ -349,7 +362,7 @@ function printInvoice() {
       }
 
       var linkPage = 0;
-      if (contentHeightMm > usablePageHeight) {
+      if (!isSinglePage && contentHeightMm > usablePageHeight) {
         linkPage = Math.floor(y / usablePageHeight);
         y = y - (linkPage * usablePageHeight);
       }
