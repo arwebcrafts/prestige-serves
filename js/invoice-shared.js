@@ -407,3 +407,11 @@ function downloadPDF() { printInvoice(); }
 function saveInvoicePDF() { printInvoice(); }
 function exportPDF() { printInvoice(); }
 
+if (typeof window !== 'undefined') {
+  window.printInvoice = printInvoice;
+  window.savePDF = printInvoice;
+  window.downloadPDF = printInvoice;
+  window.saveInvoicePDF = printInvoice;
+  window.exportPDF = printInvoice;
+}
+

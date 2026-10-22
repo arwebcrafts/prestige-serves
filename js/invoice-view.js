@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function () {
     banner.textContent = 'Thank you! Your payment was received. We will confirm by email shortly.';
     banner.style.display = 'block';
   }
-  var number = params.get('number');
+  var number = params.get('number') || params.get('num');
   var token  = params.get('token');
   if (number && token) {
     currentNumber = number;
@@ -470,3 +470,11 @@ function savePDF()        { printInvoice(); }
 function downloadPDF()    { printInvoice(); }
 function saveInvoicePDF() { printInvoice(); }
 function exportPDF()      { printInvoice(); }
+
+if (typeof window !== 'undefined') {
+  window.printInvoice = printInvoice;
+  window.savePDF = printInvoice;
+  window.downloadPDF = printInvoice;
+  window.saveInvoicePDF = printInvoice;
+  window.exportPDF = printInvoice;
+}
