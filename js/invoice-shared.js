@@ -82,11 +82,15 @@ function recalcInvoiceTable() {
   el = document.getElementById('inv-tax-amt'); if (el) el.textContent = formatUsdFromDollars(taxAmt);
   el = document.getElementById('inv-stripe-fee-amt'); if (el) el.textContent = formatUsdFromDollars(fee);
   el = document.getElementById('inv-grand'); if (el) el.textContent = formatUsdFromDollars(grand);
+  var customAmtIn = document.getElementById('inv-custom-amount');
+  if (customAmtIn && document.activeElement !== customAmtIn && !customAmtIn.dataset.manualOverride) {
+    customAmtIn.value = grand > 0 ? grand.toFixed(2) : '';
+  }
   el = document.getElementById('inv-stripe-fee-line'); if (el) el.style.display = stripeOn ? 'block' : 'none';
 
   var payBtn = document.getElementById('inv-stripe-btn-link');
   if (payBtn) {
-    payBtn.textContent = 'PAY NOW VIA STRIPE · ' + formatUsdFromDollars(grand);
+    payBtn.textContent = 'Pay Now';
   }
 
   return {
@@ -209,6 +213,23 @@ function setVal(id, v) {
 
 function collectInvoicePayload() {
   var totals = recalcInvoiceTable();
+  var items = collectLineItems();
+  var customAmtIn = document.getElementById('inv-custom-amount');
+  var customAmt = customAmtIn ? parseFloat(customAmtIn.value) : 0;
+  if (!items.length && customAmt > 0) {
+    items = [{
+      description: 'Process Serving / Litigation Support',
+      type: 'Standard Serve',
+      qty: 1,
+      unit_price: customAmt,
+      amount_cents: Math.round(customAmt * 100),
+    }];
+    totals.subtotal_cents = Math.round(customAmt * 100);
+    totals.total_cents = Math.round(customAmt * 100);
+  } else if (items.length > 0 && customAmt > 0 && customAmtIn && customAmtIn.dataset.manualOverride === 'true') {
+    totals.total_cents = Math.round(customAmt * 100);
+  }
+
   return {
     invoice_number: val('inv-num') || null,
     status: document.getElementById('inv-status') ? document.getElementById('inv-status').value : 'unpaid',
@@ -217,7 +238,9 @@ function collectInvoicePayload() {
     case_number: val('inv-case'),
     bill_to: collectBillTo(),
     service_details: collectServiceDetails(),
-    line_items: collectLineItems(),
+    line_items: items,
+    subtotal_cents: totals.subtotal_cents,
+    total_cents: totals.total_cents,
     tax_pct: totals.tax_pct,
     discount_cents: totals.discount_cents,
     stripe_fee_enabled: totals.stripe_fee_enabled,
@@ -265,7 +288,7 @@ function printInvoice() {
   document.body.appendChild(overlay);
 
   // Hide UI-only elements before capture
-  var hideEls = invEl.querySelectorAll('.inv-btn-print, .inv-add-row, .del-btn, .inv-action-bar, .inv-stripe-url-input');
+  var hideEls = invEl.querySelectorAll('.inv-btn-print, .inv-add-row, .del-btn, .inv-action-bar, .inv-stripe-url-input, .inv-stripe-amount-wrap');
   hideEls.forEach(function(el) { el.dataset.wasDisplay = el.style.display; el.style.display = 'none'; });
 
   // Also hide the Stripe URL input by ID

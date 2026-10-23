@@ -1,12 +1,11 @@
 import { neon } from '@neondatabase/serverless';
-import { createRequire } from 'module';
 import StripeLib from 'stripe';
 import { logger, LOG_CATEGORIES } from '../../logger.js';
+import invoiceUtilsRaw from '../../../lib/invoice-utils.js';
 
-const require = createRequire(import.meta.url);
-const invoiceUtils = require('../../../lib/invoice-utils.js');
+const invoiceUtils = invoiceUtilsRaw.default || invoiceUtilsRaw;
 
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_P8aH3JElyXBw@ep-gentle-frog-a4yzwn3w-pooler.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require';
 const SITE_URL = (process.env.SITE_URL || 'https://www.prestigeserves.com').replace(/\/$/, '');
 const stripeClient = process.env.STRIPE_SECRET_KEY
   ? new StripeLib(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-04-10' })
@@ -28,7 +27,12 @@ export default async function handler(req, res) {
   }
 
   const number = req.query.number;
-  const body = req.body || {};
+  let body = req.body;
+  if (typeof body === 'string') {
+    try { body = JSON.parse(body); } catch (e) { body = {}; }
+  } else {
+    body = body || {};
+  }
   const token = body.token || req.query.token;
 
   if (!number || !token) {

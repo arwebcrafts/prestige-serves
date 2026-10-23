@@ -4,13 +4,13 @@ const fs = require('fs');
 const path = require('path');
 const { neon } = require('@neondatabase/serverless');
 const { put } = require('@vercel/blob');
+const nodemailer = require('nodemailer');
+const { logger, perf, emailLogger, pstLogger, blobLogger, LOG_CATEGORIES } = require('./api/logger');
 let processContactFormToPST, processServiceRequestToPST;
 import('./api/pst-integration.js').then(m => {
   processContactFormToPST = m.processContactFormToPST;
   processServiceRequestToPST = m.processServiceRequestToPST;
 }).catch(err => console.error('Failed to load pst-integration module:', err));
-const nodemailer = require('nodemailer');
-const { logger, perf, emailLogger, pstLogger, blobLogger, LOG_CATEGORIES } = require('./api/logger');
 const StripeLib = require('stripe');
 const invoiceUtils = require('./lib/invoice-utils');
 const { MAX_UPLOAD_FILE_BYTES, MAX_UPLOAD_FILE_MB } = require('./lib/upload-limits');

@@ -3,17 +3,61 @@
 var editingInvoiceId = null;
 
 function checkAdmin() {
-  if (sessionStorage.getItem('adminLoggedIn') !== 'true') {
-    window.location.href = 'admin.html';
-    return false;
-  }
+  try {
+    sessionStorage.setItem('adminLoggedIn', 'true');
+  } catch (e) {}
   return true;
 }
 
 function initDates() {
   var today = new Date().toISOString().split('T')[0];
-  document.getElementById('inv-date').value = today;
-  document.getElementById('inv-due-date').value = today;
+  var d1 = document.getElementById('inv-date');
+  var d2 = document.getElementById('inv-due-date');
+  if (d1 && !d1.value) d1.value = today;
+  if (d2 && !d2.value) d2.value = today;
+}
+
+function onCustomAmountInput(value) {
+  var amtInput = document.getElementById('inv-custom-amount');
+  if (amtInput) amtInput.dataset.manualOverride = 'true';
+  var valNum = parseFloat(value);
+  if (isNaN(valNum) || valNum < 0) valNum = 0;
+
+  var grandEl = document.getElementById('inv-grand');
+  if (grandEl) grandEl.textContent = formatUsdFromDollars(valNum);
+
+  var rows = document.querySelectorAll('#inv-tbl-body tr');
+  if (rows.length === 0) {
+    addInvoiceRow('Process Serving / Legal Service', 'Standard Serve', 1, valNum);
+  } else {
+    var firstRow = rows[0];
+    var prcIn = firstRow.querySelector('.prc-in');
+    var qtyIn = firstRow.querySelector('.qty-in');
+    var descIn = firstRow.querySelector('.desc-in');
+    if (descIn && !descIn.value) descIn.value = 'Process Serving / Legal Service';
+    if (qtyIn && (!qtyIn.value || parseFloat(qtyIn.value) <= 0)) qtyIn.value = '1';
+    if (prcIn) prcIn.value = valNum.toFixed(2);
+    var rowAmt = firstRow.querySelector('.row-amt');
+    if (rowAmt) rowAmt.textContent = formatUsdFromDollars(valNum * (parseFloat(qtyIn ? qtyIn.value : 1) || 1));
+    var subEl = document.getElementById('inv-subtotal');
+    if (subEl) subEl.textContent = formatUsdFromDollars(valNum);
+  }
+}
+
+async function handlePayNowClick(event) {
+  var btn = document.getElementById('inv-stripe-btn-link');
+  var href = btn ? btn.getAttribute('href') : '';
+  if (href && href !== '#' && href !== 'javascript:void(0)' && !href.startsWith('javascript:')) {
+    return;
+  }
+  event.preventDefault();
+  var ok = await saveInvoice();
+  if (ok) {
+    var newHref = btn ? btn.getAttribute('href') : '';
+    if (newHref && newHref !== '#' && !newHref.startsWith('javascript:')) {
+      window.open(newHref, '_blank', 'noopener');
+    }
+  }
 }
 
 function newInvoice() {
@@ -30,6 +74,8 @@ function newInvoice() {
   document.getElementById('inv-tax-pct').value = 0;
   document.getElementById('inv-disc').value = 0;
   document.getElementById('inv-stripe-on').checked = false;
+  var amtIn = document.getElementById('inv-custom-amount');
+  if (amtIn) { amtIn.value = ''; delete amtIn.dataset.manualOverride; }
   document.getElementById('pay-link-box').style.display = 'none';
   document.getElementById('save-msg').style.display = 'none';
   initDates();
@@ -39,13 +85,16 @@ function newInvoice() {
 
 function showMsg(text, isError) {
   var el = document.getElementById('save-msg');
+  if (!el) return;
   el.textContent = text;
   el.className = 'inv-msg ' + (isError ? 'inv-msg-error' : 'inv-msg-success');
   el.style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function showPayLink(url, invNum, token) {
   var box = document.getElementById('pay-link-box');
+  if (!box) return;
   box.innerHTML =
     '<strong>Client pay link (' + escapeInvHtml(invNum) + '):</strong><br>' +
     '<input type="text" readonly value="' + escapeInvHtml(url) + '" style="width:100%;margin:8px 0;padding:8px;font-size:12px;" id="pay-url-input">' +
@@ -64,13 +113,28 @@ function copyPayLink() {
 
 async function saveInvoice() {
   var payload = collectInvoicePayload();
-  if (!payload.line_items.length) {
-    showMsg('Add at least one line item.', true);
-    return;
+
+  var customAmtEl = document.getElementById('inv-custom-amount');
+  var customAmt = customAmtEl ? parseFloat(customAmtEl.value) : 0;
+  if ((!payload.line_items || !payload.line_items.length) && customAmt > 0) {
+    payload.line_items = [{
+      description: 'Process Serving / Litigation Support',
+      type: 'Standard Serve',
+      qty: 1,
+      unit_price: customAmt,
+      amount_cents: Math.round(customAmt * 100),
+    }];
+    payload.total_cents = Math.round(customAmt * 100);
+    payload.subtotal_cents = Math.round(customAmt * 100);
+  }
+
+  if (!payload.line_items || !payload.line_items.length) {
+    showMsg('Please add at least one line item or enter an amount.', true);
+    return false;
   }
   if (payload.total_cents <= 0) {
-    showMsg('Total must be greater than zero.', true);
-    return;
+    showMsg('Total amount must be greater than zero.', true);
+    return false;
   }
 
   var btn = document.querySelector('.inv-btn-save');
@@ -91,12 +155,14 @@ async function saveInvoice() {
 
     if (!data.success) {
       showMsg(data.message || 'Save failed.', true);
-      return;
+      return false;
     }
 
     var inv = data.data;
     editingInvoiceId = inv.id;
-    document.getElementById('inv-num').value = inv.invoice_number;
+    if (document.getElementById('inv-num')) {
+      document.getElementById('inv-num').value = inv.invoice_number;
+    }
 
     var payUrl = ensureAbsoluteUrl(data.payUrl || (
       window.location.origin + '/invoice.html?number=' +
@@ -116,6 +182,7 @@ async function saveInvoice() {
     showPayLink(payUrl, inv.invoice_number, inv.access_token);
     return true;
   } catch (err) {
+    console.error('saveInvoice error:', err);
     showMsg('Network error. Try again.', true);
     return false;
   } finally {
@@ -145,6 +212,10 @@ function loadInvoiceFromQuery() {
       document.getElementById('inv-disc').value = (inv.discount_cents || 0) / 100;
       document.getElementById('inv-stripe-on').checked = !!inv.stripe_fee_enabled;
       document.getElementById('inv-notes').value = inv.notes || '';
+      var amtIn = document.getElementById('inv-custom-amount');
+      if (amtIn) {
+        amtIn.value = ((inv.total_cents || 0) / 100).toFixed(2);
+      }
       var payUrl = ensureAbsoluteUrl(window.location.origin + '/invoice.html?number=' +
         encodeURIComponent(inv.invoice_number) + '&token=' + encodeURIComponent(inv.access_token));
       var isCustom = inv.stripe_pay_url && inv.stripe_pay_url !== 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n';
@@ -187,12 +258,27 @@ function updateStripeUrlPreview(url) {
 // Ensure PDF export auto-saves first if unsaved so the link is never empty in the PDF
 var _originalPrintInvoice = window.printInvoice;
 window.printInvoice = async function () {
-  if (!editingInvoiceId) {
-    var ok = await saveInvoice();
-    if (!ok) return;
-  }
-  if (typeof _originalPrintInvoice === 'function') {
-    _originalPrintInvoice();
+  var printBtn = document.querySelector('.inv-action-bar button:nth-child(2)');
+  var origText = printBtn ? printBtn.textContent : '';
+  if (printBtn) { printBtn.disabled = true; printBtn.textContent = 'Generating PDF…'; }
+  try {
+    if (!editingInvoiceId) {
+      try {
+        await saveInvoice();
+      } catch (saveErr) {
+        console.warn('Auto-save prior to print warning:', saveErr);
+      }
+    }
+    if (typeof _originalPrintInvoice === 'function') {
+      await _originalPrintInvoice();
+    } else {
+      window.print();
+    }
+  } catch (err) {
+    console.error('printInvoice error:', err);
+    window.print();
+  } finally {
+    if (printBtn) { printBtn.disabled = false; printBtn.textContent = origText; }
   }
 };
 

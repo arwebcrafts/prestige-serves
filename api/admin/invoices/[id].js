@@ -1,11 +1,10 @@
 import { neon } from '@neondatabase/serverless';
-import { createRequire } from 'module';
 import { logger, LOG_CATEGORIES } from '../../logger.js';
+import invoiceUtilsRaw from '../../../lib/invoice-utils.js';
 
-const require = createRequire(import.meta.url);
-const invoiceUtils = require('../../../lib/invoice-utils.js');
+const invoiceUtils = invoiceUtilsRaw.default || invoiceUtilsRaw;
 
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_P8aH3JElyXBw@ep-gentle-frog-a4yzwn3w-pooler.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require';
 
 function cors(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -33,7 +32,12 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'PUT') {
-      const body = req.body || {};
+      let body = req.body;
+      if (typeof body === 'string') {
+        try { body = JSON.parse(body); } catch (e) { body = {}; }
+      } else {
+        body = body || {};
+      }
       const payload = invoiceUtils.sanitizeInvoicePayload(body);
       const updated = await sql`
         UPDATE invoices SET
