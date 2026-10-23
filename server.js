@@ -1428,8 +1428,21 @@ const server = http.createServer(async (req, res) => {
           ) RETURNING *
         `;
         const inv = inserted[0];
+        let stripeCheckoutUrl = null;
+        if (stripeClient && inv.total_cents > 0) {
+          try {
+            const session = await invoiceUtils.createInvoiceCheckoutSession(stripeClient, inv, SITE_URL);
+            stripeCheckoutUrl = session.url;
+            await sql`
+              UPDATE invoices SET stripe_checkout_session_id = ${session.id}, status = 'sent', updated_at = CURRENT_TIMESTAMP
+              WHERE id = ${inv.id}
+            `;
+          } catch (sErr) {
+            logger.warn(LOG_CATEGORIES.API, 'Direct Stripe checkout creation skipped', { error: sErr.message });
+          }
+        }
         const payUrl = SITE_URL + '/invoice.html?number=' + encodeURIComponent(inv.invoice_number) + '&token=' + encodeURIComponent(inv.access_token);
-        jsonResponse(res, 201, { success: true, data: inv, payUrl });
+        jsonResponse(res, 201, { success: true, data: inv, payUrl, stripeCheckoutUrl });
       } catch (err) {
         logger.error(LOG_CATEGORIES.API, 'Create invoice error', err);
         jsonResponse(res, 500, { success: false, message: err.message });

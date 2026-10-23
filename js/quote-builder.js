@@ -171,7 +171,7 @@ async function saveInvoice() {
 
     var currentStripeUrl = val('inv-stripe-url');
     var isCustom = currentStripeUrl && currentStripeUrl !== 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n';
-    var activePayUrl = isCustom ? ensureAbsoluteUrl(currentStripeUrl) : (payUrl + '&pay=1');
+    var activePayUrl = isCustom ? ensureAbsoluteUrl(currentStripeUrl) : (data.stripeCheckoutUrl || (payUrl + '&pay=1'));
 
     if (document.getElementById('inv-stripe-url')) {
       document.getElementById('inv-stripe-url').value = isCustom ? currentStripeUrl : '';

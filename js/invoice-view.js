@@ -102,7 +102,7 @@ function renderInvoice(inv) {
       '<div style="padding:10px 14px;background:#27ae60;color:#fff;font-size:12px;font-weight:600;text-align:center;border-radius:4px;margin-top:10px;">PAID IN FULL</div>';
   } else {
     payBlock =
-      '<a href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener" class="inv-pay-btn-anchor" onclick="if(!this.getAttribute(\'href\').includes(\'buy.stripe.com\')){event.preventDefault();payInvoice();}">' +
+      '<a id="inv-pay-btn" href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener" class="inv-pay-btn-anchor" onclick="if(!this.getAttribute(\'href\').includes(\'buy.stripe.com\')){event.preventDefault();payInvoice();}">' +
         'PAY NOW VIA STRIPE · ' + formatUsd(inv.total_cents) +
       '</a>' +
       '<div class="inv-pdf-pay-url-box" style="margin-top:6px;font-size:9px;color:rgba(255,255,255,0.85);word-break:break-all;">' +
