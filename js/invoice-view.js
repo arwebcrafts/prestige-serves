@@ -106,10 +106,8 @@ function renderInvoice(inv) {
         '<a id="inv-pay-btn" href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener" class="inv-pay-btn-anchor" onclick="if(!this.getAttribute(\'href\').includes(\'buy.stripe.com\')){event.preventDefault();payInvoice();}">' +
           'PAY NOW · ' + formatUsd(inv.total_cents) +
         '</a>' +
-        '<div class="inv-pdf-pay-url-box" style="margin-top:8px;font-size:11px;">' +
-          '<a href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener" style="color:#2a3a6e;text-decoration:underline;">Click Here to Pay Online &rarr;</a>' +
-        '</div>' +
-      '</div>';
+      '</div>' +
+      '<div style="font-size:9.5px;color:#6b7280;font-style:italic;margin-top:8px;">Standard 3% electronic processing fee applies to card payments.</div>';
   }
 
   // ── Assemble full invoice HTML ──
@@ -179,6 +177,7 @@ function renderInvoice(inv) {
       '<div class="inv-totals-col">' +
         tRow('Subtotal', formatUsd(inv.subtotal_cents)) +
         tRow('Tax / Fees', formatUsd(inv.tax_cents)) +
+        (inv.stripe_fee_enabled ? tRow('Processing Fee (3%)', formatUsd(inv.stripe_fee_cents)) : '') +
         (inv.discount_cents ? tRow('Discount', '−' + formatUsd(inv.discount_cents)) : '') +
         '<div style="margin-top:10px;padding-top:9px;border-top:1.5px solid #2a3a6e;">' +
           '<div class="inv-sec-eye">Total Due</div>' +

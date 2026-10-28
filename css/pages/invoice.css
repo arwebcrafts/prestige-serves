@@ -167,6 +167,23 @@
   border-bottom: 1px solid #2a3a6e;
 }
 
+#inv-date,
+#inv-due-date {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'EB Garamond', serif;
+  font-size: 13.5px;
+  color: #111;
+  padding: 2px 0;
+  box-shadow: none;
+}
+
+#inv-date:focus,
+#inv-due-date:focus {
+  border-bottom: 1px solid #2a3a6e;
+}
+
 .inv-static-val.brand {
   font-weight: 500;
   color: #2a3a6e;
@@ -178,7 +195,7 @@
 .inv-tbl {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12.5px;
+  font-size: 13px;
 }
 
 .inv-tbl thead tr { border-bottom: 1.5px solid #111; }
@@ -188,15 +205,19 @@
   letter-spacing: 1.5px;
   text-transform: uppercase;
   font-weight: 500;
-  padding: 0 6px 7px;
+  padding: 4px 8px 10px;
   text-align: left;
 }
 
 .inv-tbl thead th.r { text-align: right; }
 
-.inv-tbl tbody tr { border-bottom: 1px solid #e2e0db; }
+.inv-tbl tbody tr { border-bottom: 1px solid #e8e6e1; }
 
-.inv-tbl td { padding: 6px; }
+.inv-tbl td {
+  padding: 10px 8px 12px;
+  vertical-align: middle;
+  line-height: 1.5;
+}
 
 .inv-tbl td.r { text-align: right; }
 
@@ -205,9 +226,19 @@
   border: none;
   background: transparent;
   font-family: 'EB Garamond', 'Cormorant Garamond', serif;
-  font-size: 12.5px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  padding: 2px 0 4px;
   width: 100%;
   outline: none;
+  box-sizing: border-box;
+}
+
+.inv-tbl .row-amt {
+  font-family: 'EB Garamond', 'Cormorant Garamond', serif;
+  font-size: 13.5px;
+  line-height: 1.5;
+  padding-bottom: 4px;
 }
 
 .inv-tbl .qty-in { width: 48px; text-align: right; }
@@ -432,16 +463,9 @@
   text-decoration: none;
 }
 
-/* Pay URL text */
+/* Pay URL text (hidden - PAY NOW button is the sole clickable action) */
 .inv-pdf-pay-url-box {
-  margin-top: 8px;
-  font-size: 11px;
-}
-
-.inv-pdf-pay-url-box a {
-  color: #2a3a6e;
-  text-decoration: underline;
-  font-weight: 500;
+  display: none !important;
 }
 
 /* PDF link banner (hidden to prevent multi-page overflow & spamish raw URLs) */
@@ -526,8 +550,9 @@
   .inv-bill-col.right { padding-left: 14px !important; padding-right: 18px !important; }
   .inv-field       { margin-bottom: 1px !important; font-size: 11px !important; padding: 0 !important; }
   .inv-items-section { padding: 2px 18px 4px !important; }
-  .inv-tbl th      { font-size: 7px !important; padding: 0 4px 3px !important; }
-  .inv-tbl td      { padding: 2px 4px !important; font-size: 11px !important; }
+  .inv-tbl th      { font-size: 7px !important; padding: 2px 4px 5px !important; }
+  .inv-tbl td      { padding: 6px 4px 8px !important; font-size: 11px !important; line-height: 1.45 !important; }
+  .inv-tbl input, .inv-tbl select { font-size: 11px !important; line-height: 1.45 !important; padding: 1px 0 2px !important; }
   .inv-bottom-grid { border-top: 1px solid #e2e0db !important; }
   .inv-stripe-col  { padding: 6px 14px 6px 18px !important; }
   .inv-totals-col  { padding: 6px 18px 6px 14px !important; }
@@ -547,8 +572,7 @@
   /* ── Force visibility of payment elements ── */
   .inv-stripe-col,
   .inv-stripe-block,
-  .inv-pdf-pay-block,
-  .inv-pdf-pay-url-box {
+  .inv-pdf-pay-block {
     display: block !important;
     visibility: visible !important;
   }
@@ -569,7 +593,7 @@
   .inv-pay-btn-anchor {
     display: inline-block !important;
     width: auto !important;
-    padding: 7px 18px !important;
+    padding: 8px 22px !important;
     margin: 4px 0 !important;
     background: #2a3a6e !important;
     color: #fff !important;
@@ -585,22 +609,8 @@
     color: #fff !important;
   }
 
-  /* Clean text link below button */
   .inv-pdf-pay-url-box {
-    margin-top: 4px !important;
-    font-size: 10px !important;
-    color: #2a3a6e !important;
-  }
-
-  .inv-pdf-pay-url-box a {
-    display: inline !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    background: none !important;
-    border: none !important;
-    color: #2a3a6e !important;
-    font-weight: 600 !important;
-    text-decoration: underline !important;
+    display: none !important;
   }
 
   .inv-pdf-link-banner {

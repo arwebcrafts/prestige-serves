@@ -241,18 +241,8 @@ function loadInvoiceFromQuery() {
 function updateStripeUrlPreview(url) {
   var target = (!url || url === '#' || url === 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n') ? '' : ensureAbsoluteUrl(url);
   var btn = document.getElementById('inv-stripe-btn-link');
-  var txt = document.getElementById('inv-stripe-text-link');
-  var bnr = document.getElementById('inv-pdf-banner-link');
   if (btn) {
     btn.href = target || '#';
-  }
-  if (txt) {
-    txt.href = target || '#';
-    txt.textContent = target ? 'Click Here to Pay Online →' : '(Generates automatically on save)';
-  }
-  if (bnr) {
-    bnr.href = target || '#';
-    bnr.textContent = target ? 'Click Here to Pay Online →' : '(Generates automatically on save)';
   }
 }
 

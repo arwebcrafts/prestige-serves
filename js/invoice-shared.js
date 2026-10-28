@@ -71,10 +71,11 @@ function recalcInvoiceTable() {
 
   var taxPct = parseFloat(document.getElementById('inv-tax-pct') && document.getElementById('inv-tax-pct').value) || 0;
   var disc = parseFloat(document.getElementById('inv-disc') && document.getElementById('inv-disc').value) || 0;
+  var stripeOn = document.getElementById('inv-stripe-on') && document.getElementById('inv-stripe-on').checked;
   var taxAmt = sub * taxPct / 100;
   var preFee = sub + taxAmt - disc;
-  var fee = 0;
-  var grand = Math.max(0, preFee);
+  var fee = stripeOn ? preFee * 0.03 : 0;
+  var grand = Math.max(0, preFee + fee);
 
   var el;
   el = document.getElementById('inv-subtotal'); if (el) el.textContent = formatUsdFromDollars(sub);
@@ -97,8 +98,8 @@ function recalcInvoiceTable() {
     tax_pct: taxPct,
     tax_cents: Math.round(taxAmt * 100),
     discount_cents: Math.round(disc * 100),
-    stripe_fee_enabled: false,
-    stripe_fee_cents: 0,
+    stripe_fee_enabled: !!stripeOn,
+    stripe_fee_cents: Math.round(fee * 100),
     total_cents: Math.round(grand * 100),
   };
 }

@@ -54,11 +54,11 @@
         <div style="display:flex;gap:18px;justify-content:flex-end;">
           <div>
             <div class="inv-sec-eye">Invoice Date</div>
-            <input type="date" id="inv-date">
+            <input type="date" id="inv-date" style="border:none;background:transparent;font-family:EB Garamond,serif;font-size:13px;outline:none;">
           </div>
           <div>
             <div class="inv-sec-eye">Due Date</div>
-            <input type="date" id="inv-due-date">
+            <input type="date" id="inv-due-date" style="border:none;background:transparent;font-family:EB Garamond,serif;font-size:13px;outline:none;">
           </div>
         </div>
       </div>
@@ -128,10 +128,8 @@
           </div>
           <div style="margin-top:10px;" class="inv-pdf-pay-block">
             <a id="inv-stripe-btn-link" href="#" target="_blank" rel="noopener" class="inv-pay-btn-anchor" onclick="handlePayNowClick(event)">PAY NOW</a>
-            <div style="margin-top:8px;font-size:11px;" class="inv-pdf-pay-url-box">
-              <a id="inv-stripe-text-link" href="#" target="_blank" rel="noopener" style="color:#2a3a6e;text-decoration:underline;">Click Here to Pay Online &rarr;</a>
-            </div>
           </div>
+          <div style="font-size:9.5px;color:#6b7280;font-style:italic;margin-top:8px;">Standard 3% electronic processing fee applies to card payments.</div>
         </div>
       </div>
       <div class="inv-totals-col">
@@ -139,6 +137,10 @@
         <div class="inv-t-row">
           <span>Tax / Fees (<input id="inv-tax-pct" type="number" value="0" min="0" max="100" step="0.5" style="width:36px;border:none;background:transparent;border-bottom:1px dashed #ccc;" oninput="recalcInvoiceTable()">%)</span>
           <span class="val" id="inv-tax-amt">$0.00</span>
+        </div>
+        <div class="inv-t-row" id="inv-stripe-fee-row">
+          <span>Processing Fee (3%)<br><label style="font-size:8.5px;color:#6b7280;cursor:pointer;"><input type="checkbox" id="inv-stripe-on" onchange="recalcInvoiceTable()"> Standard 3% card fee</label></span>
+          <span class="val" id="inv-stripe-fee-amt">$0.00</span>
         </div>
         <div class="inv-t-row">
           <span>Discount (−$)</span>
