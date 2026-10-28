@@ -42,7 +42,7 @@ function makeTypeSelectHtml(selected) {
   var opts = INVOICE_TYPES.map(function (t) {
     return '<option value="' + escapeInvHtml(t) + '"' + (t === selected ? ' selected' : '') + '>' + escapeInvHtml(t) + '</option>';
   }).join('');
-  return '<select class="type-sel" onchange="onInvTypeChange(this)"><option value="">Select preset…</option>' + opts + '</select>';
+  return '<div class="type-wrap"><select class="type-sel" onchange="onInvTypeChange(this)"><option value="">Select preset&hellip;</option>' + opts + '</select><span class="type-caret">&#9662;</span></div>';
 }
 
 function escapeInvHtml(s) {
@@ -86,7 +86,13 @@ function recalcInvoiceTable() {
   if (customAmtIn && document.activeElement !== customAmtIn && !customAmtIn.dataset.manualOverride) {
     customAmtIn.value = grand > 0 ? grand.toFixed(2) : '';
   }
-  el = document.getElementById('inv-stripe-fee-line'); if (el) el.style.display = 'none';
+  var feeAmtEl = document.getElementById('inv-stripe-fee-amt');
+  if (feeAmtEl) {
+    feeAmtEl.textContent = formatUsdFromDollars(fee);
+    feeAmtEl.style.color = stripeOn ? "var(--black)" : "var(--mid)";
+  }
+  var stripeFeeLine = document.getElementById('stripe-fee-line');
+  if (stripeFeeLine) stripeFeeLine.style.display = stripeOn ? 'block' : 'none';
 
   var payBtn = document.getElementById('inv-stripe-btn-link');
   if (payBtn) {
@@ -109,12 +115,12 @@ function addInvoiceRow(desc, type, qty, price) {
   if (!tb) return;
   var tr = document.createElement('tr');
   tr.innerHTML =
-    '<td><input class="desc-in" placeholder="Type custom service / item name…" value="' + escapeInvHtml(desc || '') + '" oninput="recalcInvoiceTable()"></td>' +
-    '<td>' + makeTypeSelectHtml(type || '') + '</td>' +
-    '<td class="r"><input class="qty-in" type="number" min="0" step="1" value="' + (qty != null ? qty : 1) + '" oninput="recalcInvoiceTable()"></td>' +
+    '<td><input class="desc-in" placeholder="Describe service&hellip;" value="' + escapeInvHtml(desc || '') + '" oninput="recalcInvoiceTable()"></td>' +
+    '<td style="padding:6px">' + makeTypeSelectHtml(type || '') + '</td>' +
+    '<td class="r"><input class="qty-in" type="number" min="1" value="' + (qty != null ? qty : 1) + '" oninput="recalcInvoiceTable()"></td>' +
     '<td class="r"><input class="prc-in" type="number" min="0" step="0.01" value="' + (price > 0 ? price.toFixed(2) : (price === 0 ? '0.00' : '')) + '" placeholder="0.00" oninput="recalcInvoiceTable()"></td>' +
-    '<td class="r row-amt">' + formatUsdFromDollars(0) + '</td>' +
-    '<td style="text-align:center"><button type="button" class="del-btn" onclick="this.closest(\'tr\').remove();recalcInvoiceTable()" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:16px;">×</button></td>';
+    '<td class="amt r row-amt">' + formatUsdFromDollars(0) + '</td>' +
+    '<td style="text-align:center"><button type="button" class="del-btn" onclick="this.closest(\'tr\').remove();recalcInvoiceTable()" title="Remove line">&times;</button></td>';
   tb.appendChild(tr);
   recalcInvoiceTable();
 }
@@ -288,7 +294,7 @@ function printInvoice() {
   document.body.appendChild(overlay);
 
   // Hide UI-only elements before capture
-  var hideEls = invEl.querySelectorAll('.inv-btn-print, .inv-add-row, .del-btn, .inv-action-bar, .inv-stripe-url-input, .inv-stripe-amount-wrap, #inv-status, .inv-pdf-link-banner');
+  var hideEls = invEl.querySelectorAll('.inv-btn-print, .inv-add-row, .add-row-btn, .del-btn, .type-caret, .action-bar, .inv-action-bar, .inv-stripe-url-input, .stripe-link-input, .inv-stripe-amount-wrap, #inv-status, .inv-pdf-link-banner');
   hideEls.forEach(function(el) { el.dataset.wasDisplay = el.style.display; el.style.display = 'none'; });
 
   // Also hide the Stripe URL input by ID
@@ -450,3 +456,10 @@ if (typeof window !== 'undefined') {
   window.exportPDF = printInvoice;
 }
 
+
+function autoGrow(el) {
+  if (!el) return;
+  el.style.height = 'auto';
+  el.style.height = (el.scrollHeight + 2) + 'px';
+}
+window.autoGrow = autoGrow;

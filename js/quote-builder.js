@@ -63,22 +63,39 @@ async function handlePayNowClick(event) {
 function newInvoice() {
   if (!confirm('Start a new invoice? Unsaved changes will be lost.')) return;
   editingInvoiceId = null;
-  document.getElementById('inv-num').value = '';
-  document.getElementById('inv-case').value = '';
+  if (document.getElementById('inv-num')) document.getElementById('inv-num').value = '';
+  if (document.getElementById('inv-case')) document.getElementById('inv-case').value = '';
   ['bill-firm', 'bill-contact', 'bill-street', 'bill-city', 'bill-phone', 'bill-email',
    'svc-subject', 'svc-address', 'svc-docs', 'svc-server'].forEach(function (id) {
     var el = document.getElementById(id);
     if (el) el.value = '';
   });
-  document.getElementById('inv-tbl-body').innerHTML = '';
-  document.getElementById('inv-tax-pct').value = 0;
+  var tb = document.getElementById('inv-tbl-body');
+  if (tb) tb.innerHTML = '';
+  var taxEl = document.getElementById('inv-tax-pct');
+  if (taxEl) taxEl.value = 0;
+  var discEl = document.getElementById('inv-disc');
+  if (discEl) discEl.value = 0;
   var stripeOn = document.getElementById('inv-stripe-on');
-  if (stripeOn) stripeOn.checked = false;
+  if (stripeOn) stripeOn.checked = true;
+  var stripeUrl = document.getElementById('inv-stripe-url');
+  if (stripeUrl) stripeUrl.value = '';
   var amtIn = document.getElementById('inv-custom-amount');
   if (amtIn) { amtIn.value = ''; delete amtIn.dataset.manualOverride; }
+  var notes = document.getElementById('inv-notes');
+  if (notes) {
+    notes.value = "Payment is required in full before any job is scheduled or assigned. All service attempts are documented and court-ready. Questions? Call (424) 235-3089 or email info@prestigeserves.com.";
+    autoGrow(notes);
+  }
+  var statusEl = document.getElementById('inv-status');
+  if (statusEl) {
+    statusEl.value = 'unpaid';
+    statusEl.className = 'status-pill s-unpaid';
+  }
   document.getElementById('pay-link-box').style.display = 'none';
   document.getElementById('save-msg').style.display = 'none';
   initDates();
+  addInvoiceRow();
   addInvoiceRow();
   addInvoiceRow();
 }
@@ -202,7 +219,7 @@ function loadInvoiceFromQuery() {
       var inv = data.data;
       editingInvoiceId = inv.id;
       document.getElementById('inv-num').value = inv.invoice_number;
-      document.getElementById('inv-status').value = inv.status || 'unpaid';
+      document.getElementById('inv-status').value = inv.status || 'unpaid'; document.getElementById('inv-status').className = 'status-pill s-' + (inv.status || 'unpaid');
       document.getElementById('inv-date').value = (inv.invoice_date || '').slice(0, 10);
       document.getElementById('inv-due-date').value = (inv.due_date || '').slice(0, 10);
       document.getElementById('inv-case').value = inv.case_number || '';
@@ -212,7 +229,7 @@ function loadInvoiceFromQuery() {
       document.getElementById('inv-disc').value = (inv.discount_cents || 0) / 100;
       var stripeOn = document.getElementById('inv-stripe-on');
       if (stripeOn) stripeOn.checked = !!inv.stripe_fee_enabled;
-      document.getElementById('inv-notes').value = inv.notes || '';
+      document.getElementById('inv-notes').value = inv.notes || ''; autoGrow(document.getElementById('inv-notes'));
       var amtIn = document.getElementById('inv-custom-amount');
       if (amtIn) {
         amtIn.value = ((inv.total_cents || 0) / 100).toFixed(2);

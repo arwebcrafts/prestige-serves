@@ -12,9 +12,9 @@ function formatUsd(cents) {
 }
 
 function statusClass(status) {
-  if (status === 'paid') return 'inv-status-paid';
-  if (status === 'sent') return 'inv-status-sent';
-  return 'inv-status-unpaid';
+  if (status === 'paid') return 's-paid';
+  if (status === 'sent') return 's-sent';
+  return 's-unpaid';
 }
 
 function statusLabel(status) {
@@ -29,7 +29,7 @@ function escapeHtml(s) {
 }
 
 function fieldLine(v) {
-  return v ? '<div class="inv-field">' + escapeHtml(v) + '</div>' : '';
+  return v ? '<div class="field"><input readonly value="' + escapeHtml(v) + '"></div>' : '';
 }
 
 function tRow(label, val) {
@@ -79,14 +79,14 @@ function renderInvoice(inv) {
     var itemType = (li.type && li.type !== 'Custom / Write-in Item' && li.type !== 'Custom Service' && li.type !== 'Other' && li.type !== itemDesc) ? li.type : '';
     return '<tr>' +
       '<td>' + escapeHtml(itemDesc) + '</td>' +
-      '<td>' + escapeHtml(itemType) + '</td>' +
+      '<td style="padding:6px;font-size:11.5px;color:var(--black);font-family:Inter,sans-serif;">' + escapeHtml(itemType) + '</td>' +
       '<td class="r">' + (li.qty || 0) + '</td>' +
       '<td class="r">' + formatUsd(Math.round((li.unit_price || 0) * 100)) + '</td>' +
-      '<td class="r">' + formatUsd(Math.round(amt * 100)) + '</td>' +
+      '<td class="amt r row-amt">' + formatUsd(Math.round(amt * 100)) + '</td>' +
       '</tr>';
   }).join('');
 
-  // Resolve the payment URL — must be absolute for PDF
+  // Resolve the payment URL ? must be absolute for PDF
   var autoInvoicePayUrl = ensureAbsoluteUrl(
     window.location.origin + '/invoice.html?number=' +
     encodeURIComponent(inv.invoice_number) + '&token=' + encodeURIComponent(currentToken) + '&pay=1'
@@ -99,105 +99,143 @@ function renderInvoice(inv) {
   var payBlock;
   if (isPaid) {
     payBlock =
-      '<div style="padding:10px 14px;background:#27ae60;color:#fff;font-size:12px;font-weight:600;text-align:center;border-radius:4px;margin-top:10px;">PAID IN FULL</div>';
+      '<div style="padding:10px 14px;background:#27ae60;color:#fff;font-size:11px;font-weight:600;letter-spacing:1.5px;text-align:center;border-radius:2px;margin-top:6px;text-transform:uppercase;">PAID IN FULL</div>';
   } else {
     payBlock =
-      '<div style="margin-top:10px;" class="inv-pdf-pay-block">' +
+      '<div style="margin-top:8px;" class="inv-pdf-pay-block">' +
         '<a id="inv-pay-btn" href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener" class="inv-pay-btn-anchor" onclick="if(!this.getAttribute(\'href\').includes(\'buy.stripe.com\')){event.preventDefault();payInvoice();}">' +
-          'PAY NOW · ' + formatUsd(inv.total_cents) +
+          'PAY NOW' +
         '</a>' +
-      '</div>' +
-      '<div style="font-size:9.5px;color:#6b7280;font-style:italic;margin-top:8px;">Standard 3% electronic processing fee applies to card payments.</div>';
+      '</div>';
   }
 
-  // ── Assemble full invoice HTML ──
+  // Assemble full invoice HTML
   document.getElementById('inv-display').innerHTML =
-
-    /* Top bar */
-    '<div class="inv-topbar">' +
-      '<div style="display:flex;align-items:center;gap:10px;">' +
-        '<img src="assets/images/mail.png" alt="Prestige Serves" style="height:26px;width:auto;object-fit:contain;display:block;">' +
-        '<span class="inv-logo-text" style="font-family:\'Cormorant Garamond\', \'EB Garamond\', serif;font-size:21px;font-weight:500;color:#111;letter-spacing:0.01em;">Prestige Serves</span>' +
+    '<div class="topbar">' +
+      '<div class="logo-area">' +
+        '<svg width="30" height="23" viewBox="0 0 44 34" fill="none">' +
+          '<rect x="1" y="1" width="42" height="32" rx="1" stroke="#2a3a6e" stroke-width="1.6" fill="none"/>' +
+          '<polyline points="1,1 22,19 43,1" stroke="#2a3a6e" stroke-width="1.6" fill="none"/>' +
+          '<line x1="12" y1="20" x2="26" y2="20" stroke="#2a3a6e" stroke-width="1.7" stroke-linecap="round"/>' +
+          '<polyline points="22,16 27,20 22,24" stroke="#2a3a6e" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '</svg>' +
+        '<span class="logo-text">Prestige Serves</span>' +
       '</div>' +
       '<div style="display:flex;align-items:center;gap:12px;">' +
-        '<button type="button" onclick="printInvoice()" class="inv-btn-print" style="background:#2a3a6e;color:#fff;border:none;padding:5px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:2px;">Print / Save PDF</button>' +
+        '<button type="button" onclick="printInvoice()" class="inv-btn-print" style="background:var(--navy);color:#fff;border:none;padding:5px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:2px;">Print / Save PDF</button>' +
         '<span class="inv-label-top">Invoice</span>' +
       '</div>' +
     '</div>' +
 
-    /* Hero */
-    '<div class="inv-hero">' +
-      '<div>' +
-        '<div class="inv-eyebrow">Licensed &amp; Bonded Process Server · Los Angeles</div>' +
+    '<div class="hero">' +
+      '<div class="hero-left">' +
+        '<div class="eyebrow">Licensed &amp; Bonded Process Server ? Los Angeles</div>' +
         '<div class="inv-title">Invoice.</div>' +
+        '<div class="inv-subtitle">Reliable. Professional. Fast.</div>' +
       '</div>' +
-      '<div class="inv-meta-right">' +
-        '<div><span style="font-size:10px;color:#6b7280;">No.</span> <strong>' + escapeHtml(inv.invoice_number) + '</strong> ' +
-          '<span class="inv-status-pill ' + statusClass(inv.status) + '">' + statusLabel(inv.status) + '</span>' +
+      '<div class="hero-right">' +
+        '<div class="meta-chips">' +
+          '<span style="font-size:10px;color:var(--mid)">No.</span> ' +
+          '<span style="font-family:\'EB Garamond\',serif;font-size:14px;color:var(--navy);font-weight:600;margin-right:4px;">' + escapeHtml(inv.invoice_number) + '</span> ' +
+          '<span class="status-pill ' + statusClass(inv.status) + '">' + statusLabel(inv.status) + '</span>' +
         '</div>' +
-        '<div style="font-size:12px;margin-top:6px;color:#6b7280;">Date: ' + escapeHtml((inv.invoice_date || '').slice(0, 10)) +
-          ' · Due: ' + escapeHtml((inv.due_date || '').slice(0, 10)) + '</div>' +
+        '<div class="date-row">' +
+          '<div class="date-item">' +
+            '<div class="date-lbl">Invoice Date</div>' +
+            '<span style="font-family:\'EB Garamond\',serif;font-size:12px;color:var(--black);">' + escapeHtml((inv.invoice_date || '').slice(0, 10)) + '</span>' +
+          '</div>' +
+          '<div class="date-item">' +
+            '<div class="date-lbl">Due Date</div>' +
+            '<span style="font-family:\'EB Garamond\',serif;font-size:12px;color:var(--black);">' + escapeHtml((inv.due_date || '').slice(0, 10)) + '</span>' +
+          '</div>' +
+        '</div>' +
       '</div>' +
     '</div>' +
 
-    /* Upfront notice */
-    '<div class="inv-upfront"><strong style="color:#2a3a6e;">Payment Required in Full Before Service Begins.</strong></div>' +
+    '<div class="upfront">' +
+      '<span style="color:var(--navy);flex-shrink:0">?</span>' +
+      '<span><strong>Payment Required in Full Before Service Begins.</strong> All services are prepaid in advance ? no job is scheduled or assigned without confirmed payment.</span>' +
+    '</div>' +
 
-    /* Case row */
-    (inv.case_number ? '<div class="inv-case-row"><span class="inv-sec-eye">Case / Matter #</span> ' + escapeHtml(inv.case_number) + '</div>' : '') +
+    (inv.case_number ? '<div class="case-row"><span class="case-lbl">Case / Matter #</span> <span style="font-family:\'EB Garamond\',serif;font-size:13px;color:var(--black);">' + escapeHtml(inv.case_number) + '</span></div>' : '') +
 
-    /* Bill-To / From grid */
-    '<div class="inv-bill-grid">' +
-      '<div class="inv-bill-col"><div class="inv-sec-eye">Bill To</div>' +
+    '<div class="bill-grid">' +
+      '<div class="bill-col"><div class="sec-eye">Bill To</div>' +
         fieldLine(bill.firm) + fieldLine(bill.contact) + fieldLine(bill.street) +
         fieldLine(bill.cityStateZip) + fieldLine(bill.phone) + fieldLine(bill.email) +
       '</div>' +
-      '<div class="inv-bill-col right"><div class="inv-sec-eye">From</div>' +
-        '<div class="inv-field"><span class="inv-static-val brand">Prestige Serves LLC</span></div>' +
-        '<div class="inv-field">1240 S Corning St., Suite 105</div>' +
-        '<div class="inv-field">Los Angeles, CA 90035</div>' +
-        '<div style="margin-top:8px;" class="inv-sec-eye">Service Details</div>' +
+      '<div class="bill-col right"><div class="sec-eye">From</div>' +
+        '<div class="static-field"><span class="static-val brand">Prestige Serves LLC</span></div>' +
+        '<div class="static-field"><span class="static-val">1240 S Corning St., Suite 105</span></div>' +
+        '<div class="static-field"><span class="static-val">Los Angeles, CA 90035</span></div>' +
+        '<div class="static-field"><span class="static-val">(424) 235-3089</span></div>' +
+        '<div class="static-field"><span class="static-val">info@prestigeserves.com</span></div>' +
+        '<div class="static-field"><span class="static-val">prestigeserves.com</span></div>' +
+        '<div class="svc-div"></div>' +
+        '<div class="sec-eye">Service Details</div>' +
         fieldLine(svc.subject) + fieldLine(svc.serviceAddress) +
         fieldLine(svc.documents) + fieldLine(svc.assignedServer) +
       '</div>' +
     '</div>' +
 
-    /* Line items table */
-    '<div class="inv-items-section"><div class="inv-sec-eye">Services &amp; Line Items</div>' +
-      '<table class="inv-tbl"><thead><tr>' +
-        '<th>Description</th><th>Type</th><th class="r">Qty</th><th class="r">Unit</th><th class="r">Amount</th>' +
+    '<div class="items-section">' +
+      '<div class="items-eye">Services &amp; Line Items</div>' +
+      '<table class="tbl"><thead><tr>' +
+        '<th style="width:34%">Description</th><th style="width:23%">Service Type</th><th class="r" style="width:8%">Qty</th><th class="r" style="width:16%">Unit Price</th><th class="r" style="width:14%">Amount</th>' +
       '</tr></thead><tbody>' + rows + '</tbody></table>' +
     '</div>' +
 
-    /* Bottom grid: Stripe + Totals */
-    '<div class="inv-bottom-grid">' +
-      '<div class="inv-stripe-col"><div class="inv-sec-eye">Payment Information</div>' +
-        '<div class="inv-stripe-block">' +
-          '<div class="inv-stripe-wordmark">Prestige Serves · Secure Online Payment</div>' +
+    '<div class="bottom-grid">' +
+      '<div class="stripe-col">' +
+        '<div class="sec-eye" style="margin-bottom:9px">Payment via Stripe</div>' +
+        '<div class="stripe-block">' +
+          '<div class="stripe-top">' +
+            '<span class="stripe-wordmark">str<b>i</b>pe</span>' +
+            '<span class="stripe-badge">Secure</span>' +
+          '</div>' +
           payBlock +
         '</div>' +
+        '<div class="stripe-note">Payment must be received before any service is dispatched. A 3% Stripe processing fee is included in the total due and is required for payment.</div>' +
       '</div>' +
-      '<div class="inv-totals-col">' +
-        tRow('Subtotal', formatUsd(inv.subtotal_cents)) +
-        tRow('Tax / Fees', formatUsd(inv.tax_cents)) +
-        (inv.stripe_fee_enabled ? tRow('Processing Fee (3%)', formatUsd(inv.stripe_fee_cents)) : '') +
-        (inv.discount_cents ? tRow('Discount', '−' + formatUsd(inv.discount_cents)) : '') +
-        '<div style="margin-top:10px;padding-top:9px;border-top:1.5px solid #2a3a6e;">' +
-          '<div class="inv-sec-eye">Total Due</div>' +
-          '<div class="inv-grand-val">' + formatUsd(inv.total_cents) + '</div>' +
+      '<div class="totals-col">' +
+        '<div class="t-row"><span class="lbl">Subtotal</span><span class="val">' + formatUsd(inv.subtotal_cents) + '</span></div>' +
+        '<div class="t-row"><span class="lbl">Tax / Fees</span><span class="val">' + formatUsd(inv.tax_cents) + '</span></div>' +
+        (inv.stripe_fee_enabled ? '<div class="t-row"><span class="lbl">Stripe Fee (3%)</span><span class="val">' + formatUsd(inv.stripe_fee_cents) + '</span></div>' : '') +
+        (inv.discount_cents ? '<div class="t-row"><span class="lbl">Discount</span><span class="val">?' + formatUsd(inv.discount_cents) + '</span></div>' : '') +
+        '<div class="grand-section">' +
+          '<div class="grand-lbl">Total Due</div>' +
+          '<div class="grand-val">' + formatUsd(inv.total_cents) + '</div>' +
+          (inv.stripe_fee_enabled ? '<div class="stripe-fee-line" style="display:block">Includes required 3% Stripe processing fee.</div>' : '') +
+          '<div class="grand-note">Payment required before service begins.</div>' +
         '</div>' +
       '</div>' +
     '</div>' +
 
-    /* Notes */
-    (inv.notes
-      ? '<div class="inv-notes" style="padding:6px 20px;border-bottom:1px solid #e2e0db;font-size:11px;font-style:italic;color:#444;">' + escapeHtml(inv.notes) + '</div>'
-      : '') +
+    '<div class="notes-section">' +
+      '<div class="sec-eye" style="margin-bottom:6px">Notes</div>' +
+      '<div style="font-size:12px;font-family:\'EB Garamond\',serif;color:var(--black);line-height:1.6;font-style:italic;">' +
+        escapeHtml(inv.notes || 'Payment is required in full before any job is scheduled or assigned. All service attempts are documented and court-ready. Questions? Call (424) 235-3089 or email info@prestigeserves.com.') +
+      '</div>' +
+    '</div>' +
 
-    /* Footer bar */
-    '<div class="inv-footer-bar">' +
-      '<div style="color:#fff;font-family:EB Garamond,serif;">Prestige Serves LLC</div>' +
-      '<div>info@prestigeserves.com · (424) 235-3089</div>' +
+    '<div class="inv-footer">' +
+      '<div style="display:flex;align-items:center;gap:9px">' +
+        '<svg width="26" height="20" viewBox="0 0 44 34" fill="none">' +
+          '<rect x="1" y="1" width="42" height="32" rx="1" stroke="rgba(255,255,255,0.5)" stroke-width="1.6" fill="none"/>' +
+          '<polyline points="1,1 22,19 43,1" stroke="rgba(255,255,255,0.5)" stroke-width="1.6" fill="none"/>' +
+          '<line x1="12" y1="20" x2="26" y2="20" stroke="rgba(255,255,255,0.5)" stroke-width="1.7" stroke-linecap="round"/>' +
+          '<polyline points="22,16 27,20 22,24" stroke="rgba(255,255,255,0.5)" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '</svg>' +
+        '<div>' +
+          '<div class="footer-brand">Prestige Serves LLC</div>' +
+          '<div class="footer-tagline">Reliable. Professional. Fast.</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="footer-right">' +
+        '1240 S Corning St., Suite 105 ? Los Angeles, CA 90035<br>' +
+        'info@prestigeserves.com ? (424) 235-3089<br>' +
+        'prestigeserves.com ? Licensed &amp; Bonded' +
+      '</div>' +
     '</div>';
 
   document.getElementById('inv-lookup-wrap').style.display = 'none';
