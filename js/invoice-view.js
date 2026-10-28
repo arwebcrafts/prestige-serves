@@ -345,6 +345,7 @@ function printInvoice() {
       orientation: 'portrait',
       unit: 'mm',
       format: 'letter',
+      compress: true,
     });
 
     var usablePageHeight = pageHeightMm - (marginMm * 2);
@@ -363,8 +364,8 @@ function printInvoice() {
         renderHeightMm = usablePageHeight;
         xOffsetMm = marginMm + (contentWidthMm - renderWidthMm) / 2;
       }
-      var imgData = canvas.toDataURL('image/png');
-      pdf.addImage(imgData, 'PNG', xOffsetMm, yOffsetMm, renderWidthMm, renderHeightMm);
+      var imgData = canvas.toDataURL('image/jpeg', 0.82);
+      pdf.addImage(imgData, 'JPEG', xOffsetMm, yOffsetMm, renderWidthMm, renderHeightMm, undefined, 'FAST');
     } else {
       // Multi-page: slice the canvas
       var pageCount = Math.ceil(contentHeightMm / usablePageHeight);
@@ -380,11 +381,13 @@ function printInvoice() {
         sliceCanvas.width = imgWidth;
         sliceCanvas.height = srcH;
         var ctx = sliceCanvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, imgWidth, srcH);
         ctx.drawImage(canvas, 0, srcY, imgWidth, srcH, 0, 0, imgWidth, srcH);
 
-        var sliceData = sliceCanvas.toDataURL('image/png');
+        var sliceData = sliceCanvas.toDataURL('image/jpeg', 0.82);
         var sliceHeightMm = srcH * ratio;
-        pdf.addImage(sliceData, 'PNG', marginMm, marginMm, contentWidthMm, sliceHeightMm);
+        pdf.addImage(sliceData, 'JPEG', marginMm, marginMm, contentWidthMm, sliceHeightMm, undefined, 'FAST');
       }
     }
 
