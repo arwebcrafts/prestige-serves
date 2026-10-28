@@ -44,7 +44,7 @@
       <div class="inv-meta-right">
         <div style="margin-bottom:6px;">
           <span style="font-size:10px;color:#6b7280;">No.</span>
-          <input id="inv-num" placeholder="Auto on save" style="font-family:EB Garamond,serif;font-size:13px;border:none;border-bottom:1px solid #e2e0db;width:110px;text-align:right;background:transparent;">
+          <input id="inv-num" placeholder="Auto on save" style="font-family:EB Garamond,serif;font-size:13px;border:none;width:110px;text-align:right;background:transparent;">
           <select id="inv-status" style="font-size:8px;padding:3px 8px;margin-left:6px;">
             <option value="unpaid">Unpaid</option>
             <option value="sent">Sent</option>
@@ -71,7 +71,7 @@
 
     <div class="inv-case-row">
       <span class="inv-sec-eye" style="display:inline;margin-right:10px;">Case / Matter #</span>
-      <input id="inv-case" placeholder="e.g. 2026-CV-00412" style="font-family:EB Garamond,serif;font-size:13px;border:none;border-bottom:1px solid #e2e0db;width:260px;background:transparent;">
+      <input id="inv-case" placeholder="e.g. 2026-CV-00412" style="font-family:EB Garamond,serif;font-size:13px;border:none;width:260px;background:transparent;">
     </div>
 
     <div class="inv-bill-grid">
@@ -118,22 +118,21 @@
 
     <div class="inv-bottom-grid">
       <div class="inv-stripe-col">
-        <div class="inv-sec-eye">Stripe Payment</div>
+        <div class="inv-sec-eye">Payment Information</div>
         <div class="inv-stripe-block">
-          <div class="inv-stripe-wordmark">str<b>i</b>pe <span style="font-size:7px;letter-spacing:2px;background:rgba(255,255,255,0.12);padding:2px 6px;">Secure</span></div>
-          <div style="margin-top:10px;" class="inv-stripe-amount-wrap">
-            <label for="inv-custom-amount" style="font-size:9px;color:rgba(255,255,255,0.85);display:block;margin-bottom:3px;letter-spacing:0.5px;">Amount ($):</label>
-            <input type="number" id="inv-custom-amount" min="0" step="0.01" placeholder="0.00" style="width:100%;font-size:12px;padding:6px 8px;background:#fff;border:1px solid #ccc;color:#111;border-radius:3px;box-sizing:border-box;" oninput="onCustomAmountInput(this.value)">
+          <div class="inv-stripe-wordmark">Prestige Serves · Secure Online Payment</div>
+          <div style="margin-top:8px;" class="inv-stripe-amount-wrap">
+            <label for="inv-custom-amount" style="font-size:9px;color:#6b7280;display:block;margin-bottom:3px;letter-spacing:0.5px;">Custom Amount ($):</label>
+            <input type="number" id="inv-custom-amount" min="0" step="0.01" placeholder="0.00" style="width:140px;font-size:12px;padding:4px 8px;background:#fff;border:1px solid #e2e0db;color:#111;border-radius:3px;box-sizing:border-box;" oninput="onCustomAmountInput(this.value)">
             <input type="hidden" id="inv-stripe-url" value="">
           </div>
-          <div style="margin-top:12px;" class="inv-pdf-pay-block">
-            <a id="inv-stripe-btn-link" href="#" target="_blank" rel="noopener" class="inv-pay-btn-anchor" onclick="handlePayNowClick(event)">Pay Now</a>
-            <div style="margin-top:8px;font-size:9.5px;color:rgba(255,255,255,0.9);word-break:break-all;" class="inv-pdf-pay-url-box">
-              Clickable Link: <a id="inv-stripe-text-link" href="#" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:underline;">(Generates automatically on save)</a>
+          <div style="margin-top:10px;" class="inv-pdf-pay-block">
+            <a id="inv-stripe-btn-link" href="#" target="_blank" rel="noopener" class="inv-pay-btn-anchor" onclick="handlePayNowClick(event)">PAY NOW</a>
+            <div style="margin-top:8px;font-size:11px;" class="inv-pdf-pay-url-box">
+              <a id="inv-stripe-text-link" href="#" target="_blank" rel="noopener" style="color:#2a3a6e;text-decoration:underline;">Click Here to Pay Online &rarr;</a>
             </div>
           </div>
         </div>
-        <p style="font-size:9px;color:#6b7280;font-style:italic;">A 3% Stripe processing fee may apply if passed to client.</p>
       </div>
       <div class="inv-totals-col">
         <div class="inv-t-row"><span>Subtotal</span><span class="val" id="inv-subtotal">$0.00</span></div>
@@ -142,29 +141,19 @@
           <span class="val" id="inv-tax-amt">$0.00</span>
         </div>
         <div class="inv-t-row">
-          <span>Stripe Fee<br><label style="font-size:9px;cursor:pointer;"><input type="checkbox" id="inv-stripe-on" onchange="recalcInvoiceTable()"> Add 3% to client</label></span>
-          <span class="val" id="inv-stripe-fee-amt">$0.00</span>
-        </div>
-        <div class="inv-t-row">
           <span>Discount (−$)</span>
           <span class="val"><input id="inv-disc" type="number" value="0" min="0" step="1" style="width:60px;text-align:right;border:none;background:transparent;" oninput="recalcInvoiceTable()"></span>
         </div>
-        <div style="margin-top:10px;padding-top:9px;border-top:2px solid #2a3a6e;">
+        <div style="margin-top:10px;padding-top:9px;border-top:1.5px solid #2a3a6e;">
           <div class="inv-sec-eye">Total Due</div>
           <div class="inv-grand-val" id="inv-grand">$0.00</div>
-          <div id="inv-stripe-fee-line" style="font-size:8px;color:#5a6a9e;font-style:italic;display:none;">Includes 3% Stripe processing fee.</div>
         </div>
       </div>
     </div>
 
-    <div class="inv-pdf-link-banner" style="padding:7px 20px;background:#f4f6fa;border-top:1px solid #e2e0db;border-bottom:1px solid #e2e0db;font-size:10.5px;color:#1e2d5a;text-align:center;">
-      <strong>Click to Pay via Stripe Online:</strong>
-      <a id="inv-pdf-banner-link" href="#" target="_blank" rel="noopener" style="color:#1d4ed8;font-weight:bold;text-decoration:underline;margin-left:4px;word-break:break-all;">(Generates automatically on save)</a>
-    </div>
-
-    <div style="padding:8px 20px;border-bottom:1px solid #e2e0db;" class="inv-notes">
+    <div style="padding:8px 32px;border-bottom:1px solid #e2e0db;" class="inv-notes">
       <div class="inv-sec-eye">Notes</div>
-      <textarea id="inv-notes" rows="2" style="width:100%;border:none;border-bottom:1px solid #e2e0db;font-family:EB Garamond,serif;font-size:12px;resize:vertical;min-height:36px;">Payment is required in full before any job is scheduled or assigned. All service attempts are documented and court-ready. Questions? Call (424) 235-3089 or email info@prestigeserves.com.</textarea>
+      <textarea id="inv-notes" rows="2" style="width:100%;border:none;font-family:EB Garamond,serif;font-size:12px;resize:vertical;min-height:36px;outline:none;background:transparent;">Payment is required in full before any job is scheduled or assigned. All service attempts are documented and court-ready. Questions? Call (424) 235-3089 or email info@prestigeserves.com.</textarea>
     </div>
 
     <div class="inv-footer-bar">

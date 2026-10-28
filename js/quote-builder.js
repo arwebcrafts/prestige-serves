@@ -72,8 +72,8 @@ function newInvoice() {
   });
   document.getElementById('inv-tbl-body').innerHTML = '';
   document.getElementById('inv-tax-pct').value = 0;
-  document.getElementById('inv-disc').value = 0;
-  document.getElementById('inv-stripe-on').checked = false;
+  var stripeOn = document.getElementById('inv-stripe-on');
+  if (stripeOn) stripeOn.checked = false;
   var amtIn = document.getElementById('inv-custom-amount');
   if (amtIn) { amtIn.value = ''; delete amtIn.dataset.manualOverride; }
   document.getElementById('pay-link-box').style.display = 'none';
@@ -210,7 +210,8 @@ function loadInvoiceFromQuery() {
       setServiceDetails(typeof inv.service_details === 'string' ? JSON.parse(inv.service_details) : inv.service_details);
       document.getElementById('inv-tax-pct').value = inv.tax_pct || 0;
       document.getElementById('inv-disc').value = (inv.discount_cents || 0) / 100;
-      document.getElementById('inv-stripe-on').checked = !!inv.stripe_fee_enabled;
+      var stripeOn = document.getElementById('inv-stripe-on');
+      if (stripeOn) stripeOn.checked = !!inv.stripe_fee_enabled;
       document.getElementById('inv-notes').value = inv.notes || '';
       var amtIn = document.getElementById('inv-custom-amount');
       if (amtIn) {
@@ -247,11 +248,11 @@ function updateStripeUrlPreview(url) {
   }
   if (txt) {
     txt.href = target || '#';
-    txt.textContent = target || '(Generates automatically on save)';
+    txt.textContent = target ? 'Click Here to Pay Online →' : '(Generates automatically on save)';
   }
   if (bnr) {
     bnr.href = target || '#';
-    bnr.textContent = target || '(Generates automatically on save)';
+    bnr.textContent = target ? 'Click Here to Pay Online →' : '(Generates automatically on save)';
   }
 }
 

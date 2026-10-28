@@ -71,11 +71,10 @@ function recalcInvoiceTable() {
 
   var taxPct = parseFloat(document.getElementById('inv-tax-pct') && document.getElementById('inv-tax-pct').value) || 0;
   var disc = parseFloat(document.getElementById('inv-disc') && document.getElementById('inv-disc').value) || 0;
-  var stripeOn = document.getElementById('inv-stripe-on') && document.getElementById('inv-stripe-on').checked;
   var taxAmt = sub * taxPct / 100;
   var preFee = sub + taxAmt - disc;
-  var fee = stripeOn ? preFee * 0.03 : 0;
-  var grand = Math.max(0, preFee + fee);
+  var fee = 0;
+  var grand = Math.max(0, preFee);
 
   var el;
   el = document.getElementById('inv-subtotal'); if (el) el.textContent = formatUsdFromDollars(sub);
@@ -86,11 +85,11 @@ function recalcInvoiceTable() {
   if (customAmtIn && document.activeElement !== customAmtIn && !customAmtIn.dataset.manualOverride) {
     customAmtIn.value = grand > 0 ? grand.toFixed(2) : '';
   }
-  el = document.getElementById('inv-stripe-fee-line'); if (el) el.style.display = stripeOn ? 'block' : 'none';
+  el = document.getElementById('inv-stripe-fee-line'); if (el) el.style.display = 'none';
 
   var payBtn = document.getElementById('inv-stripe-btn-link');
   if (payBtn) {
-    payBtn.textContent = 'Pay Now';
+    payBtn.textContent = 'PAY NOW';
   }
 
   return {
@@ -98,8 +97,8 @@ function recalcInvoiceTable() {
     tax_pct: taxPct,
     tax_cents: Math.round(taxAmt * 100),
     discount_cents: Math.round(disc * 100),
-    stripe_fee_enabled: stripeOn,
-    stripe_fee_cents: Math.round(fee * 100),
+    stripe_fee_enabled: false,
+    stripe_fee_cents: 0,
     total_cents: Math.round(grand * 100),
   };
 }
@@ -288,7 +287,7 @@ function printInvoice() {
   document.body.appendChild(overlay);
 
   // Hide UI-only elements before capture
-  var hideEls = invEl.querySelectorAll('.inv-btn-print, .inv-add-row, .del-btn, .inv-action-bar, .inv-stripe-url-input, .inv-stripe-amount-wrap');
+  var hideEls = invEl.querySelectorAll('.inv-btn-print, .inv-add-row, .del-btn, .inv-action-bar, .inv-stripe-url-input, .inv-stripe-amount-wrap, #inv-status, .inv-pdf-link-banner');
   hideEls.forEach(function(el) { el.dataset.wasDisplay = el.style.display; el.style.display = 'none'; });
 
   // Also hide the Stripe URL input by ID

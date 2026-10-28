@@ -102,11 +102,13 @@ function renderInvoice(inv) {
       '<div style="padding:10px 14px;background:#27ae60;color:#fff;font-size:12px;font-weight:600;text-align:center;border-radius:4px;margin-top:10px;">PAID IN FULL</div>';
   } else {
     payBlock =
-      '<a id="inv-pay-btn" href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener" class="inv-pay-btn-anchor" onclick="if(!this.getAttribute(\'href\').includes(\'buy.stripe.com\')){event.preventDefault();payInvoice();}">' +
-        'PAY NOW VIA STRIPE · ' + formatUsd(inv.total_cents) +
-      '</a>' +
-      '<div class="inv-pdf-pay-url-box" style="margin-top:6px;font-size:9px;color:rgba(255,255,255,0.85);word-break:break-all;">' +
-        'Payment Link: <a href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:underline;">' + escapeHtml(stripeTargetUrl) + '</a>' +
+      '<div style="margin-top:10px;" class="inv-pdf-pay-block">' +
+        '<a id="inv-pay-btn" href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener" class="inv-pay-btn-anchor" onclick="if(!this.getAttribute(\'href\').includes(\'buy.stripe.com\')){event.preventDefault();payInvoice();}">' +
+          'PAY NOW · ' + formatUsd(inv.total_cents) +
+        '</a>' +
+        '<div class="inv-pdf-pay-url-box" style="margin-top:8px;font-size:11px;">' +
+          '<a href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener" style="color:#2a3a6e;text-decoration:underline;">Click Here to Pay Online &rarr;</a>' +
+        '</div>' +
       '</div>';
   }
 
@@ -168,31 +170,22 @@ function renderInvoice(inv) {
 
     /* Bottom grid: Stripe + Totals */
     '<div class="inv-bottom-grid">' +
-      '<div class="inv-stripe-col"><div class="inv-sec-eye">Payment via Stripe</div>' +
+      '<div class="inv-stripe-col"><div class="inv-sec-eye">Payment Information</div>' +
         '<div class="inv-stripe-block">' +
-          '<div class="inv-stripe-wordmark">str<b>i</b>pe</div>' +
+          '<div class="inv-stripe-wordmark">Prestige Serves · Secure Online Payment</div>' +
           payBlock +
         '</div>' +
       '</div>' +
       '<div class="inv-totals-col">' +
         tRow('Subtotal', formatUsd(inv.subtotal_cents)) +
         tRow('Tax / Fees', formatUsd(inv.tax_cents)) +
-        (inv.stripe_fee_enabled ? tRow('Stripe Fee (3%)', formatUsd(inv.stripe_fee_cents)) : '') +
         (inv.discount_cents ? tRow('Discount', '−' + formatUsd(inv.discount_cents)) : '') +
-        '<div style="margin-top:10px;padding-top:9px;border-top:2px solid #2a3a6e;">' +
+        '<div style="margin-top:10px;padding-top:9px;border-top:1.5px solid #2a3a6e;">' +
           '<div class="inv-sec-eye">Total Due</div>' +
           '<div class="inv-grand-val">' + formatUsd(inv.total_cents) + '</div>' +
         '</div>' +
       '</div>' +
     '</div>' +
-
-    /* PDF payment link banner — always visible in print */
-    (!isPaid
-      ? '<div class="inv-pdf-link-banner">' +
-          '<strong>Pay Online:</strong> ' +
-          '<a href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener">' + escapeHtml(stripeTargetUrl) + '</a>' +
-        '</div>'
-      : '') +
 
     /* Notes */
     (inv.notes
