@@ -115,9 +115,9 @@ function renderInvoice(inv) {
 
     /* Top bar */
     '<div class="inv-topbar">' +
-      '<div style="display:flex;align-items:center;gap:8px;">' +
-        '<img src="assets/images/mail.png" alt="Prestige Serves" style="height:24px;width:auto;object-fit:contain;display:block;">' +
-        '<span class="inv-logo-text">Prestige Serves</span>' +
+      '<div style="display:flex;align-items:center;gap:10px;">' +
+        '<img src="assets/images/mail.png" alt="Prestige Serves" style="height:26px;width:auto;object-fit:contain;display:block;">' +
+        '<span class="inv-logo-text" style="font-family:\'Cormorant Garamond\', \'EB Garamond\', serif;font-size:21px;font-weight:500;color:#111;letter-spacing:0.01em;">Prestige Serves</span>' +
       '</div>' +
       '<div style="display:flex;align-items:center;gap:12px;">' +
         '<button type="button" onclick="printInvoice()" class="inv-btn-print" style="background:#2a3a6e;color:#fff;border:none;padding:5px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:2px;">Print / Save PDF</button>' +

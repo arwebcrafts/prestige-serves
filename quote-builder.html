@@ -25,9 +25,9 @@
   <div class="inv-page" id="invoice-form">
 
     <div class="inv-topbar">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <img src="assets/images/mail.png" alt="Prestige Serves" style="height:24px;width:auto;object-fit:contain;display:block;">
-        <span class="inv-logo-text">Prestige Serves</span>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <img src="assets/images/mail.png" alt="Prestige Serves" style="height:26px;width:auto;object-fit:contain;display:block;">
+        <span class="inv-logo-text" style="font-family:'Cormorant Garamond', 'EB Garamond', serif;font-size:21px;font-weight:500;color:#111;letter-spacing:0.01em;">Prestige Serves</span>
       </div>
       <span class="inv-label-top">Quote / Invoice</span>
     </div>
@@ -39,23 +39,23 @@
         <div class="inv-subtitle">Reliable. Professional. Fast.</div>
       </div>
       <div class="inv-meta-right">
-        <div style="margin-bottom:6px;">
-          <span style="font-size:10px;color:#6b7280;">No.</span>
-          <input id="inv-num" placeholder="Auto on save" style="font-family:EB Garamond,serif;font-size:13px;border:none;width:110px;text-align:right;background:transparent;">
-          <select id="inv-status" style="font-size:8px;padding:3px 8px;margin-left:6px;">
+        <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:10px;">
+          <span style="font-family:'EB Garamond',serif;font-size:12px;color:#6b7280;">No.</span>
+          <input id="inv-num" placeholder="Auto on save" style="font-family:'EB Garamond',serif;font-size:14px;font-weight:600;border:none;width:110px;text-align:right;background:transparent;outline:none;color:#111;">
+          <select id="inv-status" style="font-size:8px;padding:2px 8px;margin-left:6px;border-radius:12px;border:1px solid #c0392b;color:#c0392b;background:transparent;font-family:inherit;">
             <option value="unpaid">Unpaid</option>
             <option value="sent">Sent</option>
             <option value="paid">Paid</option>
           </select>
         </div>
-        <div style="display:flex;gap:18px;justify-content:flex-end;">
+        <div style="display:grid;grid-template-columns:110px 110px;gap:16px;justify-content:end;text-align:left;">
           <div>
-            <div class="inv-sec-eye">Invoice Date</div>
-            <input type="date" id="inv-date" style="border:none;background:transparent;font-family:EB Garamond,serif;font-size:13px;outline:none;">
+            <div class="inv-sec-eye" style="margin-bottom:4px;">Invoice Date</div>
+            <input type="date" id="inv-date" style="border:none;background:transparent;font-family:'EB Garamond',serif;font-size:13.5px;outline:none;padding:2px 0 4px;color:#111;width:100%;">
           </div>
           <div>
-            <div class="inv-sec-eye">Due Date</div>
-            <input type="date" id="inv-due-date" style="border:none;background:transparent;font-family:EB Garamond,serif;font-size:13px;outline:none;">
+            <div class="inv-sec-eye" style="margin-bottom:4px;">Due Date</div>
+            <input type="date" id="inv-due-date" style="border:none;background:transparent;font-family:'EB Garamond',serif;font-size:13.5px;outline:none;padding:2px 0 4px;color:#111;width:100%;">
           </div>
         </div>
       </div>
@@ -68,7 +68,7 @@
 
     <div class="inv-case-row">
       <span class="inv-sec-eye" style="display:inline;margin-right:10px;">Case / Matter #</span>
-      <input id="inv-case" placeholder="e.g. 2026-CV-00412" style="font-family:EB Garamond,serif;font-size:13px;border:none;width:260px;background:transparent;">
+      <input id="inv-case" placeholder="e.g. 2026-CV-00412" style="font-family:'EB Garamond',serif;font-size:13.5px;border:none;width:260px;background:transparent;outline:none;padding:2px 0;line-height:1.5;">
     </div>
 
     <div class="inv-bill-grid">
@@ -88,7 +88,7 @@
         <div class="inv-field">Los Angeles, CA 90035</div>
         <div class="inv-field">(424) 235-3089</div>
         <div class="inv-field">info@prestigeserves.com</div>
-        <div style="margin:8px 0;border-top:1px dashed #e2e0db;"></div>
+        <div style="margin-top:14px;"></div>
         <div class="inv-sec-eye">Service Details</div>
         <div class="inv-field"><input id="svc-subject" placeholder="Subject / Defendant Name"></div>
         <div class="inv-field"><input id="svc-address" placeholder="Service Address"></div>
@@ -132,14 +132,14 @@
       <div class="inv-totals-col">
         <div class="inv-t-row"><span>Subtotal</span><span class="val" id="inv-subtotal">$0.00</span></div>
         <div class="inv-t-row">
-          <span>Tax / Fees (<input id="inv-tax-pct" type="number" value="0" min="0" max="100" step="0.5" style="width:36px;border:none;background:transparent;border-bottom:1px dashed #ccc;" oninput="recalcInvoiceTable()">%)</span>
+          <span>Tax / Fees (<input id="inv-tax-pct" type="text" inputmode="decimal" value="0" style="width:12px;border:none;background:transparent;outline:none;text-align:center;font-family:inherit;font-size:inherit;padding:0;color:inherit;" oninput="recalcInvoiceTable()">%)</span>
           <span class="val" id="inv-tax-amt">$0.00</span>
         </div>
         <div class="inv-t-row" id="inv-stripe-fee-row">
           <span>Processing Fee (3%)<br><label style="font-size:8.5px;color:#6b7280;cursor:pointer;"><input type="checkbox" id="inv-stripe-on" onchange="recalcInvoiceTable()"> Standard 3% card fee</label></span>
           <span class="val" id="inv-stripe-fee-amt">$0.00</span>
         </div>
-        <div class="inv-t-row">
+        <div class="inv-t-row" id="inv-disc-row" style="border-bottom:none;">
           <span>Discount (−$)</span>
           <span class="val"><input id="inv-disc" type="number" value="0" min="0" step="1" style="width:60px;text-align:right;border:none;background:transparent;" oninput="recalcInvoiceTable()"></span>
         </div>
@@ -150,9 +150,9 @@
       </div>
     </div>
 
-    <div style="padding:8px 32px;border-bottom:1px solid #e2e0db;" class="inv-notes">
-      <div class="inv-sec-eye">Notes</div>
-      <textarea id="inv-notes" rows="2" style="width:100%;border:none;font-family:EB Garamond,serif;font-size:12px;resize:vertical;min-height:36px;outline:none;background:transparent;">Payment is required in full before any job is scheduled or assigned. All service attempts are documented and court-ready. Questions? Call (424) 235-3089 or email info@prestigeserves.com.</textarea>
+    <div style="padding:10px 32px 14px;border-bottom:1px solid #e2e0db;" class="inv-notes">
+      <div class="inv-sec-eye" style="margin-bottom:6px;">Notes</div>
+      <textarea id="inv-notes" rows="3" style="width:100%;border:none;font-family:'EB Garamond',serif;font-size:12.5px;line-height:1.45;resize:vertical;min-height:50px;outline:none;background:transparent;overflow:visible;padding:0;color:#333;">Payment is required in full before any job is scheduled or assigned. All service attempts are documented and court-ready. Questions? Call (424) 235-3089 or email info@prestigeserves.com.</textarea>
     </div>
 
     <div class="inv-footer-bar">

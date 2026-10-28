@@ -295,6 +295,13 @@ function printInvoice() {
   var stripeInput = document.getElementById('inv-stripe-url');
   if (stripeInput) { stripeInput.dataset.wasDisplay = stripeInput.style.display; stripeInput.style.display = 'none'; }
 
+  // Ensure notes textarea is fully expanded so no text is cut off
+  var notesEl = document.getElementById('inv-notes');
+  if (notesEl) {
+    notesEl.style.height = 'auto';
+    notesEl.style.height = Math.max(50, notesEl.scrollHeight) + 'px';
+  }
+
   html2canvas(invEl, {
     scale: 2,
     useCORS: true,
@@ -414,6 +421,7 @@ function printInvoice() {
     // Restore hidden elements
     hideEls.forEach(function(el) { el.style.display = el.dataset.wasDisplay || ''; delete el.dataset.wasDisplay; });
     if (stripeInput) { stripeInput.style.display = stripeInput.dataset.wasDisplay || ''; delete stripeInput.dataset.wasDisplay; }
+    if (notesEl) notesEl.style.height = '';
 
     var ov = document.getElementById('pdf-generating-overlay');
     if (ov) ov.remove();
@@ -422,6 +430,7 @@ function printInvoice() {
     console.error('PDF generation failed:', err);
     hideEls.forEach(function(el) { el.style.display = el.dataset.wasDisplay || ''; delete el.dataset.wasDisplay; });
     if (stripeInput) { stripeInput.style.display = stripeInput.dataset.wasDisplay || ''; delete stripeInput.dataset.wasDisplay; }
+    if (notesEl) notesEl.style.height = '';
     var ov = document.getElementById('pdf-generating-overlay');
     if (ov) ov.remove();
     window.print();
