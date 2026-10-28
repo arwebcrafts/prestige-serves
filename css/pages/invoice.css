@@ -26,6 +26,13 @@
   border-bottom: 1px solid #e2e0db;
 }
 
+.inv-topbar img {
+  height: 24px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
 .inv-logo-text {
   font-family: 'EB Garamond', 'Cormorant Garamond', serif;
   font-size: 18px;
@@ -544,6 +551,7 @@
 
   /* ── Compact spacing ── */
   .inv-topbar     { padding: 4px 18px !important; }
+  .inv-topbar img { height: 20px !important; width: auto !important; }
   .inv-hero       { padding: 6px 18px !important; }
   .inv-title      { font-size: 24px !important; margin-bottom: 2px !important; }
   .inv-eyebrow    { font-size: 7px !important; margin-bottom: 3px !important; }
