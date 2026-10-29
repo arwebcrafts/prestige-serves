@@ -130,7 +130,7 @@
           <div class="pay-btn-wrap">
             <a id="inv-stripe-btn-link" href="https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n" target="_blank" rel="noopener noreferrer" class="inv-pay-now-btn" onclick="handlePayNowClick(event)">PAY NOW</a>
           </div>
-          <input class="stripe-link-input" id="inv-stripe-url" placeholder="Paste custom Stripe payment link here&hellip;" oninput="updateStripeDisplay(this.value)">
+          <input type="hidden" id="inv-stripe-url">
         </div>
         <div class="stripe-note">Payment must be received before any service is dispatched. A 3% Stripe processing fee is included in the total due and is required for payment.</div>
       </div>

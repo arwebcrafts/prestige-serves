@@ -556,7 +556,8 @@ body.admin-dashboard-body {
   line-height: 1.3;
 }
 .pay-btn-wrap {
-  margin-bottom: 6px;
+  margin-top: 2px;
+  margin-bottom: 12px;
 }
 .inv-pay-now-btn {
   display: inline-block;
