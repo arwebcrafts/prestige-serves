@@ -1,3 +1,37 @@
+function savePdfWithNewWindow(pdfDoc, filename) {
+  try {
+    var pdfArrayBuf = pdfDoc.output('arraybuffer');
+    var pdfBytes = new Uint8Array(pdfArrayBuf);
+    var pdfStr = '';
+    var chunk = 8192;
+    for (var i = 0; i < pdfBytes.length; i += chunk) {
+      pdfStr += String.fromCharCode.apply(null, pdfBytes.subarray(i, i + chunk));
+    }
+    if (pdfStr.indexOf('/S /URI /URI (') !== -1) {
+      pdfStr = pdfStr.replace(/\/S \/URI \/URI \(/g, '/S /URI /NewWindow true /URI (');
+      var updatedBytes = new Uint8Array(pdfStr.length);
+      for (var j = 0; j < pdfStr.length; j++) {
+        updatedBytes[j] = pdfStr.charCodeAt(j) & 0xff;
+      }
+      var blob = new Blob([updatedBytes], { type: 'application/pdf' });
+      var blobUrl = URL.createObjectURL(blob);
+      var downloadLink = document.createElement('a');
+      downloadLink.href = blobUrl;
+      downloadLink.download = filename;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      setTimeout(function() {
+        if (downloadLink.parentNode) downloadLink.parentNode.removeChild(downloadLink);
+        URL.revokeObjectURL(blobUrl);
+      }, 1500);
+      return;
+    }
+  } catch (e) {
+    console.warn('PDF NewWindow injection fallback to default save:', e);
+  }
+  pdfDoc.save(filename);
+}
+
 // Client invoice view + Stripe Pay Now
 // This file is loaded on invoice.html (client-facing) WITHOUT invoice-shared.js
 // so every helper it needs must be defined here.
@@ -87,13 +121,10 @@ function renderInvoice(inv) {
   }).join('');
 
   // Resolve the payment URL ? must be absolute for PDF
-  var autoInvoicePayUrl = ensureAbsoluteUrl(
-    window.location.origin + '/invoice.html?number=' +
-    encodeURIComponent(inv.invoice_number) + '&token=' + encodeURIComponent(currentToken) + '&pay=1'
-  );
-  var stripeTargetUrl = (inv.stripe_pay_url && inv.stripe_pay_url !== 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n')
+  var defaultStripeUrl = 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n';
+  var stripeTargetUrl = (inv.stripe_pay_url && inv.stripe_pay_url.trim() && inv.stripe_pay_url !== '#')
     ? ensureAbsoluteUrl(inv.stripe_pay_url)
-    : autoInvoicePayUrl;
+    : defaultStripeUrl;
 
   // Payment block inside the dark navy Stripe box
   var payBlock;
@@ -103,7 +134,7 @@ function renderInvoice(inv) {
         '<div class="pay-info-eye">PAYMENT INFORMATION</div>' +
         '<div class="pay-info-title">Stripe Payment &middot; Secure Online Payment</div>' +
         '<div class="pay-btn-wrap">' +
-          '<div style="display:inline-block;padding:9px 20px;background:#27ae60;color:#fff;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:1.5px;border-radius:3px;text-transform:uppercase;">PAID IN FULL</div>' +
+          '<div style="display:inline-block;padding:9px 20px;background:#27ae60;color:#fff;font-family:Inter,sans-serif;font-size:11px;font-weight:600;letter-spacing:1.5px;border-radius:3px;text-transform:uppercase;">PAID IN FULL</div>' +
         '</div>' +
       '</div>';
   } else {
@@ -112,7 +143,7 @@ function renderInvoice(inv) {
         '<div class="pay-info-eye">PAYMENT INFORMATION</div>' +
         '<div class="pay-info-title">Stripe Payment &middot; Secure Online Payment</div>' +
         '<div class="pay-btn-wrap">' +
-          '<a id="inv-pay-btn" href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener noreferrer" class="inv-pay-now-btn">' +
+          '<a id="inv-pay-btn" href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener noreferrer" class="inv-pay-now-btn" onclick="window.open(this.href, &quot;_blank&quot;, &quot;noopener,noreferrer&quot;); if(event){event.preventDefault();event.stopPropagation();} return false;">' +
             'PAY NOW' +
           '</a>' +
         '</div>' +
@@ -436,8 +467,8 @@ function printInvoice() {
     // ── Add clickable link annotations over every <a> in the invoice ──
     var allLinks = invEl.querySelectorAll('a[href]');
     var invRect = invEl.getBoundingClientRect();
-    var scaleX = renderWidthMm / (invEl.offsetWidth || 1);
-    var scaleY = renderHeightMm / (invEl.offsetHeight || 1);
+    var invWidth = invEl.offsetWidth || invRect.width || 1;
+    var invHeight = invEl.offsetHeight || invRect.height || 1;
 
     allLinks.forEach(function(link) {
       var href = link.href || link.getAttribute('href');
@@ -447,16 +478,18 @@ function printInvoice() {
       var linkRect = link.getBoundingClientRect();
       if (linkRect.width === 0 || linkRect.height === 0) return;
 
-      var x = (linkRect.left - invRect.left) * scaleX + xOffsetMm;
-      var y = (linkRect.top - invRect.top) * scaleY + yOffsetMm;
-      var w = linkRect.width * scaleX;
-      var h = linkRect.height * scaleY;
+      var x = ((linkRect.left - invRect.left) / invWidth) * renderWidthMm + xOffsetMm;
+      var y = ((linkRect.top - invRect.top) / invHeight) * renderHeightMm + yOffsetMm;
+      var w = (linkRect.width / invWidth) * renderWidthMm;
+      var h = (linkRect.height / invHeight) * renderHeightMm;
 
-      // Ensure generous clickable hit target in PDF reader (at least 6mm tall)
-      if (h < 6) {
-        y = Math.max(0, y - 1);
-        h = Math.max(h, 6);
-      }
+      // Add generous clickable padding so clicking anywhere on or near the button works effortlessly
+      var padX = 1.5;
+      var padY = 1.5;
+      x = Math.max(0, x - padX);
+      y = Math.max(0, y - padY);
+      w = w + (padX * 2);
+      h = Math.max(6, h + (padY * 2));
 
       // Determine which page this link falls on
       var linkPage = 0;
@@ -467,7 +500,6 @@ function printInvoice() {
 
       if (linkPage < pdf.getNumberOfPages()) {
         pdf.setPage(linkPage + 1);
-        // Use pdf.link() to add a clickable annotation rectangle
         pdf.link(x, y, w, h, { url: ensureAbsoluteUrl(href) });
       }
     });
@@ -481,8 +513,8 @@ function printInvoice() {
       creator: 'Prestige Serves LLC',
     });
 
-    // Download
-    pdf.save(filename);
+    // Save with /NewWindow true so PDF viewers open link in new tab
+    savePdfWithNewWindow(pdf, filename);
 
     // Restore print buttons
     printBtns.forEach(function(b) { b.style.display = ''; });

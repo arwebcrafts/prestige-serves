@@ -25,13 +25,13 @@ window.cycleStatus = cycleStatus;
 function updateStripeDisplay(val) {
   var btn = document.getElementById('inv-stripe-btn-link');
   var raw = val ? String(val).trim() : '';
+  var defaultUrl = 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n';
   if (btn) {
-    if (raw && raw !== '#') {
-      var href = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw;
-      btn.href = href;
-    } else {
-      btn.href = 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n';
-    }
+    var href = (raw && raw !== '#') ? (/^https?:\/\//i.test(raw) ? raw : 'https://' + raw) : defaultUrl;
+    btn.href = href;
+    btn.setAttribute('href', href);
+    btn.setAttribute('target', '_blank');
+    btn.setAttribute('rel', 'noopener noreferrer');
   }
 }
 window.updateStripeDisplay = updateStripeDisplay;
@@ -81,20 +81,18 @@ function onCustomAmountInput(value) {
   }
 }
 
-async function handlePayNowClick(event) {
+function handlePayNowClick(event) {
   var btn = document.getElementById('inv-stripe-btn-link');
-  var href = btn ? btn.getAttribute('href') : '';
-  if (href && href !== '#' && href !== 'javascript:void(0)' && !href.startsWith('javascript:')) {
-    return;
+  var href = btn ? (btn.getAttribute('href') || btn.href) : '';
+  if (!href || href === '#' || href === 'javascript:void(0)' || href.startsWith('javascript:')) {
+    href = 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n';
   }
-  event.preventDefault();
-  var ok = await saveInvoice();
-  if (ok) {
-    var newHref = btn ? btn.getAttribute('href') : '';
-    if (newHref && newHref !== '#' && !newHref.startsWith('javascript:')) {
-      window.open(newHref, '_blank', 'noopener');
-    }
+  window.open(href, '_blank', 'noopener,noreferrer');
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
   }
+  return false;
 }
 
 function newInvoice() {
@@ -224,8 +222,9 @@ async function saveInvoice() {
     ));
 
     var currentStripeUrl = val('inv-stripe-url');
-    var isCustom = currentStripeUrl && currentStripeUrl !== 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n';
-    var activePayUrl = isCustom ? ensureAbsoluteUrl(currentStripeUrl) : (data.stripeCheckoutUrl || (payUrl + '&pay=1'));
+    var defaultStripeUrl = 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n';
+    var isCustom = currentStripeUrl && currentStripeUrl.trim() && currentStripeUrl !== defaultStripeUrl && currentStripeUrl !== '#';
+    var activePayUrl = isCustom ? ensureAbsoluteUrl(currentStripeUrl) : defaultStripeUrl;
 
     if (document.getElementById('inv-stripe-url')) {
       document.getElementById('inv-stripe-url').value = isCustom ? currentStripeUrl : '';
@@ -273,8 +272,9 @@ function loadInvoiceFromQuery() {
       }
       var payUrl = ensureAbsoluteUrl(window.location.origin + '/invoice.html?number=' +
         encodeURIComponent(inv.invoice_number) + '&token=' + encodeURIComponent(inv.access_token));
-      var isCustom = inv.stripe_pay_url && inv.stripe_pay_url !== 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n';
-      var stripeUrl = isCustom ? ensureAbsoluteUrl(inv.stripe_pay_url) : (payUrl + '&pay=1');
+      var defaultStripeUrl = 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n';
+      var isCustom = inv.stripe_pay_url && inv.stripe_pay_url.trim() && inv.stripe_pay_url !== defaultStripeUrl && inv.stripe_pay_url !== '#';
+      var stripeUrl = isCustom ? ensureAbsoluteUrl(inv.stripe_pay_url) : defaultStripeUrl;
       if (document.getElementById('inv-stripe-url')) {
         document.getElementById('inv-stripe-url').value = isCustom ? inv.stripe_pay_url : '';
       }

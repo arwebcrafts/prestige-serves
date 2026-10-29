@@ -1,3 +1,37 @@
+function savePdfWithNewWindow(pdfDoc, filename) {
+  try {
+    var pdfArrayBuf = pdfDoc.output('arraybuffer');
+    var pdfBytes = new Uint8Array(pdfArrayBuf);
+    var pdfStr = '';
+    var chunk = 8192;
+    for (var i = 0; i < pdfBytes.length; i += chunk) {
+      pdfStr += String.fromCharCode.apply(null, pdfBytes.subarray(i, i + chunk));
+    }
+    if (pdfStr.indexOf('/S /URI /URI (') !== -1) {
+      pdfStr = pdfStr.replace(/\/S \/URI \/URI \(/g, '/S /URI /NewWindow true /URI (');
+      var updatedBytes = new Uint8Array(pdfStr.length);
+      for (var j = 0; j < pdfStr.length; j++) {
+        updatedBytes[j] = pdfStr.charCodeAt(j) & 0xff;
+      }
+      var blob = new Blob([updatedBytes], { type: 'application/pdf' });
+      var blobUrl = URL.createObjectURL(blob);
+      var downloadLink = document.createElement('a');
+      downloadLink.href = blobUrl;
+      downloadLink.download = filename;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      setTimeout(function() {
+        if (downloadLink.parentNode) downloadLink.parentNode.removeChild(downloadLink);
+        URL.revokeObjectURL(blobUrl);
+      }, 1500);
+      return;
+    }
+  } catch (e) {
+    console.warn('PDF NewWindow injection fallback to default save:', e);
+  }
+  pdfDoc.save(filename);
+}
+
 // Shared invoice recalc + catalog (loaded on quote-builder and invoice pages)
 
 var INVOICE_TYPES = [];
@@ -384,8 +418,8 @@ function printInvoice() {
     // Add clickable link annotations over every <a> in the invoice
     var allLinks = invEl.querySelectorAll('a[href]');
     var invRect = invEl.getBoundingClientRect();
-    var scaleX = renderWidthMm / (invEl.offsetWidth || 1);
-    var scaleY = renderHeightMm / (invEl.offsetHeight || 1);
+    var invWidth = invEl.offsetWidth || invRect.width || 1;
+    var invHeight = invEl.offsetHeight || invRect.height || 1;
 
     allLinks.forEach(function(link) {
       var href = link.href || link.getAttribute('href');
@@ -396,16 +430,18 @@ function printInvoice() {
       var linkRect = link.getBoundingClientRect();
       if (linkRect.width === 0 || linkRect.height === 0) return;
 
-      var x = (linkRect.left - invRect.left) * scaleX + xOffsetMm;
-      var y = (linkRect.top - invRect.top) * scaleY + yOffsetMm;
-      var w = linkRect.width * scaleX;
-      var h = linkRect.height * scaleY;
+      var x = ((linkRect.left - invRect.left) / invWidth) * renderWidthMm + xOffsetMm;
+      var y = ((linkRect.top - invRect.top) / invHeight) * renderHeightMm + yOffsetMm;
+      var w = (linkRect.width / invWidth) * renderWidthMm;
+      var h = (linkRect.height / invHeight) * renderHeightMm;
 
-      // Ensure generous clickable hit target in PDF reader (at least 6mm tall)
-      if (h < 6) {
-        y = Math.max(0, y - 1);
-        h = Math.max(h, 6);
-      }
+      // Add generous clickable padding so clicking anywhere on or near the button works effortlessly
+      var padX = 1.5;
+      var padY = 1.5;
+      x = Math.max(0, x - padX);
+      y = Math.max(0, y - padY);
+      w = w + (padX * 2);
+      h = Math.max(6, h + (padY * 2));
 
       var linkPage = 0;
       if (!isSinglePage && contentHeightMm > usablePageHeight) {
@@ -429,7 +465,8 @@ function printInvoice() {
       creator: 'Prestige Serves LLC',
     });
 
-    pdf.save(filename);
+    // Save with /NewWindow true so PDF readers open link in a new tab
+    savePdfWithNewWindow(pdf, filename);
 
     // Restore hidden elements
     hideEls.forEach(function(el) { el.style.display = el.dataset.wasDisplay || ''; delete el.dataset.wasDisplay; });
