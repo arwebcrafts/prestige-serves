@@ -154,12 +154,7 @@ function renderInvoice(inv) {
   document.getElementById('inv-display').innerHTML =
     '<div class="topbar">' +
       '<div class="logo-area">' +
-        '<svg width="30" height="23" viewBox="0 0 44 34" fill="none">' +
-          '<rect x="1" y="1" width="42" height="32" rx="1" stroke="#2a3a6e" stroke-width="1.6" fill="none"/>' +
-          '<polyline points="1,1 22,19 43,1" stroke="#2a3a6e" stroke-width="1.6" fill="none"/>' +
-          '<line x1="12" y1="20" x2="26" y2="20" stroke="#2a3a6e" stroke-width="1.7" stroke-linecap="round"/>' +
-          '<polyline points="22,16 27,20 22,24" stroke="#2a3a6e" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
-        '</svg>' +
+        '<img src="assets/images/mail.png" alt="Prestige Serves" class="inv-logo-img">' +
         '<span class="logo-text">Prestige Serves</span>' +
       '</div>' +
       '<div style="display:flex;align-items:center;gap:12px;">' +
@@ -254,12 +249,7 @@ function renderInvoice(inv) {
 
     '<div class="inv-footer">' +
       '<div style="display:flex;align-items:center;gap:9px">' +
-        '<svg width="26" height="20" viewBox="0 0 44 34" fill="none">' +
-          '<rect x="1" y="1" width="42" height="32" rx="1" stroke="rgba(255,255,255,0.5)" stroke-width="1.6" fill="none"/>' +
-          '<polyline points="1,1 22,19 43,1" stroke="rgba(255,255,255,0.5)" stroke-width="1.6" fill="none"/>' +
-          '<line x1="12" y1="20" x2="26" y2="20" stroke="rgba(255,255,255,0.5)" stroke-width="1.7" stroke-linecap="round"/>' +
-          '<polyline points="22,16 27,20 22,24" stroke="rgba(255,255,255,0.5)" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
-        '</svg>' +
+        '<img src="assets/images/mail.png" alt="Prestige Serves" class="inv-footer-logo-img">' +
         '<div>' +
           '<div class="footer-brand">Prestige Serves LLC</div>' +
           '<div class="footer-tagline">Reliable. Professional. Fast.</div>' +

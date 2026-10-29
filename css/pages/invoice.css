@@ -1074,3 +1074,20 @@ body.admin-dashboard-body {
     -webkit-appearance: none !important;
   }
 }
+/* Logo image styling */
+.inv-logo-img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
+}
+.inv-footer-logo-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
+  filter: brightness(0) invert(1);
+  opacity: 0.85;
+}
