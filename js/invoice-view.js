@@ -102,9 +102,9 @@ function renderInvoice(inv) {
       '<div style="padding:10px 14px;background:#27ae60;color:#fff;font-size:11px;font-weight:600;letter-spacing:1.5px;text-align:center;border-radius:2px;margin-top:6px;text-transform:uppercase;">PAID IN FULL</div>';
   } else {
     payBlock =
-      '<div style="margin-top:8px;" class="inv-pdf-pay-block">' +
-        '<a id="inv-pay-btn" href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener" class="inv-pay-btn-anchor" onclick="if(!this.getAttribute(\'href\').includes(\'buy.stripe.com\')){event.preventDefault();payInvoice();}">' +
-          'PAY NOW' +
+      '<div class="stripe-link-display has-link" style="display:block;margin-top:4px;">' +
+        '<a id="inv-pay-btn" href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener noreferrer">' +
+          escapeHtml(stripeTargetUrl) +
         '</a>' +
       '</div>';
   }
@@ -362,7 +362,7 @@ function printInvoice() {
 
   // Use html2canvas to capture the invoice element
   html2canvas(invEl, {
-    scale: 2,
+    scale: 3,
     useCORS: true,
     allowTaint: true,
     backgroundColor: '#ffffff',
@@ -405,7 +405,7 @@ function printInvoice() {
         renderHeightMm = usablePageHeight;
         xOffsetMm = marginMm + (contentWidthMm - renderWidthMm) / 2;
       }
-      var imgData = canvas.toDataURL('image/jpeg', 0.82);
+      var imgData = canvas.toDataURL('image/jpeg', 0.95);
       pdf.addImage(imgData, 'JPEG', xOffsetMm, yOffsetMm, renderWidthMm, renderHeightMm, undefined, 'FAST');
     } else {
       // Multi-page: slice the canvas
@@ -426,7 +426,7 @@ function printInvoice() {
         ctx.fillRect(0, 0, imgWidth, srcH);
         ctx.drawImage(canvas, 0, srcY, imgWidth, srcH, 0, 0, imgWidth, srcH);
 
-        var sliceData = sliceCanvas.toDataURL('image/jpeg', 0.82);
+        var sliceData = sliceCanvas.toDataURL('image/jpeg', 0.95);
         var sliceHeightMm = srcH * ratio;
         pdf.addImage(sliceData, 'JPEG', marginMm, marginMm, contentWidthMm, sliceHeightMm, undefined, 'FAST');
       }

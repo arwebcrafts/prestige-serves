@@ -9,13 +9,15 @@
   --border: #e2e0db;
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   SCREEN STYLES
-   ══════════════════════════════════════════════════════════════════ */
+* {
+  box-sizing: border-box;
+}
 
 body.admin-dashboard-body {
   font-family: 'Inter', sans-serif;
   background: #eceae4;
+  margin: 0;
+  padding: 0;
 }
 
 .inv-page-wrap {
@@ -155,6 +157,7 @@ body.admin-dashboard-body {
   white-space: nowrap;
   background: transparent;
   font-family: 'Inter', sans-serif;
+  user-select: none;
 }
 .s-unpaid, .inv-status-unpaid { border-color: #c0392b; color: #c0392b; }
 .s-paid,   .inv-status-paid   { border-color: #27ae60; color: #27ae60; }
@@ -174,6 +177,7 @@ body.admin-dashboard-body {
   color: var(--mid);
   margin-bottom: 2px;
   font-weight: 500;
+  text-align: right;
 }
 .date-item input,
 #inv-date,
@@ -188,6 +192,7 @@ body.admin-dashboard-body {
   text-align: right;
   width: 110px;
   box-shadow: none;
+  padding: 1px 0;
 }
 
 /* ── UPFRONT ── */
@@ -238,6 +243,7 @@ body.admin-dashboard-body {
   outline: none;
   background: transparent;
   width: 260px;
+  padding: 1px 0;
 }
 .case-row input::placeholder,
 #inv-case::placeholder {
@@ -285,9 +291,10 @@ body.admin-dashboard-body {
   border: none;
   border-bottom: 1px solid #ede9e2;
   width: 100%;
-  padding: 1px 0;
+  padding: 2px 0 3px 0;
   outline: none;
   background: transparent;
+  line-height: 1.4;
   transition: border-color .2s;
 }
 .field input:focus,
@@ -302,13 +309,14 @@ body.admin-dashboard-body {
 }
 .static-field {
   margin-bottom: 3px;
-  padding: 1px 0;
+  padding: 1px 0 2px 0;
   border-bottom: 1px solid #f3f0eb;
 }
 .static-val {
   font-family: 'EB Garamond', serif;
   font-size: 12px;
   color: #444;
+  line-height: 1.4;
 }
 .static-val.brand,
 .inv-static-val.brand {
@@ -367,7 +375,7 @@ body.admin-dashboard-body {
 }
 .tbl td,
 .inv-tbl td {
-  padding: 6px 6px;
+  padding: 7px 6px;
   vertical-align: middle;
 }
 .tbl td input.desc-in,
@@ -379,6 +387,8 @@ body.admin-dashboard-body {
   width: 100%;
   outline: none;
   color: var(--black);
+  padding: 1px 0;
+  line-height: 1.4;
 }
 .tbl td input.desc-in::placeholder,
 .inv-tbl td input.desc-in::placeholder {
@@ -422,6 +432,8 @@ body.admin-dashboard-body {
   text-align: right;
   outline: none;
   color: var(--black);
+  padding: 1px 0;
+  line-height: 1.4;
 }
 .tbl td input.prc-in,
 .inv-tbl td input.prc-in {
@@ -433,6 +445,8 @@ body.admin-dashboard-body {
   text-align: right;
   outline: none;
   color: var(--black);
+  padding: 1px 0;
+  line-height: 1.4;
 }
 .tbl td input.prc-in:focus,
 .inv-tbl td input.prc-in:focus {
@@ -458,7 +472,7 @@ body.admin-dashboard-body {
   cursor: pointer;
   font-size: 15px;
   line-height: 1;
-  padding: 0;
+  padding: 0 4px;
   transition: color .2s;
 }
 .del-btn:hover {
@@ -551,6 +565,24 @@ body.admin-dashboard-body {
   color: rgba(255,255,255,0.3);
   font-size: 10px;
 }
+.stripe-link-display {
+  font-size: 10.5px;
+  color: rgba(255,255,255,0.95);
+  word-break: break-all;
+  line-height: 1.5;
+  padding: 3px 0;
+  display: none;
+}
+.stripe-link-display.has-link {
+  display: block;
+}
+.stripe-link-display a {
+  color: #ffffff !important;
+  text-decoration: underline !important;
+  word-break: break-all !important;
+  font-size: 10.5px !important;
+  font-family: 'Inter', sans-serif !important;
+}
 .stripe-note {
   font-size: 8.5px;
   color: var(--mid);
@@ -578,17 +610,17 @@ body.admin-dashboard-body {
 }
 .tax-in,
 #inv-tax-pct {
-  border: none;
+  border: none !important;
+  outline: none !important;
   background: transparent;
   font-size: 9.5px;
   color: var(--mid);
   width: 14px;
   text-align: center;
+  font-family: 'Inter', sans-serif;
   padding: 0;
   margin: 0 1px;
-  outline: none;
-  border-bottom: 1px solid var(--border);
-  font-family: 'Inter', sans-serif;
+  box-shadow: none !important;
 }
 .fee-toggle {
   display: flex;
@@ -649,32 +681,6 @@ body.admin-dashboard-body {
   margin-top: 2px;
   font-style: italic;
   display: block;
-}
-
-/* ── PAY NOW BUTTON ── */
-.inv-pay-btn-anchor {
-  display: block;
-  width: 100%;
-  padding: 8px 16px;
-  background: #2a3a6e;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: #fff;
-  text-align: center;
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  text-decoration: none;
-  border-radius: 2px;
-  box-sizing: border-box;
-  transition: all .2s;
-  cursor: pointer;
-}
-.inv-pay-btn-anchor:hover {
-  background: #ffffff;
-  color: #1e2d5a;
-  border-color: #ffffff;
 }
 
 /* ── NOTES ── */
@@ -852,24 +858,61 @@ body.admin-dashboard-body {
 }
 
 @media print {
-  html, body {
-    width: 8.5in;
-    height: 11in;
+  @page {
+    size: letter portrait;
     margin: 0;
-    padding: 0;
+  }
+
+  html, body {
+    width: 8.5in !important;
+    height: 11in !important;
+    max-height: 11in !important;
+    margin: 0 !important;
+    padding: 0 !important;
     background: #fff !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    overflow: hidden !important;
+  }
+
+  .inv-page-wrap {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 8.5in !important;
+    height: 11in !important;
+    max-height: 11in !important;
+    background: #fff !important;
+    overflow: hidden !important;
   }
 
   .page, .inv-page {
     width: 8.5in !important;
     max-width: 8.5in !important;
     height: 11in !important;
+    max-height: 11in !important;
     margin: 0 !important;
     box-shadow: none !important;
     overflow: hidden !important;
+    border: none !important;
+    page-break-inside: avoid !important;
+    page-break-after: avoid !important;
+    break-inside: avoid !important;
   }
+
+  /* Compact sections for print single-page fit */
+  .topbar, .inv-topbar { padding: 8px 32px !important; }
+  .hero, .inv-hero { padding: 10px 32px 8px !important; }
+  .upfront, .inv-upfront { padding: 5px 32px !important; }
+  .case-row, .inv-case-row { padding: 5px 32px !important; }
+  .bill-col, .inv-bill-col { padding: 7px 22px 7px 32px !important; }
+  .bill-col.right, .inv-bill-col.right { padding-left: 22px !important; padding-right: 32px !important; }
+  .items-section, .inv-items-section { padding: 0 32px 8px !important; }
+  .tbl td, .inv-tbl td { padding: 5px 6px !important; }
+  .bottom-grid, .inv-bottom-grid { border-top: 1px solid var(--border) !important; }
+  .stripe-col, .inv-stripe-col { padding: 8px 22px 8px 32px !important; }
+  .totals-col, .inv-totals-col { padding: 8px 32px 8px 22px !important; }
+  .notes-section, .inv-notes { padding: 7px 32px 9px !important; }
+  .inv-footer, .inv-footer-bar { padding: 8px 32px !important; }
 
   nav, header, footer, .page-legal-links, .footer-cols,
   .action-bar, .inv-action-bar, .inv-builder-nav,
@@ -879,11 +922,23 @@ body.admin-dashboard-body {
     display: none !important;
   }
 
-  .inv-pay-btn-anchor {
-    display: inline-block !important;
-    background: #2a3a6e !important;
+  /* Hide 6th column (delete button column) in print */
+  .tbl th:last-child,
+  .tbl td:last-child,
+  .inv-tbl th:last-child,
+  .inv-tbl td:last-child {
+    display: none !important;
+  }
+
+  .stripe-link-display {
+    display: block !important;
+  }
+  .stripe-link-display a {
     color: #ffffff !important;
-    text-decoration: none !important;
+    text-decoration: underline !important;
+    word-break: break-all !important;
+    font-size: 10px !important;
+    font-family: 'Inter', sans-serif !important;
   }
 
   input, select, textarea {
@@ -891,6 +946,19 @@ body.admin-dashboard-body {
     outline: none !important;
     background: transparent !important;
     box-shadow: none !important;
+  }
+
+  .field input {
+    border-bottom: 1px solid #ede9e2 !important;
+  }
+  .case-row input {
+    border-bottom: 1px solid var(--border) !important;
+  }
+  .num-input {
+    border-bottom: 1px solid var(--border) !important;
+  }
+  .date-item input {
+    border-bottom: 1px solid var(--border) !important;
   }
 
   input::placeholder, textarea::placeholder {

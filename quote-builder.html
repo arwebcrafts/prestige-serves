@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prestige Serves — Invoice &amp; Quote Builder</title>
+<title>Prestige Serves &mdash; Invoice &amp; Quote Builder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/global.css">
@@ -49,11 +49,8 @@
         <div class="meta-chips">
           <span style="font-size:10px;color:var(--mid)">No.</span>
           <input class="num-input" id="inv-num" placeholder="INV-0001">
-          <select id="inv-status" class="status-pill s-unpaid" onchange="this.className='status-pill s-'+this.value">
-            <option value="unpaid">Unpaid</option>
-            <option value="sent">Sent</option>
-            <option value="paid">Paid</option>
-          </select>
+          <span class="status-pill s-unpaid" id="status-pill" onclick="cycleStatus()">Unpaid</span>
+          <input type="hidden" id="inv-status" value="unpaid">
         </div>
         <div class="date-row">
           <div class="date-item">
@@ -134,10 +131,8 @@
             <span class="stripe-wordmark">str<b>i</b>pe</span>
             <span class="stripe-badge">Secure</span>
           </div>
-          <input class="stripe-link-input" id="inv-stripe-url" placeholder="Paste your Stripe payment link here…" oninput="updateStripeUrlPreview(this.value)">
-          <div style="margin-top:10px;" class="inv-pdf-pay-block">
-            <a id="inv-stripe-btn-link" href="#" target="_blank" rel="noopener" class="inv-pay-btn-anchor" onclick="handlePayNowClick(event)">PAY NOW</a>
-          </div>
+          <input class="stripe-link-input" id="inv-stripe-url" placeholder="Paste your Stripe payment link here&hellip;" oninput="updateStripeDisplay(this.value)">
+          <div class="stripe-link-display has-link" id="stripe-link-display"></div>
         </div>
         <div class="stripe-note">Payment must be received before any service is dispatched. A 3% Stripe processing fee is included in the total due and is required for payment.</div>
       </div>
@@ -149,7 +144,7 @@
         </div>
         <div class="t-row">
           <span class="lbl">Stripe Fee<br><label class="fee-toggle"><input type="checkbox" id="inv-stripe-on" checked onchange="recalcInvoiceTable()"> 3% required (included in total)</label></span>
-          <span class="val" id="inv-stripe-fee-amt" style="color:var(--mid)">$0.00</span>
+          <span class="val" id="inv-stripe-fee-amt" style="color:var(--black)">$0.00</span>
         </div>
         <div class="t-row">
           <span class="lbl">Discount (&minus;$)</span>
@@ -195,7 +190,7 @@
     <div class="action-bar">
       <button type="button" class="print-btn inv-btn-save" onclick="saveInvoice()">Save Quote &amp; Get Pay Link</button>
       <button type="button" class="print-btn" onclick="printInvoice()" style="border-left:1px solid rgba(255,255,255,0.2);">&#128424;&nbsp; Save as PDF / Print</button>
-      <button type="button" class="reset-btn" onclick="newInvoice()">↺&nbsp; New Invoice</button>
+      <button type="button" class="reset-btn" onclick="newInvoice()">&#8634;&nbsp; New Invoice</button>
     </div>
 
   </div>

@@ -1,3 +1,38 @@
+
+var STATUSES = [
+  { label: 'Unpaid', cls: 's-unpaid' },
+  { label: 'Paid', cls: 's-paid' },
+  { label: 'Sent', cls: 's-sent' }
+];
+var si = 0;
+function cycleStatus() {
+  si = (si + 1) % STATUSES.length;
+  var p = document.getElementById('status-pill');
+  if (p) {
+    p.textContent = STATUSES[si].label;
+    p.className = 'status-pill ' + STATUSES[si].cls;
+  }
+  var hidden = document.getElementById('inv-status');
+  if (hidden) hidden.value = STATUSES[si].label.toLowerCase();
+}
+window.cycleStatus = cycleStatus;
+
+function updateStripeDisplay(val) {
+  var d = document.getElementById('stripe-link-display');
+  if (!d) return;
+  var raw = val ? String(val).trim() : '';
+  if (raw && raw !== '#') {
+    var href = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw;
+    d.innerHTML = '<a id="inv-stripe-btn-link" href="' + href + '" target="_blank" rel="noopener noreferrer">' + escapeInvHtml(raw) + '</a>';
+    d.classList.add('has-link');
+    d.style.display = 'block';
+  } else {
+    d.classList.remove('has-link');
+    d.style.display = 'none';
+    d.innerHTML = '';
+  }
+}
+window.updateStripeDisplay = updateStripeDisplay;
 // Admin quote builder
 
 var editingInvoiceId = null;
@@ -257,10 +292,9 @@ function loadInvoiceFromQuery() {
 
 function updateStripeUrlPreview(url) {
   var target = (!url || url === '#' || url === 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n') ? '' : ensureAbsoluteUrl(url);
-  var btn = document.getElementById('inv-stripe-btn-link');
-  if (btn) {
-    btn.href = target || '#';
-  }
+  var stripeIn = document.getElementById('inv-stripe-url');
+  if (stripeIn && target) stripeIn.value = target;
+  updateStripeDisplay(target || url);
 }
 
 // Ensure PDF export auto-saves first if unsaved so the link is never empty in the PDF
