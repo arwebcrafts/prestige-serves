@@ -1,3 +1,8 @@
+function syncNotesPrint(val) {
+  var p = document.getElementById('inv-notes-print');
+  if (p) p.textContent = val || '';
+}
+window.syncNotesPrint = syncNotesPrint;
 
 var STATUSES = [
   { label: 'Unpaid', cls: 's-unpaid' },
@@ -261,7 +266,7 @@ function loadInvoiceFromQuery() {
       document.getElementById('inv-disc').value = (inv.discount_cents || 0) / 100;
       var stripeOn = document.getElementById('inv-stripe-on');
       if (stripeOn) stripeOn.checked = true;
-      document.getElementById('inv-notes').value = inv.notes || ''; autoGrow(document.getElementById('inv-notes'));
+      document.getElementById('inv-notes').value = inv.notes || ''; autoGrow(document.getElementById('inv-notes')); syncNotesPrint(inv.notes || '');
       var amtIn = document.getElementById('inv-custom-amount');
       if (amtIn) {
         amtIn.value = ((inv.total_cents || 0) / 100).toFixed(2);

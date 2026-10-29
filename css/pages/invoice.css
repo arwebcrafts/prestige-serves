@@ -760,6 +760,21 @@ body.admin-dashboard-body {
   font-style: italic;
   box-sizing: border-box;
 }
+
+.notes-print-display {
+  display: none;
+  font-size: 12px;
+  font-family: 'EB Garamond', serif;
+  color: var(--black);
+  line-height: 1.5;
+  font-style: italic;
+  border-bottom: 1px solid var(--border);
+  padding: 2px 0 8px 0;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow: visible;
+  box-sizing: border-box;
+}
 .notes-section textarea:focus,
 #inv-notes:focus {
   border-bottom-color: var(--navy);
@@ -966,6 +981,14 @@ body.admin-dashboard-body {
   .stripe-col, .inv-stripe-col { padding: 8px 22px 8px 32px !important; }
   .totals-col, .inv-totals-col { padding: 8px 32px 8px 22px !important; }
   .notes-section, .inv-notes { padding: 7px 32px 9px !important; }
+  #inv-notes { display: none !important; }
+  .notes-print-display {
+    display: block !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow: visible !important;
+    padding: 2px 0 6px 0 !important;
+  }
   .inv-footer, .inv-footer-bar { padding: 8px 32px !important; }
 
   nav, header, footer, .page-legal-links, .footer-cols,

@@ -301,9 +301,14 @@ function printInvoice() {
   var stripeInput = document.getElementById('inv-stripe-url');
   if (stripeInput) { stripeInput.dataset.wasDisplay = stripeInput.style.display; stripeInput.style.display = 'none'; }
 
-  // Ensure notes textarea is fully expanded so no text is cut off
+  // Ensure notes display div has full text and is used for capture
   var notesEl = document.getElementById('inv-notes');
-  if (notesEl) {
+  var notesPrintEl = document.getElementById('inv-notes-print');
+  if (notesEl && notesPrintEl) {
+    notesPrintEl.textContent = notesEl.value;
+    notesPrintEl.style.display = 'block';
+    notesEl.style.display = 'none';
+  } else if (notesEl) {
     notesEl.style.height = 'auto';
     notesEl.style.height = Math.max(50, notesEl.scrollHeight) + 'px';
   }
@@ -316,6 +321,10 @@ function printInvoice() {
     logging: false,
   }).then(function(canvas) {
     var jsPDF = window.jspdf.jsPDF;
+    if (notesEl && notesPrintEl) {
+      notesPrintEl.style.display = 'none';
+      notesEl.style.display = 'block';
+    }
 
     var pageWidthMm = 215.9;
     var pageHeightMm = 279.4;

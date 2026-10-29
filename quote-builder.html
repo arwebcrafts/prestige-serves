@@ -160,7 +160,8 @@
     <!-- NOTES -->
     <div class="notes-section">
       <div class="sec-eye" style="margin-bottom:6px">Notes</div>
-      <textarea id="inv-notes" oninput="autoGrow(this)" rows="2">Payment is required in full before any job is scheduled or assigned. All service attempts are documented and court-ready. Questions? Call (424) 235-3089 or email info@prestigeserves.com.</textarea>
+      <textarea id="inv-notes" oninput="autoGrow(this);syncNotesPrint(this.value);" rows="2">Payment is required in full before any job is scheduled or assigned. All service attempts are documented and court-ready. Questions? Call (424) 235-3089 or email info@prestigeserves.com.</textarea>
+      <div class="notes-print-display" id="inv-notes-print">Payment is required in full before any job is scheduled or assigned. All service attempts are documented and court-ready. Questions? Call (424) 235-3089 or email info@prestigeserves.com.</div>
     </div>
 
     <!-- FOOTER -->
