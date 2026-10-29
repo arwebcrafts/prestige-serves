@@ -971,12 +971,15 @@ body.admin-dashboard-body {
   .page, .inv-page {
     width: 8.5in !important;
     max-width: 8.5in !important;
+    min-height: 11in !important;
     height: 11in !important;
     max-height: 11in !important;
     margin: 0 !important;
     box-shadow: none !important;
     overflow: hidden !important;
     border: none !important;
+    display: flex !important;
+    flex-direction: column !important;
     page-break-inside: avoid !important;
     page-break-after: avoid !important;
     break-inside: avoid !important;
@@ -1003,7 +1006,10 @@ body.admin-dashboard-body {
     overflow: visible !important;
     padding: 2px 0 6px 0 !important;
   }
-  .inv-footer, .inv-footer-bar { padding: 8px 32px !important; }
+  .inv-footer, .inv-footer-bar {
+    margin-top: auto !important;
+    padding: 8px 32px !important;
+  }
 
   nav, header, footer, .page-legal-links, .footer-cols,
   .action-bar, .inv-action-bar, .inv-builder-nav,

@@ -328,8 +328,8 @@ function printInvoice() {
 
     var pageWidthMm = 215.9;
     var pageHeightMm = 279.4;
-    var marginMm = 6;
-    var contentWidthMm = pageWidthMm - (marginMm * 2);
+    var marginMm = 0;
+    var contentWidthMm = pageWidthMm;
 
     var imgWidth = canvas.width;
     var imgHeight = canvas.height;
@@ -343,24 +343,22 @@ function printInvoice() {
       compress: true,
     });
 
-    var usablePageHeight = pageHeightMm - (marginMm * 2);
+    var usablePageHeight = pageHeightMm;
     var isSinglePage = false;
     var renderWidthMm = contentWidthMm;
     var renderHeightMm = contentHeightMm;
-    var xOffsetMm = marginMm;
-    var yOffsetMm = marginMm;
+    var xOffsetMm = 0;
+    var yOffsetMm = 0;
 
-    // If it fits or is within 25% of 1 page, scale proportionally to fit 1 pristine page
-    if (contentHeightMm <= usablePageHeight * 1.25) {
+    // Single page: fill full letter page edge-to-edge (zero excessive margins)
+    if (contentHeightMm <= usablePageHeight * 1.30) {
       isSinglePage = true;
-      if (contentHeightMm > usablePageHeight) {
-        var fitScale = usablePageHeight / contentHeightMm;
-        renderWidthMm = contentWidthMm * fitScale;
-        renderHeightMm = usablePageHeight;
-        xOffsetMm = marginMm + (contentWidthMm - renderWidthMm) / 2;
-      }
+      renderWidthMm = pageWidthMm;
+      renderHeightMm = pageHeightMm;
+      xOffsetMm = 0;
+      yOffsetMm = 0;
       var imgData = canvas.toDataURL('image/jpeg', 0.95);
-      pdf.addImage(imgData, 'JPEG', xOffsetMm, yOffsetMm, renderWidthMm, renderHeightMm, undefined, 'FAST');
+      pdf.addImage(imgData, 'JPEG', 0, 0, renderWidthMm, renderHeightMm, undefined, 'FAST');
     } else {
       var pageCount = Math.ceil(contentHeightMm / usablePageHeight);
       for (var p = 0; p < pageCount; p++) {
@@ -379,7 +377,7 @@ function printInvoice() {
 
         var sliceData = sliceCanvas.toDataURL('image/jpeg', 0.95);
         var sliceHeightMm = srcH * ratio;
-        pdf.addImage(sliceData, 'JPEG', marginMm, marginMm, contentWidthMm, sliceHeightMm, undefined, 'FAST');
+        pdf.addImage(sliceData, 'JPEG', 0, 0, pageWidthMm, sliceHeightMm, undefined, 'FAST');
       }
     }
 
@@ -405,7 +403,7 @@ function printInvoice() {
 
       // Ensure generous clickable hit target in PDF reader (at least 6mm tall)
       if (h < 6) {
-        y = Math.max(marginMm, y - 1);
+        y = Math.max(0, y - 1);
         h = Math.max(h, 6);
       }
 
