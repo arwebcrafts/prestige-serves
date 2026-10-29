@@ -397,8 +397,8 @@ function printInvoice() {
     // Calculate PDF dimensions (letter = 215.9mm x 279.4mm)
     var pageWidthMm = 215.9;
     var pageHeightMm = 279.4;
-    var marginMm = 0;
-    var contentWidthMm = pageWidthMm;
+    var marginMm = 2.65; // Exactly 10px spacing (top, bottom, sides)
+    var contentWidthMm = pageWidthMm - (marginMm * 2);
 
     var imgWidth = canvas.width;
     var imgHeight = canvas.height;
@@ -413,22 +413,22 @@ function printInvoice() {
       compress: true,
     });
 
-    var usablePageHeight = pageHeightMm;
+    var usablePageHeight = pageHeightMm - (marginMm * 2);
     var isSinglePage = false;
     var renderWidthMm = contentWidthMm;
-    var renderHeightMm = contentHeightMm;
-    var xOffsetMm = 0;
-    var yOffsetMm = 0;
+    var renderHeightMm = usablePageHeight;
+    var xOffsetMm = marginMm;
+    var yOffsetMm = marginMm;
 
-    // Single page: fill full letter page edge-to-edge (zero excessive margins)
+    // Single page: letter page with neat 10px spacing
     if (contentHeightMm <= usablePageHeight * 1.30) {
       isSinglePage = true;
-      renderWidthMm = pageWidthMm;
-      renderHeightMm = pageHeightMm;
-      xOffsetMm = 0;
-      yOffsetMm = 0;
+      renderWidthMm = contentWidthMm;
+      renderHeightMm = usablePageHeight;
+      xOffsetMm = marginMm;
+      yOffsetMm = marginMm;
       var imgData = canvas.toDataURL('image/jpeg', 0.95);
-      pdf.addImage(imgData, 'JPEG', 0, 0, renderWidthMm, renderHeightMm, undefined, 'FAST');
+      pdf.addImage(imgData, 'JPEG', xOffsetMm, yOffsetMm, renderWidthMm, renderHeightMm, undefined, 'FAST');
     } else {
       // Multi-page: slice the canvas
       var pageCount = Math.ceil(contentHeightMm / usablePageHeight);
@@ -450,7 +450,7 @@ function printInvoice() {
 
         var sliceData = sliceCanvas.toDataURL('image/jpeg', 0.95);
         var sliceHeightMm = srcH * ratio;
-        pdf.addImage(sliceData, 'JPEG', 0, 0, pageWidthMm, sliceHeightMm, undefined, 'FAST');
+        pdf.addImage(sliceData, 'JPEG', marginMm, marginMm, contentWidthMm, sliceHeightMm, undefined, 'FAST');
       }
     }
 
