@@ -131,10 +131,13 @@ body.admin-dashboard-body {
   border-bottom: 1px solid var(--border);
   outline: none;
   width: 110px;
+  height: 26px;
   color: var(--navy);
-  padding: 1px 0;
+  padding: 1px 0 2px 0;
   background: transparent;
   text-align: right;
+  box-sizing: border-box;
+  line-height: normal;
 }
 .num-input::placeholder,
 #inv-num::placeholder {
@@ -191,8 +194,11 @@ body.admin-dashboard-body {
   background: transparent;
   text-align: right;
   width: 110px;
+  height: 26px;
   box-shadow: none;
-  padding: 1px 0;
+  padding: 1px 0 2px 0;
+  box-sizing: border-box;
+  line-height: normal;
 }
 
 /* ── UPFRONT ── */
@@ -243,9 +249,9 @@ body.admin-dashboard-body {
   outline: none;
   background: transparent;
   width: 260px;
-  height: 26px;
+  height: 28px;
   line-height: normal;
-  padding: 2px 0 6px 0;
+  padding: 1px 0 2px 0;
   box-sizing: border-box;
 }
 .case-row input::placeholder,
@@ -294,9 +300,9 @@ body.admin-dashboard-body {
   border: none;
   border-bottom: 1px solid #ede9e2;
   width: 100%;
-  height: 26px;
+  height: 28px;
   line-height: normal;
-  padding: 2px 0 6px 0;
+  padding: 1px 0 2px 0;
   box-sizing: border-box;
   outline: none;
   background: transparent;
@@ -398,7 +404,7 @@ body.admin-dashboard-body {
 }
 .tbl td,
 .inv-tbl td {
-  padding: 8px 6px;
+  padding: 6px 6px;
   vertical-align: middle;
 }
 .tbl td input.desc-in,
@@ -408,11 +414,11 @@ body.admin-dashboard-body {
   font-size: 12.5px;
   font-family: 'EB Garamond', serif;
   width: 100%;
-  height: 26px;
+  height: 28px;
   line-height: normal;
   outline: none;
   color: var(--black);
-  padding: 2px 0 5px 0;
+  padding: 1px 0 2px 0;
   box-sizing: border-box;
 }
 .tbl td input.desc-in::placeholder,
@@ -424,7 +430,7 @@ body.admin-dashboard-body {
 .type-wrap {
   position: relative;
   width: 100%;
-  height: 26px;
+  height: 28px;
   display: flex;
   align-items: center;
 }
@@ -436,8 +442,8 @@ body.admin-dashboard-body {
   font-size: 11.5px;
   font-family: 'Inter', sans-serif;
   width: 100%;
-  height: 26px;
-  line-height: 26px;
+  height: 28px;
+  line-height: 28px;
   outline: none;
   color: var(--black);
   cursor: pointer;
@@ -460,11 +466,13 @@ body.admin-dashboard-body {
   font-size: 12.5px;
   font-family: 'EB Garamond', serif;
   width: 44px;
+  height: 28px;
   text-align: right;
   outline: none;
   color: var(--black);
-  padding: 1px 0;
-  line-height: 1.4;
+  padding: 1px 0 2px 0;
+  box-sizing: border-box;
+  line-height: normal;
 }
 .tbl td input.prc-in,
 .inv-tbl td input.prc-in {
@@ -473,11 +481,13 @@ body.admin-dashboard-body {
   font-size: 12.5px;
   font-family: 'EB Garamond', serif;
   width: 70px;
+  height: 28px;
   text-align: right;
   outline: none;
   color: var(--black);
-  padding: 1px 0;
-  line-height: 1.4;
+  padding: 1px 0 2px 0;
+  box-sizing: border-box;
+  line-height: normal;
 }
 .tbl td input.prc-in:focus,
 .inv-tbl td input.prc-in:focus {
@@ -692,6 +702,7 @@ body.admin-dashboard-body {
 .disc-in,
 #inv-disc {
   width: 60px;
+  height: 24px;
   text-align: right;
   border: none;
   background: transparent;
@@ -699,6 +710,9 @@ body.admin-dashboard-body {
   font-family: 'EB Garamond', serif;
   font-size: 13px;
   color: var(--black);
+  padding: 1px 0 2px 0;
+  box-sizing: border-box;
+  line-height: normal;
 }
 
 /* ── GRAND TOTAL ── */
