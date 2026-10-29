@@ -141,7 +141,7 @@
           <span class="val" id="inv-tax-amt">$0.00</span>
         </div>
         <div class="t-row">
-          <span class="lbl">Stripe Fee<br><label class="fee-toggle"><input type="checkbox" id="inv-stripe-on" checked onchange="recalcInvoiceTable()"> 3% required (included in total)</label></span>
+          <span class="lbl">Stripe Fee<br><label class="fee-toggle" style="cursor:default;"><input type="checkbox" id="inv-stripe-on" checked onclick="this.checked=true;return false;" style="pointer-events:none;cursor:default;" title="Mandatory fee (required)"> 3% required (included in total)</label></span>
           <span class="val" id="inv-stripe-fee-amt" style="color:var(--black)">$0.00</span>
         </div>
         <div class="t-row t-row-discount" style="border-bottom:none !important;">

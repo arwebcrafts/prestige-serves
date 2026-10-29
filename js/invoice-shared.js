@@ -71,7 +71,7 @@ function recalcInvoiceTable() {
 
   var taxPct = parseFloat(document.getElementById('inv-tax-pct') && document.getElementById('inv-tax-pct').value) || 0;
   var disc = parseFloat(document.getElementById('inv-disc') && document.getElementById('inv-disc').value) || 0;
-  var stripeOn = document.getElementById('inv-stripe-on') && document.getElementById('inv-stripe-on').checked;
+  var stripeOn = true; if (document.getElementById('inv-stripe-on')) document.getElementById('inv-stripe-on').checked = true;
   var taxAmt = sub * taxPct / 100;
   var preFee = sub + taxAmt - disc;
   var fee = stripeOn ? preFee * 0.03 : 0;

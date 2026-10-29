@@ -260,7 +260,7 @@ function loadInvoiceFromQuery() {
       document.getElementById('inv-tax-pct').value = inv.tax_pct || 0;
       document.getElementById('inv-disc').value = (inv.discount_cents || 0) / 100;
       var stripeOn = document.getElementById('inv-stripe-on');
-      if (stripeOn) stripeOn.checked = !!inv.stripe_fee_enabled;
+      if (stripeOn) stripeOn.checked = true;
       document.getElementById('inv-notes').value = inv.notes || ''; autoGrow(document.getElementById('inv-notes'));
       var amtIn = document.getElementById('inv-custom-amount');
       if (amtIn) {
