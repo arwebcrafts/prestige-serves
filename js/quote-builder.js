@@ -18,18 +18,15 @@ function cycleStatus() {
 window.cycleStatus = cycleStatus;
 
 function updateStripeDisplay(val) {
-  var d = document.getElementById('stripe-link-display');
-  if (!d) return;
+  var btn = document.getElementById('inv-stripe-btn-link');
   var raw = val ? String(val).trim() : '';
-  if (raw && raw !== '#') {
-    var href = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw;
-    d.innerHTML = '<a id="inv-stripe-btn-link" href="' + href + '" target="_blank" rel="noopener noreferrer">' + escapeInvHtml(raw) + '</a>';
-    d.classList.add('has-link');
-    d.style.display = 'block';
-  } else {
-    d.classList.remove('has-link');
-    d.style.display = 'none';
-    d.innerHTML = '';
+  if (btn) {
+    if (raw && raw !== '#') {
+      var href = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw;
+      btn.href = href;
+    } else {
+      btn.href = 'https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n';
+    }
   }
 }
 window.updateStripeDisplay = updateStripeDisplay;

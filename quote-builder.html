@@ -96,12 +96,11 @@
         <div class="static-field"><span class="static-val">(424) 235-3089</span></div>
         <div class="static-field"><span class="static-val">info@prestigeserves.com</span></div>
         <div class="static-field"><span class="static-val">prestigeserves.com</span></div>
-        <div class="svc-div"></div>
-        <div class="sec-eye">Service Details</div>
+        <div class="sec-eye" style="margin-top:10px;">Service Details</div>
         <div class="field"><input id="svc-subject" placeholder="Subject / Defendant Name"></div>
         <div class="field"><input id="svc-address" placeholder="Service Address"></div>
         <div class="field"><input id="svc-docs" placeholder="Documents to Serve"></div>
-        <div class="field"><input id="svc-server" placeholder="Assigned Server"></div>
+        <div class="field field-last"><input id="svc-server" placeholder="Assigned Server"></div>
       </div>
     </div>
 
@@ -125,14 +124,13 @@
     <!-- STRIPE + TOTALS -->
     <div class="bottom-grid">
       <div class="stripe-col">
-        <div class="sec-eye" style="margin-bottom:9px">Payment via Stripe</div>
-        <div class="stripe-block">
-          <div class="stripe-top">
-            <span class="stripe-wordmark">str<b>i</b>pe</span>
-            <span class="stripe-badge">Secure</span>
+        <div class="pay-info-box">
+          <div class="pay-info-eye">PAYMENT INFORMATION</div>
+          <div class="pay-info-title">Stripe Payment &middot; Secure Online Payment</div>
+          <div class="pay-btn-wrap">
+            <a id="inv-stripe-btn-link" href="https://buy.stripe.com/4gM4gzg8xdrR0Uxfrf6sw0n" target="_blank" rel="noopener noreferrer" class="inv-pay-now-btn" onclick="handlePayNowClick(event)">PAY NOW</a>
           </div>
-          <input class="stripe-link-input" id="inv-stripe-url" placeholder="Paste your Stripe payment link here&hellip;" oninput="updateStripeDisplay(this.value)">
-          <div class="stripe-link-display has-link" id="stripe-link-display"></div>
+          <input class="stripe-link-input" id="inv-stripe-url" placeholder="Paste custom Stripe payment link here&hellip;" oninput="updateStripeDisplay(this.value)">
         </div>
         <div class="stripe-note">Payment must be received before any service is dispatched. A 3% Stripe processing fee is included in the total due and is required for payment.</div>
       </div>
@@ -146,7 +144,7 @@
           <span class="lbl">Stripe Fee<br><label class="fee-toggle"><input type="checkbox" id="inv-stripe-on" checked onchange="recalcInvoiceTable()"> 3% required (included in total)</label></span>
           <span class="val" id="inv-stripe-fee-amt" style="color:var(--black)">$0.00</span>
         </div>
-        <div class="t-row">
+        <div class="t-row t-row-discount" style="border-bottom:none !important;">
           <span class="lbl">Discount (&minus;$)</span>
           <span class="val"><input class="disc-in" type="number" id="inv-disc" value="0" min="0" step="1" oninput="recalcInvoiceTable()"></span>
         </div>

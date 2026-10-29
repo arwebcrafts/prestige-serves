@@ -99,13 +99,23 @@ function renderInvoice(inv) {
   var payBlock;
   if (isPaid) {
     payBlock =
-      '<div style="padding:10px 14px;background:#27ae60;color:#fff;font-size:11px;font-weight:600;letter-spacing:1.5px;text-align:center;border-radius:2px;margin-top:6px;text-transform:uppercase;">PAID IN FULL</div>';
+      '<div class="pay-info-box">' +
+        '<div class="pay-info-eye">PAYMENT INFORMATION</div>' +
+        '<div class="pay-info-title">Stripe Payment &middot; Secure Online Payment</div>' +
+        '<div class="pay-btn-wrap">' +
+          '<div style="display:inline-block;padding:9px 20px;background:#27ae60;color:#fff;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:1.5px;border-radius:3px;text-transform:uppercase;">PAID IN FULL</div>' +
+        '</div>' +
+      '</div>';
   } else {
     payBlock =
-      '<div class="stripe-link-display has-link" style="display:block;margin-top:4px;">' +
-        '<a id="inv-pay-btn" href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener noreferrer">' +
-          escapeHtml(stripeTargetUrl) +
-        '</a>' +
+      '<div class="pay-info-box">' +
+        '<div class="pay-info-eye">PAYMENT INFORMATION</div>' +
+        '<div class="pay-info-title">Stripe Payment &middot; Secure Online Payment</div>' +
+        '<div class="pay-btn-wrap">' +
+          '<a id="inv-pay-btn" href="' + escapeHtml(stripeTargetUrl) + '" target="_blank" rel="noopener noreferrer" class="inv-pay-now-btn">' +
+            'PAY NOW' +
+          '</a>' +
+        '</div>' +
       '</div>';
   }
 
@@ -187,21 +197,14 @@ function renderInvoice(inv) {
 
     '<div class="bottom-grid">' +
       '<div class="stripe-col">' +
-        '<div class="sec-eye" style="margin-bottom:9px">Payment via Stripe</div>' +
-        '<div class="stripe-block">' +
-          '<div class="stripe-top">' +
-            '<span class="stripe-wordmark">str<b>i</b>pe</span>' +
-            '<span class="stripe-badge">Secure</span>' +
-          '</div>' +
-          payBlock +
-        '</div>' +
+        payBlock +
         '<div class="stripe-note">Payment must be received before any service is dispatched. A 3% Stripe processing fee is included in the total due and is required for payment.</div>' +
       '</div>' +
       '<div class="totals-col">' +
         '<div class="t-row"><span class="lbl">Subtotal</span><span class="val">' + formatUsd(inv.subtotal_cents) + '</span></div>' +
         '<div class="t-row"><span class="lbl">Tax / Fees</span><span class="val">' + formatUsd(inv.tax_cents) + '</span></div>' +
         (inv.stripe_fee_enabled ? '<div class="t-row"><span class="lbl">Stripe Fee (3%)</span><span class="val">' + formatUsd(inv.stripe_fee_cents) + '</span></div>' : '') +
-        (inv.discount_cents ? '<div class="t-row"><span class="lbl">Discount</span><span class="val">?' + formatUsd(inv.discount_cents) + '</span></div>' : '') +
+        (inv.discount_cents ? '<div class="t-row t-row-discount" style="border-bottom:none !important;"><span class="lbl">Discount</span><span class="val">?' + formatUsd(inv.discount_cents) + '</span></div>' : '') +
         '<div class="grand-section">' +
           '<div class="grand-lbl">Total Due</div>' +
           '<div class="grand-val">' + formatUsd(inv.total_cents) + '</div>' +

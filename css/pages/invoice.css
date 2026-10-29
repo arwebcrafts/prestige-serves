@@ -291,7 +291,7 @@ body.admin-dashboard-body {
   border: none;
   border-bottom: 1px solid #ede9e2;
   width: 100%;
-  padding: 2px 0 3px 0;
+  padding: 2px 0 5px 0;
   outline: none;
   background: transparent;
   line-height: 1.4;
@@ -309,7 +309,7 @@ body.admin-dashboard-body {
 }
 .static-field {
   margin-bottom: 3px;
-  padding: 1px 0 2px 0;
+  padding: 1px 0 4px 0;
   border-bottom: 1px solid #f3f0eb;
 }
 .static-val {
@@ -325,8 +325,26 @@ body.admin-dashboard-body {
   font-size: 13px;
 }
 .svc-div {
-  margin: 6px 0 5px;
-  border-top: 1px dashed var(--border);
+  display: none !important;
+  height: 0;
+  margin: 0;
+  border: none !important;
+}
+.bill-col.right .field:last-child input,
+.inv-bill-col.right .inv-field:last-child input,
+.field.field-last input,
+.inv-field.field-last input {
+  border-bottom: none !important;
+}
+.bill-col.right .field:last-child,
+.inv-bill-col.right .inv-field:last-child,
+.field.field-last,
+.inv-field.field-last {
+  margin-bottom: 0 !important;
+}
+.bill-col.right,
+.inv-bill-col.right {
+  padding-bottom: 5px !important;
 }
 
 /* ── LINE ITEMS ── */
@@ -516,78 +534,78 @@ body.admin-dashboard-body {
   padding: 12px 32px 12px 22px;
   background: var(--light);
 }
-.stripe-block,
-.inv-stripe-block {
-  background: var(--navy-dark);
-  padding: 10px 14px;
-  margin-bottom: 8px;
-  border-radius: 2px;
-}
-.stripe-top {
-  display: flex;
-  align-items: center;
-  gap: 7px;
+/* Payment Information & Pay Now Button (exact match to user reference) */
+.pay-info-box {
   margin-bottom: 6px;
 }
-.stripe-wordmark,
-.inv-stripe-wordmark {
+.pay-info-eye {
   font-family: 'Inter', sans-serif;
-  font-size: 15px;
-  font-weight: 300;
-  color: #fff;
-  letter-spacing: -0.5px;
-}
-.stripe-wordmark b,
-.inv-stripe-wordmark b {
+  font-size: 8px;
   font-weight: 500;
-}
-.stripe-badge {
-  font-size: 7px;
   letter-spacing: 2px;
-  background: rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.8);
-  padding: 2px 6px;
   text-transform: uppercase;
+  color: #5a6a9e;
+  margin-bottom: 5px;
+}
+.pay-info-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #2a3a6e;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+.pay-btn-wrap {
+  margin-bottom: 6px;
+}
+.inv-pay-now-btn {
+  display: inline-block;
+  padding: 10px 24px;
+  background: var(--navy-dark, #1e2d5a);
+  color: #ffffff !important;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none !important;
+  border-radius: 3px;
+  cursor: pointer;
+  border: none;
+  line-height: 1.2;
+  transition: background 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+.inv-pay-now-btn:hover {
+  background: var(--navy, #2a3a6e);
+  color: #ffffff !important;
 }
 .stripe-link-input {
   width: 100%;
-  background: rgba(255,255,255,0.08);
-  border: none;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-  color: rgba(255,255,255,0.9);
-  font-size: 10.5px;
-  padding: 5px 3px;
+  margin-top: 8px;
+  background: #fbfbf9;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--black);
+  font-size: 10px;
+  padding: 5px 8px;
   outline: none;
   font-family: 'Inter', sans-serif;
   box-sizing: border-box;
 }
+.stripe-link-input:focus {
+  border-color: var(--navy);
+}
 .stripe-link-input::placeholder {
-  color: rgba(255,255,255,0.3);
-  font-size: 10px;
-}
-.stripe-link-display {
-  font-size: 10.5px;
-  color: rgba(255,255,255,0.95);
-  word-break: break-all;
-  line-height: 1.5;
-  padding: 3px 0;
-  display: none;
-}
-.stripe-link-display.has-link {
-  display: block;
-}
-.stripe-link-display a {
-  color: #ffffff !important;
-  text-decoration: underline !important;
-  word-break: break-all !important;
-  font-size: 10.5px !important;
-  font-family: 'Inter', sans-serif !important;
+  color: #9ca3af;
+  font-size: 9.5px;
 }
 .stripe-note {
   font-size: 8.5px;
   color: var(--mid);
   font-style: italic;
   line-height: 1.4;
+  margin-top: 6px;
 }
 .t-row,
 .inv-t-row {
@@ -596,6 +614,15 @@ body.admin-dashboard-body {
   align-items: center;
   padding: 5px 0;
   border-bottom: 1px solid var(--border);
+}
+.t-row-discount,
+.totals-col .t-row:nth-last-of-type(2),
+.inv-totals-col .inv-t-row:nth-last-of-type(2),
+.t-row:has(+ .grand-section),
+.inv-t-row:has(+ .grand-section),
+.t-row:has(+ .grand-section.total),
+.inv-t-row:has(+ .grand-section.total) {
+  border-bottom: none !important;
 }
 .t-row .lbl,
 .inv-t-row .lbl {
@@ -930,15 +957,16 @@ body.admin-dashboard-body {
     display: none !important;
   }
 
-  .stripe-link-display {
-    display: block !important;
-  }
-  .stripe-link-display a {
+  .inv-pay-now-btn {
+    display: inline-block !important;
+    background: #1e2d5a !important;
     color: #ffffff !important;
-    text-decoration: underline !important;
-    word-break: break-all !important;
-    font-size: 10px !important;
-    font-family: 'Inter', sans-serif !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-shadow: none !important;
+  }
+  .pay-stripe-input, .stripe-link-input {
+    display: none !important;
   }
 
   input, select, textarea {
