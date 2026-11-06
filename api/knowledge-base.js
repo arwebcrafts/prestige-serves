@@ -171,7 +171,8 @@ A: We reply to all inquiries within minutes during business hours. Our AI assist
 === CONTACT & HOURS ===
 Phone:   424-235-3089
 Email:   info@prestigeserves.com
-Hours:   Monday–Friday 8:00 AM – 6:00 PM PST
+Hours:   Monday–Thursday 8:00 AM – 6:00 PM PST
+         Friday 9:00 AM – 2:30 PM PST
          Saturday 9:00 AM – 3:00 PM PST
          Sunday: Emergency/Rush orders only (call ahead)
 `;
