@@ -173,8 +173,7 @@ Phone:   424-235-3089
 Email:   info@prestigeserves.com
 Hours:   Monday–Thursday 8:30 AM – 4:30 PM PST
          Friday 8:30 AM – 2:30 PM PST
-         Saturday 9:00 AM – 3:00 PM PST
-         Sunday: Emergency/Rush orders only (call ahead)
+         Saturday – Sunday: Closed
 `;
 
 export default PRESTIGE_KB;
