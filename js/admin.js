@@ -1194,7 +1194,7 @@ function buildContactDetailView(c) {
 
   html += skipTrace.html;
   html += '<div class="detail-section va-detail-section"><h4 class="va-section-title">Submission</h4><table class="va-field-table"><tbody>' +
-    vaFieldRow('Submitted', formatDateColor(c.created_at)) +
+    '<tr><td class="va-field-label">Submitted</td><td class="va-field-value">' + formatDateColor(c.created_at) + '</td></tr>' +
     '<tr><td class="va-field-label">Email sent</td><td class="va-field-value"><span class="email-status-badge ' + (c.email_sent === 1 ? 'success' : c.email_sent === 0 ? 'failed' : 'pending') + '">' + (c.email_sent === 1 ? 'Sent' : c.email_sent === 0 ? 'Failed' : 'Pending') + '</span></td></tr>' +
     '</tbody></table></div>';
 
