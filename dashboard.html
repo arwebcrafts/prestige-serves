@@ -15,53 +15,108 @@
 </head>
 <body class="admin-dashboard-body">
 
-<nav class="admin-nav admin-nav-dashboard">
-  <div class="admin-nav-brand">
-    <img src="assets/images/mail.png" alt="" width="44" height="44" style="object-fit:contain;">
-    <div class="admin-nav-titles">
-      <span class="admin-nav-title">Prestige Serves</span>
-      <span class="admin-nav-sub">Admin dashboard</span>
-    </div>
+<!-- Mobile Topbar with Navigation Toggle -->
+<header class="admin-mobile-topbar">
+  <div class="admin-mobile-brand">
+    <img src="assets/images/mail.png" alt="" width="32" height="32" style="object-fit:contain;">
+    <span>Prestige Serves</span>
   </div>
-  <button type="button" class="btn-outline" onclick="handleLogout()">Log out</button>
-</nav>
+  <button type="button" class="admin-mobile-toggle" onclick="toggleSidebar()" aria-label="Open menu">
+    <span>☰ Menu</span>
+  </button>
+</header>
 
-<div class="admin-container admin-dashboard-wrap">
-  <header class="dashboard-hero">
-    <div>
-      <h1>Dashboard</h1>
-      <p>Review Book a Service and contact submissions, filter by date and status, and export to CSV.</p>
-    </div>
-    <div class="dashboard-hero-actions">
-      <button type="button" class="btn-dashboard-ghost" onclick="loadRequests(); loadContacts();">Refresh data</button>
-    </div>
-  </header>
+<div class="sidebar-overlay" onclick="closeSidebar()"></div>
 
-  <section class="settings-card" aria-labelledby="settings-heading">
-    <h2 id="settings-heading" class="settings-card-title">Email notifications</h2>
-    <p class="settings-card-desc">Address that receives new form submissions.</p>
-    <div class="settings-row settings-row-dashboard">
-      <label for="owner-email-input">Owner email</label>
-      <input type="email" id="owner-email-input" class="dashboard-input" placeholder="owner@example.com" autocomplete="email">
-      <button type="button" onclick="saveOwnerEmail()" class="btn-primary btn-dashboard-primary">Save</button>
-      <span id="email-save-status" class="email-save-status" aria-live="polite"></span>
+<div class="admin-layout">
+  <!-- Left Sidebar Navigation -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <img src="assets/images/mail.png" alt="" width="36" height="36" style="object-fit:contain;">
+      <div>
+        <div class="sidebar-brand-name">Prestige Serves</div>
+        <div class="sidebar-brand-sub">Admin Dashboard</div>
+      </div>
     </div>
-  </section>
 
-  <div class="dashboard-tabs" role="tablist">
-    <button type="button" role="tab" aria-selected="true" class="tab-btn active" data-tab="requests" onclick="switchTab('requests')">
-      <span class="tab-btn-label">Book a Service</span>
-      <span class="tab-btn-hint">Service requests</span>
-    </button>
-    <button type="button" role="tab" aria-selected="false" class="tab-btn" data-tab="contacts" onclick="switchTab('contacts')">
-      <span class="tab-btn-label">Contact</span>
-      <span class="tab-btn-hint">General inquiries</span>
-    </button>
-    <button type="button" role="tab" aria-selected="false" class="tab-btn" data-tab="invoices" onclick="switchTab('invoices')">
-      <span class="tab-btn-label">Invoices</span>
-      <span class="tab-btn-hint">Quotes &amp; billing</span>
-    </button>
-  </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-title">Main Sections</div>
+
+      <button type="button" class="sidebar-item tab-btn active" data-tab="requests" onclick="switchTab('requests'); closeSidebar();">
+        <span class="sidebar-item-icon">📋</span>
+        <div class="sidebar-item-content">
+          <span class="sidebar-item-title">Book a Service</span>
+          <span class="sidebar-item-sub">Service Requests</span>
+        </div>
+        <span class="sidebar-badge" id="badge-requests-count">0</span>
+      </button>
+
+      <button type="button" class="sidebar-item tab-btn" data-tab="contacts" onclick="switchTab('contacts'); closeSidebar();">
+        <span class="sidebar-item-icon">📬</span>
+        <div class="sidebar-item-content">
+          <span class="sidebar-item-title">Contact Inquiries</span>
+          <span class="sidebar-item-sub">Forms &amp; Skip Trace</span>
+        </div>
+        <span class="sidebar-badge" id="badge-contacts-count">0</span>
+      </button>
+
+      <button type="button" class="sidebar-item tab-btn" data-tab="invoices" onclick="switchTab('invoices'); closeSidebar();">
+        <span class="sidebar-item-icon">🧾</span>
+        <div class="sidebar-item-content">
+          <span class="sidebar-item-title">Invoices &amp; Billing</span>
+          <span class="sidebar-item-sub">Quotes &amp; Stripe</span>
+        </div>
+        <span class="sidebar-badge" id="badge-invoices-count">0</span>
+      </button>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="sidebar-section-title">Quick Actions</div>
+      <a href="quote-builder.html" class="sidebar-action-btn">
+        <span>➕ Create New Quote</span>
+      </a>
+      <button type="button" class="sidebar-action-btn sidebar-ghost-btn" onclick="loadRequests(); loadContacts(); loadInvoices();">
+        <span>🔄 Refresh All Data</span>
+      </button>
+      <a href="index.html" target="_blank" rel="noopener" class="sidebar-action-btn sidebar-ghost-btn">
+        <span>🌐 View Live Website</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-avatar">PS</div>
+        <div>
+          <div class="sidebar-user-name">Prestige Serves</div>
+          <div class="sidebar-user-role">Administrator</div>
+        </div>
+      </div>
+      <button type="button" class="sidebar-logout-btn" onclick="handleLogout()">Log out</button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="admin-main">
+    <header class="dashboard-hero">
+      <div>
+        <h1>Dashboard</h1>
+        <p>Review Book a Service and contact submissions, filter by date and status, and export to CSV.</p>
+      </div>
+      <div class="dashboard-hero-actions">
+        <button type="button" class="btn-dashboard-ghost" onclick="loadRequests(); loadContacts(); loadInvoices();">Refresh data</button>
+      </div>
+    </header>
+
+    <section class="settings-card" aria-labelledby="settings-heading" style="margin-bottom:24px;">
+      <h2 id="settings-heading" class="settings-card-title">Email notifications</h2>
+      <p class="settings-card-desc">Address that receives new form submissions.</p>
+      <div class="settings-row settings-row-dashboard">
+        <label for="owner-email-input">Owner email</label>
+        <input type="email" id="owner-email-input" class="dashboard-input" placeholder="owner@example.com" autocomplete="email">
+        <button type="button" onclick="saveOwnerEmail()" class="btn-primary btn-dashboard-primary">Save</button>
+        <span id="email-save-status" class="email-save-status" aria-live="polite"></span>
+      </div>
+    </section>
 
   <div class="tab-content active" id="tab-requests" role="tabpanel">
     <div class="stats-grid stats-grid-dashboard">
@@ -209,7 +264,7 @@
         </table>
       </div>
     </div>
-  </div>
+  </main>
 </div>
 
 <div id="detail-modal" class="modal-overlay">

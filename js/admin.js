@@ -168,8 +168,23 @@ document.addEventListener('DOMContentLoaded', function() {
   loadOwnerEmail();
   loadRequests();
   loadContacts();
+  loadInvoices();
   makeTabsScrollable();
 });
+
+function toggleSidebar() {
+  var sb = document.querySelector('.admin-sidebar');
+  var ov = document.querySelector('.sidebar-overlay');
+  if (sb) sb.classList.toggle('open');
+  if (ov) ov.classList.toggle('open');
+}
+
+function closeSidebar() {
+  var sb = document.querySelector('.admin-sidebar');
+  var ov = document.querySelector('.sidebar-overlay');
+  if (sb) sb.classList.remove('open');
+  if (ov) ov.classList.remove('open');
+}
 
 function handleLogout() {
   sessionStorage.removeItem('adminLoggedIn');
@@ -186,6 +201,7 @@ function switchTab(tab) {
     content.classList.toggle('active', content.id === 'tab-' + tab);
   });
   if (tab === 'invoices') loadInvoices();
+  closeSidebar();
 }
 
 function getPresetTimeRange(preset, dateFrom, dateTo) {
@@ -284,6 +300,8 @@ function updateRequestStats() {
   var filtered = getFilteredRequests();
   var today = new Date().toDateString();
   totalEl.textContent = allRequests.length;
+  var badge = document.getElementById('badge-requests-count');
+  if (badge) badge.textContent = allRequests.length;
   var fc = document.getElementById('requests-filtered-count');
   if (fc) fc.textContent = filtered.length;
   document.getElementById('requests-today').textContent = filtered.filter(function(r) {
@@ -1566,6 +1584,8 @@ function updateContactsSummaryStats() {
   var filtered = getFilteredContacts();
   var today = new Date().toDateString();
   totalEl.textContent = allContacts.length;
+  var badge = document.getElementById('badge-contacts-count');
+  if (badge) badge.textContent = allContacts.length;
   var fc = document.getElementById('contacts-filtered-count');
   if (fc) fc.textContent = filtered.length;
   var td = document.getElementById('contacts-today');
@@ -1973,6 +1993,8 @@ async function loadInvoices() {
   try {
     var resp = await fetch('/api/admin/invoices');
     var data = await resp.json();
+    var badge = document.getElementById('badge-invoices-count');
+    if (badge && data && data.data) badge.textContent = data.data.length;
     if (!data.success || !data.data || !data.data.length) {
       tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px;">No invoices yet. <a href="quote-builder.html">Create one</a>.</td></tr>';
       return;
