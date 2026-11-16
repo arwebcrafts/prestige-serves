@@ -1714,26 +1714,44 @@ function handleFormSubmit(event, id, formType) {
       openSkipTraceModal();
       return;
     }
-    const formData = {
-      firstName: form.querySelector('[name="firstName"]')?.value || '',
-      lastName: form.querySelector('[name="lastName"]')?.value || '',
-      company: form.querySelector('[name="company"]')?.value || '',
-      email: form.querySelector('[name="email"]')?.value || '',
-      phone: form.querySelector('[name="phone"]')?.value || '',
-      reason: document.getElementById('reason-value')?.value || '',
-      city: document.getElementById('city-value')?.value || '',
-      state: document.getElementById('state-value')?.value || '',
-      caseDetails: form.querySelector('[name="caseDetails"]')?.value || '',
-      urgency: form.querySelector('[name="urgency"]')?.value || (skipTraceFormData && skipTraceFormData.rush ? (skipTraceFormData.rush === 'yes' ? 'High' : 'Standard') : ''),
-      serviceType: form.querySelector('[name="serviceType"]')?.value || '',
-      consent: form.querySelector('[name="consent"]')?.checked || false,
-      skipTraceData: skipTraceFormData
-    };
-    fetch('/api/contact', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    })
+    async function submitContactWithFiles() {
+      if (modalUploadedFiles && modalUploadedFiles.length > 0) {
+        try {
+          var uploadFd = new FormData();
+          modalUploadedFiles.forEach(function(f) { uploadFd.append('files', f, f.name); });
+          var upRes = await fetch('/api/upload', { method: 'POST', body: uploadFd });
+          var upData = await upRes.json();
+          if (upData.success && upData.files && upData.files.length > 0) {
+            if (!skipTraceFormData) skipTraceFormData = {};
+            skipTraceFormData.uploadedFiles = upData.files;
+          }
+        } catch (upErr) {
+          console.warn('File upload warning:', upErr);
+        }
+      }
+      const formData = {
+        firstName: form.querySelector('[name="firstName"]')?.value || '',
+        lastName: form.querySelector('[name="lastName"]')?.value || '',
+        company: form.querySelector('[name="company"]')?.value || '',
+        email: form.querySelector('[name="email"]')?.value || '',
+        phone: form.querySelector('[name="phone"]')?.value || '',
+        reason: document.getElementById('reason-value')?.value || '',
+        city: document.getElementById('city-value')?.value || '',
+        state: document.getElementById('state-value')?.value || '',
+        caseDetails: form.querySelector('[name="caseDetails"]')?.value || '',
+        urgency: form.querySelector('[name="urgency"]')?.value || (skipTraceFormData && skipTraceFormData.rush ? (skipTraceFormData.rush === 'yes' ? 'High' : 'Standard') : ''),
+        serviceType: form.querySelector('[name="serviceType"]')?.value || '',
+        consent: form.querySelector('[name="consent"]')?.checked || false,
+        skipTraceData: skipTraceFormData
+      };
+      return fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+    }
+
+    submitContactWithFiles()
     .then(function(res) {
       return res.json();
     })

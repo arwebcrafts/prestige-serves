@@ -697,6 +697,31 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    // Standalone file upload endpoint
+    if (url === '/api/upload' && method === 'POST') {
+      try {
+        const parsed = await parseMultipart(req);
+        const uploaded = [];
+        if (parsed.files && parsed.files.length > 0) {
+          for (const file of parsed.files) {
+            try {
+              const blobResult = await put(file.originalName, file.buffer, {
+                access: 'public',
+                token: BLOB_READ_WRITE_TOKEN
+              });
+              uploaded.push({ name: file.originalName, url: blobResult.url });
+            } catch (blobErr) {
+              logger.error(LOG_CATEGORIES.BLOB, 'Upload error', blobErr);
+            }
+          }
+        }
+        jsonResponse(res, 200, { success: true, files: uploaded });
+      } catch (err) {
+        jsonResponse(res, 500, { success: false, message: err.message });
+      }
+      return;
+    }
+
     // Contact form submission
     if (url === '/api/contact' && method === 'POST') {
       const timer = perf.startTimer('contactFormSubmission');

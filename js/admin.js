@@ -1034,7 +1034,15 @@ function buildSkipTraceAdminSection(rawData, copyLines) {
 
   if (skipTraceData.uploadedFiles && skipTraceData.uploadedFiles.length) {
     html += '<div class="detail-section va-detail-section"><h4 class="va-section-title">Skip Trace — Referenced files</h4><ul class="va-files-list">' +
-      skipTraceData.uploadedFiles.map(function (f) { return '<li>📎 ' + escapeHtml(f) + '</li>'; }).join('') +
+      skipTraceData.uploadedFiles.map(function (f) {
+        if (typeof f === 'object' && f && f.url) {
+          return '<li><a href="' + escapeHtml(f.url) + '" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline;font-weight:500;">📎 ' + escapeHtml(f.name || 'Download attached file') + '</a></li>';
+        }
+        if (typeof f === 'string' && /^https?:\/\//i.test(f)) {
+          return '<li><a href="' + escapeHtml(f) + '" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline;font-weight:500;">📎 ' + escapeHtml(f.split('/').pop() || 'Download attached file') + '</a></li>';
+        }
+        return '<li>📎 ' + escapeHtml(f) + ' <span style="color:#94a3b8;font-size:11.5px;font-style:italic;">(file name provided by client)</span></li>';
+      }).join('') +
       '</ul></div>';
   }
 
