@@ -1415,12 +1415,18 @@
 }
 
 .sidebar-nav {
-  padding: 14px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+  padding: 12px 10px;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  gap: 4px !important;
   flex: 1;
   overflow-y: auto;
+  height: auto !important;
+  position: static !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .sidebar-heading {
