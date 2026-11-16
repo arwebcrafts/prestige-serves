@@ -192,7 +192,7 @@ function handleLogout() {
 }
 
 function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  document.querySelectorAll('.tab-btn, .sidebar-nav-link[data-tab]').forEach(function(btn) {
     var on = btn.getAttribute('data-tab') === tab;
     btn.classList.toggle('active', on);
     btn.setAttribute('aria-selected', on ? 'true' : 'false');
